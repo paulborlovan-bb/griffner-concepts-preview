@@ -78,23 +78,56 @@ function build() {
   const sc = H.scene;
   G = {};
   const grid = G.grid = new T.GridHelper(600, 150, 0x1c1c1c, 0x121212); grid.position.y = .001; grid.material.transparent = true; sc.add(grid);
-  /* Mensch, 1,78 m, mit Gelenken: Hüfte, Knie, Schulter, Ellbogen, Kopf. Blick Richtung Haus (−z). */
-  const mm = G.manMat = new T.MeshStandardMaterial({ color: 0xf2f2f0, emissive: 0x2a2a2a, roughness: .7, transparent: true, opacity: 0 });
+  /* Mensch, 1,78 m, mit Gelenken: Hüfte, Knie, Schulter, Ellbogen, Kopf. Blick Richtung Haus (−z), wir sehen den Rücken.
+     Angezogen wie im Markensystem (11_Anwendungen/Textil): schwarzes GRIFFNER Polo, gelbes Feld an der Kragenspitze,
+     Wortmarke auf der Brust, hinten das Logo mit gelbem Feld unter dem Kragen. Dazu Hose in Sand und helle Schuhe. */
+  const M3 = (c, o = {}) => new T.MeshStandardMaterial({ color: c, roughness: .8, transparent: true, opacity: 0, ...o });
+  const MM = G.mm = {
+    skin: M3(0xd9ae90, { emissive: 0x1c130d, roughness: .65 }), hair: M3(0x2a1f18, { roughness: .95 }),
+    polo: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }), pants: M3(0xCFC3B3, { emissive: 0x15120e, roughness: .9 }),
+    shoe: M3(0xF2F0EC, { emissive: 0x1a1a1a, roughness: .6 }), yel: M3(0xFFB200, { emissive: 0xFFB200, emissiveIntensity: .45, roughness: .7 })
+  };
+  const wm = word(); G.manMats = [...Object.values(MM), wm];
   const V3 = (x, y, z) => new T.Vector3(x, y, z), UP = V3(0, 1, 0), O = V3(0, 0, 0);
   const grp = (par, x, y, z) => { const g = new T.Group(); g.position.set(x, y, z); par.add(g); return g; };
-  const add = (par, geo, pos, s) => { const m = new T.Mesh(geo, mm); m.position.copy(pos); s && m.scale.set(...s); m.castShadow = true; par.add(m); return m; };
-  const limb = (par, a, b, r0, r1) => { const d = b.clone().sub(a), m = add(par, new T.CylinderGeometry(r1, r0, d.length(), 18), a.clone().add(b).multiplyScalar(.5)); m.quaternion.setFromUnitVectors(UP, d.normalize()); add(par, new T.SphereGeometry(r0, 18, 12), a); };
+  const add = (par, geo, mat, pos, s) => { const m = new T.Mesh(geo, mat); m.position.copy(pos); s && m.scale.set(...s); m.castShadow = true; par.add(m); return m; };
+  const limb = (par, a, b, r0, r1, mat, joint = mat) => { const d = b.clone().sub(a), m = add(par, new T.CylinderGeometry(r1, r0, d.length(), 20), mat, a.clone().add(b).multiplyScalar(.5)); m.quaternion.setFromUnitVectors(UP, d.normalize()); if (joint) add(par, new T.SphereGeometry(r0, 20, 14), joint, a); return m; };
+  const lathe = (pts, mat, par) => add(par, new T.LatheGeometry(pts.map(([r, y]) => new T.Vector2(r, y)), 32), mat, O, [1, 1, .62]);
   const man = G.man = new T.Group();
   const spine = grp(man, 0, .9, 0);
-  const prof = [[0, -.04], [.135, -.035], [.165, .05], [.14, .15], [.155, .3], [.18, .42], [.19, .51], [.15, .565], [.06, .6], [0, .605]].map(([r, y]) => new T.Vector2(r, y));
-  add(spine, new T.LatheGeometry(prof, 28), O, [1, 1, .6]);
-  const leg = x => { const hip = grp(man, x, .9, 0), knee = grp(hip, 0, -.4, 0), ank = grp(knee, 0, -.415, 0);
-    limb(hip, O, V3(0, -.4, 0), .082, .056); limb(knee, O, V3(0, -.415, 0), .056, .036); limb(ank, O, V3(0, -.05, -.17), .04, .032); return { hip, knee }; };
-  const arm = x => { const sh = grp(spine, x, .52, 0), el = grp(sh, 0, -.29, 0);
-    limb(sh, O, V3(0, -.29, 0), .05, .04); limb(el, O, V3(0, -.26, 0), .04, .03); add(el, new T.SphereGeometry(.04, 14, 10), V3(0, -.32, 0), [.75, 1.6, 1]); return { sh, el }; };
+  /* Becken in Hosenfarbe, darüber das Polo, etwas weiter geschnitten */
+  lathe([[0, -.05], [.136, -.04], [.166, .05], [.152, .14], [0, .14]], MM.pants, spine);
+  lathe([[0, -.01], [.172, -.01], [.17, .05], [.158, .15], [.164, .3], [.186, .42], [.196, .51], [.158, .565], [.072, .6], [0, .605]], MM.polo, spine);
+  /* Kragen, gelbes Feld an der linken Kragenspitze */
+  const col = add(spine, new T.CylinderGeometry(.064, .078, .055, 24, 1, true), MM.polo, V3(0, .6, .004), [1, 1, .86]); col.material.side = T.DoubleSide;
+  add(spine, new T.BoxGeometry(.026, .02, .008), MM.yel, V3(-.045, .585, -.06)).rotation.set(-.35, 0, .5);
+  /* Rücken: Logo mit gelbem Feld unter dem Kragen, Brust: Wortmarke Weiß */
+  add(spine, new T.BoxGeometry(.1, .08, .008), MM.yel, V3(0, .515, .124)).rotation.x = .12;
+  const wb = add(spine, new T.PlaneGeometry(.1, .019), wm, V3(0, .462, .128)); wb.rotation.x = .1; wb.castShadow = false;
+  const wf = add(spine, new T.PlaneGeometry(.075, .014), wm, V3(-.085, .44, -.123)); wf.rotation.y = Math.PI; wf.castShadow = false;
+  const leg = x => {
+    const hip = grp(man, x, .9, 0), knee = grp(hip, 0, -.4, 0), ank = grp(knee, 0, -.415, 0);
+    limb(hip, O, V3(0, -.4, 0), .086, .062, MM.pants); limb(knee, O, V3(0, -.405, 0), .062, .054, MM.pants);
+    add(ank, new T.SphereGeometry(.052, 20, 12), MM.shoe, V3(0, -.05, -.06), [.95, .62, 2.1]);
+    add(ank, new T.BoxGeometry(.1, .025, .25), MM.shoe, V3(0, -.075, -.06));
+    return { hip, knee };
+  };
+  const arm = x => {
+    const sh = grp(spine, x, .52, 0), el = grp(sh, 0, -.29, 0);
+    limb(sh, O, V3(0, -.29, 0), .046, .04, MM.skin, MM.polo);
+    limb(sh, V3(0, .01, 0), V3(0, -.15, 0), .062, .058, MM.polo, null);
+    limb(el, O, V3(0, -.26, 0), .04, .031, MM.skin);
+    add(el, new T.SphereGeometry(.042, 16, 12), MM.skin, V3(0, -.32, 0), [.75, 1.55, 1.05]);
+    return { sh, el };
+  };
   const head = grp(spine, 0, .57, 0);
-  limb(head, O, V3(0, .095, -.012), .05, .047); add(head, new T.SphereGeometry(.104, 28, 20), V3(0, .195, -.018), [.86, 1.12, 1]);
-  rig = { spine, head, L: leg(-.088), R: leg(.088), aL: arm(-.2), aR: arm(.2) };
+  limb(head, O, V3(0, .1, -.012), .052, .049, MM.skin);
+  add(head, new T.SphereGeometry(.104, 32, 24), MM.skin, V3(0, .195, -.018), [.88, 1.12, 1]);
+  [-1, 1].forEach(sg => add(head, new T.SphereGeometry(.022, 12, 10), MM.skin, V3(sg * .09, .19, -.008), [.6, 1, .9]));
+  /* Haare: kurze Kappe, hinten etwas tiefer */
+  const hair = add(head, new T.SphereGeometry(.111, 32, 18, 0, Math.PI * 2, 0, 1.5), MM.hair, V3(0, .2, -.016), [.92, 1.06, 1.06]);
+  hair.rotation.x = .2;
+  rig = { spine, head, L: leg(-.09), R: leg(.09), aL: arm(-.215), aR: arm(.215) };
   man.position.set(HF[0], 0, HF[1]); sc.add(man);
   /* Lichtkegel von oben: der erste Moment gehört dir */
   const spot = G.spot = new T.SpotLight(0xfff1de, 0, 0, .36, .85, 0); spot.position.set(HF[0], 7.5, HF[1] + 1.2); spot.target = man;
@@ -108,10 +141,10 @@ function build() {
   const plate = G.plate = new T.Group(), pg = new T.BoxGeometry(5, .03, 2);
   const pIn = new T.Mesh(pg, yh), pOut = new T.Mesh(pg, ym); pIn.position.z = -1; pOut.position.z = 1; pOut.castShadow = pIn.castShadow = true;
   plate.add(pIn, pOut); plate.visible = false; sc.add(plate);
-  const wm = new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0x3a3a3a, roughness: .9 });
-  G.glass = new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0x3a3a3a, roughness: .3, transparent: true });
+  const wmat = G.wallMat = new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0x3a3a3a, roughness: .9, transparent: true, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
+  G.glass = new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0x3a3a3a, roughness: .3, transparent: true, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
   const bx = new T.BoxGeometry(1, 1, 1);
-  G.walls = WALLS.map(([x0, z0, x1, z1, t]) => { const m = new T.Mesh(bx, t < .1 ? G.glass : wm); m.castShadow = true; m.receiveShadow = true; m.rotation.y = -Math.atan2(z1 - z0, x1 - x0); m.visible = false; sc.add(m); return { m, x0, z0, x1, z1, t, len: Math.hypot(x1 - x0, z1 - z0) }; });
+  G.walls = WALLS.map(([x0, z0, x1, z1, t]) => { const m = new T.Mesh(bx, t < .1 ? G.glass : wmat); m.castShadow = true; m.receiveShadow = true; m.rotation.y = -Math.atan2(z1 - z0, x1 - x0); m.visible = false; sc.add(m); return { m, x0, z0, x1, z1, t, len: Math.hypot(x1 - x0, z1 - z0) }; });
   G.v = new T.Vector3();
   G.std = H.house({ hill: 0x2b2b2a, hillLine: 0x3c3c3b }); G.std.set(STD); G.std.x = HF[0]; G.std.z = HF[1] - 1; G.std.build = 0;
   G.main = H.house({ hill: 0x2b2b2a, hillLine: 0x3c3c3b, line: 0x8a8a8a });
@@ -121,11 +154,51 @@ function build() {
   G.field = TP.map(([x, z], i) => { const h = H.house({ hill: 0x2b2b2a, hillLine: 0x3c3c3b }); h.set(TF[i]); h.x = x; h.z = z; h.build = 0; h.g.visible = false; return h; });
 }
 
+/* Wortmarke GRIFFNER in Weiß, als Textur für Polo vorne und hinten */
+function word() {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 96;
+  const x = c.getContext('2d'), ff = getComputedStyle(document.body).fontFamily || 'sans-serif';
+  x.fillStyle = '#ffffff'; x.font = `500 64px ${ff}`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  if ('letterSpacing' in x) x.letterSpacing = '14px';
+  x.fillText('GRIFFNER', 256, 52);
+  const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace;
+  return new T.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false });
+}
+
+/* Kamerafahrt: eine weiche Kurve durch alle Stationen (monoton, ohne Überschwingen), statt an jeder Station anzuhalten */
+const KF = (() => {
+  const w6 = .14 / 6, AZ = [.5, -.45, .62, -.3, .42, -.58], EL = [.22, .3, .18, .26, .2, .3];
+  const K = [[0, -.5, .2, 54, -10.5, 4.2, 7.5], [.05, -.44, .19, 46, -9, 3, 7.5], [.1, -.22, .14, 10, -6.5, .95, 8.5], [.19, -.12, .13, 12, -6.5, 1.05, 8.5],
+    [.37, .38, .3, 34, -11, 3.4, 4], [.5, .02, 1.42, 50, 0, 0, -.6], [.555, .06, 1.4, 48, 0, 0, -.6], [.67, -.55, .3, 46, 0, 2.4, 1], [.715, -.6, .27, 48, 0, 2.4, 1]];
+  AZ.forEach((az, i) => { const a = .72 + i * w6; K.push([a + w6 * .45, az, EL[i], 50, 0, 2.6, 0], [a + w6, az, EL[i], 50, 0, 2.6, 0]); });
+  K.push([.875, .3, .5, 90, -8, 0, 8], [.95, .3, .92, 262, -28, 0, 30], [1, .2, .94, 272, -28, 0, 30]);
+  /* Steigungen je Station und Kanal (Fritsch Carlson), an den Enden null */
+  const n = K.length, S = K.map(() => []);
+  for (let j = 1; j < 7; j++) for (let i = 0; i < n; i++) {
+    if (i === 0 || i === n - 1) { S[i][j] = 0; continue; }
+    const h0 = K[i][0] - K[i - 1][0] || 1e-6, h1 = K[i + 1][0] - K[i][0] || 1e-6, d0 = (K[i][j] - K[i - 1][j]) / h0, d1 = (K[i + 1][j] - K[i][j]) / h1;
+    if (d0 * d1 <= 0) { S[i][j] = 0; continue; }
+    const w1 = 2 * h1 + h0, w2 = h1 + 2 * h0; S[i][j] = (w1 + w2) / (w1 / d0 + w2 / d1);
+  }
+  return { K, S };
+})();
+function camAt(p) {
+  const { K, S } = KF; let k = 0; while (k < K.length - 2 && p > K[k + 1][0]) k++;
+  const A = K[k], B = K[k + 1], h = B[0] - A[0] || 1e-6, t = clamp((p - A[0]) / h), t2 = t * t, t3 = t2 * t, o = [p];
+  for (let j = 1; j < 7; j++) o[j] = (2 * t3 - 3 * t2 + 1) * A[j] + (t3 - 2 * t2 + t) * S[k][j] * h + (-2 * t3 + 3 * t2) * B[j] + (t3 - t2) * S[k + 1][j] * h;
+  return o;
+}
+
+/* Scrollen wird geglättet: das Bild folgt dem Rad weich nach, statt in Stufen zu springen */
+let sp = null, lt = 0;
 function tick() {
   if (!D) return;
-  const { p, on } = prog(D.el);
-  if (!on) return;
-  const it = hi, vw = innerWidth;
+  const pr = prog(D.el);
+  if (!pr.on) { sp = null; return; }
+  const now = performance.now(), dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
+  if (sp === null || reduce || Math.abs(pr.p - sp) > .2) sp = pr.p; else sp += (pr.p - sp) * (1 - Math.exp(-dt * 6.5));
+  if (Math.abs(pr.p - sp) > 1e-4) loop.poke();
+  const p = sp, it = hi, vw = innerWidth;
   /* Text */
   D.top.style.opacity = (ease(it) * (1 - E(p, .05, .09))).toFixed(3);
   if (D.scroll) D.scroll.style.opacity = (it * (1 - E(p, 0, .03))).toFixed(3);
@@ -139,13 +212,7 @@ function tick() {
   if (!G) return;
   const C = M.CONCEPTS;
   /* Kamera: Modellhaus, Figur, Wörter im Raum, Draufsicht Grundriss, Haus, Folge, Feld. [p, Azimut, Höhe, Abstand, Ziel x, y, z] */
-  const w6 = .14 / 6, AZ = [.5, -.45, .62, -.3, .42, -.58], EL = [.22, .3, .18, .26, .2, .3];
-  const K = [[0, -.5, .2, 54, -10.5, 4.2, 7.5], [.05, -.44, .19, 46, -9, 3, 7.5], [.1, -.22, .14, 10, -6.5, .95, 8.5], [.19, -.12, .13, 12, -6.5, 1.05, 8.5],
-    [.37, .38, .3, 34, -11, 3.4, 4], [.5, .02, 1.42, 50, 0, 0, -.6], [.555, .06, 1.4, 48, 0, 0, -.6], [.67, -.55, .3, 46, 0, 2.4, 1], [.715, -.6, .27, 48, 0, 2.4, 1]];
-  AZ.forEach((az, i) => { const a = .72 + i * w6; K.push([a + w6 * .45, az, EL[i], 50, 0, 2.6, 0], [a + w6, az, EL[i], 50, 0, 2.6, 0]); });
-  K.push([.875, .3, .5, 90, -8, 0, 8], [.95, .3, .92, 262, -28, 0, 30], [1, .2, .94, 272, -28, 0, 30]);
-  let k = 0; while (k < K.length - 2 && p > K[k + 1][0]) k++;
-  const A = K[k], B = K[k + 1], t = ease(clamp((p - A[0]) / Math.max(1e-6, B[0] - A[0]))), cv = A.map((v, j) => v + (B[j] - v) * t);
+  const w6 = .14 / 6, cv = camAt(p);
   const dist = cv[3] * (vw < 760 ? (vw / innerHeight < .62 ? 1.8 : 1.5) : 1);
   H.scene.fog.near = dist * .9; H.scene.fog.far = dist * 2.6 + 60;
   shift(p);
@@ -166,8 +233,8 @@ function tick() {
   pl.rotation.set(lerp(Math.PI / 2, 0, yf), lerp(Math.sin(tt * .6) * .35 + .25, 0, yf) + (1 - yf) * yf * 4 * Math.PI * .5, 0);
   G.yelIn.opacity = lerp(1, .5, E(p, .48, .52));
   /* Der Grundriss zeichnet sich, dann wachsen die Wände */
-  const ex = E(p, .555, .61), wallOn = p > .4 && p < .7;
-  G.glass.opacity = lerp(1, .3, ex);
+  const ex = E(p, .555, .61), wf = 1 - E(p, .6, .655), wallOn = p > .4 && wf > .002;
+  G.wallMat.opacity = wf; G.wallMat.depthWrite = wf > .5; G.glass.opacity = lerp(1, .3, ex) * wf;
   G.walls.forEach((w, i) => {
     const d = E(p, .415 + i * .007, .47 + i * .007), l = w.len * d, ht = lerp(.05, 3, ex), ux = (w.x1 - w.x0) / w.len, uz = (w.z1 - w.z0) / w.len;
     w.m.scale.set(Math.max(.001, l), ht, w.t); w.m.position.set(w.x0 + ux * l / 2, ht / 2, w.z0 + uz * l / 2); w.m.visible = wallOn && d > .002;
@@ -205,7 +272,7 @@ function tick() {
 
 function pose(p, up) {
   const R = rig, man = G.man, t = performance.now() / 1000, sm = x => x * x * (3 - 2 * x);
-  G.manMat.opacity = up; G.manMat.transparent = up < .999; G.manMat.depthWrite = up > .5; man.visible = up > .002 && p < .93;
+  G.manMats.forEach(m => { m.opacity = up; m.depthWrite = up > .5 && m.map == null; }); man.visible = up > .002 && p < .93;
   /* Gehen: ein paar Schritte auf das Haus zu, sobald es steht */
   const w = clamp((p - .6) / .09), env = Math.sin(Math.PI * w), ph = w * 4 * Math.PI * 2, sw2 = sm(w);
   man.position.set(lerp(HF[0], HP[0], sw2), Math.abs(Math.sin(ph)) * .025 * env + .03 * E(p, .62, .64), lerp(HF[1], HP[1], sw2));

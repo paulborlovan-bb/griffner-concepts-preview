@@ -46,7 +46,8 @@ function initFilm() {
     const r = box.getBoundingClientRect(), vh = innerHeight; if (r.top > vh || r.bottom < 0) return;
     /* offen, sobald die Mitte des Bands die Mitte des Bildschirms erreicht */
     const t = clamp((vh - r.top) / (vh / 2 + r.height / 2)), o = t * t * (3 - 2 * t), iy = lerp(16, 0, o), ix = lerp(22, 0, o);
-    box.style.clipPath = o > .999 ? '' : `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}%)`;
+    /* immer als Inline Wert setzen: ein leerer Wert ließe die geschlossene Startform aus dem CSS zurückspringen */
+    box.style.clipPath = `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}%)`;
     v.style.transform = `scale(${lerp(1.16, 1, o).toFixed(4)})`;
   } });
 }

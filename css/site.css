@@ -622,7 +622,7 @@ main,.ft{position:relative}
 /* Wald: Film als breites Band, nicht bildschirmhoch */
 .wf{position:relative;padding:clamp(56px,10vh,120px) 0;color:var(--griffner-weiss)}
 .wf__band{position:relative}
-.wf__box{position:relative;height:min(62vh,44vw);min-height:260px;overflow:hidden;clip-path:inset(16% 22%);background:#111;will-change:clip-path}
+.wf__box{position:relative;height:min(37vh,26.4vw);min-height:160px;overflow:hidden;clip-path:inset(16% 22%);background:#111;will-change:clip-path}
 .wf__box video{display:block;width:100%;height:100%;object-fit:cover;will-change:transform}
 /* Wald: Ein Tag im Wald, idealer Plan in 3D */
 .wp{color:var(--griffner-weiss)}
@@ -652,10 +652,16 @@ main,.ft{position:relative}
 .p3__hint{position:absolute;right:16px;top:16px;z-index:2;padding:7px 10px 6px;border:1px solid rgba(255,255,255,.55);color:var(--griffner-weiss);transition:opacity 700ms var(--ease);pointer-events:none}
 .p3__hint.is-off{opacity:0}
 .p3>.tag{left:16px;bottom:16px}
+/* Grundriss oder ganzes Haus: weiße Rahmen auf Schwarz, gewählt weiß gefüllt */
+.p3__tabs{position:absolute;left:16px;top:16px;z-index:3;color:var(--griffner-weiss)}
+.p3__tabs .tab{padding:9px 13px 8px;background:var(--griffner-schwarz)}
+.p3__tabs .tab:hover{background:rgba(255,255,255,.12)}
+.p3__tabs .tab[aria-selected="true"]{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
 @media (max-width:819px){
   .p3{aspect-ratio:4 / 5;max-height:none}
   .p3__lab{font-size:8px;letter-spacing:.1em;padding:3px 5px 2px}
-  .p3__hint{right:12px;top:12px}
+  .p3__hint{display:none}
+  .p3__tabs{left:12px;top:12px}
   .p3>.tag{left:12px;bottom:12px}
 }
 /* Wald: Raum und Licht, viel Luft, Bilder öffnen sich beim Kommen und schließen sich beim Gehen */
@@ -703,7 +709,7 @@ main,.ft{position:relative}
   .wv__steps li.is-cur{display:grid}
   .wp__lab{padding:3px 5px 2px}
   .wp__lab b{font-size:8px;letter-spacing:.12em}
-  .wf__box{height:52vw;min-height:220px}
+  .wf__box{height:31vw;min-height:132px}
   .wl__grid{row-gap:48px}
   .wl__fig--b{margin-top:0}
   .wl__grid>*{grid-column:1 / -1 !important;grid-row:auto !important}

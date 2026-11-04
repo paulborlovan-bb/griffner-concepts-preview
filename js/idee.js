@@ -68,10 +68,10 @@ function draw(sk, k) {
 export function initIdee() {
   I = { el: $('#w-idee'), host: $('[data-sk-idee]'), text: $('[data-idee-text]'), dock: $('[data-idee-dock]') };
   D = { el: $('#w-vol'), host: $('[data-vol-gl]'), ov: $('[data-vol-sk]'), steps: $$('[data-vol-step]'), n: $('[data-vol-n]'), dock: $('[data-vol-dock]') };
-  if (!I.el || !D.el) return;
-  /* beide Abschnitte beobachten, sonst startet nichts, wenn man per Anker direkt zum Volumen springt */
+  if (!I.el) return;
+  /* Vom Volumen zum Haus ist seit Runde 5 von der Seite genommen; der Code bleibt, falls der Abschnitt zurückkommt */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !booted) { booted = true; io.disconnect(); boot(); } }), { rootMargin: '600px 0px' });
-  io.observe(I.el); io.observe(D.el);
+  io.observe(I.el); if (D.el) io.observe(D.el);
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { refit(); loop.poke(); }, 140); });
   loop.add({ tick });
 }
@@ -86,6 +86,7 @@ async function boot() {
     { ...WP, gl: 0, gu: 0 },
     WP
   ];
+  if (!D.host) { refit(); loop.poke(); return; }
   VS = M.createStage(D.host, { bg: 0xFFFFFF, fov: 26, shadow: .16, key: 2, hemi: .95, fogNear: 260, fogFar: 600 });
   vH = VS.house({ line: 0x000000 }); vH.set(STEPS[0]); vH.ghost = 1;
   VS.onResize = () => { ovSig = ''; loop.poke(); };
@@ -102,7 +103,7 @@ function refit() {
 function tick() {
   if (!I) return;
   if (prog(I.el).on) idee();
-  if (prog(D.el).on) vol();
+  if (D.el && prog(D.el).on) vol();
 }
 
 function idee() {
