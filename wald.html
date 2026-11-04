@@ -141,24 +141,29 @@
     <section id="w-licht" class="wl" data-room="w-licht">
       <div class="wrap pad-y">
         <div class="kap" data-reveal="0"><span class="info">Concept 01 / Innen</span><span class="info">Erdgeschoß</span></div>
-        <h2 class="h-xl" data-reveal="0">Raum und Licht.</h2>
-        <div class="wl__list">
-          <figure class="wl__fig wl__fig--a" data-wl><div class="wl__box" id="w-licht-img" data-dock="edge" data-dock-x=".8" data-dock-trigger="w-licht-img"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung" loading="lazy"><span class="tag">Abb. 03 / Wohnen / Visualisierung</span></div><figcaption class="info">Wohnen, Essen und Kochen in einem Raum</figcaption></figure>
-          <figure class="wl__fig wl__fig--b" data-wl><div class="wl__box"><img src="assets/img/wald-essen.jpg" alt="Esstisch vor dem Fenster zum Wald, Visualisierung" loading="lazy"><span class="tag">Abb. 04 / Essen / Visualisierung</span></div><figcaption class="info">Der Tisch steht, wo der Wald am nächsten ist</figcaption></figure>
-          <p class="wl__say" data-reveal="0">Drinnen sitzen und trotzdem im Wald sein.</p>
-          <figure class="wl__fig wl__fig--c" data-wl><div class="wl__box"><img src="assets/img/wald-decke.jpg" alt="Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung" loading="lazy"><span class="tag">Abb. 05 / Detail / Visualisierung</span></div><figcaption class="info">Holz am Boden, Holz an der Wand</figcaption></figure>
+        <div class="wl__grid">
+          <h2 class="h-xl wl__h" data-reveal="0">Raum und Licht.</h2>
+          <figure class="wl__fig wl__fig--a" data-wl data-sp="1"><div class="wl__box" id="w-licht-img" data-dock="edge" data-dock-x=".8" data-dock-trigger="w-licht-img"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung" loading="lazy"><span class="tag">Abb. 03 / Wohnen / Visualisierung</span></div><figcaption class="info">Wohnen, Essen und Kochen in einem Raum</figcaption></figure>
+          <figure class="wl__fig wl__fig--b" data-wl data-sp="-1"><div class="wl__box"><img src="assets/img/wald-essen.jpg" alt="Esstisch vor dem Fenster zum Wald, Visualisierung" loading="lazy"><span class="tag">Abb. 04 / Essen / Visualisierung</span></div><figcaption class="info">Der Tisch steht, wo der Wald am nächsten ist</figcaption></figure>
+          <figure class="wl__fig wl__fig--c" data-wl data-sp="-1.6"><div class="wl__box"><img src="assets/img/wald-decke.jpg" alt="Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung" loading="lazy"><span class="tag">Abb. 05 / Detail / Visualisierung</span></div><figcaption class="info">Holz am Boden, Holz an der Wand</figcaption></figure>
+          <p class="wl__say" data-reveal="120">Drinnen sitzen und trotzdem im Wald sein.</p>
         </div>
       </div>
     </section>
 
-    <!-- 08 NÄCHSTES CONCEPT. Eigene Fläche, das Bild öffnet sich zum Vollbild. -->
+    <!-- 08 NÄCHSTES CONCEPT. Vollbild mit Namen darauf, das Bild setzt sich beim Hereinscrollen. -->
     <section id="w-next" class="wn" data-room="w-next">
-      <a class="wn__link" href="index.html#c-duene" aria-label="Nächstes Concept, Düne ansehen">
-        <span class="wrap wn__top info"><span>Nächstes Concept</span><span>02 von 10</span></span>
-        <span class="wn__fig" data-wn-fig><img src="assets/img/duene-1.jpg" alt="Concept Düne, Visualisierung" loading="lazy"><span class="tag">Concept 02 / Düne / Visualisierung</span></span>
-        <span class="wrap wn__row"><span class="wn__name">Düne.</span><span class="info wn__go">Ansehen</span></span>
-      </a>
-      <div class="wrap wn__all"><a class="btn-line info" href="index.html#k-sammlung">Alle Concepts</a></div>
+      <div class="wn__stage">
+        <a class="wn__link" href="index.html#c-duene" aria-label="Nächstes Concept: Düne ansehen">
+          <span class="wn__fig" data-wn-fig><img src="assets/img/duene-1.jpg" alt="Concept Düne, Visualisierung" loading="lazy"></span>
+          <span class="wn__shade" aria-hidden="true"></span>
+          <span class="wn__bottom" data-wn-row>
+            <span class="wn__name">Düne.</span>
+            <span class="wn__side"><span class="wn__lead">Ein Geschoß unter einem langen Dach.</span><span class="info wn__go">Ansehen</span></span>
+          </span>
+        </a>
+        <div class="wn__top info"><span>Nächstes Concept / 02 von 10</span><a class="btn-line info" href="index.html#k-sammlung">Alle Concepts</a></div>
+      </div>
     </section>
 
     <!-- 09 KONTAKT. Ohne Headline davor, links ein Bild, rechts das Formular im gelben Feld (js/kontakt.js). -->

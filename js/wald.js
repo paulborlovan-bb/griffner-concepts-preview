@@ -51,33 +51,37 @@ function initFilm() {
   } });
 }
 
-/* Raum und Licht: jedes Bild öffnet sich von unten, wenn es kommt, und schließt sich nach oben, wenn es geht */
+/* Raum und Licht: jedes Bild öffnet sich einmal von unten, danach zieht es mit eigenem Tempo (data-sp), so wirkt die Doppelseite tief */
 function initLicht() {
-  const figs = $$('[data-wl]').map(f => ({ f, box: $('.wl__box', f), im: $('img', f), cap: $('figcaption', f) }));
+  const figs = $$('[data-wl]').map(f => ({ f, box: $('.wl__box', f), im: $('img', f), cap: $('figcaption', f), sp: parseFloat(f.dataset.sp) || 1, k: 0 }));
   if (reduce) return;
   loop.add({ tick() {
-    const vh = innerHeight;
+    const vh = innerHeight, narrow = innerWidth < 820;
     figs.forEach(o => {
       const r = o.box.getBoundingClientRect();
       if (r.top > vh * 1.1 || r.bottom < -vh * .1) return;
-      const en = ease(clamp((vh - r.top) / (vh * .7))), lv = ease(clamp(r.bottom / (vh * .5)));
-      o.box.style.clipPath = `inset(${((1 - en) * 100).toFixed(2)}% 0 ${((1 - lv) * 100).toFixed(2)}% 0)`;
-      o.im.style.transform = `scale(${(lerp(1.22, 1, en) + (1 - lv) * .08).toFixed(4)}) translate3d(0,${((1 - en) * 6).toFixed(2)}%,0)`;
-      o.cap.style.opacity = (en * lv).toFixed(3);
+      /* einmal geöffnet, bleibt offen */
+      o.k = Math.max(o.k, ease(clamp((vh - r.top) / (vh * .55))));
+      const c = clamp((r.top + r.height / 2) / vh) - .5;
+      o.box.style.clipPath = o.k < .999 ? `inset(${((1 - o.k) * 100).toFixed(2)}% 0 0 0)` : '';
+      o.im.style.transform = `translate3d(0,${(c * 9 * o.sp).toFixed(2)}%,0) scale(${lerp(1.14, 1, o.k).toFixed(4)})`;
+      o.f.style.transform = narrow ? '' : `translate3d(0,${(c * -40 * (o.sp - 1)).toFixed(1)}px,0)`;
+      o.cap.style.opacity = o.k.toFixed(3);
     });
   } });
 }
 
-/* Nächstes Concept: das Bild wächst beim Hereinscrollen auf die volle Breite */
+/* Nächstes Concept: das Bild setzt sich beim Hereinscrollen, der Name kommt von unten */
 function initNext() {
-  const fig = $('[data-wn-fig]'); if (!fig || reduce) return;
-  const im = $('img', fig);
+  const st = $('#w-next .wn__stage'), im = $('[data-wn-fig] img'), row = $('[data-wn-row]');
+  if (!st || reduce) return;
   loop.add({ tick() {
-    const r = fig.getBoundingClientRect(), vh = innerHeight;
-    if (r.top > vh * 1.1 || r.bottom < 0) return;
-    const k = ease(clamp((vh - r.top) / (vh * .9)));
-    fig.style.clipPath = `inset(0 ${lerp(innerWidth < 820 ? 4 : 14, 0, k).toFixed(2)}%)`;
-    im.style.transform = `scale(${lerp(1.16, 1, k).toFixed(4)})`;
+    const r = st.getBoundingClientRect(), vh = innerHeight;
+    if (r.top > vh || r.bottom < 0) return;
+    const k = ease(clamp((vh - r.top) / (vh * .95)));
+    im.style.transform = `scale(${lerp(1.2, 1.02, k).toFixed(4)}) translate3d(0,${((1 - k) * -6).toFixed(2)}%,0)`;
+    row.style.transform = `translate3d(0,${((1 - k) * 60).toFixed(1)}px,0)`;
+    row.style.opacity = E(k, .35, 1).toFixed(3);
   } });
 }
 

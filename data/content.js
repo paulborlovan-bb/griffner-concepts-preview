@@ -8,7 +8,7 @@ export const CONCEPTS = [
     fuer: 'Für Menschen, die lieber im Garten sitzen als davor.',
     text: 'Oben schützt ein dunkler Rahmen, unten öffnet sich das Wohnen auf ganzer Breite zum Wald.',
     facts: ['171 m²', '2 Ebenen', 'Flachdach'],
-    img: 'assets/img/wald-garten-ecke.jpg', pos: '50% 62%',
+    img: 'assets/img/wald-garten-ecke-1800.jpg', pos: '50% 62%',
     cap: 'Abb. 01 / Visualisierung / GRIFFNER Architektur und Design',
     views: [
       { img: 'assets/img/wald-eingang.jpg', cap: 'Ankommen.' },
