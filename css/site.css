@@ -170,7 +170,7 @@ main,.ft{position:relative}
 .ask legend{padding:0;margin-bottom:16px}
 .ask__n{display:block;margin-bottom:10px;font-family:var(--font-display);font-weight:300;font-size:clamp(24px,2.2vw,36px);line-height:1.05;text-transform:uppercase;font-feature-settings:'liga' 0;letter-spacing:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-family:var(--font-text);font-weight:500;font-size:15px;line-height:1.2;padding:12px 16px;border:1px solid currentColor;background:transparent;cursor:pointer;transition:background-color var(--dur-small) var(--ease),color var(--dur-small) var(--ease)}
+.chip{font-family:var(--font-text);font-weight:500;font-size:14px;line-height:1.2;padding:10px 14px;border:1px solid currentColor;background:transparent;cursor:pointer;transition:background-color var(--dur-small) var(--ease),color var(--dur-small) var(--ease)}
 .chip:hover{background:rgba(0,0,0,.06)}
 .chip[aria-pressed="true"]{background:var(--griffner-schwarz);color:var(--griffner-weiss)}
 .chip.is-out{animation:chip-out 900ms var(--ease)}

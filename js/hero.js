@@ -80,11 +80,12 @@ function build() {
   const grid = G.grid = new T.GridHelper(600, 150, 0x1c1c1c, 0x121212); grid.position.y = .001; grid.material.transparent = true; sc.add(grid);
   /* Mensch, 1,78 m, mit Gelenken: Hüfte, Knie, Schulter, Ellbogen, Kopf. Blick Richtung Haus (−z), wir sehen den Rücken.
      Angezogen wie im Markensystem (11_Anwendungen/Textil): schwarzes GRIFFNER Polo, gelbes Feld an der Kragenspitze,
-     Wortmarke auf der Brust, hinten das Logo mit gelbem Feld unter dem Kragen. Dazu Hose in Sand und helle Schuhe. */
+     Wortmarke auf der Brust, hinten das Logo mit gelbem Feld unter dem Kragen. Dazu eine dunkle Hose und helle Schuhe;
+     das Polo fällt über die Hüfte, damit das Becken nicht als Form heraussticht. */
   const M3 = (c, o = {}) => new T.MeshStandardMaterial({ color: c, roughness: .8, transparent: true, opacity: 0, ...o });
   const MM = G.mm = {
     skin: M3(0xd9ae90, { emissive: 0x1c130d, roughness: .65 }), hair: M3(0x2a1f18, { roughness: .95 }),
-    polo: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }), pants: M3(0xCFC3B3, { emissive: 0x15120e, roughness: .9 }),
+    polo: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }), pants: M3(0x4b4a47, { emissive: 0x0e0e0d, roughness: .85 }),
     shoe: M3(0xF2F0EC, { emissive: 0x1a1a1a, roughness: .6 }), yel: M3(0xFFB200, { emissive: 0xFFB200, emissiveIntensity: .45, roughness: .7 })
   };
   const wm = word(); G.manMats = [...Object.values(MM), wm];
@@ -95,9 +96,9 @@ function build() {
   const lathe = (pts, mat, par) => add(par, new T.LatheGeometry(pts.map(([r, y]) => new T.Vector2(r, y)), 32), mat, O, [1, 1, .62]);
   const man = G.man = new T.Group();
   const spine = grp(man, 0, .9, 0);
-  /* Becken in Hosenfarbe, darüber das Polo, etwas weiter geschnitten */
-  lathe([[0, -.05], [.136, -.04], [.166, .05], [.152, .14], [0, .14]], MM.pants, spine);
-  lathe([[0, -.01], [.172, -.01], [.17, .05], [.158, .15], [.164, .3], [.186, .42], [.196, .51], [.158, .565], [.072, .6], [0, .605]], MM.polo, spine);
+  /* Becken in Hosenfarbe, schmal und flach; darüber das Polo, etwas weiter geschnitten und lang genug, um das Gesäß zu decken */
+  lathe([[0, -.1], [.118, -.09], [.148, -.02], [.146, .08], [0, .08]], MM.pants, spine);
+  lathe([[0, -.075], [.168, -.075], [.168, .0], [.158, .15], [.164, .3], [.186, .42], [.196, .51], [.158, .565], [.072, .6], [0, .605]], MM.polo, spine);
   /* Kragen, gelbes Feld an der linken Kragenspitze */
   const col = add(spine, new T.CylinderGeometry(.064, .078, .055, 24, 1, true), MM.polo, V3(0, .6, .004), [1, 1, .86]); col.material.side = T.DoubleSide;
   add(spine, new T.BoxGeometry(.026, .02, .008), MM.yel, V3(-.045, .585, -.06)).rotation.set(-.35, 0, .5);
@@ -167,10 +168,11 @@ function word() {
 
 /* Kamerafahrt: eine weiche Kurve durch alle Stationen (monoton, ohne Überschwingen), statt an jeder Station anzuhalten */
 const KF = (() => {
-  const w6 = .14 / 6, AZ = [.5, -.45, .62, -.3, .42, -.58], EL = [.22, .3, .18, .26, .2, .3];
+  /* Folge der Häuser: die Kamera gleitet in einem Zug von links nach rechts, statt bei jedem Haus hin und her zu schwenken */
+  const w6 = .14 / 6, AZ = [-.55, -.38, -.21, -.04, .13, .3], EL = [.26, .26, .27, .27, .28, .28];
   const K = [[0, -.5, .2, 54, -10.5, 4.2, 7.5], [.05, -.44, .19, 46, -9, 3, 7.5], [.1, -.22, .14, 10, -6.5, .95, 8.5], [.19, -.12, .13, 12, -6.5, 1.05, 8.5],
     [.37, .38, .3, 34, -11, 3.4, 4], [.5, .02, 1.42, 50, 0, 0, -.6], [.555, .06, 1.4, 48, 0, 0, -.6], [.67, -.55, .3, 46, 0, 2.4, 1], [.715, -.6, .27, 48, 0, 2.4, 1]];
-  AZ.forEach((az, i) => { const a = .72 + i * w6; K.push([a + w6 * .45, az, EL[i], 50, 0, 2.6, 0], [a + w6, az, EL[i], 50, 0, 2.6, 0]); });
+  AZ.forEach((az, i) => { const a = .72 + i * w6; K.push([a + w6 * .5, az, EL[i], 50, 0, 2.6, 0]); });
   K.push([.875, .3, .5, 90, -8, 0, 8], [.95, .3, .92, 262, -28, 0, 30], [1, .2, .94, 272, -28, 0, 30]);
   /* Steigungen je Station und Kanal (Fritsch Carlson), an den Enden null */
   const n = K.length, S = K.map(() => []);
@@ -242,7 +244,8 @@ function tick() {
   /* Haus: Grundriss wird Volumen, dann eine Folge eigener Concepts, dann zurück in die Mitte des Felds */
   const FS = [C.wald, C.duene, C.hang, GHOSTS[2], GHOSTS[3], GHOSTS[6]];
   let P = { ...PLAN };
-  FS.forEach((f, i) => { const a = .72 + i * w6; P = M.mix(P, f, E(p, a, a + w6 * .4)); });
+  /* Jeder Wechsel nimmt sich gut zwei Drittel seines Abschnitts, statt in einem Ruck zu springen. Ohne Hang: der Hügel würde die Figur und das gelbe Feld verdecken. */
+  FS.forEach((f, i) => { const a = .72 + i * w6; P = M.mix(P, { ...f, slope: 0 }, E(p, a - w6 * .25, a + w6 * .45)); });
   P = M.mix(P, PLAN, E(p, .865, .9));
   G.main.set(P); G.main.build = E(p, .595, .68); G.main.g.visible = p > .595;
   G.main.ghost = .6 * (1 - E(p, .645, .69)); G.main.edgeAlways = 0;
