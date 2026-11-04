@@ -80,12 +80,13 @@ function build() {
   const grid = G.grid = new T.GridHelper(600, 150, 0x1c1c1c, 0x121212); grid.position.y = .001; grid.material.transparent = true; sc.add(grid);
   /* Mensch, 1,78 m, mit Gelenken: Hüfte, Knie, Schulter, Ellbogen, Kopf. Blick Richtung Haus (−z), wir sehen den Rücken.
      Angezogen wie im Markensystem (11_Anwendungen/Textil): schwarzes GRIFFNER Polo, gelbes Feld an der Kragenspitze,
-     Wortmarke auf der Brust, hinten das Logo mit gelbem Feld unter dem Kragen. Dazu eine dunkle Hose und helle Schuhe;
-     das Polo fällt über die Hüfte, damit das Becken nicht als Form heraussticht. */
+     Wortmarke auf der Brust, hinten das Logo mit gelbem Feld unter dem Kragen. Dazu eine schwarze Hose in der Farbe des Polos
+     und helle Schuhe. Das Becken ist ein gerader, flacher Block ohne Rundungen und ohne Hüftkugeln, das Polo fällt darüber:
+     von hinten soll keine Gesäßform zu sehen sein. */
   const M3 = (c, o = {}) => new T.MeshStandardMaterial({ color: c, roughness: .8, transparent: true, opacity: 0, ...o });
   const MM = G.mm = {
     skin: M3(0xd9ae90, { emissive: 0x1c130d, roughness: .65 }), hair: M3(0x2a1f18, { roughness: .95 }),
-    polo: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }), pants: M3(0x4b4a47, { emissive: 0x0e0e0d, roughness: .85 }),
+    polo: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }), pants: M3(0x1b1b1b, { emissive: 0x070707, roughness: .9 }),
     shoe: M3(0xF2F0EC, { emissive: 0x1a1a1a, roughness: .6 }), yel: M3(0xFFB200, { emissive: 0xFFB200, emissiveIntensity: .45, roughness: .7 })
   };
   const wm = word(); G.manMats = [...Object.values(MM), wm];
@@ -97,8 +98,8 @@ function build() {
   const man = G.man = new T.Group();
   const spine = grp(man, 0, .9, 0);
   /* Becken in Hosenfarbe, schmal und flach; darüber das Polo, etwas weiter geschnitten und lang genug, um das Gesäß zu decken */
-  lathe([[0, -.1], [.118, -.09], [.148, -.02], [.146, .08], [0, .08]], MM.pants, spine);
-  lathe([[0, -.075], [.168, -.075], [.168, .0], [.158, .15], [.164, .3], [.186, .42], [.196, .51], [.158, .565], [.072, .6], [0, .605]], MM.polo, spine);
+  lathe([[0, -.13], [.168, -.13], [.168, -.04], [0, -.04]], MM.pants, spine);
+  lathe([[0, -.095], [.178, -.095], [.178, -.01], [.16, .15], [.164, .3], [.186, .42], [.196, .51], [.158, .565], [.072, .6], [0, .605]], MM.polo, spine);
   /* Kragen, gelbes Feld an der linken Kragenspitze */
   const col = add(spine, new T.CylinderGeometry(.064, .078, .055, 24, 1, true), MM.polo, V3(0, .6, .004), [1, 1, .86]); col.material.side = T.DoubleSide;
   add(spine, new T.BoxGeometry(.026, .02, .008), MM.yel, V3(-.045, .585, -.06)).rotation.set(-.35, 0, .5);
@@ -108,7 +109,7 @@ function build() {
   const wf = add(spine, new T.PlaneGeometry(.075, .014), wm, V3(-.085, .44, -.123)); wf.rotation.y = Math.PI; wf.castShadow = false;
   const leg = x => {
     const hip = grp(man, x, .9, 0), knee = grp(hip, 0, -.4, 0), ank = grp(knee, 0, -.415, 0);
-    limb(hip, O, V3(0, -.4, 0), .086, .062, MM.pants); limb(knee, O, V3(0, -.405, 0), .062, .054, MM.pants);
+    limb(hip, O, V3(0, -.4, 0), .08, .062, MM.pants, null); limb(knee, O, V3(0, -.405, 0), .062, .054, MM.pants);
     add(ank, new T.SphereGeometry(.052, 20, 12), MM.shoe, V3(0, -.05, -.06), [.95, .62, 2.1]);
     add(ank, new T.BoxGeometry(.1, .025, .25), MM.shoe, V3(0, -.075, -.06));
     return { hip, knee };
