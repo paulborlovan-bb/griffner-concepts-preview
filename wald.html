@@ -38,7 +38,24 @@
       <span class="tag">Abb. 01 / Visualisierung / GRIFFNER Architektur und Design</span>
     </section>
 
-    <!-- 02 ECKDATEN. Nur die Zahlen, die Haltung steht in Die Idee -->
+    <!-- 02 GRUNDRISS. Die echten Grundrisse als Modell in 3D, mit Möbeln. Keine Knöpfe, nur ziehen zum Drehen (js/plan3d.js). -->
+    <section id="w-plan" class="wp" data-room="w-plan">
+      <div class="wrap pad-y">
+        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Grundriss</span><span class="info">Erdgeschoß 101 m² / Obergeschoß 70 m²</span></div>
+        <div class="g12">
+          <h2 class="h-xl c-1-8" data-reveal="0">So wohnt Wald.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Unten ein offener Raum zum Garten, oben Rückzug unter dem Rahmen. Zieh am Modell und sieh dich um.</p>
+        </div>
+        <div class="p3" id="w-plan-stage" data-p3 data-dock="edge" data-dock-x=".72" data-dock-w=".07" data-dock-trigger="w-plan-stage" role="img" aria-label="Grundrisse von Concept Wald als 3D Modell mit Möbeln, Erdgeschoß und Obergeschoß">
+          <div class="p3__gl" data-p3-gl></div>
+          <div class="p3__labs" data-p3-labs aria-hidden="true"></div>
+          <span class="info p3__hint" data-p3-hint>Ziehen zum Drehen</span>
+          <span class="tag">Grundriss / Idee, kein Maßstab</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 ECKDATEN. Nur die Zahlen, die Haltung steht in Die Idee -->
     <section id="w-zahlen" class="wz" data-room="w-zahlen">
       <div class="wrap pad-y">
         <div class="kap" data-reveal="0"><span class="info">Concept 01 / Eckdaten</span><span class="info">Wald</span></div>
@@ -83,41 +100,12 @@
       </div>
     </section>
 
-    <!-- 05 PAUSE. Fünf Sekunden Film im Vollbild, öffnet sich beim Scrollen. Platzhalter aus zwei Visualisierungen, bis der echte Film da ist. -->
+    <!-- 05 PAUSE. Fünf Sekunden Film als breites Band, nicht bildschirmhoch, öffnet sich beim Hereinscrollen. Platzhalter aus zwei Visualisierungen, bis der echte Film da ist. -->
     <section id="w-film" class="wf" data-room="w-film">
-      <div class="wf__sticky">
+      <div class="wf__band">
         <div class="wf__box" data-wf-box>
           <video data-wf-video muted playsinline loop preload="metadata" poster="assets/video/wald-pause.jpg" aria-label="Kurzer Film, Concept Wald zwischen Föhren"><source src="assets/video/wald-pause.mp4" type="video/mp4"></video>
           <span class="tag">Film / Visualisierung</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 06 EIN TAG IM WALD. Nach der Referenz hausbaugehtbesser.com: dunkles Feld, Reiter für die Tageszeit, Axonometrie als Strichzeichnung, vier Kennzahlen (js/waldtag.js). -->
-    <section id="w-plan" class="wp" data-room="w-plan">
-      <div class="wrap pad-y">
-        <div class="wt__intro">
-          <span class="info" data-reveal="0">Concept 01 / Grundriss und Licht</span>
-          <h2 class="h-xl" data-reveal="0">Ein Tag im Wald.</h2>
-          <p class="txt" data-reveal="120">Wie Wald lebt, als Idee. Wähl eine Tageszeit und sieh, wo die Sonne ins Haus fällt.</p>
-        </div>
-        <div class="wt" id="w-plan-stage" data-wt>
-          <span class="wt__dock" data-dock="edge" data-dock-x=".62" data-dock-w=".08" data-dock-trigger="w-plan-stage" aria-hidden="true"></span>
-          <div class="wt__bar">
-            <div class="wt__tabs" role="group" aria-label="Tageszeit" data-wt-tabs></div>
-            <button type="button" class="wt__chip wt__play info" data-wt-play aria-pressed="false">Tag abspielen</button>
-          </div>
-          <div class="wt__stage" data-wt-stage>
-            <svg data-wt-svg aria-hidden="true" preserveAspectRatio="xMidYMid meet"></svg>
-            <p class="wt__say" aria-live="polite" data-wt-say>Frühstück in der Morgensonne.</p>
-            <span class="info wt__tag">Idee / kein Maßstab</span>
-          </div>
-          <div class="wt__stats">
-            <div class="wt__cell"><b data-wt-time>07:00</b><span class="info" data-wt-when>Juni / Uhrzeit</span></div>
-            <div class="wt__cell"><b class="is-sun" data-wt-lit>3</b><span class="info">Zonen in der Sonne</span></div>
-            <div class="wt__cell"><b data-wt-day>15,8 h</b><span class="info" data-wt-day-l>Tageslicht im Juni</span></div>
-            <div class="wt__cell"><b>171 m²</b><span class="info">Erdgeschoß 101 m² / Obergeschoß 70 m²</span></div>
-          </div>
         </div>
       </div>
     </section>
@@ -151,12 +139,11 @@
       </div>
     </section>
 
-    <!-- 09 KONTAKT. Ohne Headline davor, links ein Bild, rechts das Formular im gelben Feld (js/kontakt.js). -->
+    <!-- 09 KONTAKT. Ohne Headline und ohne Bild, nur das Formular im gelben Feld (js/kontakt.js). -->
     <section id="w-kontakt" class="wk" data-room="w-kontakt">
       <div class="wrap pad-y">
         <div class="g12 wk__body">
-          <figure class="wk__fig c-1-5" data-reveal="0"><img src="assets/img/wald-sessel.jpg" alt="Sessel am Fenster zum Wald, Visualisierung" loading="lazy"><span class="tag">Abb. 06 / Ankommen / Visualisierung</span></figure>
-          <div class="cta__box c-7-6" id="w-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="w-box">
+          <div class="cta__box wk__box" id="w-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="w-box">
             <div class="cta__box-in" data-kf-host></div>
           </div>
         </div>

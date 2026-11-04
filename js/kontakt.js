@@ -10,7 +10,7 @@ export function initKontakt(host, { prefill, say = 'Lass uns reden.' } = {}) {
   if (!host) return;
   host.innerHTML = `
     <form class="kf" novalidate aria-label="Kontaktformular">
-      <p class="cta__box-say">${say}</p>
+      ${say ? `<p class="cta__box-say">${say}</p>` : ''}
       <div class="kf__grid">
         ${field('vorname', 'Vorname', 'text', 'given-name', true)}
         ${field('nachname', 'Nachname', 'text', 'family-name', true)}

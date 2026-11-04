@@ -9,8 +9,35 @@ import { $, $$, h, ease, clamp, lerp, seg, reduce, loop, through } from './core.
 const UP = new Set(['Schlafen', 'Ankleide', 'Kinderzimmer', 'Zweites Bad', 'Zimmer', 'Bad', 'Gästezimmer', 'Leseplatz']);
 const NOWIN = new Set(['WC', 'Technik und Hauswirtschaft', 'Ankleide', 'Eingang und Garderobe']);
 const HW = 2.75, SLAB = .3, DECK = .3, ROOF = .34, TW = .12, IN = .07, SIDE = 2.8, DROP = 30, ARC = 6;
-const TALL = 2 * HW + DECK;
+const TALL = 2 * HW + DECK, CUT = 1.75;
 const WALL = 0xF4F1EB, HOT = 0xCFC3B3;
+/* Möbel wie im Grundriss von Wald: Sand für Weiches, Anthrazit für Möbel und Küche, Weiß fürs Bad */
+const FC = { w: 0xF7F6F3, s: 0xCFC3B3, a: 0x5c5b57 };
+function furnFor(r) {
+  const m = .3, x0 = r.x + m, z0 = r.z + m, W = Math.max(.5, r.w - 2 * m), D = Math.max(.5, r.d - 2 * m), out = [];
+  /* Mittelpunkt relativ zur Innenkante, Breite, Tiefe, Höhe, Farbe. Alles bleibt im Raum. */
+  const add = (fx, fz, w, d, hh, c) => { w = Math.min(w, W); d = Math.min(d, D); out.push([clamp(x0 + fx, x0 + w / 2, x0 + W - w / 2), clamp(z0 + fz, z0 + d / 2, z0 + D - d / 2), w, d, hh, c]); };
+  const n = r.room;
+  if (n.startsWith('Wohnen')) {
+    add(W - .31, D * .32, .62, Math.min(3.2, D * .55), .9, 'a');
+    if (!L.feat.kochen) add(W * .56, D * .5, Math.min(1.9, W * .34), .95, .74, 'a');
+    add(W * .2, D - .48, Math.min(2.3, W * .34), .88, .42, 's');
+    add(W * .2, D - 1.35, Math.min(1.1, W * .2), .6, .36, 'a');
+  } else if (n === 'Schlafen' || n.startsWith('Eigener')) {
+    add(W / 2, 1, 1.8, 2, .48, 's'); add(W / 2, .2, 1.6, .36, .62, 'w');
+    add(W / 2 - 1.2, .25, .45, .45, .5, 'a'); add(W / 2 + 1.2, .25, .45, .45, .5, 'a');
+  } else if (n === 'Kinderzimmer' || n === 'Zimmer' || n === 'Gästezimmer') {
+    add(.45, 1, .9, 2, .48, 's'); add(.45, .2, .8, .34, .62, 'w'); add(W - .6, D - .32, 1.2, .62, .74, 'a');
+  } else if (n === 'Ankleide') add(W / 2, .3, W, .6, 2, 'a');
+  else if (n === 'Bad' || n === 'Zweites Bad') { add(.4, .9, .8, 1.8, .55, 'w'); add(W - .25, D / 2, .5, 1.2, .86, 'w'); }
+  else if (n === 'WC') add(W / 2, .3, .4, .6, .42, 'w');
+  else if (n.startsWith('Technik')) add(W / 2, .31, Math.min(2.4, W), .62, .9, 'w');
+  else if (n.startsWith('Eingang')) add(.2, D / 2, .4, Math.min(2, D), 2, 'a');
+  else if (n === 'Arbeiten') { add(W / 2, .38, 1.6, .75, .74, 'a'); add(W / 2, 1.1, .5, .5, .46, 's'); }
+  else if (n === 'Leseplatz') { add(.5, .5, .8, .8, .44, 's'); add(W - .18, D / 2, .35, Math.min(2.4, D), 1.8, 'a'); }
+  else if (n === 'Werkstatt') add(W / 2, .45, Math.min(2.2, W), .8, .9, 'a');
+  return out;
+}
 /* Kurze Namen fürs Modell, die Liste darunter behält die langen */
 const SHORT = { 'Wohnen, Essen, Kochen': 'Wohnen', 'Eingang und Garderobe': 'Eingang', 'Technik und Hauswirtschaft': 'Technik', 'Eigener Bereich mit Bad': 'Eigener Bereich', 'Zweites Bad': 'Bad 2', 'Kinderzimmer': 'Kinder' };
 /* Was die Wünsche im Modell auslösen, für die Änderungszeile */
@@ -66,7 +93,8 @@ function plan(P, a) {
   const live = R0.find(r => r.room.startsWith('Wohnen'));
   const feat = Object.fromEntries(Object.keys(FEAT).map(k => [k, a.love.includes(k)]));
   /* Luftraum: das Wohnen geht über zwei Geschoße, das Obergeschoß rückt daneben */
-  const lw = !!(feat.weite && live && live.d > D - .1 && live.x < x0 + .05);
+  /* Kein Luftraum mehr in der Ansicht Räume: Weite zeigt sich als Glas rundum im Wohnen */
+  const lw = false;
   let ox = W0 / 2 - W1;
   if (lw && two) ox = Math.max(ox, live.x + live.w);
   const R1 = og.length ? squarify(og, ox, -D / 2, W1, D).map(r => ({ ...r, lv: 1 })) : [];
@@ -87,22 +115,28 @@ function targets(md) {
       .forEach(([x, z, s], i) => put('baum' + i, 'tree', 'slab', { x, y: 0, z, sx: s, sy: s, sz: s }));
   }
   L.rooms.forEach(r => {
-    const tall = L.lw && r.key === live.key, hh = tall ? TALL : HW;
+    /* In der offenen Ansicht sind die Wände geschnitten wie im Grundriss, damit man die Möbel sieht */
+    const tall = L.lw && r.key === live.key, hh = open ? CUT : tall ? TALL : HW;
     const y = (r.lv ? y1 + dy : y0) + hh / 2, ox = r.lv ? dx : 0;
     const fx0 = r.lv ? L.ox : L.x0, fx1 = r.lv ? L.ox + L.W1 : L.W0 / 2;
     const ext = { n: r.z < -L.D / 2 + .05, s: r.z + r.d > L.D / 2 - .05, w: r.x < fx0 + .05, e: r.x + r.w > fx1 - .05 };
     const isLive = r.room.startsWith('Wohnen');
-    const kind = side => isLive && ext[side] && (side === 's' || side === 'w') ? 'glass' : ext[side] && !isLive && !NOWIN.has(r.room) ? 'win' : 'wall';
+    const kind = side => isLive && ext[side] && (side === 's' || side === 'w' || L.feat.weite) ? 'glass' : ext[side] && !isLive && !NOWIN.has(r.room) ? 'win' : 'wall';
     const wall = (side, s, ry) => put(r.key + '|' + side, kind(side), r.lv ? 'og' : 'eg', { ...s, y, sy: hh }, { ry, room: r.key, side });
     wall('n', { x: ox + r.x + r.w / 2, z: r.z + IN, sx: r.w - .02, sz: TW }, 0);
     wall('s', { x: ox + r.x + r.w / 2, z: r.z + r.d - IN, sx: r.w - .02, sz: TW }, 0);
     wall('w', { x: ox + r.x + IN, z: r.z + r.d / 2, sx: Math.max(.2, r.d - .26), sz: TW }, Math.PI / 2);
     wall('e', { x: ox + r.x + r.w - IN, z: r.z + r.d / 2, sx: Math.max(.2, r.d - .26), sz: TW }, Math.PI / 2);
   });
+  /* Möbel in jedem Raum, steigen aus dem Boden */
+  L.rooms.forEach(r => {
+    const by = r.lv ? y1 + dy : y0, ox = r.lv ? dx : 0;
+    furnFor(r).forEach(([x, z, w, d, hh, c], i) => put(r.key + '|f' + i, 'furn', r.lv ? 'og' : 'eg', { x: ox + x, y: by + hh / 2, z, sx: w, sy: hh, sz: d }, { room: r.key, col: c }));
+  });
   /* Wünsche im Wohnen: ein langer Tisch, eine Bücherwand */
   if (live && L.feat.kochen) put('tisch', 'table', 'eg', { x: live.x + live.w / 2, y: y0 + .38, z: live.z + live.d / 2 + .4, sx: Math.min(live.w - 1.6, 4.6), sy: .76, sz: 1.05 }, { room: live.key });
   if (live && L.feat.buecher) {
-    const sh = (L.lw ? TALL : HW) - .5;
+    const sh = open ? CUT - .25 : (L.lw ? TALL : HW) - .5;
     put('buch', 'shelf', 'eg', { x: live.x + live.w / 2, y: y0 + sh / 2, z: live.z + IN + TW / 2 + .2, sx: live.w - .9, sy: sh, sz: .34 }, { room: live.key });
   }
   if (L.two) {
@@ -140,8 +174,8 @@ function setup() {
     slab: std(0xD5D2CC), decke: std(0xE8DFD0), deck: std(0xCDB89A), roof: std(0x444442),
     table: std(0x887254), shelf: std(0x6B5A44),
     tree: new T.MeshStandardMaterial({ color: 0xEDEAE3, roughness: .95, side: T.DoubleSide }),
-    glass: Object.assign(std(0x2c3338), { transparent: true, opacity: .42, roughness: .18 }),
-    pane: std(0x2a2e31),
+    glass: Object.assign(std(0xA9B4B9), { transparent: true, opacity: .4, roughness: .18 }),
+    pane: std(0x8a9195), fw: std(FC.w), fs: std(FC.s), fa: std(FC.a),
     edge: line(0x444442, .5), edgeLight: line(0x9a9a97, .7), stud: line(0xBCA98B, .7), slat: line(0xA38D6D, .6), shelfLine: line(0xD8CBB6, .8), cable: line(0x000000, .72)
   };
   ray = new T.Raycaster();
@@ -166,11 +200,11 @@ function make(t) {
     mesh = new T.Mesh(G.tree, MAT.tree); const m2 = new T.Mesh(G.tree, MAT.tree); m2.rotation.y = Math.PI / 2;
     [mesh, m2].forEach(m => { m.castShadow = true; m.receiveShadow = true; m.add(new T.LineSegments(G.treeEdge, MAT.edge)); g.add(m); });
   } else {
-    mesh = new T.Mesh(G.box, wallish ? roomMat(t.room) : MAT[t.kind]);
+    mesh = new T.Mesh(G.box, wallish ? roomMat(t.room) : t.kind === 'furn' ? MAT['f' + t.col] : MAT[t.kind]);
     mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh);
-    g.add(new T.LineSegments(G.edge, t.kind === 'roof' ? MAT.edgeLight : MAT.edge));
+    if (!(t.kind === 'furn' && t.col === 'a')) g.add(new T.LineSegments(G.edge, t.kind === 'roof' || t.kind === 'furn' ? MAT.edgeLight : MAT.edge));
   }
-  if (wallish) { st = new T.LineSegments(studs(2), MAT.stud); g.add(st); }
+  /* Wände glatt, ohne Ständerlinien: das Modell soll ruhig wirken */
   if (t.kind === 'win') { const p = new T.Mesh(G.box, MAT.pane); p.position.set(0, .08, 0); p.scale.set(.46, .52, 1.08); p.add(new T.LineSegments(G.edge, MAT.edge)); g.add(p); }
   if (t.kind === 'glass') g.add(new T.LineSegments(studs(Math.max(2, Math.round(t.sx / 1.3))), MAT.edge));
   if (t.kind === 'deck') g.add(new T.LineSegments(G.slats, MAT.slat));
@@ -187,12 +221,13 @@ function go(el, b, md, dur, delay) {
 }
 function appear(el, b, delay) {
   if (el.kind === 'tree') { el.s = { ...pick(b), sx: .001, sy: .001, sz: .001 }; go(el, b, 'rise', 1100, delay); }
-  else if (el.kind === 'slab' || el.kind === 'deck') { el.s = { ...pick(b), y: b.y - b.sy / 2, sy: .001 }; go(el, b, 'rise', 800, delay); }
+  else if (el.kind === 'slab' || el.kind === 'deck' || el.kind === 'furn') { el.s = { ...pick(b), y: b.y - b.sy / 2, sy: .001 }; go(el, b, 'rise', 800, delay); }
   else { el.s = { ...pick(b), y: b.y + DROP }; go(el, b, 'drop', 1000, delay); }
 }
 function lift(el, delay) {
   el.dead = true;
   if (el.kind === 'tree') go(el, { ...el.s, sx: .001, sy: .001, sz: .001 }, 'lift', 700, delay);
+  else if (el.kind === 'furn') go(el, { ...el.s, y: el.s.y - el.s.sy / 2, sy: .001 }, 'lift', 450, delay);
   else go(el, { ...el.s, y: el.s.y + DROP }, 'lift', 950, delay);
 }
 
@@ -214,8 +249,8 @@ function sync(md, opt = {}) {
     const delay = opt.build ? t + i++ * 50 : base + ni * 70 + (b.phase === 'roof' ? (crane ? 1500 : 450) : 0);
     let el = els.get(b.key);
     if (!el) { el = make(b); els.set(b.key, el); appear(el, b, delay); ni++; }
-    else if (el.dead) { el.dead = false; if (el.kind === 'tree') go(el, b, 'rise', 900, delay); else go(el, b, 'drop', 1000, delay); ni++; }
-    else if (far(b)) go(el, b, 'crane', 2000, li ? 250 : 0);
+    else if (el.dead) { el.dead = false; if (el.kind === 'tree' || el.kind === 'furn') go(el, b, 'rise', 900, delay + (el.kind === 'furn' ? 600 : 0)); else go(el, b, 'drop', 1000, delay); ni++; }
+    else if (far(b)) go(el, b, el.kind === 'furn' ? 'move' : 'crane', el.kind === 'furn' ? 1600 : 2000, li ? 250 : 0);
     else go(el, b, 'move', opt.dur || 1100, li ? 200 : 0);
   });
   return { marks, end: t + 1100 };
@@ -225,8 +260,8 @@ function syncLabels() {
   const keys = new Set(L.rooms.map(r => r.key));
   L.rooms.forEach(r => {
     let lb = labels.get(r.key);
-    if (!lb) { lb = h('div', { class: 'bau__lbl' }, '<b></b><em></em>'); labelsBox.appendChild(lb); labels.set(r.key, lb); }
-    lb.firstChild.textContent = SHORT[r.room] || r.room; lb.lastChild.textContent = r.m2 + ' m²'; lb._m2 = r.m2; lb._w = 0;
+    if (!lb) { lb = h('div', { class: 'bau__lbl' }, '<b></b>'); labelsBox.appendChild(lb); labels.set(r.key, lb); }
+    lb.firstChild.textContent = SHORT[r.room] || r.room; lb._m2 = r.m2; lb._w = 0;
     lb.classList.toggle('is-hot', r.key === hot);
   });
   labels.forEach((lb, k) => { if (!keys.has(k)) { lb.remove(); labels.delete(k); } });
@@ -297,7 +332,7 @@ function view(azNow) {
   const open = mode === 'raeume', side = open && L.two;
   const x0 = (side ? L.x0 : L.minX) - .3 - (L.garten ? 3.4 : 0), x1 = (side ? L.W0 / 2 + SIDE + L.W1 : L.maxX) + .3;
   const z0 = -L.D / 2 - .3, z1 = L.D / 2 + .3 + Math.max(L.garten ? 3.8 : 0, side ? 1.2 : 0);
-  const y1 = Math.max(L.two && !open ? SLAB + 2 * HW + DECK + ROOF : SLAB + HW + (open ? 0 : ROOF), L.lw ? SLAB + TALL : 0, L.garten ? 5.4 : 0) + .3;
+  const y1 = Math.max(L.two && !open ? SLAB + 2 * HW + DECK + ROOF : SLAB + (open ? CUT : HW + ROOF), L.lw ? SLAB + TALL : 0, L.garten ? 5.4 : 0) + .3;
   const el = open ? .74 : .44, c = [(x0 + x1) / 2, y1 / 2, (z0 + z1) / 2];
   const f = [-Math.sin(azNow) * Math.cos(el), -Math.sin(el), -Math.cos(azNow) * Math.cos(el)];
   const rl = Math.hypot(f[0], f[2]), r = [-f[2] / rl, 0, f[0] / rl];
@@ -337,7 +372,7 @@ function frame() {
     el.g.visible = !((el.mode === 'drop' || el.mode === 'rise') && x <= 0);
     el.g.position.set(s.x, s.y, s.z);
     el.g.scale.set(Math.max(.001, s.sx), Math.max(.001, s.sy), Math.max(.001, s.sz));
-    const fly = el.kind !== 'tree' && (el.mode === 'drop' || el.mode === 'lift' || el.mode === 'crane') && x > 0 && x < 1;
+    const fly = el.kind !== 'tree' && el.kind !== 'furn' && (el.mode === 'drop' || el.mode === 'lift' || el.mode === 'crane') && x > 0 && x < 1;
     el.crane.visible = fly;
     if (fly) { el.crane.position.set(s.x, s.y + s.sy / 2, s.z); el.crane.children[0].scale.set(s.sx * .9, 1, s.sz * .9); }
     if (el.dead && x >= 1) { S.scene.remove(el.g); S.scene.remove(el.crane); els.delete(el.key); }
@@ -352,7 +387,7 @@ function frame() {
   const st = L.feat.morgen ? 1 : 0;
   if (Math.abs(st - sun) > .002 && !reduce) { sun += (st - sun) * .05; moving = true; } else sun = st;
   S.orbit(azNow, c.el, c.dist, c.tx, c.ty, c.tz);
-  S.key.position.set(c.tx + lerp(-34, 70, sun), lerp(60, 20, sun), c.tz + lerp(46, 6, sun));
+  S.key.position.set(c.tx - 34, 60, c.tz + 46);
   S.key.color.setRGB(1, lerp(1, WARM[1], sun), lerp(1, WARM[2], sun));
   S.render();
   placeLabels(t);
@@ -361,12 +396,14 @@ function frame() {
 function kick() { if (!raf && S && L && visible) raf = requestAnimationFrame(frame); }
 
 function say(text, ms) {
+  if (!phaseEl) return;
   clearTimeout(sayT);
   phaseEl.textContent = text;
   if (ms) sayT = setTimeout(() => { phaseEl.textContent = mode === 'raeume' ? 'Deine Räume' : 'Dein Haus'; }, ms);
 }
 const later = (ms, fn) => timers.push(setTimeout(fn, reduce ? 0 : ms));
-function setTabs(m) { $$('[data-bau-mode]', stage).forEach(b => b.setAttribute('aria-selected', String(b.dataset.bauMode === m))); }
+function setTabs(m) {
+  if (!stage) return; $$('[data-bau-mode]', stage).forEach(b => b.setAttribute('aria-selected', String(b.dataset.bauMode === m))); }
 
 function setMode(m, user) {
   if (user) { timers.forEach(clearTimeout); timers = []; }
@@ -381,13 +418,8 @@ function setMode(m, user) {
 /* Erster Aufbau, sobald das Modell gut im Bild ist */
 function start() {
   if (built || !S || !L || !seen) return;
-  built = true; mode = 'haus'; setTabs('haus'); syncLabels();
-  const { marks, end } = sync('haus', { build: true });
-  const names = { slab: 'Bodenplatte', eg: L.two ? 'Wände Erdgeschoß' : 'Wände', decke: 'Decke', og: 'Wände Obergeschoß', roof: 'Dach' };
-  let n = 0;
-  PHASES.forEach(p => { if (p in marks) { const t = `0${++n} / ${names[p]}`; later(marks[p], () => say(t)); } });
-  later(end + 200, () => say('Dein Haus'));
-  later(end + 1500, () => setMode('raeume'));
+  built = true; mode = 'raeume'; syncLabels();
+  sync('raeume', { build: true });
   kick();
 }
 
@@ -395,7 +427,7 @@ async function boot() {
   if (M) return;
   try { M = await import('./house3d.js'); } catch (e) { M = null; console.warn('3D nicht geladen', e); $('.tag', stage).textContent = '3D Modell konnte nicht laden'; return; }
   T = M.T;
-  S = M.createStage(host, { bg: 0xFFFFFF, fov: 24, shadow: .15, key: 1.7, hemi: 1.05, fill: .5, fogNear: 260, fogFar: 700 });
+  S = M.createStage(host, { bg: 0xFFFFFF, fov: 24, shadow: .14, key: 1.6, hemi: 1.75, fill: .55, fogNear: 260, fogFar: 700 });
   S.onResize = () => { labels.forEach(lb => { lb._w = 0; lb._h = 0; }); kick(); };
   setup();
   start(); kick();
@@ -450,7 +482,7 @@ export function bauUpdate(P, a) {
   if (prev) {
     const d = diff(prev, L), t = now();
     d.lit.forEach(k => flash.set(k, { t0: t + (reduce ? 0 : 700), t1: t + (reduce ? 3000 : 4600) }));
-    if (d.lines.length) news(d.lines);
+    if (d.lines.length && newsEl) news(d.lines);
   }
   say('Umbau', 1800);
   kick();

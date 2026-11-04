@@ -32,21 +32,32 @@
 
   <main id="top">
 
-    <!-- 00 HERO. Am Anfang ist nur ein Strich. Dann kommst du, mit deinem Leben. Daraus werden Räume, aus Räumen ein Haus (3D, js/hero.js). -->
+    <!-- 00 HERO, nach dem Handoff design_handoff_concepts 2 (js/hero.js). Ein Modellhaus von der Stange verschwindet, du stehst auf, deine Worte werden ein Grundriss, der Grundriss ein Haus. -->
     <section id="k-hero" class="hero" data-room="k-hero">
       <div class="hero__stage">
         <div class="hero__gl" data-h-gl aria-hidden="true"></div>
-        <div class="hero__words" data-h-words aria-hidden="true"></div>
+        <div class="hero__shade" data-h-shade aria-hidden="true"></div>
         <div class="hero__top" data-h-top>
-          <span class="info">GRIFFNER Concepts / Ideen zum Weiterdenken</span>
-          <p class="hero__first">Am Anfang ist nur ein Strich.</p>
+          <span class="info">Kapitel 03 / Different Concepts</span>
         </div>
-        <p class="hero__say" data-h-say>Dann erzählst du uns, wie du lebst.</p>
-        <p class="hero__say" data-h-say>Aus deinem Alltag werden Räume.</p>
-        <p class="hero__say" data-h-say>Aus den Räumen wird dein Haus.</p>
-        <div class="hero__end" data-h-end>
-          <h1 class="hero__h1"><span>Erst die Menschen.</span><span>Dann der Plan.</span></h1>
-          <span class="info">Concepts sind ein Anfang. Gebaut wird, was zu dir passt.</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Kochen</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Schlafen</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Lesen</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Arbeiten</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Baden</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Ankommen</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Blick</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Licht</span>
+        <span class="hero__w" data-h-w aria-hidden="true">Weite</span>
+        <p class="hero__say" data-h-say>Am Anfang steht kein Modell.</p>
+        <p class="hero__say" data-h-say>Am Anfang stehst du.</p>
+        <p class="hero__say hero__say--list" data-h-say><span data-h-sl>Wie du lebst.</span><span data-h-sl>Was du brauchst.</span><span data-h-sl>Wovon du träumst.</span></p>
+        <p class="hero__say" data-h-say>Daraus entsteht ein Grundriss.</p>
+        <p class="hero__say hero__say--long" data-h-say>Und aus dem Grundriss ein Haus, das zu dir passt.</p>
+        <p class="hero__say hero__say--long" data-h-say>Denn jedes Leben folgt seinem eigenen Konzept.</p>
+        <div class="hero__end" data-h-say>
+          <span class="info">People before floor plans.</span>
+          <h1 class="hero__h1"><span>GRIFFNER</span><span>Concepts.</span></h1>
         </div>
         <div class="hero__scroll info" data-h-scroll><span>Scrollen</span><i></i></div>
         <div class="dockbox" data-h-dock data-dock="box" data-dock-trigger="k-hero" data-dock-hide="1" aria-hidden="true"></div>
@@ -79,22 +90,12 @@
           <form class="ask c-1-4" data-ask onsubmit="return false" aria-label="Drei Fragen"></form>
           <div class="sheet c-6-7" data-sheet data-reveal="100">
             <div class="sheet__head"><span class="info">Dein Raumprogramm</span><span class="info" data-sheet-total>Rund 0 m²</span></div>
-            <p class="sheet__say" data-sheet-say></p>
             <div class="bau" data-bau>
               <div class="bau__gl" data-bau-gl></div>
               <div class="bau__labels" data-bau-labels aria-hidden="true"></div>
-              <span class="info bau__phase" data-bau-phase aria-live="polite"></span>
-              <ul class="bau__news" data-bau-news aria-live="polite"></ul>
-              <div class="tabs bau__tabs" role="tablist" aria-label="Ansicht">
-                <button type="button" role="tab" class="tab info" data-bau-mode="raeume" aria-selected="true">Räume</button>
-                <button type="button" role="tab" class="tab info" data-bau-mode="haus" aria-selected="false">Haus</button>
-              </div>
               <span class="info bau__hint">Ziehen zum Drehen</span>
               <span class="tag">Arbeitsmodell / kein Maßstab</span>
             </div>
-            <ol class="sheet__list" data-sheet-list></ol>
-            <ul class="sheet__notes" data-sheet-notes></ul>
-            <span class="info sheet__foot">Richtwerte. Dein echtes Raumprogramm entsteht im Gespräch.</span>
             <div class="dockbox dockbox--corner" data-dock="box" data-dock-trigger="k-kennen-sheet" aria-hidden="true"></div>
           </div>
         </div>

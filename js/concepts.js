@@ -3,7 +3,7 @@
    Dann fliegt die Collage auseinander, das Hauptbild wächst zum Vollbild, unten links steht nur das Nötigste.
    Nur transform und opacity, keine clip-path Animation: das hält es flüssig.
    Alles kommt aus CONCEPTS in data/content.js: ein neues Concept braucht nur einen neuen Eintrag. */
-import { $, $$, E, lerp, clamp, prog, loop, store, h, reduce } from './core.js';
+import { $, $$, E, lerp, clamp, prog, loop, h, reduce } from './core.js';
 import { CONCEPTS } from '../data/content.js';
 import { answers } from './kennen.js';
 
@@ -52,7 +52,7 @@ export function initConcepts() {
           <span class="info">Concept ${c.nr}${c.ph ? ' <span class="cc__ph">/ Werte vorläufig</span>' : ''}</span>
           <h3 class="cc__word">${c.word}</h3>
           <p class="cc__lead">${c.lead}</p>
-          <div class="cc__acts"><a class="btn-line info" href="${c.href}">Ansehen</a><button type="button" class="btn-line info" data-fav aria-pressed="false">Merken</button></div>
+          <div class="cc__acts"><a class="cc__go" href="${c.href}">Concept ${c.name} ansehen</a></div>
         </div>
         <span class="tag cc__tag" data-tag>${c.cap}</span>
       </div>`;
@@ -60,34 +60,26 @@ export function initConcepts() {
     const q = s => $(s, el);
     const o = {
       c, el, mq: q('[data-mq]'), main: q('[data-main]'), mim: q('[data-main] img'), shade: q('[data-shade]'), frame: q('[data-frame]'),
-      cards: $$('[data-card]', el).map((f, i) => ({ f, s: SLOTS[i], d: i * .018 })), panel: q('[data-panel]'), tag: q('[data-tag]'), fav: q('[data-fav]')
+      cards: $$('[data-card]', el).map((f, i) => ({ f, s: SLOTS[i], d: i * .018 })), panel: q('[data-panel]'), tag: q('[data-tag]')
     };
-    o.fav.addEventListener('click', () => {
-      const f = new Set(store.get().favs || []); f.has(c.id) ? f.delete(c.id) : f.add(c.id); store.set({ favs: [...f] });
-    });
     return o;
   });
-  favs();
-  store.on((s, patch) => { if ('favs' in patch) favs(); });
   /* Maus gibt der Collage Tiefe: jede Karte weicht ein wenig aus, je nach Tiefe */
   if (!reduce && matchMedia('(pointer:fine)').matches) addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; loop.poke(); }, { passive: true });
   loop.add({ tick });
-  /* Eckdaten passen immer in ihre Karte: zu lange Wörter werden kleiner gesetzt statt abgeschnitten */
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fitFacts);
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(fitFacts, 160); });
+  /* Eckdaten passen immer in ihre Karte: zu lange Wörter werden kleiner gesetzt statt abgeschnitten.
+     Neu messen, sobald die Schrift wirklich geladen ist (auf der Vorschau kommt sie später) und beim ersten Sichtbarwerden. */
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => fitFacts());
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { CH.forEach(o => { o.fit = 0; }); fitFacts(); });
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => fitFacts(), 160); });
 }
 
-function fitFacts() {
-  $$('.cc__card--fact span').forEach(s => {
+function fitFacts(scope = document) {
+  $$('.cc__card--fact span', scope).forEach(s => {
     s.style.fontSize = '';
     let f = parseFloat(getComputedStyle(s).fontSize), n = 0;
     while (s.clientWidth && s.scrollWidth > s.clientWidth + 1 && f > 11 && n++ < 40) { f -= 1; s.style.fontSize = f + 'px'; }
   });
-}
-
-function favs() {
-  const f = new Set(store.get().favs || []);
-  CH.forEach(o => { const on = f.has(o.c.id); o.fav.setAttribute('aria-pressed', String(on)); o.fav.textContent = on ? 'Gemerkt' : 'Merken'; });
 }
 
 const clear = o => {
@@ -103,6 +95,7 @@ function tick() {
     if (narrow || reduce) { if (o.wide !== false) { o.wide = false; clear(o); } o.frame.dataset.dockHide = '1'; return; }
     o.wide = true;
     if (!on) return;
+    if (!o.fit) { o.fit = 1; fitFacts(o.el); }
     const vw = innerWidth, vh = innerHeight;
     /* Der Name läuft riesig durch, solange die Collage steht */
     o.mq.style.transform = `translate3d(${(-p * 34).toFixed(2)}%,-50%,0)`;

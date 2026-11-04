@@ -204,6 +204,12 @@ export const PLAN = {
   }
 };
 
+/* Seite Concept Wald, Grundriss in 3D (js/plan3d.js). Nur Raumnamen, keine Flächen. Koordinaten in pt wie in PLAN. */
+export const PLAN_3D = {
+  eg: { cap: 'Erdgeschoß', labels: [['Kochen', 436, 286], ['Essen', 431, 351], ['Wohnen', 686, 322], ['Büro', 650, 196], ['Eingang', 590, 152], ['Terrasse', 648, 434]] },
+  og: { cap: 'Obergeschoß', labels: [['Eltern', 452, 342], ['Kind', 668, 150], ['Kind', 668, 340], ['Galerie', 557, 300], ['Bad', 476, 186]] }
+};
+
 /* Kapitel 06, Einzug. Bildunterschriften zur Filmzeit in Sekunden. */
 export const FILM = [
   [0, 6, 'Ankommen.'], [6, 8, 'Lärche und dunkler Rahmen.'], [8, 10, 'Drinnen.'], [10, 14, 'Draußen.'],

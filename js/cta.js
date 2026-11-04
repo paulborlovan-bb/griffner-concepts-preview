@@ -26,8 +26,6 @@ function message() {
   if (s.touched) l.push(sentence(a));
   const site = SITES.find(x => x.key === s.site);
   if (site) l.push(`Mein Grundstück ist eher ${site.label.toLowerCase()}, rund ${site.size}.`);
-  const favs = (s.favs || []).map(id => NAME[id]).filter(Boolean);
-  if (favs.length) l.push(`Gemerkt habe ich mir ${favs.join(' und ')}.`);
   return l.join(' ');
 }
 
@@ -39,8 +37,7 @@ function render() {
   rows.push(['Raumprogramm', s.touched ? `Rund ${Math.round(program(a).total / 5) * 5} m², ${program(a).rooms.length} Räume` : null, link('k-kennen', 'Noch offen')]);
   const site = SITES.find(x => x.key === s.site);
   rows.push(['Grundstück', site ? `${site.label}, ${site.size}` : null, link('k-grund', 'Noch offen')]);
-  const favs = (s.favs || []).map(id => NAME[id]).filter(Boolean);
   const b = best();
-  rows.push(['Concepts', favs.length ? `Gemerkt: ${favs.join(', ')}` : (s.touched && b.score ? `Am nächsten: ${b.c.name}` : null), link('k-concepts', 'Noch keins gemerkt')]);
+  rows.push(['Concepts', s.touched && b.score ? `Am nächsten: ${b.c.name}` : null, link('k-concepts', 'Noch offen')]);
   dl.innerHTML = rows.map(([k, v, empty]) => `<dt class="info">${k}</dt><dd class="${v ? '' : 'is-empty'}">${v || empty}</dd>`).join('');
 }
