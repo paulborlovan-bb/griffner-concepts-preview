@@ -93,45 +93,30 @@
       </div>
     </section>
 
-    <!-- 06 GRUNDRISS UND LICHT. Grundrisse und Ausprobieren in einem: ein idealer Plan in 3D statt der fertigen Zeichnung, mit dem Lauf der Sonne (js/wald3d.js). -->
+    <!-- 06 EIN TAG IM WALD. Nach der Referenz hausbaugehtbesser.com: dunkles Feld, Reiter für die Tageszeit, Axonometrie als Strichzeichnung, vier Kennzahlen (js/waldtag.js). -->
     <section id="w-plan" class="wp" data-room="w-plan">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Grundriss und Licht</span><span class="info">Eine Idee, kein Plan</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Ein Tag im Wald.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Wie Wald lebt, als Idee. Zieh die Sonne über den Tag und sieh, wo sie hinfällt.</p>
+        <div class="wt__intro">
+          <span class="info" data-reveal="0">Concept 01 / Grundriss und Licht</span>
+          <h2 class="h-xl" data-reveal="0">Ein Tag im Wald.</h2>
+          <p class="txt" data-reveal="120">Wie Wald lebt, als Idee. Wähl eine Tageszeit und sieh, wo die Sonne ins Haus fällt.</p>
         </div>
-        <div class="ws__body">
-          <div class="ws__stage wp__stage" id="w-plan-stage" data-ws-stage data-dock="edge" data-dock-x=".86" data-dock-trigger="w-plan-stage">
-            <div class="ws__gl" data-ws-gl></div>
-            <div class="wp__labs" data-ws-labs aria-hidden="true"></div>
-            <div class="ws__sun" aria-live="polite"><span class="info" data-ws-when>Juni / 07:00</span><span class="ws__sun-say" data-ws-sun>Morgensonne von Osten.</span></div>
-            <span class="info ws__hint">Ziehen zum Drehen</span>
-            <span class="tag" data-ws-tag>Idee / kein Maßstab</span>
+        <div class="wt" id="w-plan-stage" data-wt>
+          <span class="wt__dock" data-dock="edge" data-dock-x=".62" data-dock-w=".08" data-dock-trigger="w-plan-stage" aria-hidden="true"></span>
+          <div class="wt__bar">
+            <div class="wt__tabs" role="group" aria-label="Tageszeit" data-wt-tabs></div>
+            <button type="button" class="wt__chip wt__play info" data-wt-play aria-pressed="false">Tag abspielen</button>
           </div>
-          <div class="ws__ctrl">
-            <div class="row ws__light">
-              <div class="ws__light-top">
-                <span class="info">Sonne</span>
-                <div class="tabs" role="group" aria-label="Jahreszeit" data-ws-season>
-                  <button type="button" class="tab info" data-v="juni" aria-pressed="true">Juni</button>
-                  <button type="button" class="tab info" data-v="dezember" aria-pressed="false">Dezember</button>
-                </div>
-              </div>
-              <label class="ws__range"><span class="info">Uhrzeit</span><input type="range" min="5" max="21" step="0.25" value="7" data-ws-time aria-label="Uhrzeit"><output class="info" data-ws-time-out>07:00</output></label>
-              <button type="button" class="btn-line info wp__play" data-ws-play>Tag abspielen</button>
-            </div>
-            <div data-ws-rows></div>
-            <div class="ws__sum">
-              <span class="info">Deine Variante</span>
-              <p class="ws__m2"><span data-ws-total>171</span><small>m²</small></p>
-              <span class="info ws__split" data-ws-split>Erdgeschoß 101 m² / Obergeschoß 70 m²</span>
-              <p class="ws__say" data-ws-say>Concept Wald, wie gezeichnet.</p>
-              <div class="ws__acts">
-                <a class="btn-solid info" href="#w-kontakt" data-ws-ask>Mit dieser Variante anfragen</a>
-                <button type="button" class="btn-line info" data-ws-reset>Zurück zum Original</button>
-              </div>
-            </div>
+          <div class="wt__stage" data-wt-stage>
+            <svg data-wt-svg aria-hidden="true" preserveAspectRatio="xMidYMid meet"></svg>
+            <p class="wt__say" aria-live="polite" data-wt-say>Frühstück in der Morgensonne.</p>
+            <span class="info wt__tag">Idee / kein Maßstab</span>
+          </div>
+          <div class="wt__stats">
+            <div class="wt__cell"><b data-wt-time>07:00</b><span class="info" data-wt-when>Juni / Uhrzeit</span></div>
+            <div class="wt__cell"><b class="is-sun" data-wt-lit>3</b><span class="info">Zonen in der Sonne</span></div>
+            <div class="wt__cell"><b data-wt-day>15,8 h</b><span class="info" data-wt-day-l>Tageslicht im Juni</span></div>
+            <div class="wt__cell"><b>171 m²</b><span class="info">Erdgeschoß 101 m² / Obergeschoß 70 m²</span></div>
           </div>
         </div>
       </div>

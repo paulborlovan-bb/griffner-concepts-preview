@@ -26,7 +26,7 @@ export const best = () => { const a = answers(); return CONCEPTS.map(c => ({ c, 
 /* Collage Plätze: Mitte x und y in Prozent, Breite in vw, Seitenverhältnis, Tiefe (wie stark die Karte mitschwebt) */
 const SLOTS = [
   [15, 31, 15, 3 / 4, 1.3], [84, 27, 13, 4 / 5, .8], [79, 75, 17, 4 / 3, 1.1],
-  [21, 77, 11, 1, .7], [41, 15, 9, 1, .5], [62, 87, 10, 1, .9]
+  [21, 77, 11, 1, .7], [41, 15, 9, 1, .5], [62, 84, 10, 1, .9]
 ];
 let CH = [], mx = 0, my = 0;
 
@@ -72,6 +72,17 @@ export function initConcepts() {
   /* Maus gibt der Collage Tiefe: jede Karte weicht ein wenig aus, je nach Tiefe */
   if (!reduce && matchMedia('(pointer:fine)').matches) addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; loop.poke(); }, { passive: true });
   loop.add({ tick });
+  /* Eckdaten passen immer in ihre Karte: zu lange Wörter werden kleiner gesetzt statt abgeschnitten */
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fitFacts);
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(fitFacts, 160); });
+}
+
+function fitFacts() {
+  $$('.cc__card--fact span').forEach(s => {
+    s.style.fontSize = '';
+    let f = parseFloat(getComputedStyle(s).fontSize), n = 0;
+    while (s.clientWidth && s.scrollWidth > s.clientWidth + 1 && f > 11 && n++ < 40) { f -= 1; s.style.fontSize = f + 'px'; }
+  });
 }
 
 function favs() {

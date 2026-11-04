@@ -233,3 +233,10 @@ export const WALD_SPIEL = [
   { key: 'og', label: 'Obergeschoß', opts: [['auskragend', 'Auskragend', 'Wie gezeichnet'], ['buendig', 'Bündig', 'Oben so lang wie unten'], ['kuerzer', 'Kürzer', 'Mehr Terrasse oben']] }
 ];
 export const WALD_SPIEL_DEFAULT = { view: 'plan', size: 'original', og: 'auskragend', season: 'juni', time: 7 };
+/* Ein Tag im Wald (js/waldtag.js): Reiter = Tageszeiten. time in Stunden, season wählt die Sonnenbahn. */
+export const WALD_TAG = [
+  { label: 'Morgen', season: 'juni', time: 7, say: 'Frühstück in der Morgensonne.' },
+  { label: 'Mittag', season: 'juni', time: 13, say: 'Mittags steht die Sonne hoch über dem Garten.' },
+  { label: 'Abend', season: 'juni', time: 18.5, say: 'Der Abend gehört der Terrasse.' },
+  { label: 'Winter', season: 'dezember', time: 12, say: 'Die Wintersonne steht tief und reicht weit ins Haus.' }
+];

@@ -3,7 +3,7 @@
 import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initIdee } from './idee.js';
-import { initWald3d } from './wald3d.js';
+import { initWaldTag } from './waldtag.js';
 import { initKontakt } from './kontakt.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
@@ -85,13 +85,9 @@ function initNext() {
   } });
 }
 
-/* Kontakt: Nachricht kennt schon Concept Wald und deine Variante */
-const SIZE = { kompakt: 'kompakt', gross: 'großzügig' }, OG = { buendig: 'mit bündigem Obergeschoß', kuerzer: 'mit kürzerem Obergeschoß' };
+/* Kontakt: Nachricht kennt schon Concept Wald */
 function initForm() {
-  const message = () => {
-    const w = store.get().wald2 || {}, v = [SIZE[w.size], OG[w.og]].filter(Boolean);
-    return `Ich interessiere mich für Concept Wald${v.length ? `, am liebsten ${v.join(' und ')}` : ''}.`;
-  };
+  const message = () => 'Ich interessiere mich für Concept Wald.';
   const kf = initKontakt($('#w-kontakt [data-kf-host]'), { prefill: message, say: 'Lass uns über Wald reden.' });
   store.on(() => kf && kf.refresh());
 }
@@ -101,7 +97,7 @@ run('hero', initHero);
 run('count', initCount);
 run('idee', initIdee);
 run('film', initFilm);
-run('wald3d', initWald3d);
+run('waldtag', initWaldTag);
 run('licht', initLicht);
 run('next', initNext);
 run('form', initForm);

@@ -59,6 +59,8 @@ async function boot() {
   T = M.T;
   S = M.createStage(D.gl, { bg: 0x000000, fov: 22, shadow: .55, key: 1.8, hemi: 1, fogNear: 90, fogFar: 330 });
   S.hemi.groundColor.setHex(0x2a2a28);
+  /* Schattenebene unter die Bodenplatte, sonst flimmern Plattenoberseite und Schatten in derselben Tiefe */
+  S.ground.position.y = -.31;
   S.onResize = () => { frameCam(); loop.poke(); };
   build();
   frameCam();
@@ -83,8 +85,10 @@ function build() {
 
   /* Wände: gemeinsame Kanten zusammengelegt, damit nichts doppelt steht. Die Südseite zum Garten ist Glas. */
   const box = new T.BoxGeometry(1, 1, 1), edge = new T.EdgesGeometry(box);
-  const white = new T.MeshStandardMaterial({ color: 0xF2EFEA, roughness: .9 });
-  const glass = new T.MeshStandardMaterial({ color: 0x1b1d20, roughness: .25, metalness: .3, transparent: true, opacity: .85 });
+  /* polygonOffset schiebt die Flächen minimal zurück, damit die Kanten nicht mit ihnen flimmern */
+  const PO = { polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 };
+  const white = new T.MeshStandardMaterial({ color: 0xF2EFEA, roughness: .9, ...PO });
+  const glass = new T.MeshStandardMaterial({ color: 0x1b1d20, roughness: .25, metalness: .3, transparent: true, opacity: .85, ...PO });
   const wl = new T.LineBasicMaterial({ color: 0x8b8378, transparent: true, opacity: .6 });
   const mesh = (mat, lineMat = wl) => { const m = new T.Mesh(box, mat); m.castShadow = true; m.receiveShadow = true; if (lineMat) m.add(new T.LineSegments(edge, lineMat)); sc.add(m); return m; };
   const Hm = new Map(), Vm = new Map();
@@ -97,11 +101,11 @@ function build() {
   /* Reihenfolge: von hinten links nach vorne rechts, so liest man das Wachsen */
   G.walls.forEach(w => { w.d = clamp(((w.x + FW / 2) / FW) * .55 + ((w.z + FH / 2) / FH) * .45); });
   G.slab = mesh(white); G.slab.scale.set(FW + .5, .3, FH + .5); G.slab.position.set(0, -.15, 0);
-  G.deck = mesh(new T.MeshStandardMaterial({ color: 0xCFC3B3, roughness: .9 }));
+  G.deck = mesh(new T.MeshStandardMaterial({ color: 0xCFC3B3, roughness: .9, ...PO }));
   G.deck.scale.set(TERR[2] - TERR[0], .14, TERR[3] - TERR[1]); G.deck.position.set(wx((TERR[0] + TERR[2]) / 2), .07, wz((TERR[1] + TERR[3]) / 2));
   /* Oben ein Rahmen statt einer Kiste, damit man in die Räume sieht */
   G.frame = new T.Group(); sc.add(G.frame);
-  const fm = new T.MeshStandardMaterial({ color: 0xCFC3B3, roughness: .8, transparent: true }), L1 = 15, D1 = 9.4, H2 = 3, b = .26, x1 = -1.2, z1 = -1.6;
+  const fm = new T.MeshStandardMaterial({ color: 0xCFC3B3, roughness: .8, transparent: true, ...PO }), L1 = 15, D1 = 9.4, H2 = 3, b = .26, x1 = -1.2, z1 = -1.6;
   const beam = (sx, sy, sz, x, y, z) => { const m = new T.Mesh(box, fm); m.scale.set(sx, sy, sz); m.position.set(x, y, z); m.castShadow = true; G.frame.add(m); };
   [0, H2].forEach(y => { beam(L1, b, b, x1, y, z1 - D1 / 2); beam(L1, b, b, x1, y, z1 + D1 / 2); beam(b, b, D1, x1 - L1 / 2, y, z1); beam(b, b, D1, x1 + L1 / 2, y, z1); });
   [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => beam(b, H2, b, x1 + sx * L1 / 2, H2 / 2, z1 + sz * D1 / 2));
@@ -110,7 +114,7 @@ function build() {
   /* Bäume wie im Architekturmodell: Fichten aus drei Kegeln, ein paar runde Laubbäume. Hell, damit sie auf Schwarz stehen. */
   const trunkG = new T.CylinderGeometry(.14, .24, 1, 6).translate(0, .5, 0), coneG = new T.ConeGeometry(1, 1, 9).translate(0, .5, 0), ballG = new T.IcosahedronGeometry(1, 1);
   const trunkE = new T.EdgesGeometry(trunkG, 40), coneE = new T.EdgesGeometry(coneG, 40), ballE = new T.EdgesGeometry(ballG, 24);
-  const tm = new T.MeshStandardMaterial({ color: 0xD9D2C6, roughness: .95, flatShading: true }), tl = new T.LineBasicMaterial({ color: 0x8f867a, transparent: true, opacity: .5 });
+  const tm = new T.MeshStandardMaterial({ color: 0xD9D2C6, roughness: .95, flatShading: true, ...PO }), tl = new T.LineBasicMaterial({ color: 0x8f867a, transparent: true, opacity: .5 });
   const part = (geo, edges) => { const m = new T.Mesh(geo, tm); m.castShadow = true; m.add(new T.LineSegments(edges, tl)); return m; };
   G.trees = TREES.map(([x, z, ht, laub], i) => {
     const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = i * 1.7; sc.add(g);
@@ -130,6 +134,13 @@ function build() {
 }
 
 const setOp = (o, v) => { o.material.opacity = v; o.visible = v > .002; };
+/* Wort am Ankerpunkt: ax = horizontaler Anker in Prozent, sc = Maßstab. Schriftgröße nur setzen, wenn sie sich ändert. */
+function word(w, ax, sc, big, narrow) {
+  if (w.fs !== big) { w.fs = big; w.ww.style.fontSize = big + 'px'; }
+  if (w.nr !== narrow) { w.nr = narrow; w.rr.style.fontSize = narrow ? '9px' : ''; w.rr.style.letterSpacing = narrow ? '.12em' : ''; }
+  w.ww.style.transformOrigin = `${(-ax).toFixed(1)}% 50%`;
+  w.ww.style.transform = `translate(${ax.toFixed(2)}%,-50%) scale(${sc.toFixed(4)})`;
+}
 
 function tick() {
   if (!D) return;
@@ -151,7 +162,7 @@ function tick() {
 
   /* Worte erscheinen frei und schweben, solange das 3D noch lädt */
   const big = Math.max(20, Math.min(44, vw * .026));
-  if (!G) { D.w.forEach((w, i) => { const [fx, fy] = WORDS[i][narrow ? 4 : 3]; const a = E(p, .11 + i * .012, .17 + i * .012); w.n.style.opacity = a.toFixed(3); w.n.style.transform = `translate3d(${(fx * vw).toFixed(1)}px,${(fy * vh).toFixed(1)}px,0) translate(${fx > .6 ? -100 : fx > .3 ? -50 : 0}%,-50%)`; w.ww.style.fontSize = big + 'px'; }); return; }
+  if (!G) { D.w.forEach((w, i) => { const [fx, fy] = WORDS[i][narrow ? 4 : 3]; const a = E(p, .11 + i * .012, .17 + i * .012); w.n.style.opacity = a.toFixed(3); w.n.style.transform = `translate3d(${(fx * vw).toFixed(1)}px,${(fy * vh).toFixed(1)}px,0)`; word(w, fx > .6 ? -100 : fx > .3 ? -50 : 0, 1, big, narrow); }); return; }
 
   /* Kamera: von Anfang an schräg von oben, sie dreht langsam um das Haus */
   offset(narrow ? E(p, .78, .9) : E(p, .76, .9));
@@ -187,15 +198,12 @@ function tick() {
     const q = proj(wx((r[0] + r[2]) / 2), ri < 7 ? 3.2 : .4, wz((r[1] + r[3]) / 2));
     const x = lerp(sx, q.x, fly), y = lerp(sy, q.y, fly);
     const ax2 = fx > .6 ? -100 : fx > .3 ? -50 : 0;
-    w.n.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(${lerp(ax2, -50, fly).toFixed(1)}%,-50%)`;
-    w.ww.style.fontSize = lerp(big, narrow ? 10 : 12, fly).toFixed(2) + 'px';
+    w.n.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0)`;
+    /* Das Wort wird kleiner per scale, nicht per Schriftgröße: kein Umbruch, kein Springen */
+    word(w, lerp(ax2, -50, fly), lerp(1, (narrow ? 10 : 12) / big, fly), big, narrow);
     w.ww.style.color = fly > .9 ? 'var(--griffner-kalk)' : '';
-    /* Unterwegs bleibt das Wort, am Ziel steht nur noch der Raum */
+    /* Unterwegs bleibt das Wort, am Ziel steht nur noch der Raum, mittig auf dem Raum */
     w.ww.style.opacity = (1 - E(p, .44 + i * .012, .5 + i * .012)).toFixed(3);
-    w.rr.style.fontSize = narrow ? '9px' : '';
-    w.rr.style.letterSpacing = narrow ? '.12em' : '';
-    w.rr.style.marginTop = '-1em';
-    w.n.style.textAlign = fly > .5 ? 'center' : 'left';
     w.rr.style.opacity = E(p, .42 + i * .012, .48 + i * .012).toFixed(3);
     w.n.style.opacity = (appear * (1 - E(p, .62, .7))).toFixed(3);
   });
