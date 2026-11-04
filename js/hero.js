@@ -35,7 +35,7 @@ const HW = [
 /* Zeitfenster der Sätze, der erste kommt mit dem Laden */
 const WINS = [null, [.1, .19], [.205, .37], [.405, .54], [.575, .69], [.725, .85], [.9, 1.4]];
 /* Bildausschnitt: Modell etwas nach rechts oben, Anteile von Breite und Höhe */
-const SHIFT = { wide: [.12, .11], narrow: [0, .1] };
+const SHIFT = { wide: [.12, .11], narrow: [-.2, .1] };
 let sk = '';
 
 let D, M, H, T, G = null, hi = reduce ? 1 : 0, rig = null;
@@ -66,8 +66,9 @@ async function boot() {
 
 /* Solange die Wörter frei im Raum schweben (p .2 bis .4), rückt das Bild weniger nach rechts, damit kein Wort am Rand abgeschnitten wird */
 function shift(p) {
-  const w = D.gl.clientWidth || innerWidth, h = D.gl.clientHeight || innerHeight, s = SHIFT[innerWidth < 820 ? 'narrow' : 'wide'];
-  const sx = s[0] * (1 - .7 * win(p, .19, .41, .03)), key = w + ',' + h + ',' + sx.toFixed(4);
+  const nar = innerWidth < 820, w = D.gl.clientWidth || innerWidth, h = D.gl.clientHeight || innerHeight, s = SHIFT[nar ? 'narrow' : 'wide'];
+  /* Schmal: die erste Kamera zielt links neben das Modellhaus, darum anfangs nach links rücken, bis die Figur in der Mitte steht */
+  const sx = nar ? s[0] * (1 - E(p, .04, .09)) : s[0] * (1 - .7 * win(p, .19, .41, .03)), key = w + ',' + h + ',' + sx.toFixed(4);
   if (key === sk) return; sk = key;
   H.cam.setViewOffset(w, h, -w * sx, h * s[1], w, h);
   H.cam.updateProjectionMatrix();
@@ -145,7 +146,7 @@ function tick() {
   K.push([.875, .3, .5, 90, -8, 0, 8], [.95, .3, .92, 262, -28, 0, 30], [1, .2, .94, 272, -28, 0, 30]);
   let k = 0; while (k < K.length - 2 && p > K[k + 1][0]) k++;
   const A = K[k], B = K[k + 1], t = ease(clamp((p - A[0]) / Math.max(1e-6, B[0] - A[0]))), cv = A.map((v, j) => v + (B[j] - v) * t);
-  const dist = cv[3] * (vw < 760 ? 1.5 : 1);
+  const dist = cv[3] * (vw < 760 ? (vw / innerHeight < .62 ? 1.8 : 1.5) : 1);
   H.scene.fog.near = dist * .9; H.scene.fog.far = dist * 2.6 + 60;
   shift(p);
   H.orbit(cv[1], cv[2], dist, cv[4], cv[5], cv[6]);
