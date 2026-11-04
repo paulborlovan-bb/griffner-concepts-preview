@@ -212,15 +212,24 @@ export const FILM = [
 
 export const RAIL = [
   ['k-kennen', '01', 'Kennenlernen'], ['k-grund', '02', 'Grundstück'], ['k-concepts', '03', 'Inspiration'],
-  ['k-mix', '04', 'Mischen'], ['k-bauen', '05', 'Bauen'], ['k-einzug', '06', 'Einzug']
+  ['k-weg', '04', 'Dein Weg'], ['k-einzug', '05', 'Einzug']
+];
+
+/* Kapitel 04, Dein Weg. Sechs Schritte, jeder mit einem kleinen Arbeitsmodell (scene, siehe js/weg.js). */
+export const WEG = [
+  { nr: '01', name: 'Kennenlernen', say: 'Wir hören zu, bevor wir zeichnen.', scene: 'tisch', cap: 'Ein Tisch, viele Fragen' },
+  { nr: '02', name: 'Grundstück', say: 'Wir lesen deinen Ort. Gelände, Bäume, Sonne.', scene: 'ort', cap: 'Dein Ort im Modell' },
+  { nr: '03', name: 'Inspiration', say: 'Drei Concepts zum Weiterdenken.', scene: 'ideen', cap: 'Wald, Düne, Summer' },
+  { nr: '04', name: 'Mischen', say: 'Du nimmst, was dir gefällt. Wir fügen es zusammen.', scene: 'mischen', cap: 'Aus drei wird eins' },
+  { nr: '05', name: 'Bauen', say: 'Vorgefertigt in Griffen, aufgestellt in wenigen Tagen.', scene: 'bauen', cap: 'Element für Element' },
+  { nr: '06', name: 'Einzug', say: 'Und dann wohnst du.', scene: 'einzug', cap: 'Licht an' }
 ];
 
 /* Seite Concept Wald, Kapitel Ausprobieren: Wald als Arbeitsmodell zwischen Föhren. Maße und Sonne stehen in js/wald3d.js.
    [Wert, Titel, Zusatz]. Der erste Wert jeder Zeile ist Concept Wald, wie es gezeichnet ist. */
 export const WALD_SPIEL = [
+  { key: 'view', label: 'Ansicht', opts: [['plan', 'Grundriss', 'Zonen und Licht'], ['haus', 'Haus', 'Zwischen den Bäumen']] },
   { key: 'size', label: 'Größe', opts: [['kompakt', 'Kompakt', 'Rund 2 m kürzer'], ['original', 'Original', 'Wie gezeichnet'], ['gross', 'Großzügig', 'Rund 2,5 m länger']] },
-  { key: 'og', label: 'Obergeschoß', opts: [['auskragend', 'Auskragend', 'Wie gezeichnet'], ['buendig', 'Bündig', 'Oben so lang wie unten'], ['kuerzer', 'Kürzer', 'Mehr Terrasse oben']] },
-  { key: 'lage', label: 'Lage', opts: [['eben', 'Eben', 'Wie im Plan'], ['hang', 'Am Hang', 'Unten halb im Gelände']] },
-  { key: 'view', label: 'Ansicht', opts: [['ganz', 'Ganz', 'Das ganze Haus'], ['ebenen', 'Ebenen', 'Obergeschoß abgehoben']] }
+  { key: 'og', label: 'Obergeschoß', opts: [['auskragend', 'Auskragend', 'Wie gezeichnet'], ['buendig', 'Bündig', 'Oben so lang wie unten'], ['kuerzer', 'Kürzer', 'Mehr Terrasse oben']] }
 ];
-export const WALD_SPIEL_DEFAULT = { size: 'original', og: 'auskragend', lage: 'eben', view: 'ganz', season: 'juni', time: 17 };
+export const WALD_SPIEL_DEFAULT = { view: 'plan', size: 'original', og: 'auskragend', season: 'juni', time: 7 };

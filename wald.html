@@ -38,14 +38,11 @@
       <span class="tag">Abb. 01 / Visualisierung / GRIFFNER Architektur und Design</span>
     </section>
 
-    <!-- 02 ECKDATEN -->
+    <!-- 02 ECKDATEN. Nur die Zahlen, die Haltung steht in Die Idee -->
     <section id="w-zahlen" class="wz" data-room="w-zahlen">
       <div class="wrap pad-y">
         <div class="kap" data-reveal="0"><span class="info">Concept 01 / Eckdaten</span><span class="info">Wald</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Oben Schutz. Unten Wald.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Oben schützt ein dunkler Rahmen, unten öffnet sich das Wohnen auf ganzer Breite zum Wald. Für Menschen, die lieber im Garten sitzen als davor.</p>
-        </div>
+        <h2 class="h-xl" data-reveal="0">Oben Schutz. Unten Wald.</h2>
         <ul class="wz__facts">
           <li data-reveal="0"><span class="wz__n"><span data-count="171">171</span><small>m²</small></span><span class="info">Wohnfläche gesamt</span></li>
           <li data-reveal="80"><span class="wz__n">101,44<small>m²</small></span><span class="info">Erdgeschoß</span></li>
@@ -57,73 +54,81 @@
       </div>
     </section>
 
-    <!-- 03 GRUNDRISSE. Der echte Plan von Concept Wald zeichnet sich Linie für Linie. Kam vorher von der Concepts Seite. -->
-    <section id="w-plan" class="entwurf" data-room="w-plan">
-      <div class="wrap pad-t">
-        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Grundrisse</span><span class="info">Maßstab 1:100</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Grundrisse.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Zwei Ebenen, 171 m². So ist Concept Wald gezeichnet. Deinen Plan zeichnen wir mit dir, Raum für Raum.</p>
+    <!-- 03 DIE IDEE. Aus dem Entwurf des Kunden: die Skizze zeichnet sich Strich für Strich, erzeugt aus denselben Maßen wie das 3D Modell (js/idee.js). -->
+    <section id="w-idee" class="wi" data-room="w-idee">
+      <div class="wi__sticky">
+        <div class="wi__sk" data-sk-idee role="img" aria-label="Skizze von Concept Wald, Strich für Strich"></div>
+        <div class="wi__text g12" data-idee-text>
+          <h2 class="h-xl c-1-6">Die Idee.</h2>
+          <p class="wi__say c-7-6">Für Menschen, die lieber im Garten sitzen als davor. Unten offen zum Wald, oben ein dunkler Rahmen, der weiter greift und die Terrasse schützt.</p>
         </div>
+        <div class="dockbox" data-idee-dock data-dock="box" data-dock-trigger="w-idee" data-dock-hide="1" aria-hidden="true"></div>
       </div>
-      <div class="entwurf__pin" data-e-pin>
-        <div class="entwurf__sticky">
-          <div class="entwurf__bar">
-            <div class="tabs" role="tablist" aria-label="Geschoß" data-e-tabs>
-              <button type="button" role="tab" class="tab info" data-e-tab="eg" aria-selected="true">Erdgeschoß</button>
-              <button type="button" role="tab" class="tab info" data-e-tab="og" aria-selected="false">Obergeschoß</button>
-            </div>
-            <span class="info" data-e-sum>Concept Wald / Erdgeschoß / 101,44 m²</span>
-          </div>
-          <div class="plan" data-e-plan>
-            <div class="plan__svg" data-e-svg></div>
-            <div class="plan__labels" data-e-labels></div>
-            <div class="plan__notes" data-e-notes></div>
-          </div>
-          <ol class="plan__legend" data-e-legend aria-label="Räume"></ol>
-          <div class="entwurf__foot">
-            <span class="info">Maßstab 1:100 / Gesamt 171,00 m² / Erdgeschoß 101,44 m² / Obergeschoß 69,55 m²</span>
-            <span class="info" data-e-who>Notizen für dich</span>
-          </div>
+    </section>
+
+    <!-- 04 VOM VOLUMEN ZUM HAUS. Aus dem Entwurf des Kunden: fünf Schritte, das Modell als Linien, am Ende wird es zur Skizze. -->
+    <section id="w-vol" class="wv" data-room="w-vol">
+      <div class="wv__sticky">
+        <div class="wv__gl" data-vol-gl aria-hidden="true"></div>
+        <div class="wv__sk" data-vol-sk aria-hidden="true"></div>
+        <div class="wv__top info"><span>Vom Volumen zum Haus</span><span data-vol-n>01 / 05</span></div>
+        <ol class="wv__steps">
+          <li data-vol-step><span class="info">01</span><span>Ein klarer Baukörper.</span></li>
+          <li data-vol-step><span class="info">02</span><span>Zwei Ebenen, gegeneinander versetzt.</span></li>
+          <li data-vol-step><span class="info">03</span><span>Das Obergeschoß kragt aus und schützt die Terrasse.</span></li>
+          <li data-vol-step><span class="info">04</span><span>Große Öffnungen nach Süden, geschlossene Seiten nach Norden.</span></li>
+          <li data-vol-step><span class="info">05</span><span>Das Diagramm wird zur Skizze des Hauses.</span></li>
+        </ol>
+        <div class="dockbox" data-vol-dock data-dock="box" data-dock-trigger="w-vol" data-dock-hide="1" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- 05 PAUSE. Fünf Sekunden Film im Vollbild, öffnet sich beim Scrollen. Platzhalter aus zwei Visualisierungen, bis der echte Film da ist. -->
+    <section id="w-film" class="wf" data-room="w-film">
+      <div class="wf__sticky">
+        <div class="wf__box" data-wf-box>
+          <video data-wf-video muted playsinline loop preload="metadata" poster="assets/video/wald-pause.jpg" aria-label="Kurzer Film, Concept Wald zwischen Föhren"><source src="assets/video/wald-pause.mp4" type="video/mp4"></video>
+          <span class="tag">Film / Visualisierung</span>
         </div>
       </div>
     </section>
 
-    <!-- 04 AUSPROBIEREN. Wald als Arbeitsmodell zwischen Bäumen: Größe, Obergeschoß, Lage, Ebenen und der Lauf der Sonne. -->
-    <section id="w-spiel" class="ws" data-room="w-spiel">
+    <!-- 06 GRUNDRISS UND LICHT. Grundrisse und Ausprobieren in einem: ein idealer Plan in 3D statt der fertigen Zeichnung, mit dem Lauf der Sonne (js/wald3d.js). -->
+    <section id="w-plan" class="wp" data-room="w-plan">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Ausprobieren</span><span class="info">Arbeitsmodell</span></div>
+        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Grundriss und Licht</span><span class="info">Eine Idee, kein Plan</span></div>
         <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Wald nach deinem Maß.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Größe, Obergeschoß, Lage und Licht. Verändere das Modell und sieh, was mit dem Haus passiert. Geplant wird dann gemeinsam.</p>
+          <h2 class="h-xl c-1-8" data-reveal="0">Ein Tag im Wald.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Wie Wald lebt, als Idee. Zieh die Sonne über den Tag und sieh, wo sie hinfällt.</p>
         </div>
         <div class="ws__body">
-          <div class="ws__stage" id="w-spiel-stage" data-ws-stage data-dock="edge" data-dock-x=".86" data-dock-trigger="w-spiel-stage">
+          <div class="ws__stage wp__stage" id="w-plan-stage" data-ws-stage data-dock="edge" data-dock-x=".86" data-dock-trigger="w-plan-stage">
             <div class="ws__gl" data-ws-gl></div>
-            <div class="ws__labs" data-ws-labs aria-hidden="true"></div>
-            <div class="ws__sun" aria-live="polite"><span class="info" data-ws-when>Juni / 17:00</span><span class="ws__sun-say" data-ws-sun>Abendsonne von Westen, lange Schatten der Bäume.</span></div>
+            <div class="wp__labs" data-ws-labs aria-hidden="true"></div>
+            <div class="ws__sun" aria-live="polite"><span class="info" data-ws-when>Juni / 07:00</span><span class="ws__sun-say" data-ws-sun>Morgensonne von Osten.</span></div>
             <span class="info ws__hint">Ziehen zum Drehen</span>
-            <span class="tag" data-ws-tag>Arbeitsmodell / kein Maßstab</span>
+            <span class="tag" data-ws-tag>Idee / kein Maßstab</span>
           </div>
           <div class="ws__ctrl">
-            <div data-ws-rows></div>
             <div class="row ws__light">
               <div class="ws__light-top">
-                <span class="info">Licht</span>
+                <span class="info">Sonne</span>
                 <div class="tabs" role="group" aria-label="Jahreszeit" data-ws-season>
                   <button type="button" class="tab info" data-v="juni" aria-pressed="true">Juni</button>
                   <button type="button" class="tab info" data-v="dezember" aria-pressed="false">Dezember</button>
                 </div>
               </div>
-              <label class="ws__range"><span class="info">Uhrzeit</span><input type="range" min="5" max="21" step="0.25" value="17" data-ws-time aria-label="Uhrzeit"><output class="info" data-ws-time-out>17:00</output></label>
+              <label class="ws__range"><span class="info">Uhrzeit</span><input type="range" min="5" max="21" step="0.25" value="7" data-ws-time aria-label="Uhrzeit"><output class="info" data-ws-time-out>07:00</output></label>
+              <button type="button" class="btn-line info wp__play" data-ws-play>Tag abspielen</button>
             </div>
+            <div data-ws-rows></div>
             <div class="ws__sum">
               <span class="info">Deine Variante</span>
               <p class="ws__m2"><span data-ws-total>171</span><small>m²</small></p>
               <span class="info ws__split" data-ws-split>Erdgeschoß 101 m² / Obergeschoß 70 m²</span>
               <p class="ws__say" data-ws-say>Concept Wald, wie gezeichnet.</p>
               <div class="ws__acts">
-                <a class="btn-solid info" href="https://griffner.com/contact#contact-form" data-ws-ask>Mit dieser Variante anfragen</a>
+                <a class="btn-solid info" href="#w-kontakt" data-ws-ask>Mit dieser Variante anfragen</a>
                 <button type="button" class="btn-line info" data-ws-reset>Zurück zum Original</button>
               </div>
             </div>
@@ -132,46 +137,37 @@
       </div>
     </section>
 
-    <!-- 05 RAUM UND LICHT -->
+    <!-- 07 RAUM UND LICHT. Mehr Luft zwischen den Bildern, jedes Bild öffnet sich beim Kommen und schließt sich beim Gehen. -->
     <section id="w-licht" class="wl" data-room="w-licht">
       <div class="wrap pad-y">
         <div class="kap" data-reveal="0"><span class="info">Concept 01 / Innen</span><span class="info">Erdgeschoß</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Raum und Licht.</h2>
-        </div>
-        <div class="wl__grid">
-          <figure class="wl__fig wl__fig--wide" data-reveal="0"><div id="w-licht-img" data-dock="edge" data-dock-x=".8" data-dock-trigger="w-licht-img"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung" loading="lazy" data-par><span class="tag">Abb. 03 / Wohnen / Visualisierung</span></div><figcaption class="txt">Wohnen, Essen und Kochen in einem Raum. Die Fenster reichen vom Boden bis zur Decke.</figcaption></figure>
-          <figure class="wl__fig wl__fig--tall" data-reveal="120"><div><img src="assets/img/wald-essen.jpg" alt="Esstisch vor dem Fenster zum Wald, Visualisierung" loading="lazy" data-par><span class="tag">Abb. 04 / Essen / Visualisierung</span></div><figcaption class="txt">Der Esstisch steht dort, wo der Wald am nächsten ist.</figcaption></figure>
-          <figure class="wl__fig wl__fig--detail" data-reveal="0"><div><img src="assets/img/wald-decke.jpg" alt="Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung" loading="lazy" data-par><span class="tag">Abb. 05 / Detail / Visualisierung</span></div><figcaption class="txt">Holz am Boden, Holz an der Wand. Warm, auch im Winter.</figcaption></figure>
-          <p class="wl__say" data-reveal="120">Drinnen sitzen und trotzdem im Wald sein.</p>
+        <h2 class="h-xl" data-reveal="0">Raum und Licht.</h2>
+        <div class="wl__list">
+          <figure class="wl__fig wl__fig--a" data-wl><div class="wl__box" id="w-licht-img" data-dock="edge" data-dock-x=".8" data-dock-trigger="w-licht-img"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung" loading="lazy"><span class="tag">Abb. 03 / Wohnen / Visualisierung</span></div><figcaption class="info">Wohnen, Essen und Kochen in einem Raum</figcaption></figure>
+          <figure class="wl__fig wl__fig--b" data-wl><div class="wl__box"><img src="assets/img/wald-essen.jpg" alt="Esstisch vor dem Fenster zum Wald, Visualisierung" loading="lazy"><span class="tag">Abb. 04 / Essen / Visualisierung</span></div><figcaption class="info">Der Tisch steht, wo der Wald am nächsten ist</figcaption></figure>
+          <p class="wl__say" data-reveal="0">Drinnen sitzen und trotzdem im Wald sein.</p>
+          <figure class="wl__fig wl__fig--c" data-wl><div class="wl__box"><img src="assets/img/wald-decke.jpg" alt="Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung" loading="lazy"><span class="tag">Abb. 05 / Detail / Visualisierung</span></div><figcaption class="info">Holz am Boden, Holz an der Wand</figcaption></figure>
         </div>
       </div>
     </section>
 
-    <!-- 06 WEITER. Mach es zu deinem, oder sieh dir das nächste Concept an. -->
-    <section id="w-weiter" class="ww" data-room="w-weiter">
+    <!-- 08 NÄCHSTES CONCEPT. Eigene Fläche, das Bild öffnet sich zum Vollbild. -->
+    <section id="w-next" class="wn" data-room="w-next">
+      <a class="wn__link" href="index.html#c-duene" aria-label="Nächstes Concept, Düne ansehen">
+        <span class="wrap wn__top info"><span>Nächstes Concept</span><span>02 von 10</span></span>
+        <span class="wn__fig" data-wn-fig><img src="assets/img/duene-1.jpg" alt="Concept Düne, Visualisierung" loading="lazy"><span class="tag">Concept 02 / Düne / Visualisierung</span></span>
+        <span class="wrap wn__row"><span class="wn__name">Düne.</span><span class="info wn__go">Ansehen</span></span>
+      </a>
+      <div class="wrap wn__all"><a class="btn-line info" href="index.html#k-sammlung">Alle Concepts</a></div>
+    </section>
+
+    <!-- 09 KONTAKT. Ohne Headline davor, links ein Bild, rechts das Formular im gelben Feld (js/kontakt.js). -->
+    <section id="w-kontakt" class="wk" data-room="w-kontakt">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Concept 01 / Weiter</span><span class="info">Wald</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-9" data-reveal="0">Mach es zu deinem.</h2>
-        </div>
-        <div class="ww__body">
-          <div data-reveal="0">
-            <a class="ww__next" href="index.html#c-duene">
-              <figure><img src="assets/img/duene-1.jpg" alt="Concept Düne, Visualisierung" loading="lazy"><figcaption class="tag">Nächstes Concept</figcaption></figure>
-              <span class="ww__row"><span class="ww__name">Düne.</span><span class="info">02 / Ansehen</span></span>
-            </a>
-            <a class="btn-line info ww__all" href="index.html#k-sammlung">Alle Concepts</a>
-          </div>
-          <div class="ww__box" id="w-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="w-box" data-reveal="120">
-            <div class="ww__box-in">
-              <p class="cta__box-say">Lass uns reden.</p>
-              <p class="txt">Dieses Concept ist ein Anfang. Größe, Dach, Fassade und Grundriss planen wir mit dir.</p>
-              <div class="ww__acts">
-                <a class="btn-solid info" href="https://griffner.com/contact#contact-form">Gespräch vereinbaren</a>
-                <a class="btn-line info" href="https://griffner.com/catalogue">Katalog bestellen</a>
-              </div>
-            </div>
+        <div class="g12 wk__body">
+          <figure class="wk__fig c-1-5" data-reveal="0"><img src="assets/img/wald-sessel.jpg" alt="Sessel am Fenster zum Wald, Visualisierung" loading="lazy"><span class="tag">Abb. 06 / Ankommen / Visualisierung</span></figure>
+          <div class="cta__box c-7-6" id="w-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="w-box">
+            <div class="cta__box-in" data-kf-host></div>
           </div>
         </div>
       </div>

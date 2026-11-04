@@ -25,17 +25,17 @@
 
   <!-- Reiseleiste: welches Kapitel gerade läuft -->
   <div class="rail" data-rail aria-hidden="false">
-    <span class="info rail__nr" data-rail-nr>01 / 06</span>
+    <span class="info rail__nr" data-rail-nr>01 / 05</span>
     <div class="rail__bar" data-rail-bar></div>
     <span class="info rail__label" data-rail-label>Kennenlernen</span>
   </div>
 
   <main id="top">
 
-    <!-- 00 HERO. Am Anfang ist nur ein Strich. Dann kommst du, mit deinem Leben. Daraus werden Räume. -->
+    <!-- 00 HERO. Am Anfang ist nur ein Strich. Dann kommst du, mit deinem Leben. Daraus werden Räume, aus Räumen ein Haus (3D, js/hero.js). -->
     <section id="k-hero" class="hero" data-room="k-hero">
       <div class="hero__stage">
-        <svg class="hero__svg" data-h-svg aria-hidden="true"></svg>
+        <div class="hero__gl" data-h-gl aria-hidden="true"></div>
         <div class="hero__words" data-h-words aria-hidden="true"></div>
         <div class="hero__top" data-h-top>
           <span class="info">GRIFFNER Concepts / Ideen zum Weiterdenken</span>
@@ -64,25 +64,6 @@
             <div class="haltung__stroke" data-st-line></div>
             <div class="dockbox" data-st-dock data-dock="box" data-dock-trigger="k-haltung" aria-hidden="true"></div>
           </div>
-        </div>
-      </div>
-      <div class="wrap pad-b">
-        <div class="g12">
-          <p class="lead c-1-9" data-reveal="0">Auch unsere Concepts sind kein Katalog. Sie sind ein Anfang. Am Ende baust du kein Concept, sondern dein Haus.</p>
-          <p class="txt c-10-3 al-end" data-reveal="120">Entworfen von unserem Architektur- und Designteam. Nimm sie, wie sie sind, als Anfang, als Mischung oder nur als Gefühl.</p>
-        </div>
-        <div class="ways">
-          <div class="way" data-reveal="0"><span class="way__nr">01</span><h3 class="h-s">So, wie es ist.</h3><p class="txt">Du findest dein Haus und baust es genau so. Angepasst an dein Grundstück.</p></div>
-          <div class="way" data-reveal="100"><span class="way__nr">02</span><h3 class="h-s">Als Anfang.</h3><p class="txt">Du nimmst die Idee und veränderst, was du willst.</p></div>
-          <div class="way" data-reveal="200"><span class="way__nr">03</span><h3 class="h-s">Als Mischung.</h3><p class="txt">Du nimmst von jedem Concept, was dir gefällt. Wir fügen es zusammen.</p></div>
-          <div class="way" data-reveal="300"><span class="way__nr">04</span><h3 class="h-s">Als Inspiration.</h3><p class="txt">Du nimmst nur das Gefühl mit und planst mit uns etwas ganz Eigenes.</p></div>
-        </div>
-        <div class="weg">
-          <div class="g12 weg__head">
-            <h2 class="h-l c-1-7" data-reveal="0">Dein Weg zum Haus.</h2>
-            <p class="txt c-9-4 al-end" data-reveal="100">Sechs Kapitel, eine Richtung. Du kannst jedes davon hier ausprobieren.</p>
-          </div>
-          <ol class="weg__list" data-weg></ol>
         </div>
       </div>
     </section>
@@ -178,69 +159,19 @@
       </div>
     </section>
 
-    <!-- 04 MISCHEN -->
-    <section id="k-mix" class="mix" data-room="k-mix">
-      <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 04 / Mischen</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Nimm, was dir gefällt.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Dir gefällt der Körper von Wald, aber das Dach von Düne? Dann bauen wir genau das. Concepts sind Bausteine, keine Grenzen.</p>
-        </div>
-        <div class="mix__body">
-          <div class="mix__stage" id="k-mix-stage" data-mix-stage data-dock="edge" data-dock-x=".86" data-dock-trigger="k-mix-stage">
-            <div class="mix__gl" data-mix-gl></div>
-            <span class="info mix__hint">Ziehen zum Drehen</span>
-            <span class="tag" data-mix-tag>Arbeitsmodell / kein Maßstab</span>
-          </div>
-          <div class="mix__ctrl">
-            <div class="mix__rows" data-mix-rows></div>
-            <div class="mix__sum">
-              <span class="info">Dein Mix</span>
-              <p class="mix__say" data-mix-say></p>
-              <div class="mix__acts"><button type="button" class="btn-line info" data-mix-reset>Zurück zu Wald</button><button type="button" class="btn-line info" data-mix-rand>Überrasch mich</button></div>
-            </div>
-          </div>
-        </div>
-        <p class="txt mix__foot" data-reveal="0">Daraus wird kein neues Concept. Daraus wird dein Haus.</p>
-      </div>
-    </section>
-
-    <!-- 05 BAUEN -->
-    <section id="k-bauen" class="bauen" data-room="k-bauen">
+    <!-- 04 DEIN WEG. Sechs Schritte fahren seitlich durch, während du scrollst. Jeder Schritt ist ein kleines Arbeitsmodell in 3D (js/weg.js). -->
+    <section id="k-weg" class="wg" data-room="k-weg">
       <div class="wrap pad-t">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 05 / Bauen</span></div>
+        <div class="kap" data-reveal="0"><span class="info">Kapitel 04 / Dein Weg</span><span class="info">Sechs Schritte</span></div>
         <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Gebaut in Griffen.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Vom ersten Strich bis zur letzten Schraube bleibt dein Haus bei uns. Geplant, gefertigt und aufgestellt von Menschen, die Holz verstehen.</p>
+          <h2 class="h-xl c-1-8" data-reveal="0">Dein Weg zum Haus.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Vom ersten Gespräch bis zum Schlüssel bleibt dein Haus bei uns. Geplant, gefertigt und aufgestellt von Menschen, die Holz verstehen.</p>
         </div>
       </div>
-      <div class="bauen__pin" data-b-pin>
-        <div class="bauen__sticky">
-          <div class="bauen__track" data-b-track>
-            <article class="step">
-              <figure class="step__img"><img src="assets/img/team-05.jpg" alt="Planungsgespräch im GRIFFNER Team" decoding="async"><figcaption class="tag">Planung</figcaption></figure>
-              <div class="step__txt"><span class="step__nr">01</span><h3 class="h-s">Geplant im eigenen Haus.</h3><p class="txt">Architektur, Statik und Haustechnik sitzen bei uns an einem Tisch. Mit dir.</p></div>
-            </article>
-            <article class="step step--wide">
-              <figure class="step__img"><img src="assets/img/manufaktur-halle.jpg" alt="Fertigungshalle in Griffen" decoding="async"><figcaption class="tag">Manufaktur Griffen</figcaption></figure>
-              <div class="step__txt"><span class="step__nr">02</span><h3 class="h-s">Vorgefertigt in der Halle.</h3><p class="txt">Wände, Decken und Dach entstehen wettergeschützt und auf den Millimeter genau.</p></div>
-            </article>
-            <article class="step">
-              <figure class="step__img"><img src="assets/img/team-09.jpg" alt="Mitarbeiter in der Fertigung" decoding="async"><figcaption class="tag">Fertigung</figcaption></figure>
-              <div class="step__txt"><span class="step__nr">03</span><h3 class="h-s">Gebaut von Menschen.</h3><p class="txt">Maschinen helfen. Entscheiden tun Menschen, die seit Jahren mit Holz arbeiten.</p></div>
-            </article>
-            <article class="step step--wide">
-              <figure class="step__img"><img src="assets/img/waldviertel.jpg" alt="Gebautes GRIFFNER Haus am Abend" decoding="async"><figcaption class="tag">Gebaut</figcaption></figure>
-              <div class="step__txt"><span class="step__nr">04</span><h3 class="h-s">Aufgestellt auf deinem Grund.</h3><p class="txt">Dein Haus kommt in großen Elementen auf dein Grundstück und steht schnell unter Dach.</p></div>
-            </article>
-            <article class="step">
-              <figure class="step__img"><img src="assets/img/team-07.jpg" alt="GRIFFNER Team" decoding="async"><figcaption class="tag">Begleitung</figcaption></figure>
-              <div class="step__txt"><span class="step__nr">05</span><h3 class="h-s">Ein Mensch für alle Fragen.</h3><p class="txt">Vom ersten Gespräch bis zur Schlüsselübergabe hast du eine feste Ansprechperson.</p></div>
-            </article>
-            <div class="step step--end"><p class="lead">Und am Ende bekommst du den Schlüssel.</p><div class="dockbox" data-b-dock data-dock="box" data-dock-trigger="k-bauen" data-dock-hide="1" aria-hidden="true"></div></div>
-          </div>
-          <div class="bauen__prog"><i data-b-prog></i></div>
-          <span id="k-bauen-end" class="trigger" aria-hidden="true"></span>
+      <div class="wg__pin" data-wg-pin>
+        <div class="wg__sticky">
+          <div class="wg__track" data-wg-track></div>
+          <div class="wg__prog"><i data-wg-prog></i><span class="info" data-wg-n>01 / 06</span></div>
         </div>
       </div>
     </section>
@@ -248,7 +179,7 @@
     <!-- 06 EINZUG. Film mit Untertiteln zur Zeit -->
     <section id="k-einzug" class="einzug" data-room="k-einzug">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 06 / Einzug</span></div>
+        <div class="kap" data-reveal="0"><span class="info">Kapitel 05 / Einzug</span></div>
         <div class="einzug__body">
           <div class="einzug__left">
             <h2 class="h-xl" data-reveal="0">Und dann wohnst du.</h2>
@@ -276,17 +207,13 @@
           <h2 class="h-xl c-1-9" data-reveal="0">Dein Haus beginnt mit einem Gespräch.</h2>
         </div>
         <div class="cta__body g12">
-          <div class="cta__know c-1-6" data-reveal="100">
+          <div class="cta__know c-1-5" data-reveal="100">
             <span class="info">Was wir schon von dir wissen</span>
             <dl class="know" data-know></dl>
             <button type="button" class="btn-line info" data-forget>Alles vergessen und neu beginnen</button>
           </div>
-          <div class="cta__box c-8-5" id="k-cta-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="k-cta-box">
-            <div class="cta__box-in">
-              <p class="cta__box-say">Lass uns reden.</p>
-              <p class="txt">Bring mit, was du hier gewählt hast. Wir bringen Stift und Papier.</p>
-              <a class="btn-solid info" href="#k-cta">Gespräch vereinbaren</a>
-            </div>
+          <div class="cta__box c-7-6" id="k-cta-box" data-dock="rect" data-dock-solid="1" data-dock-trigger="k-cta-box">
+            <div class="cta__box-in" data-kf-host></div>
           </div>
         </div>
       </div>

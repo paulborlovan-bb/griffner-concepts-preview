@@ -1,9 +1,10 @@
-/* Seite Concept Wald. Erste Einzelseite eines Concepts: Ankommen, Eckdaten, Grundrisse, Ausprobieren, Raum und Licht, Weiter.
+/* Seite Concept Wald. Ankommen, Eckdaten, Die Idee, Vom Volumen zum Haus, Film, Ein Tag im Wald, Raum und Licht, Nächstes Concept, Kontakt.
    Header, Menü und Footer kommen wie auf der Concepts Seite aus chrome.js. */
-import { $, $$, E, lerp, clamp, through, loop, reveal, reduce } from './core.js';
+import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
 import { initChrome, frame } from './chrome.js';
-import { initEntwurf } from './entwurf.js';
+import { initIdee } from './idee.js';
 import { initWald3d } from './wald3d.js';
+import { initKontakt } from './kontakt.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 
@@ -35,18 +36,71 @@ function initCount() {
   $$('[data-count]').forEach(el => { el.textContent = '0'; io.observe(el); });
 }
 
-/* Bilder in Raum und Licht wandern leicht gegen den Scroll */
-function initPar() {
-  const ims = $$('img[data-par]');
-  loop.add({ tick() { if (reduce) return; ims.forEach(im => { const t = through(im.parentElement, 1, 0); im.style.transform = `scale(1.1) translate3d(0,${((.5 - t) * 6).toFixed(2)}%,0)`; }); } });
+/* Film: kleines Fenster in der Mitte öffnet sich zum Vollbild, läuft stumm, solange er im Bild ist */
+function initFilm() {
+  const sec = $('#w-film'), box = $('[data-wf-box]'), v = $('[data-wf-video]');
+  if (!sec) return;
+  new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause(); }), { threshold: .2 }).observe(box);
+  if (reduce) { v.controls = true; return; }
+  loop.add({ tick() {
+    const r = sec.getBoundingClientRect(), vh = innerHeight; if (r.top > vh || r.bottom < 0) return;
+    /* öffnet sich gleichmäßig, vom Hereinkommen bis etwas nach dem Andocken */
+    const t = clamp((vh - r.top) / (vh * 1.5)), o = t * t * (3 - 2 * t), iy = lerp(18, 0, o), ix = lerp(26, 0, o);
+    box.style.clipPath = `inset(${iy.toFixed(2)}% ${ix.toFixed(2)}%)`;
+    v.style.transform = `scale(${lerp(1.18, 1, o).toFixed(4)})`;
+  } });
+}
+
+/* Raum und Licht: jedes Bild öffnet sich von unten, wenn es kommt, und schließt sich nach oben, wenn es geht */
+function initLicht() {
+  const figs = $$('[data-wl]').map(f => ({ f, box: $('.wl__box', f), im: $('img', f), cap: $('figcaption', f) }));
+  if (reduce) return;
+  loop.add({ tick() {
+    const vh = innerHeight;
+    figs.forEach(o => {
+      const r = o.box.getBoundingClientRect();
+      if (r.top > vh * 1.1 || r.bottom < -vh * .1) return;
+      const en = ease(clamp((vh - r.top) / (vh * .7))), lv = ease(clamp(r.bottom / (vh * .5)));
+      o.box.style.clipPath = `inset(${((1 - en) * 100).toFixed(2)}% 0 ${((1 - lv) * 100).toFixed(2)}% 0)`;
+      o.im.style.transform = `scale(${(lerp(1.22, 1, en) + (1 - lv) * .08).toFixed(4)}) translate3d(0,${((1 - en) * 6).toFixed(2)}%,0)`;
+      o.cap.style.opacity = (en * lv).toFixed(3);
+    });
+  } });
+}
+
+/* Nächstes Concept: das Bild wächst beim Hereinscrollen auf die volle Breite */
+function initNext() {
+  const fig = $('[data-wn-fig]'); if (!fig || reduce) return;
+  const im = $('img', fig);
+  loop.add({ tick() {
+    const r = fig.getBoundingClientRect(), vh = innerHeight;
+    if (r.top > vh * 1.1 || r.bottom < 0) return;
+    const k = ease(clamp((vh - r.top) / (vh * .9)));
+    fig.style.clipPath = `inset(0 ${lerp(innerWidth < 820 ? 4 : 14, 0, k).toFixed(2)}%)`;
+    im.style.transform = `scale(${lerp(1.16, 1, k).toFixed(4)})`;
+  } });
+}
+
+/* Kontakt: Nachricht kennt schon Concept Wald und deine Variante */
+const SIZE = { kompakt: 'kompakt', gross: 'großzügig' }, OG = { buendig: 'mit bündigem Obergeschoß', kuerzer: 'mit kürzerem Obergeschoß' };
+function initForm() {
+  const message = () => {
+    const w = store.get().wald2 || {}, v = [SIZE[w.size], OG[w.og]].filter(Boolean);
+    return `Ich interessiere mich für Concept Wald${v.length ? `, am liebsten ${v.join(' und ')}` : ''}.`;
+  };
+  const kf = initKontakt($('#w-kontakt [data-kf-host]'), { prefill: message, say: 'Lass uns über Wald reden.' });
+  store.on(() => kf && kf.refresh());
 }
 
 run('chrome', initChrome);
 run('hero', initHero);
 run('count', initCount);
-run('entwurf', initEntwurf);
+run('idee', initIdee);
+run('film', initFilm);
 run('wald3d', initWald3d);
-run('par', initPar);
+run('licht', initLicht);
+run('next', initNext);
+run('form', initForm);
 reveal(document);
 loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());

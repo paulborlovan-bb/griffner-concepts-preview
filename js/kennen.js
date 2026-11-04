@@ -14,7 +14,7 @@ export function initKennen() {
   list.addEventListener('pointerleave', () => bauHot(null));
   QUESTIONS.forEach((q, qi) => {
     const fs = h('fieldset', { 'data-reveal': String(qi * 100) });
-    fs.innerHTML = `<legend><span class="info">Frage 0${qi + 1}${q.multi ? ' / Mehrere möglich' : ''}</span><span class="ask__n">${q.label}</span></legend>`;
+    fs.innerHTML = `<legend><span class="info">Frage 0${qi + 1}${q.multi ? ' / Bis zu vier' : ''}</span><span class="ask__n">${q.label}</span></legend>`;
     const chips = h('div', { class: 'chips' });
     q.opts.forEach(([v, l]) => {
       const b = h('button', { type: 'button', class: 'chip', 'data-k': q.key, 'data-v': v, 'aria-pressed': 'false' }, l);
@@ -30,12 +30,19 @@ export function initKennen() {
 function pick(q, v) {
   const a = answers();
   if (q.multi) {
-    const set = new Set(a[q.key]);
-    set.has(v) ? set.delete(v) : set.add(v);
-    if (set.size > 4) return;
-    a[q.key] = [...set];
+    /* Höchstens vier. Wer ein fünftes wählt, bekommt es: das zuerst gewählte macht Platz, ohne Warnung. */
+    const list = a[q.key].filter(k => k !== v);
+    if (list.length === a[q.key].length) { list.push(v); if (list.length > 4) dropped(list.shift()); }
+    a[q.key] = list;
   } else a[q.key] = v;
   store.set({ answers: a, touched: true });
+}
+
+/* Das Feld, das Platz macht, blinkt kurz, damit man sieht, was passiert ist */
+function dropped(v) {
+  const b = form.querySelector(`.chip[data-v="${v}"]`); if (!b) return;
+  b.classList.remove('is-out'); void b.offsetWidth; b.classList.add('is-out');
+  setTimeout(() => b.classList.remove('is-out'), 900);
 }
 
 function render() {
