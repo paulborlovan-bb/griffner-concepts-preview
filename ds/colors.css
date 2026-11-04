@@ -1,0 +1,90 @@
+/* GRIFFNER, Farbe. Schwarz trägt. Gelb markiert. Weiß ordnet. Material beruhigt.
+   Nicht mehr verwenden: #FFB530, #F1BC35, #FAB800, #0E0D0C, #FAF7F1. */
+:root{
+  /* Primär */
+  --griffner-gelb:#FFB200;      /* CMYK 0 30 100 0, Pantone 7549 C, RAL 1023 */
+  --griffner-schwarz:#000000;   /* RAL 9005 */
+  --griffner-weiss:#FFFFFF;     /* RAL 9016 */
+  /* Sekundär, Material. Nur Flächen, nie Logo oder Connector. */
+  --griffner-anthrazit:#444442; /* Tiefe. Pantone 447 C */
+  --griffner-sand:#CFC3B3;      /* Wärme. Light Beige */
+  --griffner-salbei:#8B907C;    /* Natur. Pastelle Green */
+  --griffner-kalk:#CACACA;      /* Ruhe. Light Grey */
+  --griffner-kupfer:#887254;    /* Wert. Flach, für alles */
+  --griffner-kupfer-verlauf:linear-gradient(90deg,#CBBEAA 0%,#E2D7C4 18%,#CDBEA5 32%,#B3A180 50%,#9F8966 66%,#8E7959 82%,#826B4E 100%); /* @kind color */ /* nur digital */
+  /* Connector */
+  --connector-overlay:rgba(255,178,0,.5);
+  --bildschutz:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 62%,rgba(0,0,0,.6) 100%); /* @kind color */ /* einzige erlaubte Verlaufsform */
+
+  /* Semantik, dunkler Klang (Normalfall) */
+  --surface-page:var(--griffner-schwarz);
+  --surface-raised:var(--griffner-anthrazit);
+  --surface-soft:var(--griffner-sand);
+  --surface-print:var(--griffner-weiss);
+  --surface-accent:var(--griffner-gelb);
+  --text-primary:var(--griffner-weiss);
+  --text-secondary:var(--griffner-kalk);
+  --text-tertiary:var(--griffner-salbei);
+  --text-on-accent:var(--griffner-schwarz);
+  --text-on-dark:var(--griffner-weiss);
+  --text-on-light:var(--griffner-schwarz);
+  --line:var(--griffner-anthrazit);
+  --line-strong:var(--griffner-weiss);
+  --accent:var(--griffner-gelb);
+  --focus-ring:var(--griffner-weiss);
+}
+/* Heller Klang: Drucksorten, Beratung, Dokumente */
+.gri-hell{
+  --surface-page:var(--griffner-weiss);
+  --surface-raised:var(--griffner-sand);
+  --surface-soft:var(--griffner-kalk);
+  --text-primary:var(--griffner-schwarz);
+  --text-secondary:var(--griffner-anthrazit);
+  --text-tertiary:var(--griffner-salbei);
+  --line:var(--griffner-kalk);
+  --line-strong:var(--griffner-schwarz);
+  --focus-ring:var(--griffner-schwarz);
+}
+/* Materialklang: Sekundärfarben als volle Flächen, für Vielfalt im Rhythmus.
+   Logo mit Feld steht auf allen vier, Wortmarke schwarz auf hell, weiß auf Anthrazit. */
+.gri-anthrazit{
+  --surface-page:var(--griffner-anthrazit);
+  --surface-raised:var(--griffner-schwarz);
+  --text-primary:var(--griffner-weiss);
+  --text-secondary:var(--griffner-kalk);
+  --text-tertiary:var(--griffner-sand);
+  --line:rgba(255,255,255,.24);
+  --line-strong:var(--griffner-weiss);
+  --focus-ring:var(--griffner-weiss);
+}
+.gri-sand{
+  --surface-page:var(--griffner-sand);
+  --surface-raised:var(--griffner-weiss);
+  --text-primary:var(--griffner-schwarz);
+  --text-secondary:var(--griffner-anthrazit);
+  --text-tertiary:var(--griffner-anthrazit);
+  --line:rgba(0,0,0,.2);
+  --line-strong:var(--griffner-schwarz);
+  --focus-ring:var(--griffner-schwarz);
+}
+.gri-salbei{
+  --surface-page:var(--griffner-salbei);
+  --surface-raised:var(--griffner-sand);
+  --text-primary:var(--griffner-schwarz);
+  --text-secondary:var(--griffner-schwarz);
+  --text-tertiary:var(--griffner-schwarz);
+  --line:rgba(0,0,0,.24);
+  --line-strong:var(--griffner-schwarz);
+  --focus-ring:var(--griffner-schwarz);
+}
+.gri-kalk{
+  --surface-page:var(--griffner-kalk);
+  --surface-raised:var(--griffner-weiss);
+  --text-primary:var(--griffner-schwarz);
+  --text-secondary:var(--griffner-anthrazit);
+  --text-tertiary:var(--griffner-anthrazit);
+  --line:rgba(0,0,0,.2);
+  --line-strong:var(--griffner-schwarz);
+  --focus-ring:var(--griffner-schwarz);
+}
+.gri-anthrazit,.gri-sand,.gri-salbei,.gri-kalk{background:var(--surface-page);color:var(--text-primary)}

@@ -1,0 +1,31 @@
+/* GRIFFNER, Raum, Form, Bewegung. Kanten statt Kästen. Eine Sache groß. */
+:root{
+  /* Abstände */
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;
+  --space-7:40px;--space-8:48px;--space-9:64px;--space-10:80px;--space-11:96px;--space-12:128px;--space-13:192px;
+  /* Raster: zwölf Spalten, Rand ein Zwölftel der kurzen Formatseite */
+  --grid-columns:12; /* @kind other */
+  --grid-gutter:24px; /* @kind spacing */
+  --page-margin:clamp(24px,5.5vw,80px); /* @kind spacing */
+  --content-max:1760px; /* @kind spacing */
+  --measure:62ch; /* @kind other */
+  /* Form */
+  --radius:0;           /* nie gerundet */
+  --shadow:none;        /* nie Schatten */
+  --line-weight:1px; /* @kind other */    /* Haarlinie, nur als Kante, nie als Rahmen */
+  --note-weight:4px; /* @kind other */    /* gelbe Notiz-Unterstreichung */
+  /* Zeichen */
+  --connector-ratio:5/4; /* @kind other */
+  --logo-schutzraum:.122; /* @kind other */
+  --logo-min-digital:64px; /* @kind other */
+  --wortmarke-min-digital:90px; /* @kind other */
+  --logo-min-print:16mm; /* @kind other */
+  --wortmarke-min-print:24mm; /* @kind other */
+  /* Bewegung: Blenden und sanftes Steigen, kein Federn */
+  --ease-out:cubic-bezier(.2,.7,.2,1); /* @kind other */
+  --ease-in-out:cubic-bezier(.65,.05,.36,1); /* @kind other */
+  --dur-fast:160ms; /* @kind other */
+  --dur:320ms; /* @kind other */
+  --dur-slow:720ms; /* @kind other */
+  --rise:16px; /* @kind spacing */
+}

@@ -1,0 +1,40 @@
+/* GRIFFNER, Typografie. Eine Familie, zwei Stimmen. Display zeigt, Text erklärt. */
+:root{
+  --font-display:"Ofelia Display","Helvetica Neue",Arial,sans-serif;
+  --font-text:"Ofelia Text","Helvetica Neue",Arial,sans-serif;
+
+  --weight-signal:300;    /* Display Light: Signalwort, Statement */
+  --weight-headline:500;  /* Display Medium: Headline. Kein Bold in Headlines */
+  --weight-sub:600;       /* Text Semibold, alternativ 700 */
+  --weight-body:500;      /* Text Medium. Betonung 700 */
+  --weight-body-light:400;/* Text Regular, Fließtext im Style Book */
+  --weight-info:500;      /* Infoebene */
+  --weight-bold:700;
+
+  /* Größen, Web (Basis 1440). Style Book Folien 1920: x1,33 */
+  --fs-signal:clamp(72px,10vw,150px); /* @kind font */  /* ein Wort, Rand zu Rand */
+  --fs-statement:clamp(56px,7.2vw,130px); /* @kind font */
+  --fs-h1:clamp(44px,5vw,72px); /* @kind font */
+  --fs-h2:clamp(36px,3.6vw,52px); /* @kind font */
+  --fs-h3:clamp(28px,2.8vw,40px); /* @kind font */
+  --fs-h4:28px;
+  --fs-sub:24px;      /* Subheading, Text Semibold */
+  --fs-lead:22px;
+  --fs-body:18px;
+  --fs-body-sm:16px;
+  --fs-info:14px;     /* Infoebene, versal */
+  --fs-label:12px;
+
+  /* Laufweite */
+  --tracking-headline:.04em;  /* Tracking 40 */
+  --tracking-statement:.02em; /* Tracking 20 */
+  --tracking-signal:.5em;     /* weit gesperrt, oder per textLength auf Formatbreite */
+  --tracking-info:.08em;      /* Tracking 80 */
+  --tracking-bar:.2em;        /* Kopfzeile, Sektionswort */
+
+  /* Zeilenabstand */
+  --leading-statement:.95;
+  --leading-headline:1.05;
+  --leading-sub:1.3;
+  --leading-body:1.45;
+}

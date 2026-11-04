@@ -1,0 +1,34 @@
+/* GRIFFNER, Grundwerte und Zustände (Hover/Focus können nicht inline stehen). */
+html,body{margin:0}
+body{background:var(--surface-page);color:var(--text-primary);font-family:var(--font-text);font-weight:var(--weight-body);font-size:var(--fs-body);line-height:var(--leading-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+.gri-hell ::selection,.gri-hell::selection{background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.25em;transition:opacity var(--dur-fast) var(--ease-out)}
+a:hover{opacity:.64}
+:focus-visible{outline:1px solid var(--focus-ring);outline-offset:4px}
+
+.gri-btn{transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),opacity var(--dur-fast) var(--ease-out)}
+.gri-btn:disabled{opacity:.36;cursor:not-allowed}
+.gri-btn--primary:hover:not(:disabled){background:var(--griffner-kalk)}
+.gri-hell .gri-btn--primary:hover:not(:disabled){background:var(--griffner-anthrazit)}
+.gri-btn--secondary:hover:not(:disabled){background:var(--text-primary);color:var(--surface-page)}
+.gri-btn--line .gri-btn__rule{transition:transform var(--dur) var(--ease-out);transform-origin:left}
+.gri-btn--line:hover:not(:disabled) .gri-btn__rule{transform:scaleX(.4)}
+.gri-btn:active:not(:disabled){transform:translateY(1px)}
+
+.gri-field{transition:border-color var(--dur-fast) var(--ease-out)}
+.gri-field:hover{border-bottom-color:var(--text-secondary)}
+.gri-field:focus{outline:none;border-bottom-color:var(--text-primary)}
+.gri-field::placeholder{color:var(--text-tertiary);opacity:1}
+
+.gri-navlink{transition:opacity var(--dur-fast) var(--ease-out)}
+.gri-navlink:hover{opacity:.64}
+.gri-card img{transition:transform var(--dur-slow) var(--ease-out)}
+.gri-card:hover img{transform:scale(1.03)}
+.gri-check:hover .gri-check__box{border-color:var(--text-primary)}
+
+@keyframes gri-rise{from{opacity:0;transform:translateY(var(--rise))}to{opacity:1;transform:none}}
+@keyframes gri-fade{from{opacity:0}to{opacity:1}}
+.gri-rise{animation:gri-rise var(--dur-slow) var(--ease-out) both}
+.gri-fade{animation:gri-fade var(--dur-slow) var(--ease-out) both}
+@media (prefers-reduced-motion:reduce){.gri-rise,.gri-fade{animation:none}}
