@@ -12,17 +12,18 @@ import { $, $$, E, lerp, clamp, seg, loop, reduce } from './core.js';
 const T = {
   grow: [.3, 1],                                  // davor stehen Name und lose Bilder
   wipes: [[.62, 1], [1.16, 1.52], [1.66, 2]],    // drei Bildwechsel, der letzte während des Schrumpfens
-  shrink: [1.66, 2.3],                            // Bildfolge wird zum kleinen Bild im Satz
-  words: [1.98, 2.52],                            // Satz Wort für Wort
-  rule: [2.4, 2.66], row: [2.5, 2.76],
-  L: 2.98                                         // danach löst sich der Akt und scrollt weg
+  shrink: [1.66, 2.24],                           // Bildfolge wird zum kleinen Bild im Satz
+  words: [2.16, 2.62],                            // Satz Wort für Wort, erst wenn das kleine Bild fast gelandet ist
+  rule: [2.5, 2.74], row: [2.58, 2.84],
+  L: 3.04                                         // danach löst sich der Akt und scrollt weg
 };
 /* Plätze der Karten: x in % der Spalte, y in % der Höhe, Breite in % der Spalte, Seitenverhältnis, Drehung, Tiefe */
 const SLOTS = [
   [6, 64, 26, 4 / 3, -3, 1.1], [80, 22, 21, 4 / 3, -2.5, .7], [99, 56, 25, 4 / 3, 4, 1.25],
   [10, 104, 22, 4 / 3, 2, .9], [46, 112, 24, 4 / 3, -1.5, 1], [94, 102, 20, 4 / 5, -3, 1.3]
 ];
-const SLOTS_M = [[6, 46, 40, 4 / 5, -4, 1], [96, 42, 38, 4 / 5, 3.5, 1.1], [12, 96, 46, 4 / 3, 2.5, .9], [90, 98, 42, 4 / 3, -3, 1.2]];
+/* Telefon: y als Anteil der freien Fläche unter dem Namen (0 = gleich unter dem Satz, 1 = Unterkante), nie über dem Namen */
+const SLOTS_M = [[6, .18, 40, 4 / 5, -4, 1], [96, .12, 38, 4 / 5, 3.5, 1.1], [12, .98, 46, 4 / 3, 2.5, .9], [90, 1, 42, 4 / 3, -3, 1.2]];
 const NN = n => String(n).padStart(2, '0');
 /* Weich hinein und heraus, für alles, was am Scrollen hängt (Wachsen, Bildwechsel, Schrumpfen) */
 const io = t => t < .5 ? 2 * t * t : 1 - (2 - 2 * t) * (2 - 2 * t) / 2;
@@ -84,7 +85,7 @@ function akt(el, mouse) {
   const words = $$('.ak__w > span', el), wl = words.map(() => -1);
   const N = slides.length;
   let lw = 0, lh = 0, W = 0, H = 0, X = 0, Y = 0, on = [], uc = null, live = false, cx0 = 0, cy0 = 0, s0 = .5;
-  let tcx = 0, tcy = 0, kT = .1, ixT = 0, iyT = 0, man = 0, manC = 0, lastK = -1;
+  let tcx = 0, tcy = 0, kT = .1, ixT = 0, iyT = 0, man = 0, manC = 0, lastK = -1, free = 0;
   const sv = slides.map(() => -9);
 
   /* Bildfolge als Streifen: das nächste Bild schiebt sich von rechts über das aktuelle, das aktuelle weicht etwas nach links */
@@ -125,7 +126,10 @@ function akt(el, mouse) {
     if (mob) {
       const top = 108, bot = 18;
       W = cw - 32; H = Math.round(Math.min(vh - top - bot, W * 1.32)); X = 16; Y = Math.round(top + (vh - top - bot - H) / 2);
-      cx0 = cw * .5; cy0 = vh * .7; s0 = .56;
+      cx0 = cw * .5; s0 = .56;
+      /* Kleine Telefone (und Safari mit Leisten): alles unter dem Namen halten, nichts darüber schieben */
+      free = title.offsetTop + title.offsetHeight + 18;
+      cy0 = Math.max(vh * .7, free + H * s0 / 2 + 20);
     } else {
       W = Math.round(cw - pm); H = Math.round(Math.min(vh * .74, W * .62)); X = 0; Y = Math.round((vh - H) / 2 + Math.min(30, vh * .03));
       cx0 = cw * .54; cy0 = vh * .66; s0 = .5;
@@ -141,8 +145,10 @@ function akt(el, mouse) {
       const s = sl[i];
       if (!s) { f.style.display = 'none'; return null; }
       f.style.display = '';
-      Object.assign(f.style, { width: (s[2] * cw / 100) + 'px', aspectRatio: String(s[3]), left: s[0] + '%', top: s[1] + '%' });
-      return { f, s, x: s[0] / 100 * cw, y: s[1] / 100 * vh };
+      const w = s[2] * cw / 100, h = w / s[3];
+      const y = mob ? Math.max(free + s[1] * (vh - free), free + h / 2) : s[1] / 100 * vh;
+      Object.assign(f.style, { width: w + 'px', aspectRatio: String(s[3]), left: s[0] + '%', top: y + 'px' });
+      return { f, s, x: s[0] / 100 * cw, y };
     });
   };
 
