@@ -113,6 +113,7 @@ function idee() {
   const t = reduce ? 1 : E(p, .58, .72);
   I.text.style.opacity = t.toFixed(3); I.text.style.transform = `translateY(${((1 - t) * 24).toFixed(1)}px)`;
   /* Connector landet am Ende der Bodenlinie, sobald die Zeichnung fertig ist */
+  if (!I.dock) return; /* Runde 12: die Hausseiten haben an der Skizze kein gelbes Feld mehr */
   if (skI && skI.end && k > .97) {
     const r = skI.end.getBoundingClientRect(), par = I.dock.parentElement, pr = par.getBoundingClientRect();
     /* im Satzspiegel halten: am Telefon endet die Bodenlinie fast am Bildschirmrand (2026-11-05) */
