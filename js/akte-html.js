@@ -30,7 +30,7 @@ export function aktHtml(c, i, n, { one = false } = {}) {
   <div class="ak__stage" data-ak-stage>
     <div class="ak__sticky">
       <div class="ak__title" data-ak-title>
-        <h3 class="ak__h">${name}.</h3>
+        <h3 class="ak__h"><a class="ak__hl" href="${esc(c.href)}">${name}.</a></h3>
         <p class="ak__fuer">${esc(c.fuer)}</p>
       </div>
       <div class="ak__cards" aria-hidden="true">${cards.map(src => `<figure class="ak__card" data-ak-card><img src="${src}" alt="" loading="lazy" decoding="async"></figure>`).join('')}</div>
@@ -44,6 +44,7 @@ export function aktHtml(c, i, n, { one = false } = {}) {
       </div>
       <div class="ak__frame" id="${fid}" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="${fid}" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept ${name}">
         <div class="ak__slides" data-ak-slides>${pool.map((src, k) => `<div class="ak__slide" data-ak-slide${k ? ' aria-hidden="true"' : ''}><img src="${src}" alt="Concept ${name}, Bild ${k + 1} von ${pool.length}, ${kind}" style="object-position:${k ? '50% 50%' : (c.pos || '50% 50%')}"${k ? ' loading="lazy"' : ''} decoding="async"></div>`).join('')}</div>
+        <a class="ak__open" href="${esc(c.href)}" tabindex="-1" aria-hidden="true"></a>
         <div class="ak__ui" data-ak-ui>
           <span class="info ak__count" data-ak-count>01 / ${NN(pool.length)}</span>
         </div>

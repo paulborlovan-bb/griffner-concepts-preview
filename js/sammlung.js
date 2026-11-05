@@ -1,6 +1,7 @@
-/* DIE SAMMLUNG WÄCHST. Zehn weiße Volumenmodelle auf Anthrazit, die Kamera geht beim Scrollen die Reihe ab.
-   Jedes Haus baut sich auf, wenn die Kamera ankommt, der Zähler zählt mit. Daten kommen aus SAMMLUNG in data/content.js.
-   01 bis 04 sind offen und verlinkt, 05 bis 10 sind Platzhalter mit Status "Bald". */
+/* DIE SAMMLUNG WÄCHST. Zehn Plätze auf Anthrazit, die Kamera geht beim Scrollen die Reihe ab.
+   01 bis 04 sind offen, verlinkt und stehen als weiße Volumenmodelle. 05 bis 10 kommen noch: dort steht ein Schnurgerüst
+   (abgestecktes Grundstück, house3d.js Stake) mit "Coming soon". Jeder Platz baut sich auf, wenn die Kamera ankommt,
+   der Zähler zählt mit. Daten kommen aus SAMMLUNG in data/content.js. */
 import { $, E, lerp, clamp, seg, ease, prog, loop, reduce } from './core.js';
 import { SAMMLUNG } from '../data/content.js';
 
@@ -33,8 +34,7 @@ async function boot() {
   /* Schatten breit genug für den Blick auf die ganze Reihe am Ende */
   Object.assign(S.key.shadow.camera, { left: -210, right: 210, top: 130, bottom: -130, far: 420 }); S.key.shadow.camera.updateProjectionMatrix();
   H = SAMMLUNG.map((s, i) => {
-    const h = S.house({ hill: 0x5c5c5a, hillLine: 0x6c6c6a, line: 0xCACACA });
-    h.set(typeof s.form === 'string' ? M.CONCEPTS[s.form] : s.form);
+    const h = s.ph ? S.stake({}).set({ L0: s.plot[0], D: s.plot[1] }) : S.house({ hill: 0x5c5c5a, hillLine: 0x6c6c6a, line: 0xCACACA }).set(M.CONCEPTS[s.form]);
     h.x = i * GAP; h.build = 0;
     return h;
   });
@@ -85,14 +85,12 @@ function tick() {
     lab.style.visibility = o > .02 ? 'visible' : 'hidden';
     lab.classList.toggle('is-short', mob && ov > .5);
   });
-  /* Connector: steht an der vorderen rechten Ecke des neuesten fertigen Hauses, das gut im Bild steht. Links unten steht die Beschriftung. */
+  /* Connector: steht an der vorderen rechten Ecke des jüngsten offenen Concepts (04), solange es gut im Bild steht.
+     Auf den Schnurgerüsten steht er nicht, dort gibt es noch kein Haus. Links unten steht die Beschriftung. */
   const roof = h => { const P = h.p; return S.project(h.x + Math.max(P.L0 / 2, P.sx * P.up + P.L1 * P.up / 2), 0, (h.z || 0) + P.D / 2); };
   let qd = null;
-  for (let i = 3; i <= last; i++) {
-    if (built[i] < .9) continue;
-    const q = roof(H[i]);
-    if (q.x > vw * .12 && q.x < vw * .88) qd = q;
-  }
+  const hn = H[OPEN - 1];
+  if (hn && built[OPEN - 1] >= .9) { const q = roof(hn); if (q.x > vw * .12 && q.x < vw * .88) qd = q; }
   if (qd) { D.dock.style.left = qd.x.toFixed(1) + 'px'; D.dock.style.top = qd.y.toFixed(1) + 'px'; }
   if (qd && p > .12 && p < .78) delete D.dock.dataset.dockHide; else D.dock.dataset.dockHide = '1';
 }

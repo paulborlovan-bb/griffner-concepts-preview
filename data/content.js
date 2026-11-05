@@ -115,19 +115,20 @@ export const CONCEPTS = [
   }
 ];
 
-/* Die Sammlung wächst: zehn Arbeitsmodelle in einer Reihe. 01 bis 04 sind offen, 05 bis 10 sind Platzhalter (ph),
-   Namen und Formen vorläufig, bis die Concepts wirklich kommen. Formparameter siehe house3d.js CONCEPTS. */
+/* Die Sammlung wächst: zehn Plätze in einer Reihe. 01 bis 04 sind offen und stehen als Arbeitsmodell. 05 bis 10 kommen noch (ph):
+   dort steht nur ein Schnurgerüst, das abgesteckte Grundstück (plot: Länge und Tiefe des Hauses in m), darunter Coming soon
+   (Kundenwunsch 2026-11-05). Formparameter der offenen siehe house3d.js CONCEPTS. */
 export const SAMMLUNG = [
   { nr: '01', name: 'Bold', state: 'Offen', href: 'bold.html', form: 'wald' },
   { nr: '02', name: 'Calm', state: 'Offen', href: 'calm.html', form: 'duene' },
   { nr: '03', name: 'Light', state: 'Offen', href: 'light.html', form: 'summer' },
   { nr: '04', name: 'Free', state: 'Offen', href: 'free.html', form: 'hang' },
-  { nr: '05', name: 'Warm', state: 'Bald', ph: true, form: { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '06', name: 'Open', state: 'Bald', ph: true, form: { L0: 12, D: 9, H1: 3.1, L1: 12, H2: 3, sx: 0, up: 1, R: 3.4, gl: .5, gu: .4, ge: 0, slope: 0 } },
-  { nr: '07', name: 'Clear', state: 'Bald', ph: true, form: { L0: 24, D: 6.5, H1: 3.2, L1: 24, H2: 0, sx: 0, up: 0, R: 0, gl: .9, gu: 0, ge: 0, slope: 0 } },
-  { nr: '08', name: 'Easy', state: 'Bald', ph: true, form: { L0: 10, D: 10, H1: 3, L1: 14, H2: 3, sx: -2, up: 1, R: 3, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '09', name: 'Close', state: 'Bald', ph: true, form: { L0: 14, D: 9, H1: 3.4, L1: 14, H2: 0, sx: 0, up: 0, R: 5, gl: .5, gu: 0, ge: 1, slope: 0 } },
-  { nr: '10', name: 'Wide', state: 'Bald', ph: true, form: { L0: 8, D: 8, H1: 3, L1: 12, H2: 3, sx: 3, up: 1, R: 0, gl: .6, gu: .8, ge: 0, slope: .6 } }
+  { nr: '05', name: 'Concept', state: 'Coming soon', ph: true, plot: [13, 10] },
+  { nr: '06', name: 'Concept', state: 'Coming soon', ph: true, plot: [12, 9] },
+  { nr: '07', name: 'Concept', state: 'Coming soon', ph: true, plot: [17, 7.5] },
+  { nr: '08', name: 'Concept', state: 'Coming soon', ph: true, plot: [11, 10] },
+  { nr: '09', name: 'Concept', state: 'Coming soon', ph: true, plot: [14, 9] },
+  { nr: '10', name: 'Concept', state: 'Coming soon', ph: true, plot: [12, 8.5] }
 ];
 
 /* Kapitel 01, Kennenlernen. Fragen und Antworten vom Kunden (2026-11-05). */
@@ -221,11 +222,11 @@ export const SITES = [
   }
 ];
 export const SITE_STEPS = [
-  ['Wir lesen dein Grundstück.', 'Grenzen, Zufahrt, Nachbarn.'],
-  ['Was da ist, bleibt.', 'Bäume, Blicke, Gelände.'],
-  ['Die Sonne zeigt, wo gewohnt wird.', 'Morgens die Küche, abends die Terrasse.'],
-  ['Erst dann setzen wir das Haus.', 'Es dreht sich zum Licht und weicht den Bäumen aus.'],
-  ['Jeder Ort, ein anderes Haus.', 'Probier es aus.']
+  'Wir lesen dein Grundstück.',
+  'Was da ist, bleibt.',
+  'Die Sonne zeigt, wo gewohnt wird.',
+  'Erst dann setzen wir das Haus.',
+  'Jeder Ort, ein anderes Haus.'
 ];
 
 /* Kapitel 04, Mischen. Jede Zeile nimmt eine Eigenschaft aus einem Concept. */

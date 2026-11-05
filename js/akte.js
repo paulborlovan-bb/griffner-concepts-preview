@@ -172,9 +172,12 @@ function akt(el, mouse) {
 
       /* Name: kommt mit, steht, geht beim Wachsen nach oben weg */
       const tIn = S(pre, .35, .9);
-      title.style.opacity = (tIn * (1 - S(g, .12, .5))).toFixed(3);
+      const tOp = tIn * (1 - S(g, .12, .5));
+      title.style.opacity = tOp.toFixed(3);
       title.style.transform = `translate3d(0,${((1 - tIn) * 60 - g * 80 - drift * .5).toFixed(1)}px,0)`;
       title.style.visibility = g > .99 ? 'hidden' : '';
+      /* Der Name ist ein Link zum Haus, aber nur solange er gut zu sehen ist */
+      title.style.pointerEvents = tOp > .4 ? '' : 'none';
 
       /* Karten: steigen von unten auf, schweben mit eigener Tiefe, fliegen beim Wachsen nach außen */
       const cw2 = cw / 2;
@@ -202,11 +205,13 @@ function akt(el, mouse) {
         fr.style.transform = `translate3d(${dx.toFixed(1)}px,${dy.toFixed(1)}px,0) scale(${s.toFixed(4)})`;
         fr.style.clipPath = '';
         fr.style.opacity = aF.toFixed(3);
+        fr.style.pointerEvents = aF > .3 ? '' : 'none';
       } else {
         const s = Math.exp(Math.log(kT) * q);
         fr.style.transform = `translate3d(${((tcx - fcx) * q).toFixed(1)}px,${((tcy - fcy) * q).toFixed(1)}px,0) scale(${s.toFixed(4)})`;
         fr.style.clipPath = `inset(${(iyT * q).toFixed(1)}px ${(ixT * q).toFixed(1)}px)`;
         fr.style.opacity = '1';
+        fr.style.pointerEvents = '';
       }
       slidesEl.style.transform = `scale(${lerp(1.16, 1, g).toFixed(4)})`;
 

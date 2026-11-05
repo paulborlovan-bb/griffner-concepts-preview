@@ -108,6 +108,56 @@ export class House {
   }
 }
 
+/* Schnurgerüst: ein abgestecktes Grundstück für ein Concept, das noch kommt (Sammlung 05 bis 10, Kundenwunsch 2026-11-05).
+   Vier Eckböcke (zwei Bretter im Winkel auf drei Pflöcken), dazwischen die Schnüre entlang der Hauskanten, die sich über den Ecken
+   kreuzen, und vier kleine Pflöcke an den Ecken des Hauses. Maße in m wie die Häuser: p.L0 Länge, p.D Tiefe (die Grundfläche).
+   build 0 bis 1: erst die Pflöcke, dann die Bretter, dann laufen die Schnüre, zuletzt die Eckpflöcke. Gleiche Felder wie House
+   (x, z, build, p, update), damit die Sammlung beide gleich behandelt. */
+const STAKE = { o: 1.9, a: 1.1, t: .25, bh: .26, bt: .07, ph: 1.25, pw: .13, sy: 1.08 };
+export class Stake {
+  constructor(stage, opt = {}) {
+    this.g = new T.Group(); stage.scene.add(this.g);
+    this.mat = new T.MeshStandardMaterial({ color: opt.color ?? 0xF2F0EC, roughness: .9, metalness: 0 });
+    this.lineMat = new T.LineBasicMaterial({ color: opt.line ?? 0xCACACA, transparent: true, opacity: .55 });
+    this.strMat = new T.LineBasicMaterial({ color: opt.string ?? 0xFFFFFF, transparent: true, opacity: .9 });
+    this.p = { L0: 14, D: 10 }; this.build = 1; this.x = 0; this.z = 0;
+    this.posts = []; this.boards = []; this.pegs = []; this.strings = [];
+    const solid = () => { const m = new T.Mesh(BOX, this.mat); m.castShadow = true; m.receiveShadow = true; m.add(new T.LineSegments(EDGE, this.lineMat)); this.g.add(m); return m; };
+    for (let i = 0; i < 12; i++) this.posts.push(solid());
+    for (let i = 0; i < 8; i++) this.boards.push(solid());
+    for (let i = 0; i < 4; i++) this.pegs.push(solid());
+    const sg = new T.BufferGeometry().setFromPoints([new T.Vector3(0, 0, 0), new T.Vector3(1, 0, 0)]);
+    for (let i = 0; i < 4; i++) { const l = new T.Line(sg, this.strMat); this.g.add(l); this.strings.push(l); }
+  }
+  set(p) { Object.assign(this.p, p); return this; }
+  update() {
+    const { L0, D } = this.p, b = this.build, S = STAKE;
+    const kP = eo(seg(b, 0, .36)), kB = eo(seg(b, .26, .58)), kS = eo(seg(b, .5, .9)), kG = eo(seg(b, .84, 1));
+    const hx = L0 / 2, hz = D / 2, ox = hx + S.o, oz = hz + S.o, yb = S.sy;
+    const box = (m, sx, sy, sz, x, y, z, k) => { m.scale.set(sx, Math.max(.0001, sy * k), sz); m.position.set(x, y - sy * (1 - k) / 2, z); m.visible = k > .01; };
+    let pi = 0, bi = 0;
+    [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([sx, sz], c) => {
+      /* Pflöcke: äußere Ecke und die beiden Enden des Winkels */
+      [[ox, oz], [ox, hz - S.a], [hx - S.a, oz]].forEach(([x, z]) => box(this.posts[pi++], S.pw, S.ph, S.pw, sx * x, S.ph / 2, sz * z, kP));
+      /* Bretter knapp unter der Pflockspitze: eines quer zur langen Schnur (entlang z), eines quer zur kurzen (entlang x) */
+      const kb = eo(seg(kB, c * .12, .64 + c * .12));
+      const lz = S.o + S.a + S.t, lx = S.o + S.a + S.t;
+      box(this.boards[bi++], S.bt, S.bh, lz, sx * (ox + S.pw / 2 + S.bt / 2), yb - S.bh / 2 + .02, sz * (hz - S.a + lz / 2 - S.t / 2), kb);
+      box(this.boards[bi++], lx, S.bh, S.bt, sx * (hx - S.a + lx / 2 - S.t / 2), yb - S.bh / 2 + .02, sz * (oz + S.pw / 2 + S.bt / 2), kb);
+      /* kleiner Pflock an der Hausecke, genau unter dem Kreuz der Schnüre */
+      box(this.pegs[c], .09, .42, .09, sx * hx, .21, sz * hz, kG);
+    });
+    /* Schnüre: vorne und hinten (entlang x), links und rechts (entlang z), von Brett zu Brett gespannt, sie laufen von einem Ende zum anderen */
+    const run = (l, x0, z0, len, rotY, k) => { l.position.set(x0, yb + .03, z0); l.rotation.set(0, rotY, 0); l.scale.set(Math.max(.0001, len * k), 1, 1); l.visible = k > .01; };
+    const Lx = (ox + S.pw) * 2, Lz = (oz + S.pw) * 2;
+    run(this.strings[0], -Lx / 2, hz, Lx, 0, kS);
+    run(this.strings[1], Lx / 2, -hz, Lx, Math.PI, kS);
+    run(this.strings[2], hx, Lz / 2, Lz, Math.PI / 2, eo(seg(kS, .15, 1)));
+    run(this.strings[3], -hx, -Lz / 2, Lz, -Math.PI / 2, eo(seg(kS, .15, 1)));
+    this.g.position.set(this.x, 0, this.z || 0);
+  }
+}
+
 export function createStage(host, opt = {}) {
   const r = new T.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
   r.setPixelRatio(Math.min(1.6, devicePixelRatio || 1));
@@ -133,6 +183,7 @@ export function createStage(host, opt = {}) {
   const S = {
     T, r, scene, cam, key, hemi, fill, ground, houses: [],
     house(o) { const h = new House(S, o); S.houses.push(h); return h; },
+    stake(o) { const h = new Stake(S, o); S.houses.push(h); return h; },
     orbit(az, el, dist, tx = 0, ty = 2.5, tz = 0) {
       cam.position.set(tx + Math.sin(az) * Math.cos(el) * dist, ty + Math.sin(el) * dist, tz + Math.cos(az) * Math.cos(el) * dist);
       look.set(tx, ty, tz); cam.lookAt(look);

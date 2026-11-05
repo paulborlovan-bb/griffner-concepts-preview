@@ -1,10 +1,13 @@
 /* GRUNDRISS IN 3D (Seiten der Concepts, data-p3-house wählt das Haus). Die echten CAD Grundrisse als Modell: ziehen zum Drehen, dazu ein Knopf für das ganze Haus.
    Wände: die gefüllten Wandflächen der Pläne (Klasse w), hochgezogen. Boden: die Planzeichnung selbst.
-   Möbel: einfache Körper an den Stellen der weißen Möbelflächen im Plan (Klasse k). Im Carport stehen die zwei Autos aus dem Plan in 3D.
+   Möbel: einfache Körper an den Stellen der weißen Möbelflächen im Plan (Klasse k).
+   Wände und Möbelflächen kommen als Daten aus data/plan-geo.js (tools/plan-geo.mjs), nicht mehr aus dem SVG: Framer optimiert
+   hochgeladene SVG, danach fand der alte Parser nichts mehr und die Pläne lagen live flach (2026-11-05). Das SVG ist nur das Bodenbild. Im Carport stehen die zwei Autos aus dem Plan in 3D.
    Ganzes Haus: das Obergeschoß setzt sich auf das Erdgeschoß, so wie die beiden Pläne übereinander liegen (gleiches Koordinatensystem).
    Dazwischen eine dunkle Decke, oben der dunkle Rahmen aus dem Obergeschoßplan (Seiten, Brüstung zum Garten) und das Dach.
    Pläne: SVG im Bildordner (tools/plan.mjs), in Punkt, 1 m = 28,35 pt, Norden oben. */
 import { $, $$, E, clamp, lerp, loop, reduce, through } from './core.js';
+import { PLAN_GEO } from '../data/plan-geo.js';
 
 const K = 28.35, WALL = 2.35, FRAME = .32, GAP = 2.6;
 /* Ganzes Haus: Geschoßhöhen in m, Deckenstärke, Brüstung */
@@ -41,21 +44,21 @@ const FURN_LIGHT = {
    der Schnauze: s Süden, w Westen), Raumnamen. furn: Möbel von Hand, sonst aus den weißen Möbelflächen des Plans. */
 const HOUSES = {
   light: [
-    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-eg.svg', crop: [209, 68, 806, 463], aux: b => b[0] < 330 || b[0] > 760, slab: [321, 117, 761, 445],
+    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-eg.svg', geo: 'plan-eg', crop: [209, 68, 806, 463], aux: b => b[0] < 330 || b[0] > 760, slab: [321, 117, 761, 445],
       furn: FURN_LIGHT.eg, cars: [[285.5, 155.5, 133, 51, 0xEDEBE6, 's'], [360, 157, 138, 54, 0x4a4a47, 's']],
       labels: [['Kochen', 436, 286], ['Essen', 431, 351], ['Wohnen', 686, 322], ['Büro', 650, 196], ['Eingang', 590, 152], ['Terrasse', 648, 434]] },
-    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-og.svg', crop: [293, 99, 789, 473], body: [397, 123, 725, 369], slab: [321, 117, 761, 445],
+    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-og.svg', geo: 'plan-og', crop: [293, 99, 789, 473], body: [397, 123, 725, 369], slab: [321, 117, 761, 445],
       furn: FURN_LIGHT.og, labels: [['Eltern', 452, 342], ['Kind', 668, 150], ['Kind', 668, 340], ['Galerie', 557, 300], ['Bad', 476, 186]] }
   ],
   bold: [
-    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-bold-eg.svg', crop: [135, 122, 732, 450], house: [312, 150, 706, 392], slab: [156, 129, 700, 442],
+    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-bold-eg.svg', geo: 'plan-bold-eg', crop: [135, 122, 732, 450], house: [312, 150, 706, 392], slab: [156, 129, 700, 442],
       cars: [[208.3, 241.4, 130, 49, 0xEDEBE6, 's'], [274.9, 241.4, 130, 49, 0x4a4a47, 's']],
       labels: [['Carport', 241.6, 241.4], ['Abstellraum', 241.6, 352.3], ['Eingang', 412.2, 207.3], ['WC', 367.4, 249.9], ['Zimmer', 382.3, 326.7], ['Technik', 542.2, 198.8], ['Kochen', 629.7, 220.1], ['Essen', 629.7, 331], ['Wohnen', 510.3, 322.4], ['Terrasse', 561.4, 416.2]] },
-    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-bold-og.svg', crop: [127, 148, 724, 474], body: [313, 180, 707, 412], slab: [133, 154, 718, 467], off: [0, -25],
+    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-bold-og.svg', geo: 'plan-bold-og', crop: [127, 148, 724, 474], body: [313, 180, 707, 412], slab: [133, 154, 718, 467], off: [0, -25],
       labels: [['Bad', 378.6, 224.8], ['Kind', 382.9, 348.4], ['Kind', 506.5, 348.4], ['Eltern', 655.8, 352.7], ['Bad', 638.7, 224.8], ['Ankleide', 660, 288.7], ['Terrasse', 233.6, 310]] }
   ],
   calm: [
-    { key: 'eg', cap: 'Eine Ebene', src: 'assets/img/plan-calm-eg.svg', crop: [322, 134, 966, 700], house: [326, 385, 910, 645],
+    { key: 'eg', cap: 'Eine Ebene', src: 'assets/img/plan-calm-eg.svg', geo: 'plan-calm-eg', crop: [322, 134, 966, 700], house: [326, 385, 910, 645],
       cars: [[671.6, 196.1, 133.4, 50.6, 0xEDEBE6, 'w'], [671.6, 278.9, 138, 55.2, 0x4a4a47, 'w']],
       labels: [['Carport', 678.5, 239.8], ['Eingang', 680.8, 437.6], ['Kochen', 814.2, 433], ['Essen', 763.6, 571], ['Wohnen', 690, 575.6], ['Terrasse', 869.4, 571], ['Eltern', 372.6, 575.6], ['Ankleide', 372.6, 497.4], ['Bad', 404.8, 428.4], ['Dusche', 501.4, 433], ['Technik', 565.8, 433], ['Kind', 480.7, 571], ['Kind', 588.8, 571]] }
   ]
@@ -111,7 +114,8 @@ async function boot() {
   const solid = (geo, m, eg, lm) => { const o = new T.Mesh(geo, m); o.castShadow = true; o.receiveShadow = true; if (eg) o.add(new T.LineSegments(eg, lm)); return o; };
 
   await Promise.all(FLOORS.map(async (f, fi) => {
-    const svg = await (await fetch(f.src)).text();
+    const pg = PLAN_GEO[f.geo] || { w: [], k: [] };
+    const svg = await fetch(f.src).then(r => r.ok ? r.text() : null).catch(() => null);
     const [x0, y0, x1, y1] = f.crop, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
     const lx = x => (x - cx) / K, lz = y => (y - cy) / K;
     f.w = (x1 - x0) / K; f.d = (y1 - y0) / K; f.lx = lx; f.lz = lz; f.c = [cx, cy];
@@ -121,14 +125,14 @@ async function boot() {
     const plate = f.plate = solid(box, f.pm, boxE, LINE2); plate.scale.set(f.w, .3, f.d); plate.position.y = -.3; plate.castShadow = false; g.add(plate);
     f.top = new T.Mesh(new T.PlaneGeometry(f.w, f.d), new T.MeshStandardMaterial({ color: 0xEFECE6, roughness: 1, transparent: true }));
     f.top.rotation.x = -Math.PI / 2; f.top.position.y = .004; f.top.receiveShadow = true; g.add(f.top);
-    tex(svg, f).then(t => { if (!t) return; f.top.material.map = t; f.top.material.color.setHex(0xffffff); f.top.material.needsUpdate = true; loop.poke(); });
+    if (svg) tex(svg, f).then(t => { if (!t) return; f.top.material.map = t; f.top.material.color.setHex(0xffffff); f.top.material.needsUpdate = true; loop.poke(); });
     /* Wände: jede Wandfläche des Plans wird ein Körper. Splitter und Haarlinien bleiben weg.
        Rahmen (Obergeschoß, außerhalb des Hauskörpers): im Grundriss niedrig und hell, im ganzen Haus dunkel; Seiten raumhoch, zum Garten Brüstung.
        Mauern außerhalb des Hauses (Carport, Garten) wachsen im ganzen Haus nicht mit. */
     f.fm = mat(0xCACACA);
     f.walls = [];
-    for (const m of svg.matchAll(/<path class="w"[^>]*? d="([^"]+)"/g)) {
-      const n = (m[1].match(/-?[\d.]+/g) || []).map(Number), pts = [];
+    for (const n of pg.w) {
+      const pts = [];
       for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i], n[i + 1]]);
       const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
       const b = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
@@ -143,7 +147,7 @@ async function boot() {
       f.walls.push({ o, fr, hgt, d: clamp(((b[0] + b[2]) / 2 - x0) / (x1 - x0) * .7 + ((b[1] + b[3]) / 2 - y0) / (y1 - y0) * .3) });
     }
     /* Möbel */
-    f.furn = (f.furn || autoFurn(svg, f)).map(([x, y, w, d, ht, c, rnd]) => {
+    f.furn = (f.furn || autoFurn(pg, f)).map(([x, y, w, d, ht, c, rnd]) => {
       const o = solid(rnd ? cyl : box, MAT[c], c === 'a' ? null : (rnd ? cylE : boxE), LINE2);
       o.scale.set(w / K, ht, d / K); o.position.set(lx(x + w / 2), 0, lz(y + d / 2)); o.userData.h = ht; g.add(o);
       return { o, h: ht, d: clamp((x - x0) / (x1 - x0)) };
@@ -165,12 +169,9 @@ async function boot() {
 
 /* Möbel aus dem Plan: jede weiße Möbelfläche (Klasse k) innerhalb des Hauses wird ein einfacher Körper, die Höhe nach Größe und Form.
    Klein (Stühle, Hocker), groß und flach (Betten, Sofas), lang und schmal (Küchenzeilen, Schränke), sonst Tische. */
-function autoFurn(svg, f) {
+function autoFurn(pg, f) {
   const H = f.body || f.house || f.crop, out = [];
-  for (const m of svg.matchAll(/<path class="k"[^>]*? d="([^"]+)"/g)) {
-    const n = (m[1].match(/-?[\d.]+/g) || []).map(Number);
-    let b = [1e9, 1e9, -1e9, -1e9];
-    for (let i = 0; i + 1 < n.length; i += 2) b = [Math.min(b[0], n[i]), Math.min(b[1], n[i + 1]), Math.max(b[2], n[i]), Math.max(b[3], n[i + 1])];
+  for (const b of pg.k) {
     const w = b[2] - b[0], d = b[3] - b[1], cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
     if (Math.max(w, d) < 6 || cx < H[0] || cx > H[2] || cy < H[1] || cy > H[3]) continue;
     const lo = Math.min(w, d), hi = Math.max(w, d);

@@ -8,8 +8,8 @@ let D;
 
 export function initGrund() {
   D = { pin: $('[data-g-pin]'), steps: $('[data-g-steps]'), tabs: $('[data-g-tabs]'), size: $('[data-g-size]') };
-  D.st = SITE_STEPS.map(([a, b], i) => {
-    const el = h('div', { class: 'gstep' }, `<span class="info">0${i + 1} / 0${SITE_STEPS.length}</span><h3 class="gstep__h">${a}</h3><p class="txt">${b}</p>${i === SITE_STEPS.length - 1 ? '<p class="gstep__note" data-g-note></p>' : ''}`);
+  D.st = SITE_STEPS.map((a, i) => {
+    const el = h('div', { class: 'gstep' }, `<span class="info">0${i + 1} / 0${SITE_STEPS.length}</span><h3 class="gstep__h">${a}</h3>${i === SITE_STEPS.length - 1 ? '<p class="gstep__note" data-g-note></p>' : ''}`);
     D.steps.appendChild(el); return el;
   });
   D.note = $('[data-g-note]');
