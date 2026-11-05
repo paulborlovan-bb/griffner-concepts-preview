@@ -1,6 +1,8 @@
-/* Markup der Concepts als Akte, je Haus einer (Kundenwunsch 2026-11-05, Referenz stillform.homes):
-   1. Name des Hauses, lose Bilder darum   2. die mittlere Karte wächst zur Bildfolge des Hauses (70 bis 75 % breit)
-   3. ein großer Satz mit kleinem Bild davor, darunter ein großer Aufruf zur Seite des Hauses.
+/* Markup der Concepts als Akte, je Haus einer (Kundenwunsch 2026-11-05, Referenz stillform.homes, Video des Kunden):
+   1. Name des Hauses, lose Bilder darum, in der Mitte die Bildfolge als kleine Karte mit Pfeilen
+   2. die Karte wächst zur Bildfolge des Hauses (70 bis 75 % breit), beim Scrollen wechseln die Bilder
+   3. die Bildfolge schrumpft zum kleinen Bild am Anfang des großen Satzes, der Satz läuft Wort für Wort herein,
+      darunter Linie und großer Aufruf zur Seite des Hauses. Alles in einem gepinnten Bild, nur über das Scrollen.
    Links eine Liste der vier Häuser zum Springen. Kein DOM hier: tools/pages.mjs schreibt das Markup
    in index.html (Kapitel 03) und in die Seiten der Concepts (Nächstes Concept). js/akte.js bewegt es. */
 
@@ -17,6 +19,9 @@ export function poolOf(c) {
 export function aktHtml(c, i, n, { one = false } = {}) {
   const pool = poolOf(c), cards = pool.slice(1, 7), kind = /Foto/.test(c.cap) ? 'Foto' : 'Visualisierung';
   const fid = `ak-${c.id}-frame`;
+  /* Das kleine Bild im Satz ist das Bild, bei dem die Bildfolge nach drei Wechseln ankommt */
+  const thumb = pool[3 % pool.length];
+  const words = c.text.split(/\s+/).map(w => `<span class="ak__w"><span>${w}</span></span>`).join(' ');
   return `
 <article class="ak" id="ak-${c.id}" data-ak="${c.id}">
   <div class="ak__stage" data-ak-stage>
@@ -27,23 +32,23 @@ export function aktHtml(c, i, n, { one = false } = {}) {
         <p class="ak__fuer">${c.fuer}</p>
       </div>
       <div class="ak__cards" aria-hidden="true">${cards.map(src => `<figure class="ak__card" data-ak-card><img src="${src}" alt="" loading="lazy" decoding="async"></figure>`).join('')}</div>
+      <div class="ak__about" data-ak-about>
+        <span class="info ak__kap" data-ak-kap>Concept ${NN(i + 1)} / ${c.name} / Die Antwort im Raum</span>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="${thumb}" alt="" loading="lazy" decoding="async"></span>${words}</p>
+        <div class="ak__rule" data-ak-rule></div>
+        <div class="ak__row" data-ak-row>
+          <a class="ak__go" href="${c.href}">Concept ${c.name} ansehen</a>
+          <ul class="facts info ak__facts">${c.facts.map(f => `<li>${f}</li>`).join('')}</ul>
+        </div>
+      </div>
       <div class="ak__frame" id="${fid}" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="${fid}" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept ${c.name}">
         <div class="ak__slides" data-ak-slides>${pool.map((src, k) => `<div class="ak__slide" data-ak-slide${k ? ' aria-hidden="true"' : ''}><img src="${src}" alt="Concept ${c.name}, Bild ${k + 1} von ${pool.length}, ${kind}" style="object-position:${k ? '50% 50%' : (c.pos || '50% 50%')}"${k ? ' loading="lazy"' : ''} decoding="async"></div>`).join('')}</div>
         <div class="ak__ui" data-ak-ui>
           <span class="info ak__count" data-ak-count>01 / ${NN(pool.length)}</span>
           <span class="info ak__cap">${c.cap}</span>
-          <div class="ak__arrows"><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
         </div>
+        <div class="ak__arrows" data-ak-arrows><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
       </div>
-    </div>
-  </div>
-  <div class="ak__about">
-    <span class="info ak__kap" data-reveal="0">Concept ${NN(i + 1)} / ${c.name} / Die Antwort im Raum</span>
-    <p class="ak__say" data-reveal="0"><span class="ak__thumb"><img src="${pool[Math.min(2, pool.length - 1)]}" alt="" loading="lazy" decoding="async"></span>${c.text}</p>
-    <div class="ak__rule" data-reveal="80"></div>
-    <div class="ak__row" data-reveal="120">
-      <a class="ak__go" href="${c.href}">Concept ${c.name} ansehen</a>
-      <ul class="facts info ak__facts">${c.facts.map(f => `<li>${f}</li>`).join('')}</ul>
     </div>
   </div>
 </article>`;
