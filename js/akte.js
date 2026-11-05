@@ -208,6 +208,7 @@ function akt(el, mouse) {
       const gone = S(q, 0, .2);
       ui.style.opacity = (E(g, .82, 1) * (1 - gone)).toFixed(3);
       arrows.style.opacity = (aF * (1 - gone)).toFixed(3);
+      fr.style.setProperty('--ak-shade', (1 - gone).toFixed(3));
       const nowLive = aF > .5 && q < .05;
       if (nowLive !== live) {
         live = nowLive; arrows.classList.toggle('is-on', live);
