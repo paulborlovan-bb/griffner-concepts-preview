@@ -34,8 +34,8 @@ const HW = [
 ];
 /* Zeitfenster der Sätze, der erste kommt mit dem Laden */
 const WINS = [null, [.1, .19], [.205, .37], [.405, .54], [.575, .69], [.725, .85], [.9, 1.4]];
-/* Bildausschnitt: Modell etwas nach rechts oben, Anteile von Breite und Höhe */
-const SHIFT = { wide: [.12, .11], narrow: [-.2, .1] };
+/* Bildausschnitt: Modell etwas nach rechts oben, Anteile von Breite und Höhe (Nov 5: rechts weniger, damit nichts am Rand abgeschnitten wird) */
+const SHIFT = { wide: [.06, .11], narrow: [-.2, .1] };
 let sk = '';
 
 let D, M, H, T, G = null, hi = reduce ? 1 : 0, rig = null;
@@ -68,9 +68,11 @@ async function boot() {
 function shift(p) {
   const nar = innerWidth < 820, w = D.gl.clientWidth || innerWidth, h = D.gl.clientHeight || innerHeight, s = SHIFT[nar ? 'narrow' : 'wide'];
   /* Schmal: die erste Kamera zielt links neben das Modellhaus, darum anfangs nach links rücken, bis die Figur in der Mitte steht */
-  const sx = nar ? s[0] * (1 - E(p, .04, .09)) : s[0] * (1 - .7 * win(p, .19, .41, .03)), key = w + ',' + h + ',' + sx.toFixed(4);
+  /* Breit: während der Wörter (p .19 bis .41) leicht nach links und unten, damit kein Wort rechts oder oben angeschnitten wird */
+  const ww = nar ? 0 : win(p, .19, .41, .03);
+  const sx = nar ? s[0] * (1 - E(p, .04, .09)) : s[0] - (s[0] + .03) * ww, sy = s[1] * (1 - .5 * ww), key = w + ',' + h + ',' + sx.toFixed(4) + ',' + sy.toFixed(4);
   if (key === sk) return; sk = key;
-  H.cam.setViewOffset(w, h, -w * sx, h * s[1], w, h);
+  H.cam.setViewOffset(w, h, -w * sx, h * sy, w, h);
   H.cam.updateProjectionMatrix();
 }
 

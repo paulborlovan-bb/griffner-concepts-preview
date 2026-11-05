@@ -70,7 +70,7 @@ main,.ft{position:relative}
 .connector{position:fixed;left:0;top:0;width:0;height:0;z-index:5;pointer-events:none;opacity:0;display:grid;grid-template-rows:1fr 1fr;transition:opacity 600ms var(--ease);will-change:transform}
 .connector span{display:block;background:var(--griffner-gelb)}
 .dockbox{position:absolute;left:0;top:0;width:clamp(56px,6vw,110px);aspect-ratio:5 / 4;transform:translate(-50%,-50%);pointer-events:none}
-.dockbox--corner{left:auto;right:0;top:0;width:clamp(48px,4.6vw,84px);transform:translate(38%,-38%)}
+.dockbox--corner{left:auto;right:0;top:0;width:clamp(48px,4.6vw,84px);transform:translate(0,-38%)}
 
 /* Header wie griffner.com (gemessen am 04.11.2026, Desktop 1440): Menüknopf links mit senkrechtem Label, Fortschrittslinie darunter,
    Logo mit gelbem Feld in der Mitte, beim Scrollen kleine Wortmarke links, Contact rechts. */
