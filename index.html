@@ -25,7 +25,7 @@
 
   <!-- Reiseleiste: welches Kapitel gerade läuft -->
   <div class="rail" data-rail aria-hidden="false">
-    <span class="info rail__nr" data-rail-nr>01 / 05</span>
+    <span class="info rail__nr" data-rail-nr>01 / 04</span>
     <div class="rail__bar" data-rail-bar></div>
     <span class="info rail__label" data-rail-label>Kennenlernen</span>
   </div>
@@ -37,27 +37,24 @@
       <div class="hero__stage">
         <div class="hero__gl" data-h-gl aria-hidden="true"></div>
         <div class="hero__shade" data-h-shade aria-hidden="true"></div>
-        <div class="hero__top" data-h-top>
-          <span class="info">Kapitel 03 / Different Concepts</span>
-        </div>
-        <span class="hero__w" data-h-w aria-hidden="true">Kochen</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Schlafen</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Lesen</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Arbeiten</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Baden</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Ankommen</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Blick</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Licht</span>
-        <span class="hero__w" data-h-w aria-hidden="true">Weite</span>
-        <p class="hero__say" data-h-say>Und dann dein Ort.</p>
-        <p class="hero__say" data-h-say>Am Anfang stehst du.</p>
-        <p class="hero__say hero__say--list" data-h-say><span data-h-sl>Wie du lebst.</span><span data-h-sl>Was du brauchst.</span><span data-h-sl>Wovon du träumst.</span></p>
-        <p class="hero__say" data-h-say>Daraus entsteht ein Grundriss.</p>
-        <p class="hero__say hero__say--long" data-h-say>Und aus dem Grundriss ein Haus, das zu dir passt.</p>
-        <p class="hero__say hero__say--long" data-h-say>Denn jedes Leben folgt seinem eigenen Konzept.</p>
+        <div class="hero__top" data-h-top></div>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort1">Kochen</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort2">Schlafen</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort3">Lesen</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort4">Arbeiten</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort5">Baden</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort6">Ankommen</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort7">Blick</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort8">Licht</span>
+        <span class="hero__w" data-h-w aria-hidden="true" data-f="wort9">Weite</span>
+        <p class="hero__say" data-h-say data-f="satzOrt">Und dann dein Ort.</p>
+        <p class="hero__say" data-h-say data-f="satz1">Am Anfang stehst du.</p>
+        <p class="hero__say hero__say--list" data-h-say><span data-h-sl data-f="satz2a">Wie du lebst.</span><span data-h-sl data-f="satz2b">Was du brauchst.</span><span data-h-sl data-f="satz2c">Wovon du träumst.</span></p>
+        <p class="hero__say" data-h-say data-f="satz3">Daraus entsteht ein Grundriss.</p>
+        <p class="hero__say hero__say--long" data-h-say data-f="satz4">Und aus dem Grundriss ein Haus, das zu dir passt.</p>
+        <p class="hero__say hero__say--long" data-h-say data-f="satz5">Denn jedes Leben folgt seinem eigenen Konzept.</p>
         <div class="hero__end" data-h-say>
-          <span class="info">People before floor plans.</span>
-          <h1 class="hero__h1"><span>GRIFFNER</span><span>Concepts.</span></h1>
+          <h1 class="hero__h1"><span data-f="titel1">GRIFFNER</span><span data-f="titel2">Concepts.</span></h1>
         </div>
         <div class="hero__scroll info" data-h-scroll><span>Scrollen</span><i></i></div>
         <div class="dockbox" data-h-dock data-dock="box" data-dock-trigger="k-hero" data-dock-hide="1" aria-hidden="true"></div>
@@ -68,8 +65,7 @@
     <section id="k-haltung" class="haltung" data-room="k-haltung">
       <div class="haltung__pin" data-st-pin>
         <div class="haltung__sticky">
-          <span class="info haltung__kicker">Unsere Haltung</span>
-          <h2 class="haltung__words" data-st-words><span>Wir</span><span>planen</span><span>jedes</span><span>Haus</span><span>individuell.</span></h2>
+          <h2 class="haltung__words" data-st-words data-fw="haltung"><span>Wir</span><span>planen</span><span>jedes</span><span>Haus</span><span>individuell.</span></h2>
           <div class="haltung__line">
             <div class="haltung__stroke" data-st-line></div>
             <div class="dockbox" data-st-dock data-dock="box" data-dock-trigger="k-haltung" aria-hidden="true"></div>
@@ -81,11 +77,6 @@
     <!-- 01 KENNENLERNEN -->
     <section id="k-kennen" class="kennen" data-room="k-kennen">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 01 / Kennenlernen</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Erzähl uns von dir.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Bevor wir einen Strich zeichnen, hören wir zu: wie du lebst, was du brauchst, was dir wichtig ist und wovon du träumst. Daraus entwickeln wir den Grundriss, nicht umgekehrt. Drei Fragen geben einen ersten Eindruck.</p>
-        </div>
         <div class="kennen__body g12" id="k-kennen-sheet">
           <form class="ask c-1-4" data-ask onsubmit="return false" aria-label="Drei Fragen"></form>
           <div class="sheet c-6-7" data-sheet data-reveal="100">
@@ -109,10 +100,9 @@
     <!-- 02 GRUNDSTÜCK -->
     <section id="k-grund" class="grund" data-room="k-grund">
       <div class="wrap pad-t">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 02 / Grundstück</span></div>
         <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Dein Ort entscheidet mit.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Kein Grundstück ist wie das andere. Darum setzen wir kein Haus einfach ab. Wir drehen, strecken und stufen es, bis es passt.</p>
+          <h2 class="h-xl c-1-8" data-reveal="0" data-f="headline">Dein Ort entscheidet mit.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120" data-f="text">Kein Grundstück ist wie das andere. Darum setzen wir kein Haus einfach ab. Wir drehen, strecken und stufen es, bis es passt.</p>
         </div>
       </div>
       <div class="grund__pin" data-g-pin>
@@ -137,131 +127,117 @@
       <div class="aks" data-aks>
         <nav class="aks__nav" aria-label="Die 4 Concepts">
           <div class="aks__navin">
-            <span class="info aks__navk">Kapitel 03 / Inspiration</span>
             <ol class="aks__list">
-              <li><a class="aks__link" href="#ak-stille" data-ak-link="stille"><span class="info">01</span><span class="aks__name">Stille</span><i aria-hidden="true"></i></a></li>
-              <li><a class="aks__link" href="#ak-einfachheit" data-ak-link="einfachheit"><span class="info">02</span><span class="aks__name">Einfachheit</span><i aria-hidden="true"></i></a></li>
-              <li><a class="aks__link" href="#ak-leichtigkeit" data-ak-link="leichtigkeit"><span class="info">03</span><span class="aks__name">Leichtigkeit</span><i aria-hidden="true"></i></a></li>
-              <li><a class="aks__link" href="#ak-weitblick" data-ak-link="weitblick"><span class="info">04</span><span class="aks__name">Weitblick</span><i aria-hidden="true"></i></a></li>
+              <li><a class="aks__link" href="#ak-bold" data-ak-link="bold"><span class="info">01</span><span class="aks__name">Bold</span><i aria-hidden="true"></i></a></li>
+              <li><a class="aks__link" href="#ak-calm" data-ak-link="calm"><span class="info">02</span><span class="aks__name">Calm</span><i aria-hidden="true"></i></a></li>
+              <li><a class="aks__link" href="#ak-light" data-ak-link="light"><span class="info">03</span><span class="aks__name">Light</span><i aria-hidden="true"></i></a></li>
+              <li><a class="aks__link" href="#ak-free" data-ak-link="free"><span class="info">04</span><span class="aks__name">Free</span><i aria-hidden="true"></i></a></li>
             </ol>
           </div>
         </nav>
         <div class="aks__main">
           <div class="aks__intro">
-            <span class="info aks__k">Kapitel 03 / Inspiration</span>
             <h2 class="h-xl" data-reveal="0">Vier Lebensgefühle. Vier Concepts.</h2>
             <p class="txt aks__p" data-reveal="120">Jedes unserer Concepts ist aus einem Lebensgefühl entstanden. Sie sind keine fertigen Häuser, sondern Ideen zum Weiterdenken.</p>
           </div>
-<article class="ak" id="ak-stille" data-ak="stille">
+<article class="ak" id="ak-bold" data-ak="bold">
   <div class="ak__stage" data-ak-stage>
     <div class="ak__sticky">
       <div class="ak__title" data-ak-title>
-        <span class="info">Concept 01 / 04</span>
-        <h3 class="ak__h">Stille.</h3>
-        <p class="ak__fuer">Für Menschen, die nach einem vollen Tag ankommen und still werden wollen.</p>
+        <h3 class="ak__h">Bold.</h3>
+        <p class="ak__fuer">Für alle, die klare Linien lieben und Haltung zeigen.</p>
       </div>
       <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="assets/img/wald-garten.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/wald-strasse.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/wald-eingang.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/wald-sessel.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/wald-fenster.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/wald-innen.jpg" alt="" loading="lazy" decoding="async"></figure></div>
       <div class="ak__about" data-ak-about>
-        <span class="info ak__kap" data-ak-kap>Concept 01 / Stille / Die Antwort im Raum</span>
-        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="assets/img/wald-eingang.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>ruhiger,</span></span> <span class="ak__w"><span>dunkler</span></span> <span class="ak__w"><span>Baukörper,</span></span> <span class="ak__w"><span>der</span></span> <span class="ak__w"><span>sich</span></span> <span class="ak__w"><span>zwischen</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>Bäume</span></span> <span class="ak__w"><span>stellt.</span></span> <span class="ak__w"><span>Holzlamellen</span></span> <span class="ak__w"><span>filtern</span></span> <span class="ak__w"><span>Licht</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>Blicke,</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>auskragende</span></span> <span class="ak__w"><span>Obergeschoss</span></span> <span class="ak__w"><span>schützt.</span></span> <span class="ak__w"><span>Innen</span></span> <span class="ak__w"><span>ist</span></span> <span class="ak__w"><span>es</span></span> <span class="ak__w"><span>warm,</span></span> <span class="ak__w"><span>außen</span></span> <span class="ak__w"><span>bleibt</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>Welt</span></span> <span class="ak__w"><span>draußen.</span></span></p>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="assets/img/wald-eingang.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Eine</span></span> <span class="ak__w"><span>dunkle</span></span> <span class="ak__w"><span>Fassade,</span></span> <span class="ak__w"><span>ein</span></span> <span class="ak__w"><span>Obergeschoss,</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>weit</span></span> <span class="ak__w"><span>auskragt,</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>warmes</span></span> <span class="ak__w"><span>Holz</span></span> <span class="ak__w"><span>in</span></span> <span class="ak__w"><span>jedem</span></span> <span class="ak__w"><span>Rücksprung.</span></span> <span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>Haus,</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>man</span></span> <span class="ak__w"><span>nicht</span></span> <span class="ak__w"><span>übersieht.</span></span></p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>
-          <a class="ak__go" href="stille.html">Concept Stille ansehen</a>
-          <ul class="facts info ak__facts"><li>171 m²</li><li>2 Ebenen</li><li>Flachdach</li></ul>
+          <a class="ak__go" href="bold.html">Concept Bold ansehen</a>
+          <ul class="facts info ak__facts"><li>2 Ebenen</li><li>Flachdach</li><li>Carport</li></ul>
         </div>
       </div>
-      <div class="ak__frame" id="ak-stille-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-stille-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Stille">
-        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="assets/img/wald-garten-ecke-1800.jpg" alt="Concept Stille, Bild 1 von 9, Visualisierung" style="object-position:50% 62%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-garten.jpg" alt="Concept Stille, Bild 2 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-strasse.jpg" alt="Concept Stille, Bild 3 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-eingang.jpg" alt="Concept Stille, Bild 4 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-sessel.jpg" alt="Concept Stille, Bild 5 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-fenster.jpg" alt="Concept Stille, Bild 6 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-innen.jpg" alt="Concept Stille, Bild 7 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-essen.jpg" alt="Concept Stille, Bild 8 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-decke.jpg" alt="Concept Stille, Bild 9 von 9, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
+      <div class="ak__frame" id="ak-bold-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-bold-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Bold">
+        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="assets/img/wald-garten-ecke-1800.jpg" alt="Concept Bold, Bild 1 von 8, Visualisierung" style="object-position:50% 62%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-garten.jpg" alt="Concept Bold, Bild 2 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-strasse.jpg" alt="Concept Bold, Bild 3 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-eingang.jpg" alt="Concept Bold, Bild 4 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-sessel.jpg" alt="Concept Bold, Bild 5 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-fenster.jpg" alt="Concept Bold, Bild 6 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-innen.jpg" alt="Concept Bold, Bild 7 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/wald-essen.jpg" alt="Concept Bold, Bild 8 von 8, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
         <div class="ak__ui" data-ak-ui>
-          <span class="info ak__count" data-ak-count>01 / 09</span>
-          <span class="info ak__cap">Abb. 01 / Visualisierung / GRIFFNER Architektur und Design</span>
+          <span class="info ak__count" data-ak-count>01 / 08</span>
         </div>
         <div class="ak__arrows" data-ak-arrows><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
       </div>
     </div>
   </div>
 </article>
-<article class="ak" id="ak-einfachheit" data-ak="einfachheit">
+<article class="ak" id="ak-calm" data-ak="calm">
   <div class="ak__stage" data-ak-stage>
     <div class="ak__sticky">
       <div class="ak__title" data-ak-title>
-        <span class="info">Concept 02 / 04</span>
-        <h3 class="ak__h">Einfachheit.</h3>
-        <p class="ak__fuer">Für Menschen, die das Wesentliche suchen und alles auf einer Ebene wollen.</p>
+        <h3 class="ak__h">Calm.</h3>
+        <p class="ak__fuer">Für alle, die zur Ruhe kommen wollen.</p>
       </div>
-      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="assets/img/duene-2.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/duene-3.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/yUyYdoKFQZKqKrIkwklWpPDNk.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/A4JqmOFGCgPWiDedinKXtdLU6s.jpg" alt="" loading="lazy" decoding="async"></figure></div>
+      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="assets/img/duene-2.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/duene-3.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/yUyYdoKFQZKqKrIkwklWpPDNk.jpg" alt="" loading="lazy" decoding="async"></figure></div>
       <div class="ak__about" data-ak-about>
-        <span class="info ak__kap" data-ak-kap>Concept 02 / Einfachheit / Die Antwort im Raum</span>
-        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>modernes</span></span> <span class="ak__w"><span>Barnhouse:</span></span> <span class="ak__w"><span>ein</span></span> <span class="ak__w"><span>Satteldach,</span></span> <span class="ak__w"><span>ein</span></span> <span class="ak__w"><span>großer</span></span> <span class="ak__w"><span>Giebel</span></span> <span class="ak__w"><span>aus</span></span> <span class="ak__w"><span>Glas,</span></span> <span class="ak__w"><span>Holz</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>Stein.</span></span> <span class="ak__w"><span>Alles</span></span> <span class="ak__w"><span>liegt</span></span> <span class="ak__w"><span>auf</span></span> <span class="ak__w"><span>einer</span></span> <span class="ak__w"><span>Ebene,</span></span> <span class="ak__w"><span>ohne</span></span> <span class="ak__w"><span>Treppen,</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>unter</span></span> <span class="ak__w"><span>dem</span></span> <span class="ak__w"><span>offenen</span></span> <span class="ak__w"><span>Dach</span></span> <span class="ak__w"><span>entsteht</span></span> <span class="ak__w"><span>ein</span></span> <span class="ak__w"><span>Raum,</span></span> <span class="ak__w"><span>der</span></span> <span class="ak__w"><span>nicht</span></span> <span class="ak__w"><span>mehr</span></span> <span class="ak__w"><span>sein</span></span> <span class="ak__w"><span>will,</span></span> <span class="ak__w"><span>als</span></span> <span class="ak__w"><span>er</span></span> <span class="ak__w"><span>ist.</span></span></p>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>langes</span></span> <span class="ak__w"><span>Satteldach,</span></span> <span class="ak__w"><span>ein</span></span> <span class="ak__w"><span>Giebel</span></span> <span class="ak__w"><span>aus</span></span> <span class="ak__w"><span>Glas,</span></span> <span class="ak__w"><span>Holz</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>Stein.</span></span> <span class="ak__w"><span>Und</span></span> <span class="ak__w"><span>alles,</span></span> <span class="ak__w"><span>was</span></span> <span class="ak__w"><span>du</span></span> <span class="ak__w"><span>brauchst,</span></span> <span class="ak__w"><span>auf</span></span> <span class="ak__w"><span>einer</span></span> <span class="ak__w"><span>Ebene.</span></span></p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>
-          <a class="ak__go" href="einfachheit.html">Concept Einfachheit ansehen</a>
-          <ul class="facts info ak__facts"><li>142 m²</li><li>1 Ebene</li><li>Satteldach</li></ul>
+          <a class="ak__go" href="calm.html">Concept Calm ansehen</a>
+          <ul class="facts info ak__facts"><li>1 Ebene</li><li>Satteldach</li><li>Carport</li></ul>
         </div>
       </div>
-      <div class="ak__frame" id="ak-einfachheit-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-einfachheit-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Einfachheit">
-        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="assets/img/duene-1.jpg" alt="Concept Einfachheit, Bild 1 von 6, Visualisierung" style="object-position:50% 60%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/duene-2.jpg" alt="Concept Einfachheit, Bild 2 von 6, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/duene-3.jpg" alt="Concept Einfachheit, Bild 3 von 6, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="Concept Einfachheit, Bild 4 von 6, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/yUyYdoKFQZKqKrIkwklWpPDNk.jpg" alt="Concept Einfachheit, Bild 5 von 6, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/A4JqmOFGCgPWiDedinKXtdLU6s.jpg" alt="Concept Einfachheit, Bild 6 von 6, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
+      <div class="ak__frame" id="ak-calm-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-calm-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Calm">
+        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="assets/img/duene-1.jpg" alt="Concept Calm, Bild 1 von 5, Visualisierung" style="object-position:50% 60%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/duene-2.jpg" alt="Concept Calm, Bild 2 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/duene-3.jpg" alt="Concept Calm, Bild 3 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/DS9pFqgfFYqAglCs94KEi84z2E.jpg" alt="Concept Calm, Bild 4 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/yUyYdoKFQZKqKrIkwklWpPDNk.jpg" alt="Concept Calm, Bild 5 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
         <div class="ak__ui" data-ak-ui>
-          <span class="info ak__count" data-ak-count>01 / 06</span>
-          <span class="info ak__cap">Abb. 02 / Visualisierung / GRIFFNER Architektur und Design</span>
+          <span class="info ak__count" data-ak-count>01 / 05</span>
         </div>
         <div class="ak__arrows" data-ak-arrows><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
       </div>
     </div>
   </div>
 </article>
-<article class="ak" id="ak-leichtigkeit" data-ak="leichtigkeit">
+<article class="ak" id="ak-light" data-ak="light">
   <div class="ak__stage" data-ak-stage>
     <div class="ak__sticky">
       <div class="ak__title" data-ak-title>
-        <span class="info">Concept 03 / 04</span>
-        <h3 class="ak__h">Leichtigkeit.</h3>
-        <p class="ak__fuer">Für Menschen, die am liebsten draußen leben und gern Gäste haben.</p>
+        <h3 class="ak__h">Light.</h3>
+        <p class="ak__fuer">Für alle, denen weniger mehr ist.</p>
       </div>
-      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/UF5oPuAOaTho1Yzsax78ykNPTe8.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/Unpl4PriPV66mKCB4Z3z6BNiU.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/SXbkxuksx0QXTehHKkv5oNpigM.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/GKnuRBnUYGIkfnsAm8njyQ4JU.jpg" alt="" loading="lazy" decoding="async"></figure></div>
+      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="assets/img/light-strasse.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="assets/img/light-garten.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/SXbkxuksx0QXTehHKkv5oNpigM.jpg" alt="" loading="lazy" decoding="async"></figure></div>
       <div class="ak__about" data-ak-about>
-        <span class="info ak__kap" data-ak-kap>Concept 03 / Leichtigkeit / Die Antwort im Raum</span>
-        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/Unpl4PriPV66mKCB4Z3z6BNiU.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Weite</span></span> <span class="ak__w"><span>Dachüberstände</span></span> <span class="ak__w"><span>spenden</span></span> <span class="ak__w"><span>Schatten,</span></span> <span class="ak__w"><span>raumhohe</span></span> <span class="ak__w"><span>Fenster</span></span> <span class="ak__w"><span>öffnen</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>Haus</span></span> <span class="ak__w"><span>zu</span></span> <span class="ak__w"><span>Terrasse</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>Pool,</span></span> <span class="ak__w"><span>oben</span></span> <span class="ak__w"><span>läuft</span></span> <span class="ak__w"><span>eine</span></span> <span class="ak__w"><span>Dachterrasse</span></span> <span class="ak__w"><span>über</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>ganze</span></span> <span class="ak__w"><span>Breite.</span></span> <span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>Haus</span></span> <span class="ak__w"><span>für</span></span> <span class="ak__w"><span>lange</span></span> <span class="ak__w"><span>Abende,</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>sich</span></span> <span class="ak__w"><span>wie</span></span> <span class="ak__w"><span>Urlaub</span></span> <span class="ak__w"><span>anfühlt.</span></span></p>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Zwei</span></span> <span class="ak__w"><span>schmale</span></span> <span class="ak__w"><span>Dächer</span></span> <span class="ak__w"><span>wie</span></span> <span class="ak__w"><span>dünne</span></span> <span class="ak__w"><span>Platten,</span></span> <span class="ak__w"><span>heller</span></span> <span class="ak__w"><span>Stein,</span></span> <span class="ak__w"><span>Holz</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>Glas.</span></span> <span class="ak__w"><span>Reduziert</span></span> <span class="ak__w"><span>auf</span></span> <span class="ak__w"><span>das,</span></span> <span class="ak__w"><span>was</span></span> <span class="ak__w"><span>zählt,</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>oben</span></span> <span class="ak__w"><span>wartet</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>Terrasse.</span></span></p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>
-          <a class="ak__go" href="leichtigkeit.html">Concept Leichtigkeit ansehen</a>
-          <ul class="facts info ak__facts"><li>158 m²</li><li>2 Ebenen</li><li>Dachterrasse</li></ul>
+          <a class="ak__go" href="light.html">Concept Light ansehen</a>
+          <ul class="facts info ak__facts"><li>171 m²</li><li>2 Ebenen</li><li>Dachterrasse</li></ul>
         </div>
       </div>
-      <div class="ak__frame" id="ak-leichtigkeit-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-leichtigkeit-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Leichtigkeit">
-        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="https://framerusercontent.com/images/D2dvU723pCo0LPWhJQ7TszrGAZ8.jpg" alt="Concept Leichtigkeit, Bild 1 von 7, Foto" style="object-position:50% 55%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/UF5oPuAOaTho1Yzsax78ykNPTe8.jpg" alt="Concept Leichtigkeit, Bild 2 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg" alt="Concept Leichtigkeit, Bild 3 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/Unpl4PriPV66mKCB4Z3z6BNiU.jpg" alt="Concept Leichtigkeit, Bild 4 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg" alt="Concept Leichtigkeit, Bild 5 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/SXbkxuksx0QXTehHKkv5oNpigM.jpg" alt="Concept Leichtigkeit, Bild 6 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/GKnuRBnUYGIkfnsAm8njyQ4JU.jpg" alt="Concept Leichtigkeit, Bild 7 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
+      <div class="ak__frame" id="ak-light-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-light-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Light">
+        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="assets/img/light-pool.jpg" alt="Concept Light, Bild 1 von 5, Visualisierung" style="object-position:50% 56%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/light-strasse.jpg" alt="Concept Light, Bild 2 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="assets/img/light-garten.jpg" alt="Concept Light, Bild 3 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg" alt="Concept Light, Bild 4 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/SXbkxuksx0QXTehHKkv5oNpigM.jpg" alt="Concept Light, Bild 5 von 5, Visualisierung" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
         <div class="ak__ui" data-ak-ui>
-          <span class="info ak__count" data-ak-count>01 / 07</span>
-          <span class="info ak__cap">Abb. 03 / Foto, Platzhalter bis zur Visualisierung</span>
+          <span class="info ak__count" data-ak-count>01 / 05</span>
         </div>
         <div class="ak__arrows" data-ak-arrows><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
       </div>
     </div>
   </div>
 </article>
-<article class="ak" id="ak-weitblick" data-ak="weitblick">
+<article class="ak" id="ak-free" data-ak="free">
   <div class="ak__stage" data-ak-stage>
     <div class="ak__sticky">
       <div class="ak__title" data-ak-title>
-        <span class="info">Concept 04 / 04</span>
-        <h3 class="ak__h">Weitblick.</h3>
-        <p class="ak__fuer">Für Menschen, die ihre Aussicht nicht hinter Wänden verstecken wollen.</p>
+        <h3 class="ak__h">Free.</h3>
+        <p class="ak__fuer">Für alle, die sich nicht einengen lassen.</p>
       </div>
-      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/akgUOvcI77asKhnC9ditt1tvV0.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/dwSiRsZPRfR256KgbCD7stEgR3I.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/vBroLID0qE6B0yeBV2vSpP0BnII.jpg" alt="" loading="lazy" decoding="async"></figure></div>
+      <div class="ak__cards" aria-hidden="true"><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/akgUOvcI77asKhnC9ditt1tvV0.jpg" alt="" loading="lazy" decoding="async"></figure><figure class="ak__card" data-ak-card><img src="https://framerusercontent.com/images/dwSiRsZPRfR256KgbCD7stEgR3I.jpg" alt="" loading="lazy" decoding="async"></figure></div>
       <div class="ak__about" data-ak-about>
-        <span class="info ak__kap" data-ak-kap>Concept 04 / Weitblick / Die Antwort im Raum</span>
-        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Das</span></span> <span class="ak__w"><span>Obergeschoss</span></span> <span class="ak__w"><span>kragt</span></span> <span class="ak__w"><span>über</span></span> <span class="ak__w"><span>den</span></span> <span class="ak__w"><span>gläsernen</span></span> <span class="ak__w"><span>Sockel</span></span> <span class="ak__w"><span>hinaus</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>richtet</span></span> <span class="ak__w"><span>sich</span></span> <span class="ak__w"><span>mit</span></span> <span class="ak__w"><span>einer</span></span> <span class="ak__w"><span>großen</span></span> <span class="ak__w"><span>Glasfront</span></span> <span class="ak__w"><span>auf</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>Landschaft.</span></span> <span class="ak__w"><span>Unten</span></span> <span class="ak__w"><span>öffnet</span></span> <span class="ak__w"><span>sich</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>Wohnen</span></span> <span class="ak__w"><span>zum</span></span> <span class="ak__w"><span>Garten,</span></span> <span class="ak__w"><span>oben</span></span> <span class="ak__w"><span>gehört</span></span> <span class="ak__w"><span>der</span></span> <span class="ak__w"><span>Raum</span></span> <span class="ak__w"><span>dem</span></span> <span class="ak__w"><span>Blick.</span></span></p>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="" loading="lazy" decoding="async"></span><span class="ak__w"><span>Ein</span></span> <span class="ak__w"><span>Obergeschoss,</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>weit</span></span> <span class="ak__w"><span>über</span></span> <span class="ak__w"><span>das</span></span> <span class="ak__w"><span>gläserne</span></span> <span class="ak__w"><span>Erdgeschoss</span></span> <span class="ak__w"><span>ragt,</span></span> <span class="ak__w"><span>und</span></span> <span class="ak__w"><span>eine</span></span> <span class="ak__w"><span>Giebelfront,</span></span> <span class="ak__w"><span>die</span></span> <span class="ak__w"><span>sich</span></span> <span class="ak__w"><span>ganz</span></span> <span class="ak__w"><span>öffnet.</span></span> <span class="ak__w"><span>Viel</span></span> <span class="ak__w"><span>Raum,</span></span> <span class="ak__w"><span>viel</span></span> <span class="ak__w"><span>Licht,</span></span> <span class="ak__w"><span>viel</span></span> <span class="ak__w"><span>Freiheit.</span></span></p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>
-          <a class="ak__go" href="weitblick.html">Concept Weitblick ansehen</a>
+          <a class="ak__go" href="free.html">Concept Free ansehen</a>
           <ul class="facts info ak__facts"><li>185 m²</li><li>2 Ebenen</li><li>Auskragung</li></ul>
         </div>
       </div>
-      <div class="ak__frame" id="ak-weitblick-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-weitblick-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Weitblick">
-        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="https://framerusercontent.com/images/rUtKW4GqlLLBQmqVXILK5afEZGI.jpg" alt="Concept Weitblick, Bild 1 von 7, Foto" style="object-position:50% 50%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg" alt="Concept Weitblick, Bild 2 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg" alt="Concept Weitblick, Bild 3 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="Concept Weitblick, Bild 4 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/akgUOvcI77asKhnC9ditt1tvV0.jpg" alt="Concept Weitblick, Bild 5 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/dwSiRsZPRfR256KgbCD7stEgR3I.jpg" alt="Concept Weitblick, Bild 6 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/vBroLID0qE6B0yeBV2vSpP0BnII.jpg" alt="Concept Weitblick, Bild 7 von 7, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
+      <div class="ak__frame" id="ak-free-frame" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="ak-free-frame" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept Free">
+        <div class="ak__slides" data-ak-slides><div class="ak__slide" data-ak-slide><img src="https://framerusercontent.com/images/rUtKW4GqlLLBQmqVXILK5afEZGI.jpg" alt="Concept Free, Bild 1 von 6, Foto" style="object-position:50% 50%" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg" alt="Concept Free, Bild 2 von 6, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg" alt="Concept Free, Bild 3 von 6, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/S5wq8LaRxuE8KWfr8X7uLremE.jpg" alt="Concept Free, Bild 4 von 6, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/akgUOvcI77asKhnC9ditt1tvV0.jpg" alt="Concept Free, Bild 5 von 6, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div><div class="ak__slide" data-ak-slide aria-hidden="true"><img src="https://framerusercontent.com/images/dwSiRsZPRfR256KgbCD7stEgR3I.jpg" alt="Concept Free, Bild 6 von 6, Foto" style="object-position:50% 50%" loading="lazy" decoding="async"></div></div>
         <div class="ak__ui" data-ak-ui>
-          <span class="info ak__count" data-ak-count>01 / 07</span>
-          <span class="info ak__cap">Abb. 04 / Foto, Platzhalter bis zur Visualisierung</span>
+          <span class="info ak__count" data-ak-count>01 / 06</span>
         </div>
         <div class="ak__arrows" data-ak-arrows><button type="button" class="ak__arrow" data-ak-prev aria-label="Vorheriges Bild" tabindex="-1">←</button><button type="button" class="ak__arrow" data-ak-next aria-label="Nächstes Bild" tabindex="-1">→</button></div>
       </div>
@@ -281,9 +257,8 @@
           <div class="sammlung__labs" data-sm-labs></div>
           <div class="sammlung__head">
             <div class="sammlung__intro">
-              <span class="info">Concepts / Stand 06.11.2026</span>
-              <h2 class="h-xl">Die Sammlung wächst.</h2>
-              <p class="txt">Es gibt mehr Lebensgefühle als Häuser. Darum entstehen laufend neue Concepts. Schau wieder vorbei.</p>
+              <h2 class="h-xl" data-f="headline">Die Sammlung wächst.</h2>
+              <p class="txt" data-f="text">Es gibt mehr Lebensgefühle als Häuser. Darum entstehen laufend neue Concepts. Schau wieder vorbei.</p>
             </div>
             <div class="sammlung__cnt" aria-live="off"><span data-sm-cnt>04</span><span class="info">Concepts</span></div>
           </div>
@@ -294,9 +269,8 @@
     </section>
 
     <!-- 04 DEIN WEG. Sechs Schritte fahren seitlich durch, während du scrollst. Jeder Schritt ist ein kleines Arbeitsmodell in 3D (js/weg.js). -->
-    <section id="k-weg" class="wg" data-room="k-weg">
+    <section id="k-weg" class="wg" data-room="k-weg" hidden>
       <div class="wrap pad-t">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 04 / Dein Weg</span><span class="info">Sechs Schritte</span></div>
         <div class="g12">
           <h2 class="h-xl c-1-8" data-reveal="0">Dein Weg zum Haus.</h2>
           <p class="txt c-9-4 al-end" data-reveal="120">Vom ersten Gespräch bis zum Schlüssel bleibt dein Haus bei uns. Geplant, gefertigt und aufgestellt von Menschen, die Holz verstehen.</p>
@@ -313,10 +287,9 @@
     <!-- 06 EINZUG. Film mit Untertiteln zur Zeit -->
     <section id="k-einzug" class="einzug" data-room="k-einzug">
       <div class="wrap pad-y">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 05 / Einzug</span></div>
         <div class="einzug__body">
           <div class="einzug__left">
-            <h2 class="h-xl" data-reveal="0">Und dann wohnst du.</h2>
+            <h2 class="h-xl" data-reveal="0" data-f="headline">Und dann wohnst du.</h2>
             <p class="einzug__cap" data-f-cap aria-live="polite">Ankommen.</p>
             <ol class="einzug__list" data-f-list></ol>
             <div class="einzug__nav" data-f-nav>
@@ -324,7 +297,7 @@
               <span class="info einzug__now" data-f-now aria-live="polite">01 / 05 Ankommen</span>
               <button type="button" class="einzug__arrow" data-f-next aria-label="Nächster Moment">→</button>
             </div>
-            <p class="txt einzug__txt" data-reveal="0">So kann sich Concept Stille anfühlen. Dreißig Sekunden zwischen Ankommen und Dableiben.</p>
+            <p class="txt einzug__txt" data-reveal="0" data-f="text">So kann sich Concept Bold anfühlen. Dreißig Sekunden zwischen Ankommen und Dableiben.</p>
           </div>
           <div class="film" id="k-film" data-f data-dock="edge" data-dock-x=".72" data-dock-trigger="k-film">
             <video data-f-video muted playsinline loop preload="metadata" poster="assets/video/wald-film.jpg">
@@ -333,7 +306,7 @@
             <div class="film__shade" aria-hidden="true"></div>
             <button type="button" class="film__btn info" data-f-btn>Pause</button>
             <div class="film__bar" aria-hidden="true"><i data-f-bar></i></div>
-            <span class="tag">Concept Stille / Visualisierung</span>
+            <span class="tag" data-f="bildtext">Concept Bold / Visualisierung</span>
           </div>
         </div>
       </div>

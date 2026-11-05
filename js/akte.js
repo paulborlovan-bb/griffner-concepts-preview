@@ -224,7 +224,7 @@ function akt(el, mouse) {
       if (g > .97 && q < .02) delete fr.dataset.dockHide; else fr.dataset.dockHide = '1';
 
       /* Satz: Kennzeile, Wörter von unten aus der Zeile, Linie, Aufruf */
-      kap.style.opacity = S(u, T.words[0] - .04, T.words[0] + .18).toFixed(3);
+      if (kap) kap.style.opacity = S(u, T.words[0] - .04, T.words[0] + .18).toFixed(3);
       const n = words.length, [wa, wb] = T.words, wd = .14;
       words.forEach((w, i) => {
         const a = wa + (wb - wa - wd) * i / Math.max(1, n - 1);

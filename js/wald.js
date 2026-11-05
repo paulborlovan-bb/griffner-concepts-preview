@@ -1,5 +1,5 @@
-/* Seite eines Concepts (stille.html, einfachheit.html, leichtigkeit.html, weitblick.html, erzeugt von tools/pages.mjs).
-   Ankommen, Eckdaten, Die Idee, Film oder Bildband, Raum und Licht, Grundriss (nur Stille), Nächstes Concept, Kontakt.
+/* Seite eines Concepts (bold.html, calm.html, light.html, free.html, erzeugt von tools/pages.mjs).
+   Ankommen, Eckdaten, Die Idee, Film oder Bildband, Raum und Licht, Grundriss (Bold, Calm, Light), Nächstes Concept, Kontakt.
    Welches Concept, steht als data-concept an jeder Sektion. Header, Menü und Footer kommen aus chrome.js. */
 import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
 import { CONCEPTS } from '../data/content.js';
@@ -60,12 +60,12 @@ function initFilm() {
   } });
 }
 
-/* Raum und Licht: jedes Bild öffnet sich einmal von unten, danach zieht es mit eigenem Tempo (data-sp), so wirkt die Doppelseite tief */
+/* Raum und Licht: jedes Bild öffnet sich einmal von unten und zieht dann leicht nach (Parallaxe im Bild) */
 function initLicht() {
-  const figs = $$('[data-wl]').map(f => ({ f, box: $('.wl__box', f), im: $('img', f), cap: $('figcaption', f), sp: parseFloat(f.dataset.sp) || 1, k: 0 }));
+  const figs = $$('[data-wl]').map(f => ({ f, box: $('.wl__box', f), im: $('img', f), k: 0 }));
   if (reduce) return;
   loop.add({ tick() {
-    const vh = innerHeight, narrow = innerWidth < 820;
+    const vh = innerHeight;
     figs.forEach(o => {
       const r = o.box.getBoundingClientRect();
       if (r.top > vh * 1.1 || r.bottom < -vh * .1) return;
@@ -73,9 +73,7 @@ function initLicht() {
       o.k = Math.max(o.k, ease(clamp((vh - r.top) / (vh * .55))));
       const c = clamp((r.top + r.height / 2) / vh) - .5;
       o.box.style.clipPath = o.k < .999 ? `inset(${((1 - o.k) * 100).toFixed(2)}% 0 0 0)` : '';
-      o.im.style.transform = `translate3d(0,${(c * 9 * o.sp).toFixed(2)}%,0) scale(${lerp(1.14, 1, o.k).toFixed(4)})`;
-      o.f.style.transform = narrow ? '' : `translate3d(0,${(c * -40 * (o.sp - 1)).toFixed(1)}px,0)`;
-      o.cap.style.opacity = o.k.toFixed(3);
+      o.im.style.transform = `translate3d(0,${(c * 9).toFixed(2)}%,0) scale(${lerp(1.14, 1, o.k).toFixed(4)})`;
     });
   } });
 }

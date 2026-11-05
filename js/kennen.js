@@ -12,7 +12,7 @@ export function initKennen() {
   initBau();
   QUESTIONS.forEach((q, qi) => {
     const fs = h('fieldset', { 'data-reveal': String(qi * 100) });
-    fs.innerHTML = `<legend><span class="info">Frage ${qi + 1} / ${q.hint}</span><span class="ask__n">${q.label}</span></legend>`;
+    fs.innerHTML = `<legend><span class="ask__n">${q.label}</span></legend>`;
     const chips = h('div', { class: 'chips' });
     q.opts.forEach(([v, l]) => {
       const b = h('button', { type: 'button', class: 'chip', 'data-k': q.key, 'data-v': v, 'aria-pressed': 'false' }, l);

@@ -1,18 +1,17 @@
-/* GRUNDRISS IN 3D (Seite Wald). Die echten CAD Grundrisse als Modell: ziehen zum Drehen, dazu ein Knopf für das ganze Haus.
+/* GRUNDRISS IN 3D (Seiten der Concepts, data-p3-house wählt das Haus). Die echten CAD Grundrisse als Modell: ziehen zum Drehen, dazu ein Knopf für das ganze Haus.
    Wände: die gefüllten Wandflächen der Pläne (Klasse w), hochgezogen. Boden: die Planzeichnung selbst.
    Möbel: einfache Körper an den Stellen der weißen Möbelflächen im Plan (Klasse k). Im Carport stehen die zwei Autos aus dem Plan in 3D.
    Ganzes Haus: das Obergeschoß setzt sich auf das Erdgeschoß, so wie die beiden Pläne übereinander liegen (gleiches Koordinatensystem).
    Dazwischen eine dunkle Decke, oben der dunkle Rahmen aus dem Obergeschoßplan (Seiten, Brüstung zum Garten) und das Dach.
-   Pläne: assets/img/plan-eg.svg und plan-og.svg, in Punkt, 1 m = 28,35 pt, Norden oben, Garten im Süden (+z). */
+   Pläne: SVG im Bildordner (tools/plan.mjs), in Punkt, 1 m = 28,35 pt, Norden oben. */
 import { $, $$, E, clamp, lerp, loop, reduce, through } from './core.js';
-import { PLAN_3D } from '../data/content.js';
 
 const K = 28.35, WALL = 2.35, FRAME = .32, GAP = 2.6;
-/* Ganzes Haus: Geschoßhöhen in m, Deckenstärke, Brüstung; Decke und Dach über Haus und Rahmen (pt) */
-const EGH = 2.9, OGH = 2.75, SLAB = .34, RAIL = 1.05, SLAB_PT = [321, 117, 761, 445];
+/* Ganzes Haus: Geschoßhöhen in m, Deckenstärke, Brüstung */
+const EGH = 2.9, OGH = 2.75, SLAB = .34, RAIL = 1.05;
 const COL = { w: 0xF7F6F3, s: 0xCFC3B3, a: 0x5c5b57 }, DARK = 0x3a3936;
-/* Möbel: x, y, Breite, Tiefe in pt (aus dem Plan), Höhe in m, Farbe (w weiß, s Sand, a Anthrazit), rund */
-const FURN = {
+/* Concept Light, Möbel von Hand: x, y, Breite, Tiefe in pt (aus dem Plan), Höhe in m, Farbe (w weiß, s Sand, a Anthrazit), rund */
+const FURN_LIGHT = {
   eg: [
     [350, 256, 140, 17, .9, 'a'], [382, 299, 104, 28, .9, 'a'],
     [396, 367, 71, 34, .74, 'a'],
@@ -36,13 +35,32 @@ const FURN = {
     [420, 151, 14, 12, .42, 'w'], [547, 151, 15, 12, .42, 'w'], [412, 138, 6, 62, 1.1, 'w'], [537, 138, 6, 37, 1.1, 'w'], [594, 142, 13, 31, .86, 'w']
   ]
 };
-/* Autos im Carport, aus dem Plan: Mitte x, y, Länge, Breite in pt, Lackfarbe. Schnauze nach Süden, zum Garten. */
-const CARS = [[285.5, 155.5, 133, 51, 0xEDEBE6], [360, 157, 138, 54, 0x4a4a47]];
-/* Ausschnitt je Plan in pt; im Obergeschoß ist alles außerhalb des Hauskörpers der Rahmen über der Terrasse */
-const FLOORS = [
-  { key: 'eg', src: 'assets/img/plan-eg.svg', crop: [209, 68, 806, 463] },
-  { key: 'og', src: 'assets/img/plan-og.svg', crop: [293, 99, 789, 473], body: [397, 123, 725, 369] }
-];
+/* Die echten Grundrisse je Concept (CAD PDF, tools/plan.mjs). Je Geschoß: Plan, Ausschnitt in pt, Hauskörper (body: alles außerhalb ist
+   im Obergeschoß der Rahmen), aux (Mauern außerhalb des Hauses, wachsen im ganzen Haus nicht mit), Decke bzw. Dach (slab, pt),
+   off (Versatz in pt auf das Erdgeschoß, wenn die Pläne nicht deckungsgleich liegen), Autos (Mitte x, y, Länge, Breite in pt, Lack, Richtung
+   der Schnauze: s Süden, w Westen), Raumnamen. furn: Möbel von Hand, sonst aus den weißen Möbelflächen des Plans. */
+const HOUSES = {
+  light: [
+    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-eg.svg', crop: [209, 68, 806, 463], aux: b => b[0] < 330 || b[0] > 760, slab: [321, 117, 761, 445],
+      furn: FURN_LIGHT.eg, cars: [[285.5, 155.5, 133, 51, 0xEDEBE6, 's'], [360, 157, 138, 54, 0x4a4a47, 's']],
+      labels: [['Kochen', 436, 286], ['Essen', 431, 351], ['Wohnen', 686, 322], ['Büro', 650, 196], ['Eingang', 590, 152], ['Terrasse', 648, 434]] },
+    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-og.svg', crop: [293, 99, 789, 473], body: [397, 123, 725, 369], slab: [321, 117, 761, 445],
+      furn: FURN_LIGHT.og, labels: [['Eltern', 452, 342], ['Kind', 668, 150], ['Kind', 668, 340], ['Galerie', 557, 300], ['Bad', 476, 186]] }
+  ],
+  bold: [
+    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-bold-eg.svg', crop: [135, 122, 732, 450], house: [312, 150, 706, 392], slab: [156, 129, 700, 442],
+      cars: [[208.3, 241.4, 130, 49, 0xEDEBE6, 's'], [274.9, 241.4, 130, 49, 0x4a4a47, 's']],
+      labels: [['Carport', 241.6, 241.4], ['Abstellraum', 241.6, 352.3], ['Eingang', 412.2, 207.3], ['WC', 367.4, 249.9], ['Zimmer', 382.3, 326.7], ['Technik', 542.2, 198.8], ['Kochen', 629.7, 220.1], ['Essen', 629.7, 331], ['Wohnen', 510.3, 322.4], ['Terrasse', 561.4, 416.2]] },
+    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-bold-og.svg', crop: [127, 148, 724, 474], body: [313, 180, 707, 412], slab: [133, 154, 718, 467], off: [0, -25],
+      labels: [['Bad', 378.6, 224.8], ['Kind', 382.9, 348.4], ['Kind', 506.5, 348.4], ['Eltern', 655.8, 352.7], ['Bad', 638.7, 224.8], ['Ankleide', 660, 288.7], ['Terrasse', 233.6, 310]] }
+  ],
+  calm: [
+    { key: 'eg', cap: 'Eine Ebene', src: 'assets/img/plan-calm-eg.svg', crop: [322, 134, 966, 700], house: [326, 385, 910, 645],
+      cars: [[671.6, 196.1, 133.4, 50.6, 0xEDEBE6, 'w'], [671.6, 278.9, 138, 55.2, 0x4a4a47, 'w']],
+      labels: [['Carport', 678.5, 239.8], ['Eingang', 680.8, 437.6], ['Kochen', 814.2, 433], ['Essen', 763.6, 571], ['Wohnen', 690, 575.6], ['Terrasse', 869.4, 571], ['Eltern', 372.6, 575.6], ['Ankleide', 372.6, 497.4], ['Bad', 404.8, 428.4], ['Dusche', 501.4, 433], ['Technik', 565.8, 433], ['Kind', 480.7, 571], ['Kind', 588.8, 571]] }
+  ]
+};
+let FLOORS = [];
 
 let M, T, S, D, k = reduce ? 1 : 0, started = false, az = 0, el = 0, user = [0, 0], touched = false, narrow = null;
 let hm = 0, hmT = 0, lt = 0, PL = null, HS = null, MATD = null;
@@ -52,6 +70,9 @@ const sm = x => x * x * (3 - 2 * x);
 export function initPlan3d() {
   D = { st: $('[data-p3]'), gl: $('[data-p3-gl]'), labs: $('[data-p3-labs]'), hint: $('[data-p3-hint]'), tag: $('[data-p3-tag]'), tabs: $$('[data-p3-mode]') };
   if (!D.st) return;
+  FLOORS = (HOUSES[D.st.dataset.p3House] || HOUSES.light).map(f => ({ ...f }));
+  /* Nur eine Ebene: kein Umschalten zum ganzen Haus */
+  if (FLOORS.length < 2) { const tb = D.tabs[0] && D.tabs[0].closest('.tabs'); if (tb) tb.style.display = 'none'; }
   /* Aufbau beim ersten Hinsehen: erst die Wände, dann die Möbel, dann die Namen */
   new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting || started) return; started = true;
@@ -113,7 +134,8 @@ async function boot() {
       const b = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
       if (Math.min(b[2] - b[0], b[3] - b[1]) < 1.5 || (b[2] - b[0]) * (b[3] - b[1]) < 20) continue;
       const fr = !!f.body && (b[0] < f.body[0] || b[1] < f.body[1] || b[2] > f.body[2] || b[3] > f.body[3]);
-      const aux = f.key === 'eg' && (b[0] < 330 || b[0] > 760);
+      const cxw = (b[0] + b[2]) / 2, cyw = (b[1] + b[3]) / 2;
+      const aux = f.aux ? f.aux(b) : !!f.house && (cxw < f.house[0] || cxw > f.house[2] || cyw < f.house[1] || cyw > f.house[3]);
       const sh = new T.Shape(pts.map(([x, y]) => new T.Vector2(lx(x), -lz(y))));
       const geo = new T.ExtrudeGeometry(sh, { depth: fr ? FRAME : WALL, bevelEnabled: false }); geo.rotateX(-Math.PI / 2);
       const o = solid(geo, fr ? f.fm : MAT.wall, new T.EdgesGeometry(geo, 25), LINE); g.add(o);
@@ -121,25 +143,45 @@ async function boot() {
       f.walls.push({ o, fr, hgt, d: clamp(((b[0] + b[2]) / 2 - x0) / (x1 - x0) * .7 + ((b[1] + b[3]) / 2 - y0) / (y1 - y0) * .3) });
     }
     /* Möbel */
-    f.furn = FURN[f.key].map(([x, y, w, d, ht, c, rnd]) => {
+    f.furn = (f.furn || autoFurn(svg, f)).map(([x, y, w, d, ht, c, rnd]) => {
       const o = solid(rnd ? cyl : box, MAT[c], c === 'a' ? null : (rnd ? cylE : boxE), LINE2);
       o.scale.set(w / K, ht, d / K); o.position.set(lx(x + w / 2), 0, lz(y + d / 2)); o.userData.h = ht; g.add(o);
       return { o, h: ht, d: clamp((x - x0) / (x1 - x0)) };
     });
     /* Autos im Carport */
-    f.cars = f.key === 'eg' ? CARS.map(([x, y, l, w, c], i) => { const o = car(l / K, w / K, c); o.position.set(lx(x), 0, lz(y)); g.add(o); return { o, d: .1 + i * .06 }; }) : [];
+    f.cars = (f.cars || []).map(([x, y, l, w, c, dir], i) => { const o = car(l / K, w / K, c); if (dir === 'w') o.rotation.y = -Math.PI / 2; o.position.set(lx(x), 0, lz(y)); g.add(o); return { o, d: .1 + i * .06 }; });
     /* Ganzes Haus: Decke über dem Erdgeschoß (am Erdgeschoß), Dach über dem Obergeschoß */
-    const [sx0, sy0, sx1, sy1] = SLAB_PT, slab = solid(box, MAT.dark, boxE, LINED);
+    const [sx0, sy0, sx1, sy1] = f.slab || f.crop, slab = solid(box, MAT.dark, boxE, LINED);
     slab.scale.set((sx1 - sx0) / K, SLAB, (sy1 - sy0) / K); slab.position.set(lx((sx0 + sx1) / 2), f.key === 'eg' ? EGH : OGH, lz((sy0 + sy1) / 2));
     slab.visible = false; g.add(slab); f.slab = slab;
     /* Namen auf dem Boden, dazu der Name der Ebene vor dem Sockel */
-    const P = PLAN_3D[f.key];
-    f.labs = P.labels.map(([t, x, y]) => ({ el: lab(t, 'p3__lab'), x: lx(x), z: lz(y) }));
-    f.cap = { el: lab(P.cap, 'p3__cap'), x: 0, z: f.d / 2 };
+    f.labs = (f.labels || []).map(([t, x, y]) => ({ el: lab(t, 'p3__lab'), x: lx(x), z: lz(y) }));
+    f.cap = { el: lab(f.cap, 'p3__cap'), x: 0, z: f.d / 2 };
     f.fi = fi;
   }));
   layout();
   loop.poke();
+}
+
+/* Möbel aus dem Plan: jede weiße Möbelfläche (Klasse k) innerhalb des Hauses wird ein einfacher Körper, die Höhe nach Größe und Form.
+   Klein (Stühle, Hocker), groß und flach (Betten, Sofas), lang und schmal (Küchenzeilen, Schränke), sonst Tische. */
+function autoFurn(svg, f) {
+  const H = f.body || f.house || f.crop, out = [];
+  for (const m of svg.matchAll(/<path class="k"[^>]*? d="([^"]+)"/g)) {
+    const n = (m[1].match(/-?[\d.]+/g) || []).map(Number);
+    let b = [1e9, 1e9, -1e9, -1e9];
+    for (let i = 0; i + 1 < n.length; i += 2) b = [Math.min(b[0], n[i]), Math.min(b[1], n[i + 1]), Math.max(b[2], n[i]), Math.max(b[3], n[i + 1])];
+    const w = b[2] - b[0], d = b[3] - b[1], cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    if (Math.max(w, d) < 6 || cx < H[0] || cx > H[2] || cy < H[1] || cy > H[3]) continue;
+    const lo = Math.min(w, d), hi = Math.max(w, d);
+    let ht = .74, c = 'a';
+    if (hi < 22) { ht = .46; c = 's'; }
+    else if (lo > 34 && w * d > 1400) { ht = .45; c = 's'; }
+    else if (lo < 24 && hi > 40) { ht = .9; c = 'a'; }
+    else if (lo < 30) { ht = .42; c = 's'; }
+    out.push([b[0], b[1], w, d, ht, c]);
+  }
+  return out;
 }
 
 /* Ein Auto als einfaches, echtes Modell: Karosserie im Profil, Glas, Dach, vier Räder. Länge entlang z, Schnauze nach +z. */
@@ -189,20 +231,25 @@ function tex(svg, f) {
 /* Breit: beide Ebenen nebeneinander. Schmal: Erdgeschoß vorne, Obergeschoß dahinter.
    Ganzes Haus: Erdgeschoß in der Mitte, Obergeschoß genau darüber, versetzt wie in den Plänen. */
 function layout() {
-  if (!FLOORS[0].g) return;
+  if (!FLOORS[0] || !FLOORS[0].g) return;
   const w = D.gl.clientWidth || 1, h = D.gl.clientHeight || 1;
   narrow = w / h < 1.05;
   const [a, b] = FLOORS;
+  const box = (x0, x1, y0, y1, z0, z1) => { const o = []; [x0, x1].forEach(x => [y0, y1].forEach(y => [z0, z1].forEach(z => o.push([x, y, z])))); return o; };
+  /* Nur eine Ebene: das Geschoß in der Mitte, kein ganzes Haus */
+  if (!b) {
+    PL = HS = { a: [0, 0], C: [0, .8, 0], BB: box(-a.w / 2, a.w / 2, -.3, WALL, -a.d / 2, a.d / 2) };
+    return;
+  }
   let pa, pb;
   if (!narrow) { const tot = a.w + GAP + b.w; pa = [-tot / 2 + a.w / 2, 0]; pb = [tot / 2 - b.w / 2, -(a.d - b.d) / 2]; }
   /* Telefon: mehr Abstand, weil die Kamera flacher von der Seite schaut und das vordere Geschoß sonst das hintere verdeckt */
   else { const tot = a.d + GAP * 2 + b.d; pa = [0, tot / 2 - a.d / 2]; pb = [0, -tot / 2 + b.d / 2]; }
   let mn = [1e9, 1e9], mx = [-1e9, -1e9];
   [[a, pa], [b, pb]].forEach(([f, p]) => { mn = [Math.min(mn[0], p[0] - f.w / 2), Math.min(mn[1], p[1] - f.d / 2)]; mx = [Math.max(mx[0], p[0] + f.w / 2), Math.max(mx[1], p[1] + f.d / 2)]; });
-  const box = (x0, x1, y0, y1, z0, z1) => { const o = []; [x0, x1].forEach(x => [y0, y1].forEach(y => [z0, z1].forEach(z => o.push([x, y, z])))); return o; };
   PL = { a: pa, b: pb, C: [(mn[0] + mx[0]) / 2, .8, (mn[1] + mx[1]) / 2], BB: box(mn[0], mx[0], -.3, WALL, mn[1], mx[1]) };
-  const top = EGH + SLAB + OGH + SLAB;
-  HS = { a: [0, 0], b: [(b.c[0] - a.c[0]) / K, (b.c[1] - a.c[1]) / K], C: [0, 2.4, 0], BB: box(-a.w / 2, a.w / 2, -.3, top, -a.d / 2, a.d / 2) };
+  const top = EGH + SLAB + OGH + SLAB, off = b.off || [0, 0];
+  HS = { a: [0, 0], b: [(b.c[0] + off[0] - a.c[0]) / K, (b.c[1] + off[1] - a.c[1]) / K], C: [0, 2.4, 0], BB: box(-a.w / 2, a.w / 2, -.3, top, -a.d / 2, a.d / 2) };
 }
 
 /* Kameraabstand, bei dem das ganze Modell im Bild bleibt, für jede Drehung neu. Gestapelt (Telefon) mehr Luft unten für Geschoßname und Hinweis. */
@@ -242,10 +289,11 @@ function tick() {
   const now = performance.now(), dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
   if (hm !== hmT) { hm = hmT > hm ? Math.min(hmT, hm + dt / 1.8) : Math.max(hmT, hm - dt / 1.8); loop.poke(); }
   const m = sm(hm), [a, b] = FLOORS;
+  if (!a.g) return;
   /* Lage der Geschoße: das Obergeschoß hebt ab, schwebt hinüber und setzt sich auf die Decke */
   const mv = E(m, .12, .8), arc = Math.sin(Math.PI * mv) * 2.4;
   a.g.position.set(lerp(PL.a[0], HS.a[0], E(m, 0, .7)), 0, lerp(PL.a[1], HS.a[1], E(m, 0, .7)));
-  b.g.position.set(lerp(PL.b[0], HS.b[0], mv), lerp(0, EGH + SLAB, mv) + arc, lerp(PL.b[1], HS.b[1], mv));
+  if (b) b.g.position.set(lerp(PL.b[0], HS.b[0], mv), lerp(0, EGH + SLAB, mv) + arc, lerp(PL.b[1], HS.b[1], mv));
   const C = PL.C.map((v, i) => lerp(v, HS.C[i], m)), BB = PL.BB.map((p, i) => p.map((v, j) => lerp(v, HS.BB[i][j], m)));
   /* leichte Drehung beim Scrollen, dazu was du selbst gedreht hast; das ganze Haus von flacher und mehr von der Seite */
   const t = through(D.st, 1, -.2);

@@ -4,14 +4,16 @@
 /* Fotos von griffner.com (Framer CMS, Projekte) als Platzhalter, bis es Visualisierungen der Concepts gibt */
 const WEB = 'https://framerusercontent.com/images/';
 
-/* Vier Lebensgefühle, vier Concepts. Texte "Für Menschen" und "Die Antwort im Raum" vom Kunden (2026-11-05).
-   form: Arbeitsmodell in house3d.js CONCEPTS. page: Inhalte der eigenen Seite (stille.html usw., erzeugt von tools/pages.mjs). */
+/* Vier Lebensgefühle, vier Concepts. Namen und Texte vom Kunden (2026-11-05, Runde 10): Bold (vorher Stille, Wald),
+   Calm (vorher Einfachheit, Düne), Light (vorher Leichtigkeit), Free (vorher Weitblick).
+   form: Arbeitsmodell in house3d.js CONCEPTS. page: Inhalte der eigenen Seite (bold.html usw., erzeugt von tools/pages.mjs).
+   page.plan: Schlüssel in js/plan3d.js HOUSES (echte Grundrisse), ohne plan kein Kapitel Grundriss. */
 export const CONCEPTS = [
   {
-    id: 'stille', nr: '01', name: 'Stille', word: 'STILLE.', form: 'wald',
-    fuer: 'Für Menschen, die nach einem vollen Tag ankommen und still werden wollen.',
-    text: 'Ein ruhiger, dunkler Baukörper, der sich zwischen die Bäume stellt. Holzlamellen filtern Licht und Blicke, das auskragende Obergeschoss schützt. Innen ist es warm, außen bleibt die Welt draußen.',
-    facts: ['171 m²', '2 Ebenen', 'Flachdach'],
+    id: 'bold', nr: '01', name: 'Bold', word: 'BOLD.', form: 'wald',
+    fuer: 'Für alle, die klare Linien lieben und Haltung zeigen.',
+    text: 'Eine dunkle Fassade, ein Obergeschoss, das weit auskragt, und warmes Holz in jedem Rücksprung. Ein Haus, das man nicht übersieht.',
+    facts: ['2 Ebenen', 'Flachdach', 'Carport'],
     img: 'assets/img/wald-garten-ecke-1800.jpg', pos: '50% 62%',
     cap: 'Abb. 01 / Visualisierung / GRIFFNER Architektur und Design',
     views: [
@@ -20,27 +22,25 @@ export const CONCEPTS = [
       { img: 'assets/img/wald-fenster.jpg', cap: 'Draußen.' }
     ],
     fits: { who: ['allein', 'zwei'], live: ['arbeiten'], wichtig: ['rueckzug'] },
-    m2: 171, href: 'stille.html',
+    href: 'bold.html',
     page: {
-      hero: { img: 'assets/img/wald-garten.jpg', alt: 'Concept Stille, zweigeschoßiges Haus mit Flachdach zwischen Bäumen, Visualisierung', top: 'Zwei Ebenen mit Auskragung / Visualisierung' },
-      zahlenH: 'Oben Schutz. Unten Wald.',
-      zahlen: [['171', 'm²', 'Wohnfläche gesamt', 1], ['101,44', 'm²', 'Erdgeschoß'], ['69,55', 'm²', 'Obergeschoß'], ['2', '', 'Ebenen', 1], ['Flach', '', 'Dachform']],
-      fig: { img: 'assets/img/wald-strasse.jpg', alt: 'Concept Stille von der Zufahrt, Visualisierung', cap: 'Abb. 02 / Ankommen / Visualisierung' },
-      film: { video: 'assets/video/wald-pause.mp4', poster: 'assets/video/wald-pause.jpg', label: 'Kurzer Film, Concept Stille zwischen Bäumen', cap: 'Film / Visualisierung' },
+      hero: { img: 'assets/img/wald-garten.jpg', alt: 'Concept Bold, zweigeschoßiges Haus mit dunkler Fassade und auskragendem Obergeschoss, Visualisierung' },
+      zahlenH: 'Oben weit. Unten warm.',
+      zahlen: [['2', '', 'Ebenen', 1], ['4', '', 'Zimmer', 1], ['2', '', 'Bäder', 1], ['2', '', 'Plätze im Carport', 1], ['Flach', '', 'Dachform']],
+      fig: { img: 'assets/img/wald-strasse.jpg', alt: 'Concept Bold von der Zufahrt, Visualisierung' },
+      film: { video: 'assets/video/wald-pause.mp4', poster: 'assets/video/wald-pause.jpg', label: 'Kurzer Film, Concept Bold zwischen Bäumen', cap: 'Film / Visualisierung' },
       licht: [
-        { img: 'assets/img/wald-innen.jpg', alt: 'Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung', tag: 'Abb. 03 / Wohnen / Visualisierung', cap: 'Wohnen, Essen und Kochen in einem Raum' },
-        { img: 'assets/img/wald-essen.jpg', alt: 'Esstisch vor dem Fenster zum Wald, Visualisierung', tag: 'Abb. 04 / Essen / Visualisierung', cap: 'Der Tisch steht, wo der Wald am nächsten ist' },
-        { img: 'assets/img/wald-decke.jpg', alt: 'Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung', tag: 'Abb. 05 / Detail / Visualisierung', cap: 'Holz am Boden, Holz an der Wand' }
+        { img: 'assets/img/wald-innen.jpg', alt: 'Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung', h: 'Warm im Inneren.', p: 'Wohnen, Essen und Kochen teilen sich einen Raum. Holz am Boden und an der Wand, große Fenster holen das Grün ins Haus.' },
+        { img: 'assets/img/wald-essen.jpg', alt: 'Esstisch vor dem Fenster zum Garten, Visualisierung', h: 'Der Tisch am Fenster.', p: 'Gegessen wird dort, wo der Garten am nächsten ist. Draußen bleibt die Welt, drinnen kommst du an.' }
       ],
-      lichtSay: 'Drinnen sitzen und trotzdem im Wald sein.',
-      plan: true
+      plan: 'bold', planH: 'So wohnt Bold.', planP: 'Unten Wohnen, Kochen und ein Zimmer für alles, oben Eltern, Kinder und zwei Bäder. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
     }
   },
   {
-    id: 'einfachheit', nr: '02', name: 'Einfachheit', word: 'EINFACHHEIT.', form: 'duene', ph: true,
-    fuer: 'Für Menschen, die das Wesentliche suchen und alles auf einer Ebene wollen.',
-    text: 'Ein modernes Barnhouse: ein Satteldach, ein großer Giebel aus Glas, Holz und Stein. Alles liegt auf einer Ebene, ohne Treppen, und unter dem offenen Dach entsteht ein Raum, der nicht mehr sein will, als er ist.',
-    facts: ['142 m²', '1 Ebene', 'Satteldach'],
+    id: 'calm', nr: '02', name: 'Calm', word: 'CALM.', form: 'duene', ph: true,
+    fuer: 'Für alle, die zur Ruhe kommen wollen.',
+    text: 'Ein langes Satteldach, ein Giebel aus Glas, Holz und Stein. Und alles, was du brauchst, auf einer Ebene.',
+    facts: ['1 Ebene', 'Satteldach', 'Carport'],
     img: 'assets/img/duene-1.jpg', pos: '50% 60%',
     cap: 'Abb. 02 / Visualisierung / GRIFFNER Architektur und Design',
     views: [
@@ -48,52 +48,50 @@ export const CONCEPTS = [
       { img: 'assets/img/duene-3.jpg', cap: 'Draußen.' }
     ],
     fits: { who: ['allein', 'zwei', 'generationen'], live: ['draussen'], wichtig: ['ebene', 'offen'] },
-    m2: 142, href: 'einfachheit.html',
+    href: 'calm.html',
     page: {
-      hero: { img: 'assets/img/duene-1.jpg', alt: 'Concept Einfachheit, Haus mit Satteldach und Glasgiebel, Visualisierung', top: 'Eine Ebene unter dem Satteldach / Visualisierung' },
+      hero: { img: 'assets/img/duene-1.jpg', alt: 'Concept Calm, Haus mit langem Satteldach und Glasgiebel, Visualisierung' },
       zahlenH: 'Ein Dach. Eine Ebene.',
-      zahlen: [['142', 'm²', 'Wohnfläche gesamt', 1], ['1', '', 'Ebene', 1], ['0', '', 'Treppen', 1], ['Sattel', '', 'Dachform']],
-      fig: { img: 'assets/img/duene-2.jpg', alt: 'Concept Einfachheit, Ankommen unter dem langen Dach, Visualisierung', cap: 'Abb. 02 / Ankommen / Visualisierung' },
-      band: { img: 'assets/img/duene-3.jpg', alt: 'Concept Einfachheit von der Gartenseite, Visualisierung', cap: 'Abb. 03 / Draußen / Visualisierung' },
+      zahlen: [['1', '', 'Ebene', 1], ['0', '', 'Treppen', 1], ['3', '', 'Zimmer', 1], ['2', '', 'Plätze im Carport', 1], ['Sattel', '', 'Dachform']],
+      fig: { img: 'assets/img/duene-2.jpg', alt: 'Concept Calm, Ankommen unter dem langen Dach, Visualisierung' },
+      band: { img: 'assets/img/duene-3.jpg', alt: 'Concept Calm von der Gartenseite, Visualisierung' },
       licht: [
-        { img: WEB + 'DS9pFqgfFYqAglCs94KEi84z2E.jpg', alt: 'Essplatz unter einer Holzdecke, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Ein Raum unter dem offenen Dach' },
-        { img: WEB + 'yUyYdoKFQZKqKrIkwklWpPDNk.jpg', alt: 'Wohnraum mit Holz und Blick ins Grüne, Foto', tag: 'Abb. 05 / Blick / Foto, Platzhalter', cap: 'Glas im Giebel, Licht bis in die Tiefe' },
-        { img: WEB + 'A4JqmOFGCgPWiDedinKXtdLU6s.jpg', alt: 'Holzwand mit Sessel, Foto', tag: 'Abb. 06 / Detail / Foto, Platzhalter', cap: 'Holz und Stein, sonst nichts' }
+        { img: WEB + 'DS9pFqgfFYqAglCs94KEi84z2E.jpg', alt: 'Essplatz unter einer Holzdecke, Foto, Platzhalter', h: 'Ein Raum unter dem Dach.', p: 'Unter dem offenen Satteldach liegen Wohnen, Essen und Kochen beisammen. Kein Flur, keine Treppe, nur Raum.' },
+        { img: WEB + 'yUyYdoKFQZKqKrIkwklWpPDNk.jpg', alt: 'Wohnraum mit Holz und Blick ins Grüne, Foto, Platzhalter', h: 'Licht bis in die Tiefe.', p: 'Der gläserne Giebel holt das Licht weit ins Haus. Holz und Stein, sonst braucht es nichts.' }
       ],
-      lichtSay: 'Ein Raum, der nicht mehr sein will, als er ist.'
+      plan: 'calm', planH: 'So wohnt Calm.', planP: 'Alles auf einer Ebene: vorne Wohnen, Essen und Kochen zur Terrasse, hinten Eltern, Kinder und das Bad. Zieh am Modell und sieh dich um.'
     }
   },
   {
-    id: 'leichtigkeit', nr: '03', name: 'Leichtigkeit', word: 'LEICHTIGKEIT.', form: 'summer', ph: true,
-    fuer: 'Für Menschen, die am liebsten draußen leben und gern Gäste haben.',
-    text: 'Weite Dachüberstände spenden Schatten, raumhohe Fenster öffnen das Haus zu Terrasse und Pool, oben läuft eine Dachterrasse über die ganze Breite. Ein Haus für lange Abende, das sich wie Urlaub anfühlt.',
-    facts: ['158 m²', '2 Ebenen', 'Dachterrasse'],
-    img: WEB + 'D2dvU723pCo0LPWhJQ7TszrGAZ8.jpg', pos: '50% 55%',
-    cap: 'Abb. 03 / Foto, Platzhalter bis zur Visualisierung',
+    id: 'light', nr: '03', name: 'Light', word: 'LIGHT.', form: 'summer',
+    fuer: 'Für alle, denen weniger mehr ist.',
+    text: 'Zwei schmale Dächer wie dünne Platten, heller Stein, Holz und Glas. Reduziert auf das, was zählt, und oben wartet die Terrasse.',
+    facts: ['171 m²', '2 Ebenen', 'Dachterrasse'],
+    img: 'assets/img/light-pool.jpg', pos: '50% 56%',
+    cap: 'Abb. 03 / Visualisierung / GRIFFNER Architektur und Design',
     views: [
-      { img: WEB + 'Unpl4PriPV66mKCB4Z3z6BNiU.jpg', cap: 'Draußen.' },
-      { img: WEB + 'hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg', cap: 'Abends.' }
+      { img: 'assets/img/light-garten.jpg', cap: 'Draußen.' },
+      { img: 'assets/img/light-strasse.jpg', cap: 'Ankommen.' }
     ],
     fits: { who: ['zwei', 'kinder'], live: ['gaeste', 'draussen'], wichtig: ['offen', 'licht'] },
-    m2: 158, href: 'leichtigkeit.html',
+    m2: 171, href: 'light.html',
     page: {
-      hero: { img: WEB + 'D2dvU723pCo0LPWhJQ7TszrGAZ8.jpg', alt: 'Weißes Haus mit weiten Dachüberständen und raumhohen Fenstern, Foto', top: 'Zwei Ebenen mit Dachterrasse / Foto, Platzhalter' },
-      zahlenH: 'Draußen ist das zweite Wohnzimmer.',
-      zahlen: [['158', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['1', '', 'Dachterrasse', 1], ['Flach', '', 'Dachform']],
-      fig: { img: WEB + 'UF5oPuAOaTho1Yzsax78ykNPTe8.jpg', alt: 'Haus mit Dachterrasse und Garten von oben, Foto', cap: 'Abb. 02 / Von oben / Foto, Platzhalter' },
-      band: { img: WEB + 'hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg', alt: 'Haus und Pool am Abend, Foto', cap: 'Abb. 03 / Abends / Foto, Platzhalter' },
+      hero: { img: 'assets/img/light-pool.jpg', alt: 'Concept Light, Haus mit zwei schmalen Dächern, hellem Stein und Pool, Visualisierung', pos: '50% 56%' },
+      zahlenH: 'Weniger, aber besser.',
+      zahlen: [['171', 'm²', 'Wohnfläche gesamt', 1], ['101,44', 'm²', 'Erdgeschoß'], ['69,55', 'm²', 'Obergeschoß'], ['2', '', 'Ebenen', 1], ['Flach', '', 'Dachform']],
+      fig: { img: 'assets/img/light-strasse.jpg', alt: 'Concept Light von der Straße, Visualisierung' },
+      band: { img: 'assets/img/light-garten.jpg', alt: 'Concept Light von der Gartenseite mit Pool, Visualisierung', pos: '50% 62%' },
       licht: [
-        { img: WEB + '14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg', alt: 'Heller Wohnraum mit raumhohen Fenstern, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Raumhohe Fenster zur Terrasse' },
-        { img: WEB + 'SXbkxuksx0QXTehHKkv5oNpigM.jpg', alt: 'Essplatz vor der Glasfront, Foto', tag: 'Abb. 05 / Essen / Foto, Platzhalter', cap: 'Der Tisch steht fast schon draußen' },
-        { img: WEB + 'GKnuRBnUYGIkfnsAm8njyQ4JU.jpg', alt: 'Zwei Sessel im Licht, Foto', tag: 'Abb. 06 / Detail / Foto, Platzhalter', cap: 'Schatten unter dem weiten Dach' }
+        { img: WEB + '14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg', alt: 'Heller Wohnraum mit raumhohen Fenstern, Foto, Platzhalter', h: 'Fast schon draußen.', p: 'Raumhohe Fenster öffnen das Haus zu Terrasse und Pool. Der Tisch steht dort, wo der Sommer beginnt.' },
+        { img: WEB + 'SXbkxuksx0QXTehHKkv5oNpigM.jpg', alt: 'Essplatz vor der Glasfront, Foto, Platzhalter', h: 'Oben die Terrasse.', p: 'Zwei schmale Dächer, dazwischen viel Glas. Und oben wartet die Terrasse auf lange Abende.' }
       ],
-      lichtSay: 'Ein Haus, das sich wie Urlaub anfühlt.'
+      plan: 'light', planH: 'So wohnt Light.', planP: 'Unten ein offener Raum zum Garten, oben Rückzug und die Terrasse. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
     }
   },
   {
-    id: 'weitblick', nr: '04', name: 'Weitblick', word: 'WEITBLICK.', form: 'hang', ph: true,
-    fuer: 'Für Menschen, die ihre Aussicht nicht hinter Wänden verstecken wollen.',
-    text: 'Das Obergeschoss kragt über den gläsernen Sockel hinaus und richtet sich mit einer großen Glasfront auf die Landschaft. Unten öffnet sich das Wohnen zum Garten, oben gehört der Raum dem Blick.',
+    id: 'free', nr: '04', name: 'Free', word: 'FREE.', form: 'hang', ph: true,
+    fuer: 'Für alle, die sich nicht einengen lassen.',
+    text: 'Ein Obergeschoss, das weit über das gläserne Erdgeschoss ragt, und eine Giebelfront, die sich ganz öffnet. Viel Raum, viel Licht, viel Freiheit.',
     facts: ['185 m²', '2 Ebenen', 'Auskragung'],
     img: WEB + 'rUtKW4GqlLLBQmqVXILK5afEZGI.jpg', pos: '50% 50%',
     cap: 'Abb. 04 / Foto, Platzhalter bis zur Visualisierung',
@@ -102,19 +100,17 @@ export const CONCEPTS = [
       { img: WEB + 'akgUOvcI77asKhnC9ditt1tvV0.jpg', cap: 'Drinnen.' }
     ],
     fits: { who: ['zwei', 'kinder'], live: ['arbeiten', 'sport'], wichtig: ['licht'] },
-    m2: 185, href: 'weitblick.html',
+    m2: 185, href: 'free.html',
     page: {
-      hero: { img: WEB + 'FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg', alt: 'Weißes Haus mit auskragendem Obergeschoss am Abend, davor ein Pool, Foto', top: 'Zwei Ebenen mit Auskragung / Foto, Platzhalter' },
-      zahlenH: 'Unten Garten. Oben Blick.',
-      zahlen: [['185', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['Glas', '', 'Front zur Landschaft'], ['Flach', '', 'Dachform']],
-      fig: { img: WEB + 'MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg', alt: 'Haus am Hang von oben, Foto', cap: 'Abb. 02 / Am Hang / Foto, Platzhalter' },
-      band: { img: WEB + 'S5wq8LaRxuE8KWfr8X7uLremE.jpg', alt: 'Terrasse unter dem auskragenden Obergeschoss, Foto', cap: 'Abb. 03 / Unter dem Obergeschoss / Foto, Platzhalter' },
+      hero: { img: WEB + 'FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg', alt: 'Weißes Haus mit auskragendem Obergeschoss am Abend, davor ein Pool, Foto, Platzhalter' },
+      zahlenH: 'Viel Raum. Viel Licht.',
+      zahlen: [['185', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['Glas', '', 'Giebelfront'], ['Flach', '', 'Dachform']],
+      fig: { img: WEB + 'MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg', alt: 'Haus am Hang von oben, Foto, Platzhalter' },
+      band: { img: WEB + 'S5wq8LaRxuE8KWfr8X7uLremE.jpg', alt: 'Terrasse unter dem auskragenden Obergeschoss, Foto, Platzhalter' },
       licht: [
-        { img: WEB + 'akgUOvcI77asKhnC9ditt1tvV0.jpg', alt: 'Wohnraum mit Glasfront zur Terrasse, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Die Glasfront gehört der Landschaft' },
-        { img: WEB + 'dwSiRsZPRfR256KgbCD7stEgR3I.jpg', alt: 'Essplatz vor der Glasfront, dahinter die Küche, Foto', tag: 'Abb. 05 / Essen / Foto, Platzhalter', cap: 'Unten öffnet sich das Wohnen zum Garten' },
-        { img: WEB + 'vBroLID0qE6B0yeBV2vSpP0BnII.jpg', alt: 'Weiße Küche mit Kochinsel, Foto', tag: 'Abb. 06 / Kochen / Foto, Platzhalter', cap: 'Kochen mit Blick ins Tal' }
-      ],
-      lichtSay: 'Oben gehört der Raum dem Blick.'
+        { img: WEB + 'akgUOvcI77asKhnC9ditt1tvV0.jpg', alt: 'Wohnraum mit Glasfront zur Terrasse, Foto, Platzhalter', h: 'Die Front gehört dem Blick.', p: 'Die Giebelfront öffnet sich ganz. Drinnen und draußen werden ein Raum, so weit du schauen kannst.' },
+        { img: WEB + 'dwSiRsZPRfR256KgbCD7stEgR3I.jpg', alt: 'Essplatz vor der Glasfront, dahinter die Küche, Foto, Platzhalter', h: 'Unten offen, oben weit.', p: 'Unten öffnet sich das Wohnen zum Garten, oben ragt das Geschoss weit hinaus. Niemand rückt hier zusammen.' }
+      ]
     }
   }
 ];
@@ -122,16 +118,16 @@ export const CONCEPTS = [
 /* Die Sammlung wächst: zehn Arbeitsmodelle in einer Reihe. 01 bis 04 sind offen, 05 bis 10 sind Platzhalter (ph),
    Namen und Formen vorläufig, bis die Concepts wirklich kommen. Formparameter siehe house3d.js CONCEPTS. */
 export const SAMMLUNG = [
-  { nr: '01', name: 'Stille', state: 'Offen', href: 'stille.html', form: 'wald' },
-  { nr: '02', name: 'Einfachheit', state: 'Offen', href: 'einfachheit.html', form: 'duene' },
-  { nr: '03', name: 'Leichtigkeit', state: 'Offen', href: 'leichtigkeit.html', form: 'summer' },
-  { nr: '04', name: 'Weitblick', state: 'Offen', href: 'weitblick.html', form: 'hang' },
-  { nr: '05', name: 'Geborgenheit', state: 'Bald', ph: true, form: { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '06', name: 'Freiheit', state: 'Bald', ph: true, form: { L0: 12, D: 9, H1: 3.1, L1: 12, H2: 3, sx: 0, up: 1, R: 3.4, gl: .5, gu: .4, ge: 0, slope: 0 } },
-  { nr: '07', name: 'Klarheit', state: 'Bald', ph: true, form: { L0: 24, D: 6.5, H1: 3.2, L1: 24, H2: 0, sx: 0, up: 0, R: 0, gl: .9, gu: 0, ge: 0, slope: 0 } },
-  { nr: '08', name: 'Gelassenheit', state: 'Bald', ph: true, form: { L0: 10, D: 10, H1: 3, L1: 14, H2: 3, sx: -2, up: 1, R: 3, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '09', name: 'Nähe', state: 'Bald', ph: true, form: { L0: 14, D: 9, H1: 3.4, L1: 14, H2: 0, sx: 0, up: 0, R: 5, gl: .5, gu: 0, ge: 1, slope: 0 } },
-  { nr: '10', name: 'Weite', state: 'Bald', ph: true, form: { L0: 8, D: 8, H1: 3, L1: 12, H2: 3, sx: 3, up: 1, R: 0, gl: .6, gu: .8, ge: 0, slope: .6 } }
+  { nr: '01', name: 'Bold', state: 'Offen', href: 'bold.html', form: 'wald' },
+  { nr: '02', name: 'Calm', state: 'Offen', href: 'calm.html', form: 'duene' },
+  { nr: '03', name: 'Light', state: 'Offen', href: 'light.html', form: 'summer' },
+  { nr: '04', name: 'Free', state: 'Offen', href: 'free.html', form: 'hang' },
+  { nr: '05', name: 'Warm', state: 'Bald', ph: true, form: { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 } },
+  { nr: '06', name: 'Open', state: 'Bald', ph: true, form: { L0: 12, D: 9, H1: 3.1, L1: 12, H2: 3, sx: 0, up: 1, R: 3.4, gl: .5, gu: .4, ge: 0, slope: 0 } },
+  { nr: '07', name: 'Clear', state: 'Bald', ph: true, form: { L0: 24, D: 6.5, H1: 3.2, L1: 24, H2: 0, sx: 0, up: 0, R: 0, gl: .9, gu: 0, ge: 0, slope: 0 } },
+  { nr: '08', name: 'Easy', state: 'Bald', ph: true, form: { L0: 10, D: 10, H1: 3, L1: 14, H2: 3, sx: -2, up: 1, R: 3, gl: .6, gu: .6, ge: 0, slope: 0 } },
+  { nr: '09', name: 'Close', state: 'Bald', ph: true, form: { L0: 14, D: 9, H1: 3.4, L1: 14, H2: 0, sx: 0, up: 0, R: 5, gl: .5, gu: 0, ge: 1, slope: 0 } },
+  { nr: '10', name: 'Wide', state: 'Bald', ph: true, form: { L0: 8, D: 8, H1: 3, L1: 12, H2: 3, sx: 3, up: 1, R: 0, gl: .6, gu: .8, ge: 0, slope: .6 } }
 ];
 
 /* Kapitel 01, Kennenlernen. Fragen und Antworten vom Kunden (2026-11-05). */
@@ -251,7 +247,7 @@ export const MIX_PARAMS = {
 };
 export const DEFAULT_MIX = { koerper: 'wald', dach: 'wald', licht: 'wald', fassade: 'wald' };
 
-/* Seite Concept Wald, Grundrisse. Echte Grundrisse Concept Wald (CAD, 1:100). Koordinaten in Punkt, 1 m = 28,35 pt. */
+/* Alter 2D Grundriss (nicht mehr verwendet). Echte Grundrisse Concept Light (CAD, 1:100). Koordinaten in Punkt, 1 m = 28,35 pt. */
 export const PLAN = {
   eg: {
     label: 'Erdgeschoß', sum: '101,44 m²', src: 'assets/img/plan-eg.svg',
@@ -300,14 +296,14 @@ export const FILM = [
 
 export const RAIL = [
   ['k-kennen', '01', 'Kennenlernen'], ['k-grund', '02', 'Grundstück'], ['k-concepts', '03', 'Inspiration'],
-  ['k-weg', '04', 'Dein Weg'], ['k-einzug', '05', 'Einzug']
+  ['k-einzug', '04', 'Einzug']
 ];
 
 /* Kapitel 04, Dein Weg. Sechs Schritte, jeder mit einem kleinen Arbeitsmodell (scene, siehe js/weg.js). */
 export const WEG = [
   { nr: '01', name: 'Kennenlernen', say: 'Wir hören zu, bevor wir zeichnen.', scene: 'tisch', cap: 'Ein Tisch, viele Fragen' },
   { nr: '02', name: 'Grundstück', say: 'Wir lesen deinen Ort. Gelände, Bäume, Sonne.', scene: 'ort', cap: 'Dein Ort im Modell' },
-  { nr: '03', name: 'Inspiration', say: 'Vier Concepts zum Weiterdenken.', scene: 'ideen', cap: 'Stille, Einfachheit, Leichtigkeit, Weitblick' },
+  { nr: '03', name: 'Inspiration', say: 'Vier Concepts zum Weiterdenken.', scene: 'ideen', cap: 'Bold, Calm, Light, Free' },
   { nr: '04', name: 'Mischen', say: 'Du nimmst, was dir gefällt. Wir fügen es zusammen.', scene: 'mischen', cap: 'Aus vielen wird eins' },
   { nr: '05', name: 'Bauen', say: 'Vorgefertigt in Griffen, aufgestellt in wenigen Tagen.', scene: 'bauen', cap: 'Element für Element' },
   { nr: '06', name: 'Einzug', say: 'Und dann wohnst du.', scene: 'einzug', cap: 'Licht an' }
