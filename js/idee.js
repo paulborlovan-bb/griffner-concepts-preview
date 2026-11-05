@@ -114,8 +114,12 @@ function idee() {
   I.text.style.opacity = t.toFixed(3); I.text.style.transform = `translateY(${((1 - t) * 24).toFixed(1)}px)`;
   /* Connector landet am Ende der Bodenlinie, sobald die Zeichnung fertig ist */
   if (skI && skI.end && k > .97) {
-    const r = skI.end.getBoundingClientRect(), pr = I.dock.parentElement.getBoundingClientRect();
-    I.dock.style.left = (r.left - pr.left).toFixed(1) + 'px'; I.dock.style.top = (r.top - pr.top).toFixed(1) + 'px'; delete I.dock.dataset.dockHide;
+    const r = skI.end.getBoundingClientRect(), par = I.dock.parentElement, pr = par.getBoundingClientRect();
+    /* im Satzspiegel halten: am Telefon endet die Bodenlinie fast am Bildschirmrand (2026-11-05) */
+    const cs = getComputedStyle(par), hb = (I.dock.offsetWidth || 0) / 2;
+    const lo = (parseFloat(cs.paddingLeft) || 0) + hb, hi = pr.width - (parseFloat(cs.paddingRight) || 0) - hb;
+    const x = Math.min(Math.max(r.left - pr.left, lo), Math.max(lo, hi));
+    I.dock.style.left = x.toFixed(1) + 'px'; I.dock.style.top = (r.top - pr.top).toFixed(1) + 'px'; delete I.dock.dataset.dockHide;
   } else I.dock.dataset.dockHide = '1';
 }
 

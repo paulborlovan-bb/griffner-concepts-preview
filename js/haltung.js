@@ -12,7 +12,10 @@ function tick() {
   const { p, on } = prog(S.pin); if (!on) return;
   const n = S.words.length;
   S.words.forEach((w, i) => { w.style.opacity = (.12 + .88 * E(p, i / n * .5, i / n * .5 + .14)).toFixed(3); });
-  const lw = S.line.parentElement.clientWidth * E(p, .5, .92);
+  /* Der Connector (Mitte = Ende des Strichs) bleibt ganz im Satzspiegel: er startet bündig links und endet bündig rechts,
+     sonst stand er am Telefon halb über dem Rand (2026-11-05) */
+  const W = S.line.parentElement.clientWidth, bw = S.dock.offsetWidth || 0;
+  const lw = bw / 2 + Math.max(0, W - bw) * E(p, .5, .92);
   S.line.style.width = lw.toFixed(1) + 'px';
   S.dock.style.left = lw.toFixed(1) + 'px';
 }
