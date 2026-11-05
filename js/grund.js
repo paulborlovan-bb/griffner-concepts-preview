@@ -36,14 +36,14 @@ function build() {
 
 function tick() {
   const narrow = innerWidth < 820;
-  let { p, on } = prog(D.pin); if (!on && !narrow) return;
-  if (narrow) p = 1;
+  const { p, on } = prog(D.pin); if (!on) return;
   const nSt = D.st.length;
   D.st.forEach((el, i) => {
     const a = i / nSt, b = (i + 1) / nSt;
     const o = i === nSt - 1 ? E(p, a, a + .04) : win(p, a, b, .04);
     el.style.opacity = o.toFixed(3);
-    el.style.transform = narrow ? '' : `translateY(calc(-50% + ${((1 - E(p, a, a + .06)) * 24).toFixed(1)}px))`;
+    /* Telefon: Schritte stehen oben unter dem Modell, sonst mittig neben dem Modell */
+    el.style.transform = narrow ? `translateY(${((1 - E(p, a, a + .06)) * 18).toFixed(1)}px)` : `translateY(calc(-50% + ${((1 - E(p, a, a + .06)) * 24).toFixed(1)}px))`;
   });
   g3Tick(p);
   D.tabs.classList.toggle('is-on', p > .82);

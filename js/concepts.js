@@ -1,10 +1,11 @@
-/* 03 INSPIRATION. Vier Lebensgefühle, vier Concepts, präsentiert wie stillform.homes (Kundenwunsch 2026-11-05):
-   lose Bilder um die Überschrift, die mittlere Karte wächst zum Rahmen (75 %), darin schieben sich die Häuser durch.
-   Die Bühne selbst ist js/buehne.js. Alles kommt aus CONCEPTS in data/content.js: ein neues Concept braucht nur einen Eintrag. */
+/* 03 INSPIRATION. Vier Lebensgefühle, vier Concepts, präsentiert wie stillform.homes (Kundenwunsch 2026-11-05, zweite Runde):
+   je Haus ein Akt mit Name und losen Bildern, Bildfolge in einem Rahmen von 70 bis 75 %, dann großer Satz und Aufruf.
+   Markup aus js/akte-html.js (von tools/pages.mjs in index.html geschrieben), Bewegung in js/akte.js.
+   Alles kommt aus CONCEPTS in data/content.js: ein neues Concept braucht nur einen Eintrag und einen Lauf von tools/pages.mjs. */
 import { $ } from './core.js';
 import { CONCEPTS } from '../data/content.js';
 import { answers } from './kennen.js';
-import { initBuehne, cardsFor } from './buehne.js';
+import { initAkte } from './akte.js';
 
 const WHY = {
   who: { allein: 'allein wohnst', zwei: 'zu zweit wohnst', kinder: 'mit Kindern wohnst', generationen: 'mit mehreren Generationen wohnst' },
@@ -21,11 +22,5 @@ export function fit(c, a = answers()) {
 export const best = () => { const a = answers(); return CONCEPTS.map(c => ({ c, ...fit(c, a) })).sort((x, y) => y.score - x.score)[0]; };
 
 export function initConcepts() {
-  const root = $('#k-concepts [data-bu]');
-  if (!root) return;
-  const n = CONCEPTS.length;
-  initBuehne(root, {
-    houses: CONCEPTS, cards: cardsFor(CONCEPTS),
-    count: i => `Concept ${CONCEPTS[i].nr} / ${String(n).padStart(2, '0')}`
-  });
+  initAkte($('#k-concepts'));
 }

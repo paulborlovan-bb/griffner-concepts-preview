@@ -195,7 +195,8 @@ function layout() {
   const [a, b] = FLOORS;
   let pa, pb;
   if (!narrow) { const tot = a.w + GAP + b.w; pa = [-tot / 2 + a.w / 2, 0]; pb = [tot / 2 - b.w / 2, -(a.d - b.d) / 2]; }
-  else { const tot = a.d + GAP + b.d; pa = [0, tot / 2 - a.d / 2]; pb = [0, -tot / 2 + b.d / 2]; }
+  /* Telefon: mehr Abstand, weil die Kamera flacher von der Seite schaut und das vordere Geschoß sonst das hintere verdeckt */
+  else { const tot = a.d + GAP * 2 + b.d; pa = [0, tot / 2 - a.d / 2]; pb = [0, -tot / 2 + b.d / 2]; }
   let mn = [1e9, 1e9], mx = [-1e9, -1e9];
   [[a, pa], [b, pb]].forEach(([f, p]) => { mn = [Math.min(mn[0], p[0] - f.w / 2), Math.min(mn[1], p[1] - f.d / 2)]; mx = [Math.max(mx[0], p[0] + f.w / 2), Math.max(mx[1], p[1] + f.d / 2)]; });
   const box = (x0, x1, y0, y1, z0, z1) => { const o = []; [x0, x1].forEach(x => [y0, y1].forEach(y => [z0, z1].forEach(z => o.push([x, y, z])))); return o; };
@@ -209,7 +210,7 @@ function fit(a, e, C, BB) {
   let lo = 6, hi = 320; const v = V();
   for (let i = 0; i < 16; i++) {
     const d = (lo + hi) / 2; S.orbit(a, e, d, C[0], C[1], C[2]); S.cam.updateMatrixWorld();
-    let o = 0; BB.forEach(p => { v.set(p[0], p[1], p[2]).project(S.cam); o = Math.max(o, Math.abs(v.x) / .97, (v.y < 0 ? -v.y / (narrow ? .7 : .84) : v.y / (narrow ? .82 : .9)), v.z > 1 ? 9 : 0); });
+    let o = 0; BB.forEach(p => { v.set(p[0], p[1], p[2]).project(S.cam); o = Math.max(o, Math.abs(v.x) / .97, (v.y < 0 ? -v.y / (narrow ? .6 : .84) : v.y / (narrow ? .8 : .9)), v.z > 1 ? 9 : 0); });
     if (o > 1) lo = d; else hi = d;
   }
   return hi;
@@ -248,8 +249,9 @@ function tick() {
   const C = PL.C.map((v, i) => lerp(v, HS.C[i], m)), BB = PL.BB.map((p, i) => p.map((v, j) => lerp(v, HS.BB[i][j], m)));
   /* leichte Drehung beim Scrollen, dazu was du selbst gedreht hast; das ganze Haus von flacher und mehr von der Seite */
   const t = through(D.st, 1, -.2);
-  az = lerp(narrow ? -.28 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * .34 + user[0];
-  el = clamp(lerp(narrow ? 1.02 : .92, .42, m) + user[1], .14, 1.35);
+  /* Telefon: mehr von der Seite als von oben (Kundenwunsch 2026-11-05) */
+  az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + user[0];
+  el = clamp(lerp(narrow ? .56 : .92, .42, m) + user[1], .14, 1.35);
   S.orbit(az, el, fit(az, el, C, BB), C[0], C[1], C[2]);
   const gw = E(m, .04, .42), gu = E(m, .55, .86), gf = E(m, .62, .92), gs = E(m, .34, .56), gr = E(m, .8, 1);
   FLOORS.forEach(f => {

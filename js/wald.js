@@ -3,7 +3,7 @@
    Welches Concept, steht als data-concept an jeder Sektion. Header, Menü und Footer kommen aus chrome.js. */
 import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
 import { CONCEPTS } from '../data/content.js';
-import { initBuehne, cardsFor } from './buehne.js';
+import { initAkte } from './akte.js';
 import { initChrome, frame } from './chrome.js';
 import { initIdee } from './idee.js';
 import { initPlan3d } from './plan3d.js';
@@ -80,16 +80,9 @@ function initLicht() {
   } });
 }
 
-/* Nächstes Concept: dieselbe Bühne wie auf der Concepts Seite (stillform.homes), mit einem Haus im Rahmen */
+/* Nächstes Concept: derselbe Akt wie auf der Concepts Seite (stillform.homes), für das nächste Haus */
 function initNext() {
-  const sec = $('#w-next'), root = sec && $('[data-bu]', sec);
-  if (!root) return;
-  const nx = CONCEPTS.find(c => c.id === sec.dataset.next) || CONCEPTS[0];
-  const n = String(CONCEPTS.length).padStart(2, '0');
-  initBuehne(root, {
-    houses: [nx], cards: cardsFor([nx, ...CONCEPTS.filter(c => c.id !== nx.id)]),
-    count: () => `Nächstes Concept / ${nx.nr} von ${n}`, all: 'index.html#k-concepts'
-  });
+  initAkte($('#w-next'));
 }
 
 /* Kontakt: Nachricht kennt schon das Concept */
