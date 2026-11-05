@@ -1,12 +1,16 @@
 /* GRIFFNER Concepts, Inhalte. Alle Texte und Daten an einem Ort, damit neue Concepts nur hier dazukommen.
    Platzhalter sind mit ph: true markiert und vor dem Livegang mit dem Kunden abzustimmen. */
 
+/* Fotos von griffner.com (Framer CMS, Projekte) als Platzhalter, bis es Visualisierungen der Concepts gibt */
+const WEB = 'https://framerusercontent.com/images/';
+
+/* Vier Lebensgefühle, vier Concepts. Texte "Für Menschen" und "Die Antwort im Raum" vom Kunden (2026-11-05).
+   form: Arbeitsmodell in house3d.js CONCEPTS. page: Inhalte der eigenen Seite (stille.html usw., erzeugt von tools/pages.mjs). */
 export const CONCEPTS = [
   {
-    id: 'wald', nr: '01', name: 'Wald', word: 'WALD.',
-    lead: 'Ein Haus, das sich unter die Föhren duckt und sich zum Wald hin ganz öffnet.',
-    fuer: 'Für Menschen, die lieber im Garten sitzen als davor.',
-    text: 'Oben schützt ein dunkler Rahmen, unten öffnet sich das Wohnen auf ganzer Breite zum Wald.',
+    id: 'stille', nr: '01', name: 'Stille', word: 'STILLE.', form: 'wald',
+    fuer: 'Für Menschen, die nach einem vollen Tag ankommen und still werden wollen.',
+    text: 'Ein ruhiger, dunkler Baukörper, der sich zwischen die Bäume stellt. Holzlamellen filtern Licht und Blicke, das auskragende Obergeschoss schützt. Innen ist es warm, außen bleibt die Welt draußen.',
     facts: ['171 m²', '2 Ebenen', 'Flachdach'],
     img: 'assets/img/wald-garten-ecke-1800.jpg', pos: '50% 62%',
     cap: 'Abb. 01 / Visualisierung / GRIFFNER Architektur und Design',
@@ -15,98 +19,176 @@ export const CONCEPTS = [
       { img: 'assets/img/wald-sessel.jpg', cap: 'Drinnen.' },
       { img: 'assets/img/wald-fenster.jpg', cap: 'Draußen.' }
     ],
-    fits: { who: ['zwei', 'familie'], work: ['zuhause', 'kunden'], love: ['garten', 'buecher', 'kochen', 'weite'] },
-    m2: 171, href: 'wald.html'
+    fits: { who: ['allein', 'zwei'], live: ['arbeiten'], wichtig: ['rueckzug'] },
+    m2: 171, href: 'stille.html',
+    page: {
+      hero: { img: 'assets/img/wald-garten.jpg', alt: 'Concept Stille, zweigeschoßiges Haus mit Flachdach zwischen Bäumen, Visualisierung', top: 'Zwei Ebenen mit Auskragung / Visualisierung' },
+      zahlenH: 'Oben Schutz. Unten Wald.',
+      zahlen: [['171', 'm²', 'Wohnfläche gesamt', 1], ['101,44', 'm²', 'Erdgeschoß'], ['69,55', 'm²', 'Obergeschoß'], ['2', '', 'Ebenen', 1], ['Flach', '', 'Dachform']],
+      fig: { img: 'assets/img/wald-strasse.jpg', alt: 'Concept Stille von der Zufahrt, Visualisierung', cap: 'Abb. 02 / Ankommen / Visualisierung' },
+      film: { video: 'assets/video/wald-pause.mp4', poster: 'assets/video/wald-pause.jpg', label: 'Kurzer Film, Concept Stille zwischen Bäumen', cap: 'Film / Visualisierung' },
+      licht: [
+        { img: 'assets/img/wald-innen.jpg', alt: 'Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung', tag: 'Abb. 03 / Wohnen / Visualisierung', cap: 'Wohnen, Essen und Kochen in einem Raum' },
+        { img: 'assets/img/wald-essen.jpg', alt: 'Esstisch vor dem Fenster zum Wald, Visualisierung', tag: 'Abb. 04 / Essen / Visualisierung', cap: 'Der Tisch steht, wo der Wald am nächsten ist' },
+        { img: 'assets/img/wald-decke.jpg', alt: 'Strickdecke auf einem Hocker, Holzboden im Fischgrät, Visualisierung', tag: 'Abb. 05 / Detail / Visualisierung', cap: 'Holz am Boden, Holz an der Wand' }
+      ],
+      lichtSay: 'Drinnen sitzen und trotzdem im Wald sein.',
+      plan: true
+    }
   },
   {
-    id: 'duene', nr: '02', name: 'Düne', word: 'DÜNE.',
-    lead: 'Ein Geschoß unter einem langen Dach.',
-    fuer: 'Für Menschen, die Weite brauchen und keine Treppe.',
-    text: 'Der Giebel öffnet sich in ganzer Höhe zur Landschaft. Der Wind bleibt draußen.',
-    facts: ['142 m²', '1 Ebene', 'Satteldach'], ph: true,
+    id: 'einfachheit', nr: '02', name: 'Einfachheit', word: 'EINFACHHEIT.', form: 'duene', ph: true,
+    fuer: 'Für Menschen, die das Wesentliche suchen und alles auf einer Ebene wollen.',
+    text: 'Ein modernes Barnhouse: ein Satteldach, ein großer Giebel aus Glas, Holz und Stein. Alles liegt auf einer Ebene, ohne Treppen, und unter dem offenen Dach entsteht ein Raum, der nicht mehr sein will, als er ist.',
+    facts: ['142 m²', '1 Ebene', 'Satteldach'],
     img: 'assets/img/duene-1.jpg', pos: '50% 60%',
     cap: 'Abb. 02 / Visualisierung / GRIFFNER Architektur und Design',
     views: [
       { img: 'assets/img/duene-2.jpg', cap: 'Ankommen.' },
       { img: 'assets/img/duene-3.jpg', cap: 'Draußen.' }
     ],
-    fits: { who: ['allein', 'zwei', 'generationen'], work: ['buero', 'zuhause'], love: ['weite', 'rueckzug', 'morgen', 'werkstatt'] },
-    m2: 142, href: '#'
+    fits: { who: ['allein', 'zwei', 'generationen'], live: ['draussen'], wichtig: ['ebene', 'offen'] },
+    m2: 142, href: 'einfachheit.html',
+    page: {
+      hero: { img: 'assets/img/duene-1.jpg', alt: 'Concept Einfachheit, Haus mit Satteldach und Glasgiebel, Visualisierung', top: 'Eine Ebene unter dem Satteldach / Visualisierung' },
+      zahlenH: 'Ein Dach. Eine Ebene.',
+      zahlen: [['142', 'm²', 'Wohnfläche gesamt', 1], ['1', '', 'Ebene', 1], ['0', '', 'Treppen', 1], ['Sattel', '', 'Dachform']],
+      fig: { img: 'assets/img/duene-2.jpg', alt: 'Concept Einfachheit, Ankommen unter dem langen Dach, Visualisierung', cap: 'Abb. 02 / Ankommen / Visualisierung' },
+      band: { img: 'assets/img/duene-3.jpg', alt: 'Concept Einfachheit von der Gartenseite, Visualisierung', cap: 'Abb. 03 / Draußen / Visualisierung' },
+      licht: [
+        { img: WEB + 'DS9pFqgfFYqAglCs94KEi84z2E.jpg', alt: 'Essplatz unter einer Holzdecke, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Ein Raum unter dem offenen Dach' },
+        { img: WEB + 'yUyYdoKFQZKqKrIkwklWpPDNk.jpg', alt: 'Wohnraum mit Holz und Blick ins Grüne, Foto', tag: 'Abb. 05 / Blick / Foto, Platzhalter', cap: 'Glas im Giebel, Licht bis in die Tiefe' },
+        { img: WEB + 'A4JqmOFGCgPWiDedinKXtdLU6s.jpg', alt: 'Holzwand mit Sessel, Foto', tag: 'Abb. 06 / Detail / Foto, Platzhalter', cap: 'Holz und Stein, sonst nichts' }
+      ],
+      lichtSay: 'Ein Raum, der nicht mehr sein will, als er ist.'
+    }
   },
   {
-    id: 'summer', nr: '03', name: 'Summer', word: 'SUMMER.',
-    lead: 'Ein Haus für lange Abende draußen.',
-    fuer: 'Für Menschen, die den Sommer draußen verbringen und gern Gäste haben.',
-    text: 'Ein weites Dach greift über die Terrasse. Die Schiebefenster verschwinden in der Wand, drinnen und draußen werden ein Raum.',
-    facts: ['158 m²', '2 Ebenen', 'Flachdach mit Vordach'], ph: true,
-    img: 'assets/img/summer-1.jpg', pos: '50% 55%',
-    cap: 'Abb. 03 / Platzhalterbild, Visualisierung Summer folgt',
+    id: 'leichtigkeit', nr: '03', name: 'Leichtigkeit', word: 'LEICHTIGKEIT.', form: 'summer', ph: true,
+    fuer: 'Für Menschen, die am liebsten draußen leben und gern Gäste haben.',
+    text: 'Weite Dachüberstände spenden Schatten, raumhohe Fenster öffnen das Haus zu Terrasse und Pool, oben läuft eine Dachterrasse über die ganze Breite. Ein Haus für lange Abende, das sich wie Urlaub anfühlt.',
+    facts: ['158 m²', '2 Ebenen', 'Dachterrasse'],
+    img: WEB + 'D2dvU723pCo0LPWhJQ7TszrGAZ8.jpg', pos: '50% 55%',
+    cap: 'Abb. 03 / Foto, Platzhalter bis zur Visualisierung',
     views: [
-      { img: 'assets/img/summer-2.jpg', cap: 'Garten.' }
+      { img: WEB + 'Unpl4PriPV66mKCB4Z3z6BNiU.jpg', cap: 'Draußen.' },
+      { img: WEB + 'hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg', cap: 'Abends.' }
     ],
-    fits: { who: ['zwei', 'familie'], work: ['buero'], love: ['garten', 'gaeste', 'kochen', 'morgen'] },
-    m2: 158, href: '#'
+    fits: { who: ['zwei', 'kinder'], live: ['gaeste', 'draussen'], wichtig: ['offen', 'licht'] },
+    m2: 158, href: 'leichtigkeit.html',
+    page: {
+      hero: { img: WEB + 'D2dvU723pCo0LPWhJQ7TszrGAZ8.jpg', alt: 'Weißes Haus mit weiten Dachüberständen und raumhohen Fenstern, Foto', top: 'Zwei Ebenen mit Dachterrasse / Foto, Platzhalter' },
+      zahlenH: 'Draußen ist das zweite Wohnzimmer.',
+      zahlen: [['158', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['1', '', 'Dachterrasse', 1], ['Flach', '', 'Dachform']],
+      fig: { img: WEB + 'UF5oPuAOaTho1Yzsax78ykNPTe8.jpg', alt: 'Haus mit Dachterrasse und Garten von oben, Foto', cap: 'Abb. 02 / Von oben / Foto, Platzhalter' },
+      band: { img: WEB + 'hIzLm0JqGbCfJyRp1j0sU8F7Hc.jpg', alt: 'Haus und Pool am Abend, Foto', cap: 'Abb. 03 / Abends / Foto, Platzhalter' },
+      licht: [
+        { img: WEB + '14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg', alt: 'Heller Wohnraum mit raumhohen Fenstern, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Raumhohe Fenster zur Terrasse' },
+        { img: WEB + 'SXbkxuksx0QXTehHKkv5oNpigM.jpg', alt: 'Essplatz vor der Glasfront, Foto', tag: 'Abb. 05 / Essen / Foto, Platzhalter', cap: 'Der Tisch steht fast schon draußen' },
+        { img: WEB + 'GKnuRBnUYGIkfnsAm8njyQ4JU.jpg', alt: 'Zwei Sessel im Licht, Foto', tag: 'Abb. 06 / Detail / Foto, Platzhalter', cap: 'Schatten unter dem weiten Dach' }
+      ],
+      lichtSay: 'Ein Haus, das sich wie Urlaub anfühlt.'
+    }
+  },
+  {
+    id: 'weitblick', nr: '04', name: 'Weitblick', word: 'WEITBLICK.', form: 'hang', ph: true,
+    fuer: 'Für Menschen, die ihre Aussicht nicht hinter Wänden verstecken wollen.',
+    text: 'Das Obergeschoss kragt über den gläsernen Sockel hinaus und richtet sich mit einer großen Glasfront auf die Landschaft. Unten öffnet sich das Wohnen zum Garten, oben gehört der Raum dem Blick.',
+    facts: ['185 m²', '2 Ebenen', 'Auskragung'],
+    img: WEB + 'rUtKW4GqlLLBQmqVXILK5afEZGI.jpg', pos: '50% 50%',
+    cap: 'Abb. 04 / Foto, Platzhalter bis zur Visualisierung',
+    views: [
+      { img: WEB + 'S5wq8LaRxuE8KWfr8X7uLremE.jpg', cap: 'Draußen.' },
+      { img: WEB + 'akgUOvcI77asKhnC9ditt1tvV0.jpg', cap: 'Drinnen.' }
+    ],
+    fits: { who: ['zwei', 'kinder'], live: ['arbeiten', 'sport'], wichtig: ['licht'] },
+    m2: 185, href: 'weitblick.html',
+    page: {
+      hero: { img: WEB + 'FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg', alt: 'Weißes Haus mit auskragendem Obergeschoss am Abend, davor ein Pool, Foto', top: 'Zwei Ebenen mit Auskragung / Foto, Platzhalter' },
+      zahlenH: 'Unten Garten. Oben Blick.',
+      zahlen: [['185', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['Glas', '', 'Front zur Landschaft'], ['Flach', '', 'Dachform']],
+      fig: { img: WEB + 'MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg', alt: 'Haus am Hang von oben, Foto', cap: 'Abb. 02 / Am Hang / Foto, Platzhalter' },
+      band: { img: WEB + 'S5wq8LaRxuE8KWfr8X7uLremE.jpg', alt: 'Terrasse unter dem auskragenden Obergeschoss, Foto', cap: 'Abb. 03 / Unter dem Obergeschoss / Foto, Platzhalter' },
+      licht: [
+        { img: WEB + 'akgUOvcI77asKhnC9ditt1tvV0.jpg', alt: 'Wohnraum mit Glasfront zur Terrasse, Foto', tag: 'Abb. 04 / Wohnen / Foto, Platzhalter', cap: 'Die Glasfront gehört der Landschaft' },
+        { img: WEB + 'dwSiRsZPRfR256KgbCD7stEgR3I.jpg', alt: 'Essplatz vor der Glasfront, dahinter die Küche, Foto', tag: 'Abb. 05 / Essen / Foto, Platzhalter', cap: 'Unten öffnet sich das Wohnen zum Garten' },
+        { img: WEB + 'vBroLID0qE6B0yeBV2vSpP0BnII.jpg', alt: 'Weiße Küche mit Kochinsel, Foto', tag: 'Abb. 06 / Kochen / Foto, Platzhalter', cap: 'Kochen mit Blick ins Tal' }
+      ],
+      lichtSay: 'Oben gehört der Raum dem Blick.'
+    }
   }
 ];
 
-/* Die Sammlung wächst: zehn Arbeitsmodelle in einer Reihe. 01 bis 03 sind offen, 04 bis 10 sind Platzhalter (ph),
+/* Die Sammlung wächst: zehn Arbeitsmodelle in einer Reihe. 01 bis 04 sind offen, 05 bis 10 sind Platzhalter (ph),
    Namen und Formen vorläufig, bis die Concepts wirklich kommen. Formparameter siehe house3d.js CONCEPTS. */
 export const SAMMLUNG = [
-  { nr: '01', name: 'Wald', state: 'Offen', href: 'wald.html', form: 'wald' },
-  { nr: '02', name: 'Düne', state: 'Offen', href: '#c-duene', form: 'duene' },
-  { nr: '03', name: 'Summer', state: 'Offen', href: '#c-summer', form: 'summer' },
-  { nr: '04', name: 'Hang', state: 'Bald', ph: true, form: 'hang' },
-  { nr: '05', name: 'Hof', state: 'Bald', ph: true, form: { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '06', name: 'Lichtung', state: 'Bald', ph: true, form: { L0: 12, D: 9, H1: 3.1, L1: 12, H2: 3, sx: 0, up: 1, R: 3.4, gl: .5, gu: .4, ge: 0, slope: 0 } },
-  { nr: '07', name: 'Feld', state: 'Bald', ph: true, form: { L0: 24, D: 6.5, H1: 3.2, L1: 24, H2: 0, sx: 0, up: 0, R: 0, gl: .9, gu: 0, ge: 0, slope: 0 } },
-  { nr: '08', name: 'Bucht', state: 'Bald', ph: true, form: { L0: 10, D: 10, H1: 3, L1: 14, H2: 3, sx: -2, up: 1, R: 3, gl: .6, gu: .6, ge: 0, slope: 0 } },
-  { nr: '09', name: 'Kante', state: 'Bald', ph: true, form: { L0: 14, D: 9, H1: 3.4, L1: 14, H2: 0, sx: 0, up: 0, R: 5, gl: .5, gu: 0, ge: 1, slope: 0 } },
-  { nr: '10', name: 'Alm', state: 'Bald', ph: true, form: { L0: 8, D: 8, H1: 3, L1: 12, H2: 3, sx: 3, up: 1, R: 0, gl: .6, gu: .8, ge: 0, slope: .6 } }
+  { nr: '01', name: 'Stille', state: 'Offen', href: 'stille.html', form: 'wald' },
+  { nr: '02', name: 'Einfachheit', state: 'Offen', href: 'einfachheit.html', form: 'duene' },
+  { nr: '03', name: 'Leichtigkeit', state: 'Offen', href: 'leichtigkeit.html', form: 'summer' },
+  { nr: '04', name: 'Weitblick', state: 'Offen', href: 'weitblick.html', form: 'hang' },
+  { nr: '05', name: 'Geborgenheit', state: 'Bald', ph: true, form: { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 } },
+  { nr: '06', name: 'Freiheit', state: 'Bald', ph: true, form: { L0: 12, D: 9, H1: 3.1, L1: 12, H2: 3, sx: 0, up: 1, R: 3.4, gl: .5, gu: .4, ge: 0, slope: 0 } },
+  { nr: '07', name: 'Klarheit', state: 'Bald', ph: true, form: { L0: 24, D: 6.5, H1: 3.2, L1: 24, H2: 0, sx: 0, up: 0, R: 0, gl: .9, gu: 0, ge: 0, slope: 0 } },
+  { nr: '08', name: 'Gelassenheit', state: 'Bald', ph: true, form: { L0: 10, D: 10, H1: 3, L1: 14, H2: 3, sx: -2, up: 1, R: 3, gl: .6, gu: .6, ge: 0, slope: 0 } },
+  { nr: '09', name: 'Nähe', state: 'Bald', ph: true, form: { L0: 14, D: 9, H1: 3.4, L1: 14, H2: 0, sx: 0, up: 0, R: 5, gl: .5, gu: 0, ge: 1, slope: 0 } },
+  { nr: '10', name: 'Weite', state: 'Bald', ph: true, form: { L0: 8, D: 8, H1: 3, L1: 12, H2: 3, sx: 3, up: 1, R: 0, gl: .6, gu: .8, ge: 0, slope: .6 } }
 ];
 
-/* Kapitel 01, Kennenlernen */
+/* Kapitel 01, Kennenlernen. Fragen und Antworten vom Kunden (2026-11-05). */
 export const QUESTIONS = [
-  { key: 'who', label: 'Wer zieht ein?', multi: false, opts: [['allein', 'Ich allein'], ['zwei', 'Wir zu zweit'], ['familie', 'Familie mit Kindern'], ['generationen', 'Mehrere Generationen']] },
-  { key: 'work', label: 'Wo arbeitest du?', multi: false, opts: [['buero', 'Im Büro'], ['zuhause', 'Oft zuhause'], ['kunden', 'Zuhause, mit Kundschaft']] },
-  { key: 'love', label: 'Was darf nicht fehlen?', multi: true, opts: [['morgen', 'Morgenlicht'], ['kochen', 'Kochen für viele'], ['weite', 'Weite'], ['rueckzug', 'Rückzug'], ['garten', 'Garten'], ['gaeste', 'Gäste über Nacht'], ['buecher', 'Bücher'], ['werkstatt', 'Werkstatt']] }
+  { key: 'who', label: 'Wer wohnt bei dir?', multi: false, hint: 'Eine Antwort', opts: [['allein', 'Allein'], ['zwei', 'Zu zweit'], ['kinder', 'Mit Kindern'], ['generationen', 'Mehrere Generationen']] },
+  { key: 'live', label: 'Wie lebst du?', multi: true, hint: 'Mehrere Antworten möglich', opts: [['arbeiten', 'Arbeiten zuhause'], ['gaeste', 'Gerne Gäste'], ['sport', 'Platz für Sport'], ['draussen', 'Am liebsten draußen']] },
+  { key: 'wichtig', label: 'Was ist dir wichtig?', multi: false, hint: 'Eine Antwort', opts: [['offen', 'Ein offener Raum'], ['rueckzug', 'Rückzugsorte für alle'], ['ebene', 'Alles auf einer Ebene'], ['licht', 'Viel Licht']] }
 ];
 
-export const DEFAULT_ANSWERS = { who: 'familie', work: 'zuhause', love: ['morgen', 'garten'] };
+export const DEFAULT_ANSWERS = { who: 'kinder', live: ['arbeiten', 'draussen'], wichtig: 'licht' };
 
-/* Erstes Raumprogramm aus den Antworten. Richtwerte zur Veranschaulichung, keine Planung. */
-export function program(a) {
-  const R = [];
-  const add = (room, m2, note) => R.push({ room, m2, note });
-  add('Wohnen, Essen, Kochen', a.love.includes('kochen') ? 62 : 48, a.love.includes('kochen') ? 'Ein Tisch für zehn.' : '');
-  add('Eingang und Garderobe', 8);
-  ({
-    allein: () => add('Schlafen', 15),
-    zwei: () => { add('Schlafen', 16); add('Ankleide', 6); },
-    familie: () => { add('Schlafen', 16); add('Ankleide', 6); add('Kinderzimmer', 13); add('Kinderzimmer', 13); add('Zweites Bad', 6); },
-    generationen: () => { add('Schlafen', 16); add('Zimmer', 13); add('Eigener Bereich mit Bad', 34, 'Ebenerdig, mit eigenem Zugang.'); }
-  }[a.who] || (() => {}))();
-  add('Bad', 9); add('WC', 3); add('Technik und Hauswirtschaft', 10);
-  if (a.work === 'zuhause') add('Arbeiten', 12, 'Weg vom Trubel.');
-  if (a.work === 'kunden') add('Arbeiten', 15, 'Mit eigenem Eingang.');
-  if (a.love.includes('gaeste')) add('Gästezimmer', 12);
-  if (a.love.includes('rueckzug')) add('Leseplatz', 8, 'Ein Ort nur für dich.');
-  if (a.love.includes('werkstatt')) add('Werkstatt', 14);
-  const notes = [];
-  if (a.love.includes('morgen')) notes.push('Küche nach Osten.');
-  if (a.love.includes('weite')) notes.push('Ein Luftraum über dem Wohnen.');
-  if (a.love.includes('garten')) notes.push('Die Terrasse wird das zweite Wohnzimmer.');
-  if (a.love.includes('buecher')) notes.push('Eine Wand nur für Bücher.');
-  const total = R.reduce((s, r) => s + r.m2, 0);
-  return { rooms: R, notes, total };
+/* Gespeicherte Antworten aus älteren Runden (andere Fragen) nicht übernehmen: nur gültige Werte zählen */
+export function cleanAnswers(raw) {
+  const a = { ...DEFAULT_ANSWERS };
+  if (!raw || typeof raw !== 'object') return a;
+  QUESTIONS.forEach(q => {
+    const ok = new Set(q.opts.map(o => o[0])), v = raw[q.key];
+    if (q.multi) { if (Array.isArray(v)) a[q.key] = v.filter(k => ok.has(k)); }
+    else if (ok.has(v)) a[q.key] = v;
+  });
+  return a;
 }
 
-const WHO = { allein: 'Du ziehst allein ein', zwei: 'Du ziehst zu zweit ein', familie: 'Du ziehst mit deiner Familie ein', generationen: 'Du ziehst mit mehreren Generationen ein' };
-const WORK = { buero: 'arbeitest im Büro', zuhause: 'arbeitest oft zuhause', kunden: 'empfängst Kundschaft zuhause' };
-const LOVE = { morgen: 'Morgenlicht', kochen: 'Kochen für viele', weite: 'Weite', rueckzug: 'Rückzug', garten: 'deinen Garten', gaeste: 'Gäste über Nacht', buecher: 'Bücher', werkstatt: 'eine Werkstatt' };
+/* Erstes Raumprogramm aus den Antworten. Richtwerte vom Kunden ("Richtwerte, angepasst", 2026-11-05), keine Planung.
+   Mit Kindern: die Zahl der Kinder wird nicht gefragt, gerechnet wird mit zwei (Annahme, mit dem Kunden klären). */
+export const KIDS = 2;
+export function program(a) {
+  const R = [], live = a.live || [];
+  const add = (room, m2, note) => R.push({ room, m2, note });
+  add('Wohnen, Essen, Kochen', 45 + (a.wichtig === 'offen' ? 10 : 0), a.wichtig === 'offen' ? 'Größer, ein offener Raum.' : '');
+  /* Immer: Eingang, Bad, WC, Technik zusammen 29 m², fürs Modell aufgeteilt */
+  add('Eingang', 7); add('Bad', 9); add('WC', 3); add('Technik', 10);
+  add('Schlafzimmer', 16);
+  if (a.who === 'kinder') { for (let i = 0; i < KIDS; i++) add('Kinderzimmer', 13); if (KIDS >= 2) add('Zweites Bad', 8); }
+  if (a.who === 'generationen') add('Eigener Wohnbereich mit Bad', 40, 'Ebenerdig, mit eigenem Zugang.');
+  if (live.includes('arbeiten')) add('Arbeitszimmer', 12);
+  if (live.includes('gaeste')) add('Gästezimmer mit Duschbad', 18);
+  if (live.includes('sport')) add('Fitnessraum', 15);
+  if (a.wichtig === 'rueckzug') add('Nischen', 6, 'Rückzugsorte für alle.');
+  /* Zum Schluss: Flure und Wege, 15 % der Räume */
+  const net = R.reduce((s, r) => s + r.m2, 0);
+  add('Flure und Wege', Math.round(net * .15));
+  const notes = [];
+  if (live.includes('draussen')) notes.push('Eine große Terrasse.');
+  if (a.wichtig === 'ebene') notes.push('Alles auf einer Ebene.');
+  if (a.wichtig === 'licht') notes.push('Mehr Glas.');
+  const total = R.reduce((s, r) => s + r.m2, 0);
+  return { rooms: R, notes, total, oneLevel: a.wichtig === 'ebene', terrace: live.includes('draussen'), light: a.wichtig === 'licht' };
+}
+
+const WHO = { allein: 'Du wohnst allein', zwei: 'Du wohnst zu zweit', kinder: 'Du wohnst mit Kindern', generationen: 'Du wohnst mit mehreren Generationen' };
+const LIVE = { arbeiten: 'arbeitest zuhause', gaeste: 'hast gerne Gäste', sport: 'brauchst Platz für Sport', draussen: 'bist am liebsten draußen' };
+const WICHTIG = { offen: 'Dir ist ein offener Raum wichtig.', rueckzug: 'Dir sind Rückzugsorte für alle wichtig.', ebene: 'Dir ist wichtig, dass alles auf einer Ebene liegt.', licht: 'Dir ist viel Licht wichtig.' };
 export function sentence(a) {
-  const l = a.love.map(k => LOVE[k]);
+  const l = (a.live || []).map(k => LIVE[k]).filter(Boolean);
   const list = l.length > 1 ? l.slice(0, -1).join(', ') + ' und ' + l[l.length - 1] : l[0];
-  return `${WHO[a.who]}, ${WORK[a.work]}${list ? ' und willst ' + list + ' nicht missen' : ''}.`;
+  return `${WHO[a.who] || WHO.zwei}${list ? ', ' + list : ''}. ${WICHTIG[a.wichtig] || ''}`.trim();
 }
 
 /* Kapitel 02, Grundstück. Maße in Metern, Ursprung links oben, Norden oben. */
@@ -225,8 +307,8 @@ export const RAIL = [
 export const WEG = [
   { nr: '01', name: 'Kennenlernen', say: 'Wir hören zu, bevor wir zeichnen.', scene: 'tisch', cap: 'Ein Tisch, viele Fragen' },
   { nr: '02', name: 'Grundstück', say: 'Wir lesen deinen Ort. Gelände, Bäume, Sonne.', scene: 'ort', cap: 'Dein Ort im Modell' },
-  { nr: '03', name: 'Inspiration', say: 'Drei Concepts zum Weiterdenken.', scene: 'ideen', cap: 'Wald, Düne, Summer' },
-  { nr: '04', name: 'Mischen', say: 'Du nimmst, was dir gefällt. Wir fügen es zusammen.', scene: 'mischen', cap: 'Aus drei wird eins' },
+  { nr: '03', name: 'Inspiration', say: 'Vier Concepts zum Weiterdenken.', scene: 'ideen', cap: 'Stille, Einfachheit, Leichtigkeit, Weitblick' },
+  { nr: '04', name: 'Mischen', say: 'Du nimmst, was dir gefällt. Wir fügen es zusammen.', scene: 'mischen', cap: 'Aus vielen wird eins' },
   { nr: '05', name: 'Bauen', say: 'Vorgefertigt in Griffen, aufgestellt in wenigen Tagen.', scene: 'bauen', cap: 'Element für Element' },
   { nr: '06', name: 'Einzug', say: 'Und dann wohnst du.', scene: 'einzug', cap: 'Licht an' }
 ];

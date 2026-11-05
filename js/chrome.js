@@ -11,7 +11,7 @@ const roomColor = el => {
 };
 const Lm = c => (c[0] * .2126 + c[1] * .7152 + c[2] * .0722) / 255;
 function colorAt(y, rooms) {
-  const zone = (a, b) => innerHeight * (Math.abs(Lm(a) - Lm(b)) > .45 ? .035 : .3);
+  const zone = (a, b) => innerHeight * (Math.abs(Lm(a) - Lm(b)) > .45 ? .035 : .5);
   for (let i = 0; i < rooms.length; i++) {
     const r = rooms[i].getBoundingClientRect();
     if (r.top <= y && r.bottom > y) {

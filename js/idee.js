@@ -78,7 +78,8 @@ export function initIdee() {
 
 async function boot() {
   try { M = await import('./house3d.js'); } catch (e) { console.warn('3D nicht geladen', e); return; }
-  WP = { ...M.CONCEPTS.wald };
+  /* Form des Concepts dieser Seite (data-form an #w-idee, aus content.js) */
+  WP = { ...(M.CONCEPTS[(I.el && I.el.dataset.form) || 'wald'] || M.CONCEPTS.wald) };
   /* Vier Formen, die fünfte Stufe ist die Skizze */
   STEPS = [
     { ...M.CONCEPTS.block, L0: 16, D: 9, H1: 6.2, L1: 16, H2: 0, tone: 0 },

@@ -127,7 +127,7 @@ function tree(parent, x, y, z, ht, mat = MT.white, lm = MT.line) {
 }
 const house = (parent, id, o = {}) => {
   const hs = new M.House({ scene: parent }, { line: 0x8b8378, hill: 0xE4DCD1, hillLine: 0xB7AC9D, toned: true, ...o });
-  hs.set(M.CONCEPTS[id]); hs.edgeAlways = .45; return hs;
+  hs.set(typeof id === 'string' ? M.CONCEPTS[id] : id); hs.edgeAlways = .45; return hs;
 };
 
 const BUILD = {
@@ -184,21 +184,22 @@ const BUILD = {
     };
     return s;
   },
-  /* 03 Inspiration: Wald, Düne und Summer auf Sockeln, nacheinander gebaut */
+  /* 03 Inspiration: Stille, Einfachheit, Leichtigkeit und Weitblick auf Sockeln, nacheinander gebaut */
   ideen() {
-    const s = stage(0xCFC3B3, { box: 60, fogNear: 170, fogFar: 380 });
-    const hs = ['wald', 'duene', 'summer'].map((id, i) => {
-      const hold = new T.Group(); hold.position.set((i - 1) * 30, .5, 0); s.scene.add(hold);
-      box(s.scene, 25, .5, 15, (i - 1) * 30, 0, 0);
+    const s = stage(0xCFC3B3, { box: 70, fogNear: 190, fogFar: 420 });
+    const forms = ['wald', 'duene', 'summer', { ...M.CONCEPTS.hang, slope: 0 }];
+    const hs = forms.map((id, i) => {
+      const hold = new T.Group(); hold.position.set((i - 1.5) * 28, .5, 0); s.scene.add(hold);
+      box(s.scene, 24, .5, 15, (i - 1.5) * 28, 0, 0);
       return house(hold, id);
     });
     s.update = (k, c) => {
-      hs.forEach((h, i) => { h.build = E(k, i * .13, .46 + i * .13); h.update(); });
-      s.orbit(-.42 + (c - .5) * -.6, .34, 124, 0, 3, 0);
+      hs.forEach((h, i) => { h.build = E(k, i * .1, .43 + i * .1); h.update(); });
+      s.orbit(-.42 + (c - .5) * -.6, .34, 150, 0, 3, 0);
     };
     return s;
   },
-  /* 04 Mischen: dahinter Wald, Düne und Summer als Linien, vorne wird aus ihnen eins */
+  /* 04 Mischen: dahinter Stille, Einfachheit und Leichtigkeit als Linien, vorne wird aus ihnen eins */
   mischen() {
     const s = stage(0xCFC3B3, { box: 60, fogNear: 170, fogFar: 380 });
     const ghosts = ['wald', 'duene', 'summer'].map((id, i) => {

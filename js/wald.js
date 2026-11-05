@@ -1,12 +1,16 @@
-/* Seite Concept Wald. Ankommen, Grundriss in 3D, Eckdaten, Die Idee, Vom Volumen zum Haus, Film, Raum und Licht, Nächstes Concept, Kontakt.
-   Header, Menü und Footer kommen wie auf der Concepts Seite aus chrome.js. */
+/* Seite eines Concepts (stille.html, einfachheit.html, leichtigkeit.html, weitblick.html, erzeugt von tools/pages.mjs).
+   Ankommen, Eckdaten, Die Idee, Film oder Bildband, Raum und Licht, Grundriss (nur Stille), Nächstes Concept, Kontakt.
+   Welches Concept, steht als data-concept an jeder Sektion. Header, Menü und Footer kommen aus chrome.js. */
 import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
+import { CONCEPTS } from '../data/content.js';
+import { initBuehne, cardsFor } from './buehne.js';
 import { initChrome, frame } from './chrome.js';
 import { initIdee } from './idee.js';
 import { initPlan3d } from './plan3d.js';
 import { initKontakt } from './kontakt.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
+const concept = () => { const el = $('[data-concept]'); return CONCEPTS.find(c => el && c.id === el.dataset.concept) || CONCEPTS[0]; };
 
 /* Vollbild zieht beim Scrollen leicht zurück, der Name hebt sich ab */
 function initHero() {
@@ -38,10 +42,14 @@ function initCount() {
 
 /* Film: ein breites Band, nicht bildschirmhoch. Es öffnet sich beim Hereinscrollen und läuft stumm, solange es im Bild ist */
 function initFilm() {
-  const box = $('[data-wf-box]'), v = $('[data-wf-video]');
-  if (!box) return;
-  new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause(); }), { threshold: .2 }).observe(box);
-  if (reduce) { v.controls = true; return; }
+  /* Film, oder ein Bild als Band, solange es für das Concept keinen Film gibt */
+  const box = $('[data-wf-box]'), v = $('[data-wf-video]') || $('[data-wf-img]');
+  if (!box || !v) return;
+  if (v.tagName === 'VIDEO') {
+    new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause(); }), { threshold: .2 }).observe(box);
+    if (reduce) v.controls = true;
+  }
+  if (reduce) return;
   loop.add({ tick() {
     const r = box.getBoundingClientRect(), vh = innerHeight; if (r.top > vh || r.bottom < 0) return;
     /* offen, sobald die Mitte des Bands die Mitte des Bildschirms erreicht */
@@ -72,23 +80,21 @@ function initLicht() {
   } });
 }
 
-/* Nächstes Concept: das Bild setzt sich beim Hereinscrollen, der Name kommt von unten */
+/* Nächstes Concept: dieselbe Bühne wie auf der Concepts Seite (stillform.homes), mit einem Haus im Rahmen */
 function initNext() {
-  const st = $('#w-next .wn__stage'), im = $('[data-wn-fig] img'), row = $('[data-wn-row]');
-  if (!st || reduce) return;
-  loop.add({ tick() {
-    const r = st.getBoundingClientRect(), vh = innerHeight;
-    if (r.top > vh || r.bottom < 0) return;
-    const k = ease(clamp((vh - r.top) / (vh * .95)));
-    im.style.transform = `scale(${lerp(1.2, 1.02, k).toFixed(4)}) translate3d(0,${((1 - k) * -6).toFixed(2)}%,0)`;
-    row.style.transform = `translate3d(0,${((1 - k) * 60).toFixed(1)}px,0)`;
-    row.style.opacity = E(k, .35, 1).toFixed(3);
-  } });
+  const sec = $('#w-next'), root = sec && $('[data-bu]', sec);
+  if (!root) return;
+  const nx = CONCEPTS.find(c => c.id === sec.dataset.next) || CONCEPTS[0];
+  const n = String(CONCEPTS.length).padStart(2, '0');
+  initBuehne(root, {
+    houses: [nx], cards: cardsFor([nx, ...CONCEPTS.filter(c => c.id !== nx.id)]),
+    count: () => `Nächstes Concept / ${nx.nr} von ${n}`, all: 'index.html#k-concepts'
+  });
 }
 
-/* Kontakt: Nachricht kennt schon Concept Wald */
+/* Kontakt: Nachricht kennt schon das Concept */
 function initForm() {
-  const message = () => 'Ich interessiere mich für Concept Wald.';
+  const message = () => `Ich interessiere mich für Concept ${concept().name}.`;
   const kf = initKontakt($('#w-kontakt [data-kf-host]'), { prefill: message, say: '' });
   store.on(() => kf && kf.refresh());
 }

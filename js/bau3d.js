@@ -6,8 +6,8 @@
    und die Wünsche bekommen Gestalt (Tisch für zehn, Luftraum, Bücherwand, Terrasse mit Bäumen, Morgenlicht von Osten). */
 import { $, $$, h, ease, clamp, lerp, seg, reduce, loop, through } from './core.js';
 
-const UP = new Set(['Schlafen', 'Ankleide', 'Kinderzimmer', 'Zweites Bad', 'Zimmer', 'Bad', 'Gästezimmer', 'Leseplatz']);
-const NOWIN = new Set(['WC', 'Technik und Hauswirtschaft', 'Ankleide', 'Eingang und Garderobe']);
+const UP = new Set(['Schlafzimmer', 'Kinderzimmer', 'Zweites Bad', 'Bad', 'Gästezimmer mit Duschbad', 'Nischen']);
+const NOWIN = new Set(['WC', 'Technik', 'Eingang', 'Flure und Wege']);
 const HW = 2.75, SLAB = .3, DECK = .3, ROOF = .34, TW = .12, IN = .07, SIDE = 2.8, DROP = 30, ARC = 6;
 const TALL = 2 * HW + DECK, CUT = 1.75;
 const WALL = 0xF4F1EB, HOT = 0xCFC3B3;
@@ -23,28 +23,25 @@ function furnFor(r) {
     if (!L.feat.kochen) add(W * .56, D * .5, Math.min(1.9, W * .34), .95, .74, 'a');
     add(W * .2, D - .48, Math.min(2.3, W * .34), .88, .42, 's');
     add(W * .2, D - 1.35, Math.min(1.1, W * .2), .6, .36, 'a');
-  } else if (n === 'Schlafen' || n.startsWith('Eigener')) {
+  } else if (n === 'Schlafzimmer' || n.startsWith('Eigener')) {
     add(W / 2, 1, 1.8, 2, .48, 's'); add(W / 2, .2, 1.6, .36, .62, 'w');
     add(W / 2 - 1.2, .25, .45, .45, .5, 'a'); add(W / 2 + 1.2, .25, .45, .45, .5, 'a');
-  } else if (n === 'Kinderzimmer' || n === 'Zimmer' || n === 'Gästezimmer') {
+  } else if (n === 'Kinderzimmer' || n.startsWith('Gästezimmer')) {
     add(.45, 1, .9, 2, .48, 's'); add(.45, .2, .8, .34, .62, 'w'); add(W - .6, D - .32, 1.2, .62, .74, 'a');
   } else if (n === 'Ankleide') add(W / 2, .3, W, .6, 2, 'a');
   else if (n === 'Bad' || n === 'Zweites Bad') { add(.4, .9, .8, 1.8, .55, 'w'); add(W - .25, D / 2, .5, 1.2, .86, 'w'); }
   else if (n === 'WC') add(W / 2, .3, .4, .6, .42, 'w');
   else if (n.startsWith('Technik')) add(W / 2, .31, Math.min(2.4, W), .62, .9, 'w');
   else if (n.startsWith('Eingang')) add(.2, D / 2, .4, Math.min(2, D), 2, 'a');
-  else if (n === 'Arbeiten') { add(W / 2, .38, 1.6, .75, .74, 'a'); add(W / 2, 1.1, .5, .5, .46, 's'); }
-  else if (n === 'Leseplatz') { add(.5, .5, .8, .8, .44, 's'); add(W - .18, D / 2, .35, Math.min(2.4, D), 1.8, 'a'); }
-  else if (n === 'Werkstatt') add(W / 2, .45, Math.min(2.2, W), .8, .9, 'a');
+  else if (n === 'Arbeitszimmer') { add(W / 2, .38, 1.6, .75, .74, 'a'); add(W / 2, 1.1, .5, .5, .46, 's'); }
+  else if (n === 'Nischen') { add(.5, .5, .8, .8, .44, 's'); add(W - .18, D / 2, .35, Math.min(2.4, D), 1.8, 'a'); }
+  else if (n === 'Fitnessraum') { add(W / 2, D / 2, Math.min(1.9, W * .6), .8, .04, 's'); add(W - .3, D / 2, .5, Math.min(1.4, D), 1.3, 'a'); }
   return out;
 }
 /* Kurze Namen fürs Modell, die Liste darunter behält die langen */
-const SHORT = { 'Wohnen, Essen, Kochen': 'Wohnen', 'Eingang und Garderobe': 'Eingang', 'Technik und Hauswirtschaft': 'Technik', 'Eigener Bereich mit Bad': 'Eigener Bereich', 'Zweites Bad': 'Bad 2', 'Kinderzimmer': 'Kinder' };
+const SHORT = { 'Wohnen, Essen, Kochen': 'Wohnen', 'Schlafzimmer': 'Schlafen', 'Eigener Wohnbereich mit Bad': 'Wohnbereich', 'Zweites Bad': 'Bad 2', 'Kinderzimmer': 'Kinder', 'Gästezimmer mit Duschbad': 'Gäste', 'Arbeitszimmer': 'Arbeiten', 'Fitnessraum': 'Sport', 'Flure und Wege': 'Flur', 'Nischen': 'Nische' };
 /* Was die Wünsche im Modell auslösen, für die Änderungszeile */
-const FEAT = {
-  garten: ['Terrasse und Bäume', 'Terrasse'], weite: ['Luftraum über dem Wohnen', 'Luftraum'], buecher: ['Bücherwand', 'Bücherwand'],
-  kochen: ['Tisch für zehn', 'Tisch für zehn'], morgen: ['Morgenlicht von Osten', 'Morgenlicht']
-};
+const FEAT = { garten: ['Große Terrasse', 'Terrasse'], licht: ['Mehr Glas', 'Mehr Glas'] };
 const KEYS = ['x', 'y', 'z', 'sx', 'sy', 'sz'];
 const PHASES = ['slab', 'eg', 'decke', 'og', 'roof'];
 const easeIn = x => x * x * x;
@@ -84,14 +81,15 @@ export function roomKeys(rooms) { return rooms.map((r, i) => r.room + '#' + room
 function plan(P, a) {
   const keys = roomKeys(P.rooms);
   const rooms = P.rooms.map((r, i) => ({ ...r, key: keys[i] }));
-  const two = P.total > 120;
+  /* Alles auf einer Ebene: immer eingeschossig */
+  const two = P.total > 120 && !P.oneLevel;
   const eg = rooms.filter(r => !two || !UP.has(r.room)), og = two ? rooms.filter(r => UP.has(r.room)) : [];
   const A0 = sum(eg), A1 = sum(og);
   const D = clamp(Math.sqrt(Math.max(A0, A1) / 1.55), 7.6, 10.4);
   const W0 = A0 / D, W1 = A1 / D, x0 = -W0 / 2;
   const R0 = squarify(eg, x0, -D / 2, W0, D).map(r => ({ ...r, lv: 0 }));
   const live = R0.find(r => r.room.startsWith('Wohnen'));
-  const feat = Object.fromEntries(Object.keys(FEAT).map(k => [k, a.love.includes(k)]));
+  const feat = { garten: !!P.terrace, licht: !!P.light };
   /* Luftraum: das Wohnen geht über zwei Geschoße, das Obergeschoß rückt daneben */
   /* Kein Luftraum mehr in der Ansicht Räume: Weite zeigt sich als Glas rundum im Wohnen */
   const lw = false;
@@ -110,7 +108,7 @@ function targets(md) {
   const put = (key, kind, phase, s, extra = {}) => out.push({ key: key + '|' + kind, kind, phase, ry: 0, ...s, ...extra });
   put('slab', 'slab', 'slab', { x: 0, y: SLAB / 2, z: 0, sx: L.W0 + .5, sy: SLAB, sz: L.D + .5 });
   if (L.garten && live) {
-    put('terr', 'deck', 'slab', { x: live.x + live.w / 2, y: .11, z: L.D / 2 + .25 + 1.7, sx: live.w, sy: .22, sz: 3.4 });
+    put('terr', 'deck', 'slab', { x: live.x + live.w / 2, y: .11, z: L.D / 2 + .25 + 2.2, sx: live.w + 2.4, sy: .22, sz: 4.4 });
     [[live.x - 2.3, L.D / 2 + 1.4, 5.6], [live.x + live.w + 1.5, L.D / 2 + 3.3, 6.6], [live.x - 2.8, -L.D / 2 + 1.2, 4.8]]
       .forEach(([x, z, s], i) => put('baum' + i, 'tree', 'slab', { x, y: 0, z, sx: s, sy: s, sz: s }));
   }
@@ -121,7 +119,9 @@ function targets(md) {
     const fx0 = r.lv ? L.ox : L.x0, fx1 = r.lv ? L.ox + L.W1 : L.W0 / 2;
     const ext = { n: r.z < -L.D / 2 + .05, s: r.z + r.d > L.D / 2 - .05, w: r.x < fx0 + .05, e: r.x + r.w > fx1 - .05 };
     const isLive = r.room.startsWith('Wohnen');
-    const kind = side => isLive && ext[side] && (side === 's' || side === 'w' || L.feat.weite) ? 'glass' : ext[side] && !isLive && !NOWIN.has(r.room) ? 'win' : 'wall';
+    /* Viel Licht: das Wohnen rundum verglast, alle Räume zum Garten (Süden) raumhoch */
+    const kind = side => isLive && ext[side] && (side === 's' || side === 'w' || L.feat.licht) ? 'glass'
+      : ext[side] && !isLive && !NOWIN.has(r.room) ? (L.feat.licht && side === 's' ? 'glass' : 'win') : 'wall';
     const wall = (side, s, ry) => put(r.key + '|' + side, kind(side), r.lv ? 'og' : 'eg', { ...s, y, sy: hh }, { ry, room: r.key, side });
     wall('n', { x: ox + r.x + r.w / 2, z: r.z + IN, sx: r.w - .02, sz: TW }, 0);
     wall('s', { x: ox + r.x + r.w / 2, z: r.z + r.d - IN, sx: r.w - .02, sz: TW }, 0);
@@ -295,7 +295,7 @@ function placeLabels(t) {
   floorLbl.forEach((lb, i) => {
     let on = false;
     if (sideOn) {
-      const x = i ? dk.s.x : 0, z = L.D / 2 + (i === 0 && L.garten ? 3.9 : .7);
+      const x = i ? dk.s.x : 0, z = L.D / 2 + (i === 0 && L.garten ? 4.9 : .7);
       const q = new T.Vector3(x, 0, z).project(S.cam), px = (q.x + 1) / 2 * W, py = (1 - q.y) / 2 * H;
       const w = lb._w || (lb._w = lb.offsetWidth), r = { x0: px - w / 2 - 3, x1: px + w / 2 + 3, y0: py, y1: py + 20 };
       on = r.x0 > 0 && r.x1 < W && r.y1 < H && !hit(r);
@@ -331,7 +331,7 @@ function placeLabels(t) {
 function view(azNow) {
   const open = mode === 'raeume', side = open && L.two;
   const x0 = (side ? L.x0 : L.minX) - .3 - (L.garten ? 3.4 : 0), x1 = (side ? L.W0 / 2 + SIDE + L.W1 : L.maxX) + .3;
-  const z0 = -L.D / 2 - .3, z1 = L.D / 2 + .3 + Math.max(L.garten ? 3.8 : 0, side ? 1.2 : 0);
+  const z0 = -L.D / 2 - .3, z1 = L.D / 2 + .3 + Math.max(L.garten ? 4.8 : 0, side ? 1.2 : 0);
   const y1 = Math.max(L.two && !open ? SLAB + 2 * HW + DECK + ROOF : SLAB + (open ? CUT : HW + ROOF), L.lw ? SLAB + TALL : 0, L.garten ? 5.4 : 0) + .3;
   const el = open ? .74 : .44, c = [(x0 + x1) / 2, y1 / 2, (z0 + z1) / 2];
   const f = [-Math.sin(azNow) * Math.cos(el), -Math.sin(el), -Math.cos(azNow) * Math.cos(el)];

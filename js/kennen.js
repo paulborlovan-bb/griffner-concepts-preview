@@ -1,18 +1,18 @@
 /* 01 KENNENLERNEN. Drei Fragen, daraus ein erstes Raumprogramm. Rechts nur das Arbeitsmodell in 3D mit Möbeln (bau3d.js) und die Fläche. */
 import { $, store, h } from './core.js';
-import { QUESTIONS, DEFAULT_ANSWERS, program } from '../data/content.js';
+import { QUESTIONS, cleanAnswers, program } from '../data/content.js';
 import { initBau, bauUpdate } from './bau3d.js';
 
 let form, total;
 
-export const answers = () => ({ ...DEFAULT_ANSWERS, ...(store.get().answers || {}) });
+export const answers = () => cleanAnswers(store.get().answers);
 
 export function initKennen() {
   form = $('[data-ask]'); total = $('[data-sheet-total]');
   initBau();
   QUESTIONS.forEach((q, qi) => {
     const fs = h('fieldset', { 'data-reveal': String(qi * 100) });
-    fs.innerHTML = `<legend><span class="info">Frage 0${qi + 1}${q.multi ? ' / Bis zu vier' : ''}</span><span class="ask__n">${q.label}</span></legend>`;
+    fs.innerHTML = `<legend><span class="info">Frage ${qi + 1} / ${q.hint}</span><span class="ask__n">${q.label}</span></legend>`;
     const chips = h('div', { class: 'chips' });
     q.opts.forEach(([v, l]) => {
       const b = h('button', { type: 'button', class: 'chip', 'data-k': q.key, 'data-v': v, 'aria-pressed': 'false' }, l);
@@ -28,19 +28,12 @@ export function initKennen() {
 function pick(q, v) {
   const a = answers();
   if (q.multi) {
-    /* Höchstens vier. Wer ein fünftes wählt, bekommt es: das zuerst gewählte macht Platz, ohne Warnung. */
+    /* Mehrere Antworten möglich: an und aus */
     const list = a[q.key].filter(k => k !== v);
-    if (list.length === a[q.key].length) { list.push(v); if (list.length > 4) dropped(list.shift()); }
+    if (list.length === a[q.key].length) list.push(v);
     a[q.key] = list;
   } else a[q.key] = v;
   store.set({ answers: a, touched: true });
-}
-
-/* Das Feld, das Platz macht, blinkt kurz, damit man sieht, was passiert ist */
-function dropped(v) {
-  const b = form.querySelector(`.chip[data-v="${v}"]`); if (!b) return;
-  b.classList.remove('is-out'); void b.offsetWidth; b.classList.add('is-out');
-  setTimeout(() => b.classList.remove('is-out'), 900);
 }
 
 function render() {

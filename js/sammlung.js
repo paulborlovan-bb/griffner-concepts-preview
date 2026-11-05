@@ -1,8 +1,10 @@
 /* DIE SAMMLUNG WÄCHST. Zehn weiße Volumenmodelle auf Anthrazit, die Kamera geht beim Scrollen die Reihe ab.
    Jedes Haus baut sich auf, wenn die Kamera ankommt, der Zähler zählt mit. Daten kommen aus SAMMLUNG in data/content.js.
-   01 bis 03 sind offen und verlinkt, 04 bis 10 sind Platzhalter mit Status "Bald". */
+   01 bis 04 sind offen und verlinkt, 05 bis 10 sind Platzhalter mit Status "Bald". */
 import { $, E, lerp, clamp, seg, ease, prog, loop, reduce } from './core.js';
 import { SAMMLUNG } from '../data/content.js';
+
+const OPEN = SAMMLUNG.filter(s => !s.ph).length;
 
 const GAP = 34;
 let M, S, D, H = [], LABS = [], visible = false, booting = false;
@@ -49,14 +51,14 @@ function tick() {
   /* Kamera: sanft anfahren, die Reihe entlang, am Ende zurücktreten, bis alle zehn in einer Reihe stehen */
   const tk = seg(p, .05, .78), tx = last * GAP * tk * tk * (3 - 2 * tk);
   const ov = reduce ? 1 : E(p, .8, .95);
-  /* Aufbau: 01 bis 03 gleich zu Beginn, der Rest, wenn die Kamera ankommt */
+  /* Aufbau: die offenen gleich zu Beginn, der Rest, wenn die Kamera ankommt */
   const built = SAMMLUNG.map((s, i) => {
     if (reduce) return 1;
-    if (i < 3) return E(p, .01 + i * .03, .08 + i * .03);
+    if (i < OPEN) return E(p, .01 + i * .03, .08 + i * .03);
     return ease(clamp((tx - (i * GAP - 58)) / 30));
   });
   const n = built.filter(b => b > .55).length;
-  D.cnt.textContent = String(Math.max(3, n)).padStart(2, '0');
+  D.cnt.textContent = String(Math.max(OPEN, n)).padStart(2, '0');
   if (D.hint) D.hint.style.opacity = (1 - E(p, .04, .1)).toFixed(3);
   if (!S || !visible) return;
   /* Am Ende rücken die Häuser zu einem Raster zusammen: 5 x 2 am Desktop, 2 x 5 am Telefon, 01 hinten links */

@@ -49,7 +49,7 @@
         <span class="hero__w" data-h-w aria-hidden="true">Blick</span>
         <span class="hero__w" data-h-w aria-hidden="true">Licht</span>
         <span class="hero__w" data-h-w aria-hidden="true">Weite</span>
-        <p class="hero__say" data-h-say>Am Anfang steht kein Modell.</p>
+        <p class="hero__say" data-h-say>Und dann dein Ort.</p>
         <p class="hero__say" data-h-say>Am Anfang stehst du.</p>
         <p class="hero__say hero__say--list" data-h-say><span data-h-sl>Wie du lebst.</span><span data-h-sl>Was du brauchst.</span><span data-h-sl>Wovon du träumst.</span></p>
         <p class="hero__say" data-h-say>Daraus entsteht ein Grundriss.</p>
@@ -84,7 +84,7 @@
         <div class="kap" data-reveal="0"><span class="info">Kapitel 01 / Kennenlernen</span></div>
         <div class="g12">
           <h2 class="h-xl c-1-8" data-reveal="0">Erzähl uns von dir.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Bevor wir einen Strich ziehen, wollen wir wissen, wie du lebst. Drei Fragen reichen für einen ersten Eindruck. Im echten Gespräch werden es mehr.</p>
+          <p class="txt c-9-4 al-end" data-reveal="120">Bevor wir einen Strich zeichnen, hören wir zu: wie du lebst, was du brauchst, was dir wichtig ist und wovon du träumst. Daraus entwickeln wir den Grundriss, nicht umgekehrt. Drei Fragen geben einen ersten Eindruck.</p>
         </div>
         <div class="kennen__body g12" id="k-kennen-sheet">
           <form class="ask c-1-4" data-ask onsubmit="return false" aria-label="Drei Fragen"></form>
@@ -133,14 +133,17 @@
 
     <!-- 03 INSPIRATION. Die Concepts, aus content.js gebaut -->
     <section id="k-concepts" class="concepts" data-room="k-concepts">
-      <div class="wrap pad-t concepts__intro">
-        <div class="kap" data-reveal="0"><span class="info">Kapitel 03 / Inspiration</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-9" data-reveal="0">Drei Ideen zum Weiterdenken.</h2>
-          <p class="txt c-10-3 al-end" data-reveal="120" data-c-count>Wald, Düne und Summer. Keine fertigen Häuser, sondern Haltungen. Die Sammlung wächst.</p>
+      <!-- Bühne nach stillform.homes (js/buehne.js): Karten und Rahmen setzt das Skript ein -->
+      <div class="bu" data-bu>
+        <div class="bu__sticky">
+          <div class="bu__intro" data-bu-intro>
+            <span class="info">Kapitel 03 / Inspiration</span>
+            <h2 class="bu__h">Vier Lebensgefühle. Vier Concepts.</h2>
+            <p class="bu__p">Jedes unserer Concepts ist aus einem Lebensgefühl entstanden. Sie sind keine fertigen Häuser, sondern Ideen zum Weiterdenken.</p>
+          </div>
+          <div class="bu__cards" data-bu-cards aria-hidden="true"></div>
         </div>
       </div>
-      <div data-chapters></div>
     </section>
 
     <!-- DIE SAMMLUNG WÄCHST. Zehn Arbeitsmodelle in einer Reihe, die Kamera fährt beim Scrollen daran entlang (Idee aus dem Handoff) -->
@@ -153,9 +156,9 @@
             <div class="sammlung__intro">
               <span class="info">Concepts / Stand 06.11.2026</span>
               <h2 class="h-xl">Die Sammlung wächst.</h2>
-              <p class="txt">Neue Concepts kommen laufend dazu. Das nächste ist schon in Arbeit.</p>
+              <p class="txt">Es gibt mehr Lebensgefühle als Häuser. Darum entstehen laufend neue Concepts. Schau wieder vorbei.</p>
             </div>
-            <div class="sammlung__cnt" aria-live="off"><span data-sm-cnt>03</span><span class="info">Concepts</span></div>
+            <div class="sammlung__cnt" aria-live="off"><span data-sm-cnt>04</span><span class="info">Concepts</span></div>
           </div>
           <span class="info sammlung__hint">Scrollen, um die Reihe abzugehen</span>
           <div class="dockbox" data-sm-dock data-dock="box" data-dock-trigger="k-sammlung" data-dock-hide="1" aria-hidden="true"></div>
@@ -189,7 +192,7 @@
             <h2 class="h-xl" data-reveal="0">Und dann wohnst du.</h2>
             <p class="einzug__cap" data-f-cap aria-live="polite">Ankommen.</p>
             <ol class="einzug__list" data-f-list></ol>
-            <p class="txt einzug__txt" data-reveal="0">So kann sich Concept Wald anfühlen. Dreißig Sekunden zwischen Ankommen und Dableiben.</p>
+            <p class="txt einzug__txt" data-reveal="0">So kann sich Concept Stille anfühlen. Dreißig Sekunden zwischen Ankommen und Dableiben.</p>
           </div>
           <div class="film" id="k-film" data-f data-dock="edge" data-dock-x=".72" data-dock-trigger="k-film">
             <video data-f-video muted playsinline loop preload="metadata" poster="assets/video/wald-film.jpg">
@@ -198,7 +201,7 @@
             <div class="film__shade" aria-hidden="true"></div>
             <button type="button" class="film__btn info" data-f-btn>Pause</button>
             <div class="film__bar" aria-hidden="true"><i data-f-bar></i></div>
-            <span class="tag">Concept Wald / Visualisierung</span>
+            <span class="tag">Concept Stille / Visualisierung</span>
           </div>
         </div>
       </div>
