@@ -257,7 +257,8 @@ main,.ft{position:relative}
 .bu__btn{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.75);background:none;padding:8px 12px 7px;cursor:pointer;color:var(--griffner-weiss);transition:background-color var(--dur-small) var(--ease),color var(--dur-small) var(--ease)}
 .bu__btn:hover{background:var(--griffner-weiss);color:var(--griffner-schwarz);opacity:1}
 .bu__btn:disabled{opacity:.32;cursor:default;background:none;color:var(--griffner-weiss)}
-.bu__panel{position:absolute;z-index:2;pointer-events:none;left:clamp(16px,3cqi,44px);right:clamp(16px,3cqi,44px);bottom:clamp(26px,3.6cqi,52px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"word word" "f r" "g r";column-gap:clamp(24px,4cqi,64px);row-gap:clamp(12px,1.8cqi,22px);align-items:end;opacity:0}
+/* unten Platz für das gelbe Feld, das an der Unterkante andockt */
+.bu__panel{position:absolute;z-index:2;pointer-events:none;left:clamp(16px,3cqi,44px);right:clamp(16px,3cqi,44px);bottom:clamp(56px,7.6cqi,100px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"word word" "f r" "g r";column-gap:clamp(24px,4cqi,64px);row-gap:clamp(12px,1.8cqi,22px);align-items:end;opacity:0}
 .bu__panel.is-on{pointer-events:auto}
 .bu__word{grid-area:word;margin:0;font-family:var(--font-display);font-weight:300;font-size:min(10cqi,112px);line-height:.86;text-transform:uppercase;font-feature-settings:'liga' 0;white-space:nowrap}
 .bu__fuer{grid-area:f;margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(17px,2.1cqi,27px);line-height:1.15;max-width:19em;text-wrap:pretty}
