@@ -184,17 +184,17 @@ main,.ft{position:relative}
 .kennen__head{margin-bottom:clamp(48px,6vw,112px)}
 /* Runde 15: Übergang „Auf den Punkt“ (Export des Kunden). Sektion 400vh, Bühne sticky 100vh auf Weiß; der Raum bleibt Schwarz,
    damit die Raumfarben davor und danach nicht aufhellen (die Bühne deckt die Sektion immer ganz) */
-.punkt{position:relative;height:500vh}
-.punkt__st{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--griffner-schwarz);color:var(--griffner-schwarz)}
-/* Runde 16: am Ende blendet das Haus ins Schwarz der Concepts */
-.punkt__nacht{position:absolute;inset:0;background:var(--griffner-schwarz);opacity:0;pointer-events:none}
-.punkt__bild{display:contents}
-.punkt__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 58%;display:block;transform:scale(1.16);will-change:transform}
+/* Runde 19 (Kundenwunsch: durch den Punkt in die Concepts, kein Bild mehr): die Sektion endet 100vh früher, die Concepts fahren
+   unter der Bühne ein (Bühne z-index 3, über der Liste der Concepts). Die Sektion selbst bleibt durchsichtig (auch gegen die Raumfarbe
+   aus Framer), Schwarz kommt von der Fläche hinter den Buchstaben, die nur bis zur Oberkante der Concepts reicht. */
+.punkt{position:relative;height:500vh;margin-bottom:-100vh;background-color:transparent!important}
+.punkt__st{position:sticky;top:0;z-index:3;height:100vh;height:100svh;overflow:hidden;background:transparent;color:var(--griffner-schwarz);pointer-events:none}
+.punkt__back{position:absolute;left:0;right:0;top:0;height:100%;background:var(--griffner-schwarz)}
 .punkt__svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .punkt__svg text{font-family:var(--font-display);font-weight:300;font-feature-settings:'liga' 0}
 .punkt__z{position:absolute;left:var(--page-margin);right:var(--page-margin);top:20%;margin:0;opacity:0;font-family:var(--font-display);font-weight:300;font-size:clamp(28px,4.2vw,80px);line-height:.95;letter-spacing:0;text-transform:uppercase;font-feature-settings:'liga' 0;will-change:transform,opacity}
 .punkt__z--2{top:70%}
-.punkt.is-still{height:auto}
+.punkt.is-still{height:auto;margin-bottom:0}
 .punkt.is-still .punkt__st{position:relative}
 .ask fieldset{border:0;margin:0 0 44px;padding:0;min-width:0}
 .ask legend{padding:0;margin-bottom:16px}
@@ -271,7 +271,7 @@ main,.ft{position:relative}
 /* Akte nach stillform.homes (js/akte.js, Markup js/akte-html.js), auf Schwarz und zurückhaltend (Kundenwunsch 2026-11-05):
    links leise die Liste der Häuser, rechts je Haus Name mit losen Bildern, Bildfolge 70 bis 75 % breit, Satz und Aufruf */
 .aks{position:relative;display:grid;grid-template-columns:minmax(210px,23vw) minmax(0,1fr)}
-.aks__nav{position:relative;z-index:4}
+.aks__nav{position:relative;z-index:2}
 .aks__navin{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;padding:clamp(112px,17vh,170px) clamp(20px,2.4vw,40px) 40px var(--page-margin);display:flex;flex-direction:column;gap:clamp(18px,2.6vh,28px)}
 .aks__navk{opacity:.5}
 .aks__list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
@@ -328,7 +328,7 @@ main,.ft{position:relative}
 @media (max-width:759px){
   /* Telefon: die Liste wird eine Leiste unter dem Kopf, die Akte nutzen die ganze Breite */
   .aks{display:block}
-  .aks__nav{position:sticky;top:52px;height:0;z-index:6}
+  .aks__nav{position:sticky;top:52px;height:0;z-index:2}
   .aks__navin{position:relative;height:auto;padding:0;display:block;background:var(--gk-bg,var(--griffner-schwarz))}
   .aks.is-stuck .aks__navin::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:52px;background:var(--gk-bg,var(--griffner-schwarz))}
   .aks__navk{display:none}

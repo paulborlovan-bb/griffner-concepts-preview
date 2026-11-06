@@ -11,7 +11,11 @@
    die Maske, sobald der Kreis den Screen deckt. Kein Gelb. Mit reduzierter Bewegung: Endzustand ohne Zoom, ohne Strecke.
    Runde 16 (Kundenwunsch „transition from black to white and from image back to black“): Sektion 500vh. Die Bühne kommt
    schwarz aus dem Grundstück (keine Kante), steht sie oben, blendet die Fläche zu Weiß (P 0–.1). Dann der Ablauf oben
-   (P .1–.88). Am Ende blendet das Haus ins Schwarz (P .9–1), die Concepts schließen ohne Kante an. */
+   (P .1–.88). Am Ende blendet das Haus ins Schwarz (P .9–1), die Concepts schließen ohne Kante an.
+   Runde 19 (Kundenwunsch „get through the point and see the section with the concepts, no more image“): kein Bild, keine
+   Abblende. Durch die Buchstaben ist es Schwarz (Fläche data-p-back). Die Sektion endet 100vh früher, darum fahren die Concepts
+   im letzten Bildschirm unter der Bühne ein; die schwarze Fläche reicht nur bis zu ihrer Oberkante. Ablauf: P 0–.08 Schwarz zu
+   Weiß, P .08–.7 Zeilen und Wort, P .72–1 Zoom durch den Punkt, am Ende stehen die Concepts genau oben. */
 import { $, clamp, seg, lerp, loop, reduce, prog, mix, css } from './core.js';
 
 const eo = t => 1 - Math.pow(1 - t, 3);
@@ -22,8 +26,8 @@ export function initUebergang() {
   const sec = $('#k-uebergang');
   if (!sec || !$('[data-p-svg]', sec)) return;
   B = {
-    sec, st: $('.punkt__st', sec), img: $('[data-p-img]', sec), svg: $('[data-p-svg]', sec), g: $('[data-p-g]', sec), word: $('[data-p-word]', sec),
-    plate: $('[data-p-plate]', sec), night: $('[data-p-night]', sec), dot: $('[data-p-dot]', sec), circ: $('[data-p-circle]', sec), meas: $('[data-p-meas]', sec), l1: $('[data-p-l1]', sec), l2: $('[data-p-l2]', sec)
+    sec, st: $('.punkt__st', sec), back: $('[data-p-back]', sec), svg: $('[data-p-svg]', sec), g: $('[data-p-g]', sec), word: $('[data-p-word]', sec),
+    plate: $('[data-p-plate]', sec), dot: $('[data-p-dot]', sec), circ: $('[data-p-circle]', sec), meas: $('[data-p-meas]', sec), l1: $('[data-p-l1]', sec), l2: $('[data-p-l2]', sec)
   };
   /* Vorleser: eine Zeile „Daraus entsteht dein Concept.“, das Wort in der Maske ist nur Bild */
   B.l1.setAttribute('aria-label', `${B.l1.textContent.trim()} Concept.`);
@@ -61,25 +65,29 @@ function build() {
   const gap = Math.max(16, H * .03);
   B.l1.style.top = (base - cap - gap - B.l1.offsetHeight) + 'px';
   B.l2.style.top = (base + fs * .14 + gap) + 'px';
-  bm = { W, H, nat, avail, pc: [cx, cy], r, tr, S: Math.hypot(W, H) / Math.min(pw, ph) * 1.2 };
+  /* Um so viel endet die Sektion früher (CSS 100vh, am Telefon nicht immer innerHeight) */
+  const mb = -parseFloat(getComputedStyle(B.sec).marginBottom) || 0;
+  bm = { W, H, nat, avail, pc: [cx, cy], r, tr, mb, S: Math.hypot(W, H) / Math.min(pw, ph) * 1.2 };
 }
 
 function tick() {
   if (!B) return;
-  const { p: pr, on } = prog(B.sec);
+  const { p: pr, on, r: sr } = prog(B.sec);
   if (!on) return;
   if (innerWidth !== lw || innerHeight !== lh) { lw = innerWidth; lh = innerHeight; build(); }
-  /* Schwarz zu Weiß, dann der Ablauf, dann ins Schwarz */
-  const wIn = reduce ? 1 : eio(seg(pr, 0, .1)), p = reduce ? .5 : seg(pr, .1, .88), dark = reduce ? 0 : eio(seg(pr, .9, 1));
+  /* Schwarz zu Weiß, dann Zeilen und Wort, dann der Zoom durch den Punkt */
+  const wIn = reduce ? 1 : eio(seg(pr, 0, .08)), p = reduce ? .5 : seg(pr, .08, .7);
   const plate = css(mix([0, 0, 0], [255, 255, 255], wIn));
-  B.plate.setAttribute('fill', plate); B.st.style.backgroundColor = plate;
-  B.night.style.opacity = dark.toFixed(3);
-  B.word.setAttribute('textLength', lerp(bm.nat, bm.avail, eio(seg(p, .06, .32))).toFixed(1));
-  const r1 = eo(seg(p, .02, .14)), r2 = eo(seg(p, .34, .46)), out = reduce ? 0 : eo(seg(p, .56, .63));
+  B.plate.setAttribute('fill', plate);
+  /* Schwarz hinter den Buchstaben, aber nur bis zur Oberkante der Concepts, die unter der Bühne einfahren */
+  const stTop = reduce ? 0 : B.st.getBoundingClientRect().top;
+  B.back.style.height = reduce ? '' : clamp(sr.bottom - bm.mb - stTop, 0, bm.H + 2).toFixed(1) + 'px';
+  B.word.setAttribute('textLength', lerp(bm.nat, bm.avail, eio(seg(p, .06, .4))).toFixed(1));
+  const r1 = eo(seg(p, .02, .16)), r2 = eo(seg(p, .42, .56)), out = reduce ? 0 : eo(seg(p, .84, .97));
   B.l1.style.opacity = (r1 * (1 - out)).toFixed(3); B.l1.style.transform = `translate3d(0,${((1 - r1) * 24 - out * 24).toFixed(1)}px,0)`;
   B.l2.style.opacity = (r2 * (1 - out)).toFixed(3); B.l2.style.transform = `translate3d(0,${((1 - r2) * 24 - out * 24).toFixed(1)}px,0)`;
   /* Zoom in den Punkt */
-  const z = reduce ? 0 : eio(seg(p, .6, .95)), s = Math.exp(Math.log(bm.S) * z), mv = eio(seg(z, 0, .5));
+  const z = reduce ? 0 : eio(seg(pr, .72, 1)), s = Math.exp(Math.log(bm.S) * z), mv = eio(seg(z, 0, .5));
   const tx = lerp(bm.pc[0], bm.W / 2, mv), ty = lerp(bm.pc[1], bm.H / 2, mv);
   B.g.setAttribute('transform', z > 0 ? `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${s.toFixed(4)}) translate(${(-bm.pc[0]).toFixed(2)} ${(-bm.pc[1]).toFixed(2)})` : '');
   /* Ab dem ersten Zoomschritt trägt der Kreis den Punkt, das Zeichen geht in der Fläche auf */
@@ -93,5 +101,4 @@ function tick() {
   B.svg.style.visibility = covered ? 'hidden' : '';
   /* Prototyp: Header dunkel, solange die weiße Fläche steht (in Framer regelt das der Differenz-Modus des Headers) */
   if (covered) delete B.st.dataset.inkBg; else B.st.dataset.inkBg = plate;
-  B.img.style.transform = `scale(${(1.16 - .16 * eo(seg(reduce ? 1 : p, .55, 1)) + .04 * dark).toFixed(4)})`;
 }
