@@ -766,7 +766,6 @@ main,.ft{position:relative}
   .p3m{display:grid;gap:4px;margin-top:clamp(28px,5vh,48px);margin-left:calc(-1 * var(--page-margin));margin-right:calc(-1 * var(--page-margin))}
   .p3m__pic{position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
   .p3m__pic img{display:block;width:100%;height:auto}
-  .p3m__tag{position:absolute;right:var(--page-margin);bottom:12px;padding:7px 10px 6px;border:1px solid rgba(255,255,255,.55);color:var(--griffner-weiss)}
   /* Telefon: keine Raumnamen im Modell, zu eng (Kundenwunsch 2026-11-05). Die Geschoße bleiben beschriftet. */
   .p3__lab{display:none}
   .p3__hint{display:none}
