@@ -218,7 +218,8 @@ export const SITES = [
     contours: true,
     start: { x: 20, y: 18, r: 30 }, fit: { x: 17, y: 8, r: 0 },
     view: { from: [17, 14], to: [17, 31], spread: 14 },
-    note: 'Am Hang folgt das Haus dem Gelände. Oben die Zufahrt, unten der Blick ins Tal.'
+    /* Runde 21: in Framer geleert (Hand-Edit im Code von Konzept Grund), hier nachgezogen */
+    note: ''
   }
 ];
 export const SITE_STEPS = [

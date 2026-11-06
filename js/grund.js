@@ -28,7 +28,8 @@ function build() {
   const key = store.get().site || 'eben';
   const site = SITES.find(s => s.key === key) || SITES[0];
   $$('[data-site]', D.tabs).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.site === site.key)));
-  D.size.textContent = 'Grundstück ' + site.size;
+  /* Runde 21 (Kundenwunsch): kein Etikett „Grundstück …“ mehr oben über dem Modell */
+  if (D.size) D.size.textContent = 'Grundstück ' + site.size;
   if (D.note) D.note.textContent = site.note;
   g3Site(site.key);
   loop.poke();
@@ -47,5 +48,5 @@ function tick() {
   });
   g3Tick(p);
   D.tabs.classList.toggle('is-on', p > .82);
-  D.size.style.opacity = E(p, .04, .12).toFixed(3);
+  if (D.size) D.size.style.opacity = E(p, .04, .12).toFixed(3);
 }

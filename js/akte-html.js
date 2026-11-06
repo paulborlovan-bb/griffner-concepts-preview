@@ -42,7 +42,7 @@ export function aktHtml(c, i, n, { one = false, go = true } = {}) {
         <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="${thumb}" alt="" loading="lazy" decoding="async"></span>${words}</p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>${go ? `
-          <a class="ak__go" href="${esc(c.href)}">${esc(c.go || `Concept ${c.name} ansehen`)}</a>` : ''}
+          <a class="ak__go" href="${esc(c.href)}" aria-label="${esc(`Concept ${c.name} ansehen`)}">${esc(c.go || 'Concept ansehen')}</a>` : ''}
           <ul class="facts info ak__facts">${(c.facts || []).map(f => `<li>${esc(f)}</li>`).join('')}</ul>
         </div>
       </div>
@@ -59,7 +59,8 @@ export function aktHtml(c, i, n, { one = false, go = true } = {}) {
 </article>`;
 }
 
-/* Kapitel 03 auf der Concepts Seite: Liste links mit den Namen, rechts die Akte mit ihrem Titel und dem Aufruf „Concept Bold ansehen“, ohne Einleitung */
+/* Kapitel 03 auf der Concepts Seite: Liste links mit den Namen, rechts die Akte mit ihrem Titel und dem Aufruf „Concept ansehen“
+   (Runde 21: ohne den Namen, der steht nur noch im aria-label), ohne Einleitung */
 export function akteHtml(list) {
   const n = list.length;
   return `
