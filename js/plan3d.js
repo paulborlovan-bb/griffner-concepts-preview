@@ -115,10 +115,75 @@ let hm = 0, hmT = 0, lt = 0, PL = null, HS = null, MATD = null;
 const V = () => new T.Vector3();
 const sm = x => x * x * (3 - 2 * x);
 
+/* Runde 34: am Telefon kein Modell mehr, sondern je Geschoß ein Bild (schräg von oben mit Raumnamen, gerendert aus diesem
+   Modell mit tools/plan-shots.mjs über ?p3shot=0|1). Tippen öffnet das Bild groß: mit zwei Fingern zoomen, doppelt tippen. */
+const SHOT = typeof location !== 'undefined' ? (location.search.match(/[?&]p3shot=(\d)/) || [])[1] : undefined;
+let booted = false;
+
+/* Bild groß: schwarz über allem, passt ins Fenster; zwei Finger zoomen (bis 5fach) und schieben, doppelt tippen 2,5fach */
+function openPic(img, from) {
+  if (!img) return;
+  const doc = globalThis.document, body = doc.body;
+  const ov = doc.createElement('div');
+  ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', img.alt);
+  ov.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;touch-action:none;overflow:hidden;opacity:0;transition:opacity 300ms ease';
+  const im = doc.createElement('img');
+  im.alt = img.alt; im.src = img.dataset.full || img.currentSrc || img.src;
+  im.style.cssText = 'position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none';
+  const ui = 'position:absolute;z-index:2;color:#fff;font:500 10.5px/1.2 var(--font-text, sans-serif);letter-spacing:.2em;text-transform:uppercase;';
+  const x = doc.createElement('button'); x.type = 'button'; x.textContent = 'Schließen';
+  x.style.cssText = ui + 'right:16px;top:calc(16px + env(safe-area-inset-top));padding:10px 13px 9px;border:1px solid #fff;background:#000;cursor:pointer';
+  const hint = doc.createElement('span'); hint.textContent = 'Mit zwei Fingern zoomen';
+  hint.style.cssText = ui + 'left:16px;bottom:calc(16px + env(safe-area-inset-bottom));pointer-events:none;transition:opacity 700ms ease';
+  ov.append(im, x, hint); body.appendChild(ov);
+  const ovf = body.style.overflow; body.style.overflow = 'hidden';
+  let W = 1, H = 1, bw = 1, bh = 1, s = 1, tx = 0, ty = 0, p0 = null, last = 0;
+  const clampT = () => { const w = bw * s, h = bh * s; tx = w <= W ? (W - w) / 2 : Math.min(0, Math.max(W - w, tx)); ty = h <= H ? (H - h) / 2 : Math.min(0, Math.max(H - h, ty)); };
+  const draw = () => { im.style.transform = `translate3d(${tx}px,${ty}px,0) scale(${s})`; };
+  const fit = () => { W = ov.clientWidth || 1; H = ov.clientHeight || 1; const r = (im.naturalWidth || 1) / (im.naturalHeight || 1); bw = Math.min(W, H * r); bh = bw / r; im.style.width = bw + 'px'; im.style.height = bh + 'px'; clampT(); draw(); };
+  const zoomAt = (ns, px, py) => { ns = Math.min(5, Math.max(1, ns)); tx = px - (px - tx) * ns / s; ty = py - (py - ty) * ns / s; s = ns; clampT(); draw(); hint.style.opacity = '0'; };
+  const pts = e => [...e.touches].map(t => [t.clientX, t.clientY]);
+  const two = P => ({ two: true, d: Math.hypot(P[0][0] - P[1][0], P[0][1] - P[1][1]) || 1, mx: (P[0][0] + P[1][0]) / 2, my: (P[0][1] + P[1][1]) / 2, s, tx, ty });
+  const one = P => ({ two: false, x: P[0][0], y: P[0][1], tx, ty });
+  ov.addEventListener('touchstart', e => {
+    if (e.target === x) return;
+    e.preventDefault();
+    const P = pts(e);
+    if (P.length >= 2) { p0 = two(P); return; }
+    if (e.timeStamp - last < 300) { zoomAt(s > 1.05 ? 1 : 2.5, P[0][0], P[0][1]); last = 0; p0 = null; return; }
+    last = e.timeStamp; p0 = one(P);
+  }, { passive: false });
+  ov.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const P = pts(e); if (!p0) return;
+    if (p0.two && P.length >= 2) {
+      const q = two(P), ns = Math.min(5, Math.max(1, p0.s * q.d / p0.d));
+      tx = q.mx - (p0.mx - p0.tx) * ns / p0.s; ty = q.my - (p0.my - p0.ty) * ns / p0.s; s = ns; clampT(); draw(); hint.style.opacity = '0';
+    } else if (!p0.two && P.length === 1) { tx = p0.tx + P[0][0] - p0.x; ty = p0.ty + P[0][1] - p0.y; clampT(); draw(); }
+  }, { passive: false });
+  ov.addEventListener('touchend', e => { const P = pts(e); p0 = P.length === 1 ? one(P) : P.length >= 2 ? two(P) : null; });
+  ov.addEventListener('wheel', e => { e.preventDefault(); zoomAt(s * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive: false });
+  ov.addEventListener('dblclick', e => zoomAt(s > 1.05 ? 1 : 2.5, e.clientX, e.clientY));
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  const onRs = () => { s = 1; fit(); };
+  const close = () => {
+    ov.style.opacity = '0'; body.style.overflow = ovf;
+    globalThis.removeEventListener('keydown', onKey); globalThis.removeEventListener('resize', onRs);
+    setTimeout(() => ov.parentNode && ov.parentNode.removeChild(ov), 300);
+    if (from) from.focus({ preventScroll: true });
+  };
+  x.addEventListener('click', close);
+  globalThis.addEventListener('keydown', onKey); globalThis.addEventListener('resize', onRs);
+  if (im.complete && im.naturalWidth) fit(); else im.addEventListener('load', fit);
+  fit(); requestAnimationFrame(() => { ov.style.opacity = '1'; x.focus({ preventScroll: true }); });
+}
+
 export function initPlan3d() {
   D = { st: $('[data-p3]'), gl: $('[data-p3-gl]'), labs: $('[data-p3-labs]'), hint: $('[data-p3-hint]'), tag: $('[data-p3-tag]'), tabs: $$('[data-p3-mode]') };
   if (!D.st) return;
+  $$('[data-p3m-open]').forEach(b => b.addEventListener('click', () => openPic(b.querySelector('img'), b)));
   FLOORS = (HOUSES[D.st.dataset.p3House] || HOUSES.light).map(f => ({ ...f }));
+  if (SHOT != null) { FLOORS = [FLOORS[+SHOT] || FLOORS[0]]; D.st.classList.add('is-shot'); }
   /* Nur eine Ebene: kein Umschalten zum ganzen Haus */
   /* Runde 32: am Telefon bleiben die Tabs (Grundriss oder Haus), am Desktop blendet sie das CSS aus (.p3.is-one) */
   if (FLOORS.length < 2) D.st.classList.add('is-one');
@@ -141,9 +206,11 @@ export function initPlan3d() {
     if (reduce) { hm = hmT; fo = foT; }
     lt = performance.now(); loop.poke();
   }));
-  drag();
-  loop.add({ tick });
-  boot();
+  /* Das Modell startet nur, wo die Bühne zu sehen ist (nicht am Telefon, dort stehen die Bilder) */
+  const mq = matchMedia('(max-width: 819px)');
+  const go = () => { if (booted || (mq.matches && SHOT == null)) return; booted = true; drag(); loop.add({ tick }); boot(); };
+  if (mq.addEventListener) mq.addEventListener('change', go);
+  go();
 }
 
 async function boot() {
@@ -303,13 +370,14 @@ function layout() {
   const box = (x0, x1, y0, y1, z0, z1) => { const o = []; [x0, x1].forEach(x => [y0, y1].forEach(y => [z0, z1].forEach(z => o.push([x, y, z])))); return o; };
   /* Telefon: die Bühne so hoch, dass das größere Geschoß von oben die ganze Breite füllt (oben Reiter, unten Geschoßname und Hinweis) */
   if (phone) {
-    const W = D.st.clientWidth || 1, s = W * .94 / Math.max(...FLOORS.map(f => f.w));
-    const hp = Math.round(clamp(Math.max(...FLOORS.map(f => f.d * Math.min(s, (W * .94) / f.w))) + 128, W * .95, W * 1.75));
+    /* Runde 34: die Bühne geht am Telefon über die ganze Breite (CSS), der Plan füllt 98 % davon, quer wie am Desktop */
+    const W = D.st.clientWidth || 1, s = W * .98 / Math.max(...FLOORS.map(f => f.w));
+    const hp = Math.round(clamp(Math.max(...FLOORS.map(f => f.d * Math.min(s, (W * .98) / f.w))) + 128, W * .95, W * 1.75));
     /* die neue Höhe meldet sich über den ResizeObserver der Bühne, dann läuft layout noch einmal */
     if (Math.abs((D.st.clientHeight || 0) - hp) > 2) D.st.style.aspectRatio = W + ' / ' + hp;
   } else if (D.st.style.aspectRatio) D.st.style.aspectRatio = '';
   const w = D.gl.clientWidth || 1, h = D.gl.clientHeight || 1;
-  narrow = phone || w / h < 1.05;
+  narrow = SHOT == null && (phone || w / h < 1.05);
   /* Telefon: jedes Geschoß für sich, untereinander mit viel Abstand; die Kamera fährt zum gewählten */
   if (phone) {
     const gap = 8, pa = [0, 0], pb = b ? [0, a.d / 2 + gap + b.d / 2] : null;
@@ -427,14 +495,14 @@ function tick() {
   const P0 = PF ? { C: PF[0].C.map((v, i) => PF[1] ? lerp(v, PF[1].C[i], sm(fo)) : v), BB: PF[0].BB.map((p, i) => p.map((_, j) => pv(i, j))) } : PL;
   const C = P0.C.map((v, i) => lerp(v, HS.C[i], m)), BB = P0.BB.map((p, i) => p.map((v, j) => lerp(v, HS.BB[i][j], m)));
   /* leichte Drehung beim Scrollen, dazu was du selbst gedreht hast; das ganze Haus von flacher und mehr von der Seite */
-  const t = through(D.st, 1, -.2);
+  const t = SHOT != null ? .5 : through(D.st, 1, -.2);
   let mg;
   if (phone) {
     /* Runde 32: Grundriss genau von oben (Norden oben, ohne Schwanken), erst das ganze Haus kippt in die Perspektive */
     az = lerp(0, -.55, m) + (t - .5) * .2 * m + uc[0];
     el = clamp(lerp(1.5, .42, m) + uc[1], .14, 1.52);
     const H = D.gl.clientHeight || 1;
-    mg = [lerp(.94, .97, m), lerp(1 - 2 * 66 / H, .62, m), lerp(1 - 2 * 58 / H, .8, m)];
+    mg = [lerp(.98, .97, m), lerp(1 - 2 * 66 / H, .62, m), lerp(1 - 2 * 58 / H, .8, m)];
   } else {
     az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + uc[0];
     el = clamp(lerp(narrow ? .56 : .92, .42, m) + uc[1], .14, 1.35);

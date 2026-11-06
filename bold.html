@@ -105,14 +105,19 @@
           <div class="p3__gl" data-p3-gl></div>
           <div class="p3__labs" data-p3-labs aria-hidden="true"></div>
           <div class="tabs p3__tabs" role="tablist" aria-label="Ansicht">
-            <button type="button" role="tab" class="tab info" data-p3-mode="plan" aria-selected="true"><span class="p3__wide">Grundriss</span><span class="p3__ph">Unten</span></button>
-            <button type="button" role="tab" class="tab info p3__og" data-p3-mode="og" aria-selected="false">Oben</button>
+            <button type="button" role="tab" class="tab info" data-p3-mode="plan" aria-selected="true"><span class="p3__wide">Grundriss</span><span class="p3__ph">EG</span></button>
+            <button type="button" role="tab" class="tab info p3__og" data-p3-mode="og" aria-selected="false">OG</button>
             <button type="button" role="tab" class="tab info" data-p3-mode="haus" aria-selected="false">Ganzes Haus</button>
           </div>
           <span class="info p3__hint" data-p3-hint>Ziehen zum Drehen</span>
           <div class="p3__turn">
             <button type="button" class="ak__arrow" data-p3-turn="-1" aria-label="Modell nach links drehen">←</button><button type="button" class="ak__arrow" data-p3-turn="1" aria-label="Modell nach rechts drehen">→</button>
           </div>
+        </div>
+        <!-- Telefon (Runde 34): statt des Modells je Geschoß ein Bild, Tippen öffnet es groß zum Zoomen (js/plan3d.js openPic) -->
+        <div class="p3m">
+          <button type="button" class="p3m__pic" data-p3m-open aria-label="Erdgeschoß von Concept Bold groß ansehen"><img src="assets/img/plan3d-bold-eg.webp" data-full="assets/img/plan3d-bold-eg.webp" alt="Erdgeschoß von Concept Bold mit Möbeln und Raumnamen, schräg von oben" width="1714" height="1174" loading="lazy"><span class="info p3m__tag">Vergrößern</span></button>
+          <button type="button" class="p3m__pic" data-p3m-open aria-label="Obergeschoß von Concept Bold groß ansehen"><img src="assets/img/plan3d-bold-og.webp" data-full="assets/img/plan3d-bold-og.webp" alt="Obergeschoß von Concept Bold mit Möbeln und Raumnamen, schräg von oben" width="1710" height="1182" loading="lazy"><span class="info p3m__tag">Vergrößern</span></button>
         </div>
       </div>
     </section>
