@@ -199,7 +199,8 @@ export const SITES = [
     house: WALD, terr: [[9.5, 7.5], [15.2, 7.5], [15.2, 11.2], [9.5, 11.2]],
     start: { x: 23, y: 16, r: 0 }, fit: { x: 16, y: 10.5, r: -12 },
     view: { from: [18, 16.5], to: [18, 30.5], spread: 9 },
-    note: 'Das Wohnen dreht sich zur Abendsonne. Die Föhren bleiben stehen.'
+    /* 2026-11-06 14:26 in Framer geleert (KonzeptGrund), hier gespiegelt */
+    note: ''
   },
   {
     key: 'schmal', label: 'Schmal und tief',

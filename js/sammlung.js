@@ -2,7 +2,7 @@
    01 bis 04 sind offen, verlinkt und stehen als weiße Volumenmodelle. 05 bis 10 kommen noch: dort steht ein Schnurgerüst
    (abgestecktes Grundstück, house3d.js Stake) mit "Coming soon". Jeder Platz baut sich auf, wenn die Kamera ankommt,
    der Zähler zählt mit. Daten kommen aus SAMMLUNG in data/content.js. */
-import { $, E, lerp, clamp, seg, ease, prog, loop, reduce, hex, mix, css } from './core.js';
+import { $, E, lerp, clamp, seg, ease, prog, loop, reduce, hex, mix, css, vhs } from './core.js';
 import { SAMMLUNG } from '../data/content.js';
 
 const OPEN = SAMMLUNG.filter(s => !s.ph).length;
@@ -47,7 +47,8 @@ function tick() {
   if (!D || !D.el) return;
   const { p, on } = prog(D.el);
   if (!on) return;
-  const vw = innerWidth, vh = innerHeight, mob = vw < 760, last = (H.length || SAMMLUNG.length) - 1;
+  /* Runde 29: Maße der Bühne statt des Fensters, die Beschriftungen liegen in der Bühne (am Telefon ist das Fenster beim Scrollen höher) */
+  const stg = D.labs.parentNode, vw = stg.clientWidth || innerWidth, vh = stg.clientHeight || vhs(), mob = innerWidth < 760, last = (H.length || SAMMLUNG.length) - 1;
   /* Kamera: sanft anfahren, die Reihe entlang, am Ende zurücktreten, bis alle zehn in einer Reihe stehen */
   const tk = seg(p, .05, .78), tx = last * GAP * tk * tk * (3 - 2 * tk);
   const ov = reduce ? 1 : E(p, .8, .95);
@@ -80,12 +81,25 @@ function tick() {
   if (rc !== rl) { rl = rc; S.scene.background.set(rc); S.scene.fog.color.set(rc); }
   S.render();
   const floor = vh - (mob ? 56 : 72);
+  /* Runde 29 (Kundenwunsch „the numbers are not correct“): im Raster am Telefon lag die Nummer an der vorderen Ecke des Hauses und
+     damit auf dem Dach des Hauses in der Reihe davor, 01 und 02 standen so auf 03 und 04. Im Raster steht sie jetzt neben dem Haus:
+     linke Spalte links davon, rechte Spalte rechts davon, auf halber Tiefe. */
+  const side = mob ? E(ov, .45, .85) : 0;
   H.forEach((h, i) => {
     const lab = LABS[i];
     const q = S.project(h.x - h.p.L0 / 2, -.2, (h.z || 0) + h.p.D / 2 + 3);
-    const inView = q.z < 1 && q.x > -240 && q.x < vw + 20;
-    const y = Math.min(q.y + 14, floor - lab.offsetHeight);
-    lab.style.transform = `translate3d(${q.x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+    let x = q.x, y = Math.min(q.y + 14, floor - lab.offsetHeight);
+    if (side > 0) {
+      const P = h.p, right = i % cols === cols - 1;
+      const ext = right && !SAMMLUNG[i].ph ? Math.max(P.L0 / 2, (P.sx || 0) * (P.up || 0) + (P.L1 || 0) * (P.up || 0) / 2) : P.L0 / 2;
+      const qs = S.project(h.x + (right ? ext + 1.5 : -ext - 1.5), 0, h.z || 0);
+      x = lerp(x, right ? qs.x + 6 : qs.x - lab.offsetWidth - 6, side);
+      y = lerp(y, qs.y - lab.offsetHeight / 2, side);
+      /* nie am Rand anstoßen (Chrome 390 x 844: die 09 stand bei x 0) */
+      x = lerp(x, clamp(x, 8, vw - lab.offsetWidth - 8), side);
+    }
+    const inView = q.z < 1 && x > -240 && x < vw + 20;
+    lab.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
     const o = inView ? E(built[i], .35, .8) * (SAMMLUNG[i].ph ? .72 : 1) : 0;
     lab.style.opacity = o.toFixed(3);
     lab.style.visibility = o > .02 ? 'visible' : 'hidden';

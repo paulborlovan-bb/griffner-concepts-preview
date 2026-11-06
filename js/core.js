@@ -29,13 +29,18 @@ export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 export const h = (tag, attrs = {}, html = '') => { const el = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => v != null && el.setAttribute(k, v)); if (html) el.innerHTML = html; return el; };
 
 /* Fortschritt eines gepinnten Abschnitts: 0 wenn die Oberkante oben ankommt, 1 wenn die Unterkante unten ankommt */
-export function prog(el) {
-  const r = el.getBoundingClientRect(), vh = innerHeight;
-  return { p: reduce ? 1 : clamp(-r.top / Math.max(1, r.height - vh)), on: r.bottom > -vh * .2 && r.top < vh * 1.2, r };
+/* Runde 29 (Kundenwunsch: am Telefon läuft nicht alles sauber, Chrome und Safari): eine Bildschirmhöhe, die beim Scrollen gleich bleibt.
+   innerHeight wächst am Telefon, sobald die Leiste des Browsers wegfährt, die Bühnen sind aber 100svh hoch. Dann sprang der
+   Fortschritt mitten im Scrollen. Die Höhe des Dokumentfensters ist die kleine Höhe (wie svh) und ändert sich dabei nicht. */
+export const vhs = () => document.documentElement.clientHeight || innerHeight;
+/* h: Höhe der gepinnten Bühne, wenn sie nicht 100svh ist */
+export function prog(el, h) {
+  const r = el.getBoundingClientRect(), vh = vhs();
+  return { p: reduce ? 1 : clamp(-r.top / Math.max(1, r.height - (h || vh))), on: r.bottom > -vh * .2 && r.top < vh * 1.2, r };
 }
 /* Wie weit ein Element durch den Viewport gewandert ist: 0 Oberkante bei 100 %, 1 Oberkante bei 0 % */
 export function through(el, a = 1, b = 0) {
-  const r = el.getBoundingClientRect(), vh = innerHeight;
+  const r = el.getBoundingClientRect(), vh = vhs();
   return clamp((vh * a - r.top) / (vh * (a - b)));
 }
 

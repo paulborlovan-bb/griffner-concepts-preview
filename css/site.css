@@ -188,7 +188,8 @@ main,.ft{position:relative}
    unter der Bühne ein (Bühne z-index 3, über der Liste der Concepts). Die Sektion selbst bleibt durchsichtig (auch gegen die Raumfarbe
    aus Framer), Schwarz kommt von der Fläche hinter den Buchstaben, die nur bis zur Oberkante der Concepts reicht. */
 .punkt{position:relative;height:500vh;margin-bottom:-100vh;background-color:transparent!important}
-.punkt__st{position:sticky;top:0;z-index:3;height:100vh;height:100svh;overflow:hidden;background:transparent;color:var(--griffner-schwarz);pointer-events:none}
+/* Runde 29: 100lvh, damit die Bühne am Telefon auch bei weggefahrener Browserleiste den ganzen Screen deckt (vorher 100svh, unten ein Streifen) */
+.punkt__st{position:sticky;top:0;z-index:3;height:100vh;height:100lvh;overflow:hidden;background:transparent;color:var(--griffner-schwarz);pointer-events:none}
 .punkt__back{position:absolute;left:0;right:0;top:0;height:100%;background:var(--griffner-schwarz)}
 .punkt__svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .punkt__svg text{font-family:var(--font-display);font-weight:300;font-feature-settings:'liga' 0}

@@ -6,7 +6,7 @@
       der Satz läuft Wort für Wort herein, dann Linie und großer Aufruf zur Seite des Hauses.
    Pfeile und Wischen blättern zusätzlich. Links zeigt die Liste, wo du bist, und springt zu jedem Haus.
    Nur transform, opacity und (beim Schrumpfen) clip-path. Genutzt von concepts.js (vier Häuser) und wald.js (Nächstes Concept). */
-import { $, $$, E, lerp, clamp, seg, loop, reduce } from './core.js';
+import { $, $$, E, lerp, clamp, seg, loop, reduce, vhs } from './core.js';
 
 /* Ablauf in Bildschirmhöhen, ab dem Moment, in dem der Akt oben anliegt */
 const T = {
@@ -51,7 +51,7 @@ export function initAkte(root) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { A.forEach(a => a.relayout()); loop.poke(); });
   let cur = -1;
   loop.add({ tick() {
-    const r = box.getBoundingClientRect(), vh = innerHeight;
+    const r = box.getBoundingClientRect(), vh = vhs();
     if (r.bottom < -vh * .2 || r.top > vh * 1.2) return;
     /* Telefon: hinter dem Kopf ein Streifen Sand, erst wenn die Leiste oben steht */
     const stuck = r.top < 53 && r.bottom > 100;
@@ -155,7 +155,8 @@ function akt(el, mouse) {
   return {
     relayout() { lw = 0; },
     tick() {
-      const r = stage.getBoundingClientRect(), vh = innerHeight;
+      /* Runde 29: stabile Höhe (core.js vhs), sonst rechnete der Akt am Telefon beim Ein- und Ausfahren der Browserleiste alles neu */
+      const r = stage.getBoundingClientRect(), vh = vhs();
       if (r.bottom < -vh * .3 || r.top > vh * 1.3) return;
       const cw = sticky.clientWidth;
       if (cw !== lw || vh !== lh) { lw = cw; lh = vh; layout(cw, vh); }

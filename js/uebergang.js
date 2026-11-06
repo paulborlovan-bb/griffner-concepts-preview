@@ -20,7 +20,7 @@ import { $, clamp, seg, lerp, loop, reduce, prog, mix, css } from './core.js';
 
 const eo = t => 1 - Math.pow(1 - t, 3);
 const eio = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-let B = null, bm = null, lw = 0, lh = 0;
+let B = null, bm = null, lw = 0, lh = 0, lx = '';
 
 export function initUebergang() {
   const sec = $('#k-uebergang');
@@ -38,9 +38,12 @@ export function initUebergang() {
   loop.add({ tick });
 }
 
-/* Maße aus der Schrift: Wortgröße 80 % der Satzbreite (höchstens 46 % der Höhe), Lage des Punkts, Zeilen über und unter dem Wort */
+/* Maße aus der Schrift: Wortgröße 80 % der Satzbreite (höchstens 46 % der Höhe), Lage des Punkts, Zeilen über und unter dem Wort.
+   Runde 29 (Telefon, Chrome und Safari): gemessen an der Bühne, nicht am Fenster. Das Fenster wird beim Scrollen höher, wenn die
+   Leiste des Browsers wegfährt; dann wurde mitten im Zoom neu gerechnet und der Punkt sprang. Die Bühne ist 100lvh hoch, deckt
+   also immer den ganzen Screen und ändert ihre Höhe beim Scrollen nicht. */
 function build() {
-  const W = innerWidth, H = innerHeight, m = B.l1.offsetLeft || W / 12;
+  const W = B.st.clientWidth || innerWidth, H = B.st.clientHeight || innerHeight, m = B.l1.offsetLeft || W / 12;
   const t = B.meas;
   t.removeAttribute('textLength'); t.setAttribute('font-size', 100);
   const w100 = t.getComputedTextLength() || 520, avail = W - 2 * m;
@@ -49,17 +52,23 @@ function build() {
   cv.font = `300 ${fs}px ${getComputedStyle(t).fontFamily}`;
   const cap = cv.measureText('C').actualBoundingBoxAscent || fs * .7, dot = cv.measureText('.');
   const base = H * .5 + cap / 2;
-  t.setAttribute('font-size', fs); t.setAttribute('textLength', avail); t.setAttribute('lengthAdjust', 'spacing'); t.setAttribute('x', m); t.setAttribute('y', -9999);
+  /* Runde 29 (Safari): kein textLength mehr. Safari sperrte das Wort anders, sobald die Gruppe beim Zoom eine Transformation bekam
+     (das Wort wurde breiter, das C rutschte links aus dem Bild, der Punkt stand nicht mehr am Kreis). Jetzt bekommt jeder Buchstabe
+     seine eigene Lage (x-Liste), die Sperrung rechnen wir selbst: gleich viel Raum zwischen allen Zeichen, wie lengthAdjust spacing. */
+  t.setAttribute('font-size', fs); t.setAttribute('x', m); t.setAttribute('y', -9999);
+  const n = t.getNumberOfChars ? t.getNumberOfChars() : 8, adv = [];
+  for (let i = 0; i < n; i++) { let a = 0; try { a = t.getSubStringLength(i, 1); } catch (er) { a = 0; } adv.push(a || cv.measureText(t.textContent.charAt(i)).width); }
+  const natW = adv.reduce((a, b) => a + b, 0) || nat;
   const dl = dot.actualBoundingBoxLeft || 0, dr = dot.actualBoundingBoxRight || fs * .1;
   const asc = dot.actualBoundingBoxAscent || fs * .1, desc = dot.actualBoundingBoxDescent || 0;
   const pw = (dl + dr) || fs * .1, ph = (asc + desc) || fs * .1;
-  let cx = m + avail - fs * .1, tr = cx - fs * .3;
-  try {
-    const e = t.getExtentOfChar(7); cx = e.x + (dr - dl) / 2;
-    const e6 = t.getExtentOfChar(6); tr = e6.x + e6.width;
-  } catch (er) { /* ohne Maße bleibt die Schätzung */ }
   const w = B.word;
-  w.setAttribute('font-size', fs); w.setAttribute('x', m); w.setAttribute('y', base); w.setAttribute('lengthAdjust', 'spacing');
+  w.setAttribute('font-size', fs); w.setAttribute('y', base); w.removeAttribute('textLength'); w.removeAttribute('lengthAdjust');
+  bm = { m, adv, nat: natW, avail };
+  /* Lage am Ende der Sperrung: Mitte des Punkts und rechte Kante des T */
+  const xe = place(avail);
+  const cx = xe[n - 1] + (dr - dl) / 2, tr = xe[n - 2] + adv[n - 2];
+  lx = '';
   const cy = base - (asc - desc) / 2, r = Math.min(pw, ph) / 2;
   B.circ.setAttribute('cx', cx.toFixed(2)); B.circ.setAttribute('cy', cy.toFixed(2)); B.circ.setAttribute('r', r.toFixed(2));
   const gap = Math.max(16, H * .03);
@@ -67,14 +76,23 @@ function build() {
   B.l2.style.top = (base + fs * .14 + gap) + 'px';
   /* Um so viel endet die Sektion früher (CSS 100vh, am Telefon nicht immer innerHeight) */
   const mb = -parseFloat(getComputedStyle(B.sec).marginBottom) || 0;
-  bm = { W, H, nat, avail, pc: [cx, cy], r, tr, mb, S: Math.hypot(W, H) / Math.min(pw, ph) * 1.2 };
+  bm = { W, H, m, adv, nat: natW, avail, pc: [cx, cy], r, tr, mb, S: Math.hypot(W, H) / Math.min(pw, ph) * 1.2 };
+}
+
+/* Lage jedes Zeichens bei Gesamtbreite L: natürliche Vorschübe plus gleich viel Raum in jeder Lücke */
+function place(L) {
+  const { m, adv, nat } = bm, n = adv.length, gx = n > 1 ? (L - nat) / (n - 1) : 0, xs = [];
+  let x = m;
+  for (let i = 0; i < n; i++) { xs.push(x + i * gx); x += adv[i]; }
+  return xs;
 }
 
 function tick() {
   if (!B) return;
-  const { p: pr, on, r: sr } = prog(B.sec);
+  const sw = B.st.clientWidth, sh = B.st.clientHeight;
+  const { p: pr, on, r: sr } = prog(B.sec, sh);
   if (!on) return;
-  if (innerWidth !== lw || innerHeight !== lh) { lw = innerWidth; lh = innerHeight; build(); }
+  if (sw !== lw || sh !== lh) { lw = sw; lh = sh; build(); }
   /* Schwarz zu Weiß, dann Zeilen und Wort, dann der Zoom durch den Punkt */
   const wIn = reduce ? 1 : eio(seg(pr, 0, .08)), p = reduce ? .5 : seg(pr, .08, .7);
   const plate = css(mix([0, 0, 0], [255, 255, 255], wIn));
@@ -82,7 +100,9 @@ function tick() {
   /* Schwarz hinter den Buchstaben, aber nur bis zur Oberkante der Concepts, die unter der Bühne einfahren */
   const stTop = reduce ? 0 : B.st.getBoundingClientRect().top;
   B.back.style.height = reduce ? '' : clamp(sr.bottom - bm.mb - stTop, 0, bm.H + 2).toFixed(1) + 'px';
-  B.word.setAttribute('textLength', lerp(bm.nat, bm.avail, eio(seg(p, .06, .4))).toFixed(1));
+  const xs = place(lerp(bm.nat, bm.avail, eio(seg(p, .06, .4)))), last = xs.length - 1;
+  const xw = xs.slice(0, last).map(v => v.toFixed(2)).join(' ');
+  if (xw !== lx) { lx = xw; B.word.setAttribute('x', xw); B.dot.setAttribute('x', xs[last].toFixed(2)); }
   const r1 = eo(seg(p, .02, .16)), r2 = eo(seg(p, .42, .56)), out = reduce ? 0 : eo(seg(p, .84, .97));
   B.l1.style.opacity = (r1 * (1 - out)).toFixed(3); B.l1.style.transform = `translate3d(0,${((1 - r1) * 24 - out * 24).toFixed(1)}px,0)`;
   B.l2.style.opacity = (r2 * (1 - out)).toFixed(3); B.l2.style.transform = `translate3d(0,${((1 - r2) * 24 - out * 24).toFixed(1)}px,0)`;
