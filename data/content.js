@@ -10,7 +10,7 @@ const WEB = 'https://framerusercontent.com/images/';
    page.plan: Schlüssel in js/plan3d.js HOUSES (echte Grundrisse), ohne plan kein Kapitel Grundriss. */
 export const CONCEPTS = [
   {
-    id: 'bold', nr: '01', name: 'Bold', word: 'BOLD.', form: 'wald',
+    id: 'bold', nr: '01', name: 'Bold', titel: 'Zum Beispiel so.', word: 'BOLD.', form: 'wald',
     fuer: 'Für alle, die klare Linien lieben und Haltung zeigen.',
     text: 'Eine dunkle Fassade, ein Obergeschoss, das weit auskragt, und warmes Holz in jedem Rücksprung. Ein Haus, das man nicht übersieht.',
     facts: ['2 Ebenen', 'Flachdach', 'Carport'],
@@ -37,7 +37,7 @@ export const CONCEPTS = [
     }
   },
   {
-    id: 'calm', nr: '02', name: 'Calm', word: 'CALM.', form: 'duene', ph: true,
+    id: 'calm', nr: '02', name: 'Calm', titel: 'Oder so.', word: 'CALM.', form: 'duene', ph: true,
     fuer: 'Für alle, die zur Ruhe kommen wollen.',
     text: 'Ein langes Satteldach, ein Giebel aus Glas, Holz und Stein. Und alles, was du brauchst, auf einer Ebene.',
     facts: ['1 Ebene', 'Satteldach', 'Carport'],
@@ -63,7 +63,7 @@ export const CONCEPTS = [
     }
   },
   {
-    id: 'light', nr: '03', name: 'Light', word: 'LIGHT.', form: 'summer',
+    id: 'light', nr: '03', name: 'Light', titel: 'Oder so.', word: 'LIGHT.', form: 'summer',
     fuer: 'Für alle, denen weniger mehr ist.',
     text: 'Zwei schmale Dächer wie dünne Platten, heller Stein, Holz und Glas. Reduziert auf das, was zählt, und oben wartet die Terrasse.',
     facts: ['171 m²', '2 Ebenen', 'Dachterrasse'],
@@ -89,7 +89,7 @@ export const CONCEPTS = [
     }
   },
   {
-    id: 'free', nr: '04', name: 'Free', word: 'FREE.', form: 'hang', ph: true,
+    id: 'free', nr: '04', name: 'Free', titel: 'Oder ganz anders.', word: 'FREE.', form: 'hang', ph: true,
     fuer: 'Für alle, die sich nicht einengen lassen.',
     text: 'Ein Obergeschoss, das weit über das gläserne Erdgeschoss ragt, und eine Giebelfront, die sich ganz öffnet. Viel Raum, viel Licht, viel Freiheit.',
     facts: ['185 m²', '2 Ebenen', 'Auskragung'],

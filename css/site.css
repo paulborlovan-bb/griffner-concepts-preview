@@ -1,7 +1,7 @@
 /* GRIFFNER Concepts, Prototyp. Nur Tokens aus dem Design System und den Web-Tokens von griffner.com.
    Keine Rundungen, keine Schatten, kein Verlauf außer dem Bildschutz. */
 :root{
-  --t-hero:4.625rem; --t-xl:4.625rem; --t-l:3rem; --t-m:2.25rem; --t-zitat:1.875rem; --t-einl:2.125rem; --t-zahl:5rem;
+  --t-hero:4.625rem; --t-xl:4.625rem; --t-l:3rem; --t-kap:3.25rem; --t-m:2.25rem; --t-zitat:1.875rem; --t-einl:2.125rem; --t-zahl:5rem;
   --t-body-l:1.125rem; --t-body:1rem; --t-body-s:.9375rem; --t-info:.6875rem; --t-label:.625rem; --t-hs:1.125rem;
   --lh-d:1.02; --lh-zitat:1.15; --lh-body:1.45;
   --ease:cubic-bezier(0.22,1,0.36,1);
@@ -14,9 +14,10 @@
   /* Räume dieser Seite */
   --room-k-hero:var(--griffner-schwarz);
   --room-k-haltung:var(--griffner-weiss);
-  --room-k-kennen:var(--griffner-sand);
+  --room-k-kennen:var(--griffner-schwarz);
   --room-k-grund:var(--griffner-schwarz);
   --room-k-concepts:var(--griffner-schwarz);
+  --room-k-ueber:var(--griffner-schwarz);
   --room-k-sammlung:var(--griffner-anthrazit);
   --room-k-weg:var(--griffner-weiss);
   --room-k-einzug:var(--griffner-schwarz);
@@ -33,8 +34,8 @@
   --room-w-next:var(--griffner-schwarz);
   --room-w-kontakt:var(--griffner-weiss);
 }
-@media (max-width:1199px){:root{--t-hero:3.25rem;--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-zitat:1.625rem;--t-einl:1.75rem;--t-zahl:3.75rem;--t-body-l:1.0625rem}}
-@media (max-width:809px){:root{--t-hero:2.5rem;--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-zitat:1.375rem;--t-einl:1.5rem;--t-zahl:3.25rem;--t-body-l:1rem;--t-info:.625rem}}
+@media (max-width:1199px){:root{--t-kap:2.375rem;--t-hero:3.25rem;--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-zitat:1.625rem;--t-einl:1.75rem;--t-zahl:3.75rem;--t-body-l:1.0625rem}}
+@media (max-width:809px){:root{--t-kap:1.875rem;--t-hero:2.5rem;--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-zitat:1.375rem;--t-einl:1.5rem;--t-zahl:3.25rem;--t-body-l:1rem;--t-info:.625rem}}
 html{font-size:16px}
 @media (min-width:1200px){html{font-size:calc(16px + (100vw - 1200px) * 4 / 720)}}
 @media (min-width:1920px){html{font-size:20px}}
@@ -171,8 +172,26 @@ main,.ft{position:relative}
 .haltung__stroke{position:absolute;left:0;top:0;height:1px;width:0;background:currentColor}
 
 /* 01 KENNENLERNEN */
-.kennen{color:var(--griffner-schwarz)}
+/* Runde 13: auf Schwarz wie Grundstück und Concepts. Chips mit weißer Linie, gewählt weiß, das Blatt mit dem Modell bleibt weiß */
+.kennen{color:var(--griffner-weiss)}
+.kennen .chip:hover{background:rgba(255,255,255,.08)}
+.kennen .chip[aria-pressed="true"]{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+.kennen .chip.is-out{animation-name:chip-out-w}
+@keyframes chip-out-w{0%{background:var(--griffner-weiss);color:var(--griffner-schwarz)}100%{background:transparent;color:inherit}}
+.kennen .ask__hint{color:rgba(255,255,255,.6)}
 .kennen__body{align-items:start}
+/* Runde 13: Überschrift und Satz wie im Grundstück, darunter der Konfigurator */
+.kennen__head{margin-bottom:clamp(48px,6vw,112px)}
+/* Runde 13: Übergang wie „Manifest“ auf /about (Abstand oben 176/144/112, Zeilen in Display/Kapitel, Bühne 140vh mit 100vh sticky) */
+.ueber{color:var(--griffner-weiss)}
+.ueber__in{padding-top:176px}
+.ueber__z{margin:0;max-width:920px;font-family:var(--font-display);font-weight:300;font-size:var(--t-kap);line-height:1.06;text-transform:uppercase;text-wrap:balance;opacity:.14}
+.ueber__pause{height:30vh}
+.ueber__ende{height:140vh}
+.ueber__buehne{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:40px}
+.ueber__feld{width:clamp(56px,6.2vw,120px);aspect-ratio:5 / 4}
+@media (max-width:1199px){.ueber__in{padding-top:144px}}
+@media (max-width:809px){.ueber__in{padding-top:112px}}
 .ask fieldset{border:0;margin:0 0 44px;padding:0;min-width:0}
 .ask legend{padding:0;margin-bottom:16px}
 .ask__n{display:block;margin-bottom:10px;font-family:var(--font-display);font-weight:300;font-size:var(--t-zitat);line-height:1.05;text-transform:uppercase;font-feature-settings:'liga' 0;letter-spacing:0}
