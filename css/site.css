@@ -32,7 +32,7 @@
   --room-w-plan:var(--griffner-schwarz);
   --room-w-licht:var(--griffner-schwarz);
   --room-w-next:var(--griffner-schwarz);
-  --room-w-kontakt:var(--griffner-weiss);
+  --room-w-kontakt:var(--griffner-schwarz); /* Runde 24 (Kundenwunsch): hinter dem gelben Feld Schwarz statt Weiß */
 }
 @media (max-width:1199px){:root{--t-kap:2.375rem;--t-hero:3.25rem;--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-zitat:1.625rem;--t-einl:1.75rem;--t-zahl:3.75rem;--t-body-l:1.0625rem}}
 @media (max-width:809px){:root{--t-kap:1.875rem;--t-hero:2.5rem;--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-zitat:1.375rem;--t-einl:1.5rem;--t-zahl:3.25rem;--t-body-l:1rem;--t-info:.625rem}}
@@ -793,7 +793,8 @@ main,.ft{position:relative}
   .wv__steps li.is-cur{display:grid}
   .wp__lab{padding:3px 5px 2px}
   .wp__lab b{font-size:8px;letter-spacing:.12em}
-  .wf__box{height:31vw;min-height:132px}
+  /* Runde 24 (Kundenwunsch „videos on mobile a little bit higher“): fast das ganze Filmformat (2,34 : 1), vorher 31vw */
+  .wf__box{height:42vw;min-height:150px}
   .wl__rows{gap:72px}
   .wl__row,.wl__row--r{grid-template-columns:minmax(0,1fr);row-gap:24px}
   .wl__fig,.wl__text,.wl__row--r .wl__fig,.wl__row--r .wl__text{grid-column:1;grid-row:auto}
