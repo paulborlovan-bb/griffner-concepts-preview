@@ -8,8 +8,11 @@
    p .60–.95  Zoom in den Punkt, exponentiell, der Punkt wandert dabei in die Bildmitte. Am Ende füllt das Haus den Screen.
    Anders als im Export ist der Punkt beim Zoom ein Kreis (gleiche Lage und Größe wie das Zeichen): stark vergrößerte Schrift
    zeichnet Chrome nicht mehr, dann wurde der Screen kurz weiß. Die Buchstaben gehen weg, sobald sie links aus dem Bild sind,
-   die Maske, sobald der Kreis den Screen deckt. Kein Gelb. Mit reduzierter Bewegung: Endzustand ohne Zoom, ohne Strecke. */
-import { $, clamp, seg, lerp, loop, reduce, prog } from './core.js';
+   die Maske, sobald der Kreis den Screen deckt. Kein Gelb. Mit reduzierter Bewegung: Endzustand ohne Zoom, ohne Strecke.
+   Runde 16 (Kundenwunsch „transition from black to white and from image back to black“): Sektion 500vh. Die Bühne kommt
+   schwarz aus dem Grundstück (keine Kante), steht sie oben, blendet die Fläche zu Weiß (P 0–.1). Dann der Ablauf oben
+   (P .1–.88). Am Ende blendet das Haus ins Schwarz (P .9–1), die Concepts schließen ohne Kante an. */
+import { $, clamp, seg, lerp, loop, reduce, prog, mix, css } from './core.js';
 
 const eo = t => 1 - Math.pow(1 - t, 3);
 const eio = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -20,7 +23,7 @@ export function initUebergang() {
   if (!sec || !$('[data-p-svg]', sec)) return;
   B = {
     sec, st: $('.punkt__st', sec), img: $('[data-p-img]', sec), svg: $('[data-p-svg]', sec), g: $('[data-p-g]', sec), word: $('[data-p-word]', sec),
-    dot: $('[data-p-dot]', sec), circ: $('[data-p-circle]', sec), meas: $('[data-p-meas]', sec), l1: $('[data-p-l1]', sec), l2: $('[data-p-l2]', sec)
+    plate: $('[data-p-plate]', sec), night: $('[data-p-night]', sec), dot: $('[data-p-dot]', sec), circ: $('[data-p-circle]', sec), meas: $('[data-p-meas]', sec), l1: $('[data-p-l1]', sec), l2: $('[data-p-l2]', sec)
   };
   /* Vorleser: eine Zeile „Daraus entsteht dein Concept.“, das Wort in der Maske ist nur Bild */
   B.l1.setAttribute('aria-label', `${B.l1.textContent.trim()} Concept.`);
@@ -66,7 +69,11 @@ function tick() {
   const { p: pr, on } = prog(B.sec);
   if (!on) return;
   if (innerWidth !== lw || innerHeight !== lh) { lw = innerWidth; lh = innerHeight; build(); }
-  const p = reduce ? .5 : pr;
+  /* Schwarz zu Weiß, dann der Ablauf, dann ins Schwarz */
+  const wIn = reduce ? 1 : eio(seg(pr, 0, .1)), p = reduce ? .5 : seg(pr, .1, .88), dark = reduce ? 0 : eio(seg(pr, .9, 1));
+  const plate = css(mix([0, 0, 0], [255, 255, 255], wIn));
+  B.plate.setAttribute('fill', plate); B.st.style.backgroundColor = plate;
+  B.night.style.opacity = dark.toFixed(3);
   B.word.setAttribute('textLength', lerp(bm.nat, bm.avail, eio(seg(p, .06, .32))).toFixed(1));
   const r1 = eo(seg(p, .02, .14)), r2 = eo(seg(p, .34, .46)), out = reduce ? 0 : eo(seg(p, .56, .63));
   B.l1.style.opacity = (r1 * (1 - out)).toFixed(3); B.l1.style.transform = `translate3d(0,${((1 - r1) * 24 - out * 24).toFixed(1)}px,0)`;
@@ -85,6 +92,6 @@ function tick() {
   const covered = z >= 1 || bm.r * s > far + 2;
   B.svg.style.visibility = covered ? 'hidden' : '';
   /* Prototyp: Header dunkel, solange die weiße Fläche steht (in Framer regelt das der Differenz-Modus des Headers) */
-  if (B.st) { if (covered) delete B.st.dataset.inkBg; else B.st.dataset.inkBg = '#FFFFFF'; }
-  B.img.style.transform = `scale(${(1.16 - .16 * eo(seg(reduce ? 1 : p, .55, 1))).toFixed(4)})`;
+  if (covered) delete B.st.dataset.inkBg; else B.st.dataset.inkBg = plate;
+  B.img.style.transform = `scale(${(1.16 - .16 * eo(seg(reduce ? 1 : p, .55, 1)) + .04 * dark).toFixed(4)})`;
 }

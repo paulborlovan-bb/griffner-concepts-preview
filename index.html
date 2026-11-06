@@ -128,7 +128,7 @@
     <!-- ÜBERGANG „Auf den Punkt“ (Runde 15, Export des Kunden). In der weißen Fläche ist CONCEPT. ausgestanzt, durch die Buchstaben
          sieht man das erste Haus. Die Zeilen steigen über und unter dem Wort ein, dann zoomt der Punkt auf, bis das Haus den Screen füllt (js/uebergang.js). -->
     <section id="k-uebergang" class="punkt" data-room="k-ueber">
-      <div class="punkt__st" data-ink-bg="#FFFFFF">
+      <div class="punkt__st" data-ink-bg="#000000">
         <div class="punkt__bild" data-fm="media"><img class="punkt__img" data-p-img src="assets/img/wald-garten.jpg" alt="" aria-hidden="true" decoding="async"></div>
         <svg class="punkt__svg" data-p-svg aria-hidden="true">
           <defs>
@@ -138,8 +138,9 @@
             </mask>
           </defs>
           <text data-p-meas x="0" y="-9999" visibility="hidden">CONCEPT.</text>
-          <rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" mask="url(#k-punkt-mask)"></rect>
+          <rect data-p-plate x="0" y="0" width="100%" height="100%" fill="#000000" mask="url(#k-punkt-mask)"></rect>
         </svg>
+        <div class="punkt__nacht" data-p-night aria-hidden="true"></div>
         <h2 class="punkt__z" data-p-l1><span aria-hidden="true" data-f="zeile1">Daraus entsteht dein</span></h2>
         <h2 class="punkt__z punkt__z--2" data-p-l2 data-f="zeile2">Wie das aussehen kann?</h2>
       </div>
