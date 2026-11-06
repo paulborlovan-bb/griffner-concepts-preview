@@ -58,7 +58,8 @@ function tick() {
     return ease(clamp((tx - (i * GAP - 58)) / 30));
   });
   const n = built.filter(b => b > .55).length;
-  D.cnt.textContent = String(Math.max(OPEN, n)).padStart(2, '0');
+  /* Runde 28: der Zähler oben rechts ist entfernt, darum nur, falls es ihn gibt */
+  if (D.cnt) D.cnt.textContent = String(Math.max(OPEN, n)).padStart(2, '0');
   if (D.hint) D.hint.style.opacity = (1 - E(p, .04, .1)).toFixed(3);
   if (!S || !visible) return;
   /* Am Ende rücken die Häuser zu einem Raster zusammen: 5 x 2 am Desktop, 2 x 5 am Telefon, 01 hinten links */
