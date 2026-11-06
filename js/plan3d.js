@@ -5,7 +5,10 @@
    hochgeladene SVG, danach fand der alte Parser nichts mehr und die Pläne lagen live flach (2026-11-05). Das SVG ist nur das Bodenbild. Im Carport stehen die zwei Autos aus dem Plan in 3D.
    Ganzes Haus: das Obergeschoß setzt sich auf das Erdgeschoß, so wie die beiden Pläne übereinander liegen (gleiches Koordinatensystem).
    Dazwischen eine dunkle Decke, oben der dunkle Rahmen aus dem Obergeschoßplan (Seiten, Brüstung zum Garten) und das Dach.
-   Pläne: SVG im Bildordner (tools/plan.mjs), in Punkt, 1 m = 28,35 pt, Norden oben. */
+   Pläne: SVG im Bildordner (tools/plan.mjs), in Punkt, 1 m = 28,35 pt, Norden oben.
+   Runde 32 (Kundenwunsch: am Telefon schwer zugänglich, zu klein): am Telefon liegt jedes Geschoß von oben gesehen über die ganze
+   Breite, die Reiter wählen Erdgeschoß, Obergeschoß oder das ganze Haus, die Kamera gleitet hinüber. Erst das ganze Haus kippt in die
+   Perspektive und lässt sich drehen; über dem Grundriss scrollt der Finger einfach die Seite. Desktop wie bisher. Dazu Concept Free. */
 import { $, $$, E, clamp, lerp, loop, reduce, through } from './core.js';
 import { PLAN_GEO } from '../data/plan-geo.js';
 
@@ -38,10 +41,33 @@ const FURN_LIGHT = {
     [420, 151, 14, 12, .42, 'w'], [547, 151, 15, 12, .42, 'w'], [412, 138, 6, 62, 1.1, 'w'], [537, 138, 6, 37, 1.1, 'w'], [594, 142, 13, 31, .86, 'w']
   ]
 };
+/* Concept Free (2G Frame, CAD PDF 2026-11-05), Möbel von Hand aus dem Plan wie bei Light */
+const FURN_FREE = {
+  eg: [
+    [623.4, 279.1, 45.1, 24.1, .42, 's'], [642.8, 303.2, 25.7, 57.6, .42, 's'], [608.7, 318.7, 16.9, 33.8, .4, 'a'], [564.4, 281.3, 11.1, 94.7, .5, 'a'],
+    [724.5, 296.2, 28.2, 56.3, .74, 'a'],
+    [715, 299.3, 9.4, 13.3, .46, 's'], [715, 317.3, 9.4, 14.1, .46, 's'], [715, 335.8, 9.4, 13.9, .46, 's'],
+    [752.7, 299.3, 9.4, 13.3, .46, 's'], [752.7, 317.3, 9.4, 14.1, .46, 's'], [752.7, 335.8, 9.4, 13.9, .46, 's'],
+    [701.2, 394, 94.7, 27.7, .9, 'a'], [711.2, 384.3, 11, 11, .7, 's', 1], [729.2, 384.3, 11, 11, .7, 's', 1], [747.8, 384.3, 11, 11, .7, 's', 1],
+    [668.5, 459.9, 68.1, 17.2, 2, 'a'], [762.1, 459.9, 33.8, 17.2, 2, 'a'], [668.5, 482, 17.2, 28.3, 2, 'a'],
+    [668.5, 510.3, 68.1, 16.7, 2, 'a'], [736.6, 510.3, 59.3, 16.7, .9, 'a'],
+    [711.2, 531.1, 42.4, 16.6, .74, 'a'], [726.8, 548.6, 12, 12, .46, 's', 1], [706.7, 604.5, 51, 24.9, .42, 's'],
+    [608.7, 538, 16.6, 35.5, 2, 'w'], [564.4, 576.8, 16.6, 52.6, 2, 'w'], [535.3, 363.5, 17.5, 84.5, 2, 'w'],
+    [382.2, 292.9, 86.6, 16.6, .45, 's'], [382.2, 309.5, 86.6, 15.3, .9, 's'], [385.8, 269.4, 15.2, 19.4, .8, 'a']
+  ],
+  og: [
+    [619.9, 245.2, 57.3, 56, .48, 's'], [709.1, 242.2, 19.7, 62.3, 1.1, 'a'], [753.1, 226.4, 21.1, 42.1, .55, 'w'], [753.1, 270.7, 21.1, 41.5, .86, 'w'],
+    [798.8, 208.4, 16.9, 130.1, 2, 'w'], [716.8, 371, 47.7, 20.2, .55, 'w'], [746.8, 416.9, 39.3, 15.7, .86, 'w'], [639.3, 424.4, 34.6, 16.6, .86, 'w'],
+    [613, 495.6, 56.8, 40.1, .48, 's'], [612.2, 539.3, 16.6, 33.2, .74, 'a'], [757.8, 495.6, 56.8, 40.1, .48, 's'], [798.5, 539.3, 16.6, 33.2, .74, 'a'],
+    [707.2, 473.4, 17.1, 46.5, 2, 'w'], [710.8, 525.5, 17.1, 47, 2, 'w']
+  ]
+};
 /* Die echten Grundrisse je Concept (CAD PDF, tools/plan.mjs). Je Geschoß: Plan, Ausschnitt in pt, Hauskörper (body: alles außerhalb ist
    im Obergeschoß der Rahmen), aux (Mauern außerhalb des Hauses, wachsen im ganzen Haus nicht mit), Decke bzw. Dach (slab, pt),
    off (Versatz in pt auf das Erdgeschoß, wenn die Pläne nicht deckungsgleich liegen), Autos (Mitte x, y, Länge, Breite in pt, Lack, Richtung
-   der Schnauze: s Süden, w Westen), Raumnamen. furn: Möbel von Hand, sonst aus den weißen Möbelflächen des Plans. */
+   der Schnauze: s Süden, w Westen, n Norden), Raumnamen. furn: Möbel von Hand, sonst aus den weißen Möbelflächen des Plans.
+   slab darf auch eine Liste von Rechtecken sein (Free: die Decke reicht unter das auskragende Obergeschoß). roof: Satteldach statt
+   flacher Decke, [x0, y0, x1, y1, Firsthöhe in m], First entlang y. */
 const HOUSES = {
   light: [
     { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-eg.svg', geo: 'plan-eg', crop: [209, 68, 806, 463], aux: b => b[0] < 330 || b[0] > 760, slab: [321, 117, 761, 445],
@@ -58,9 +84,23 @@ const HOUSES = {
       labels: [['Bad', 378.6, 224.8], ['Kind', 382.9, 348.4], ['Kind', 506.5, 348.4], ['Eltern', 655.8, 352.7], ['Bad', 638.7, 224.8], ['Ankleide', 660, 288.7], ['Terrasse', 233.6, 310]] }
   ],
   calm: [
+    /* Runde 32: Satteldach über die lange Seite (Bild Calm: First etwa 4,2 m über der Traufe), das Carport flach */
     { key: 'eg', cap: 'Eine Ebene', src: 'assets/img/plan-calm-eg.svg', geo: 'plan-calm-eg', crop: [322, 134, 966, 700], house: [326, 385, 910, 645],
+      roof: [326, 385, 910, 645, 4.2, 'x'], slab: [[644, 141.9, 770.1, 337.5]],
       cars: [[671.6, 196.1, 133.4, 50.6, 0xEDEBE6, 'w'], [671.6, 278.9, 138, 55.2, 0x4a4a47, 'w']],
       labels: [['Carport', 678.5, 239.8], ['Eingang', 680.8, 437.6], ['Kochen', 814.2, 433], ['Essen', 763.6, 571], ['Wohnen', 690, 575.6], ['Terrasse', 869.4, 571], ['Eltern', 372.6, 575.6], ['Ankleide', 372.6, 497.4], ['Bad', 404.8, 428.4], ['Dusche', 501.4, 433], ['Technik', 565.8, 433], ['Kind', 480.7, 571], ['Kind', 588.8, 571]] }
+  ],
+  /* Runde 32: Concept Free aus dem CAD PDF. Das Obergeschoß liegt auf seinem Blatt um 47,8 pt nach rechts und 56,9 pt höher
+     (der Umriss des Erdgeschoßes ist dort eingezeichnet), es sitzt mittig auf der Mittelwand und ragt nach Norden und Süden aus. */
+  free: [
+    { key: 'eg', cap: 'Erdgeschoß', src: 'assets/img/plan-free-eg.svg', geo: 'plan-free-eg', crop: [360, 185, 820, 725], house: [371, 253.5, 807.7, 641.2],
+      slab: [[371, 253.5, 807.7, 641.2], [552.5, 196.8, 779.4, 253.5], [552.5, 641.2, 779.4, 683.8]], furn: FURN_FREE.eg,
+      cars: [[430.8, 549.8, 134, 50, 0xEDEBE6, 'n'], [500, 549.8, 134, 50, 0x4a4a47, 'n']],
+      labels: [['Sauna', 425.9, 308.2], ['Abstellraum', 423.2, 405.1], ['Technik', 500.7, 405.1], ['Garage', 465.7, 470], ['Wohnen', 600, 300], ['Essen', 738.3, 368],
+        ['Kochen', 743.9, 438.3], ['Speis', 730, 494], ['WC', 594.3, 499.2], ['Eingang', 619.2, 596.2], ['Büro', 732.8, 590], ['Terrasse', 666, 225]] },
+    { key: 'og', cap: 'Obergeschoß', src: 'assets/img/plan-free-og.svg', geo: 'plan-free-og', crop: [590, 130, 838, 637], body: [598, 196, 829, 585.5],
+      roof: [600.3, 139.9, 827.2, 626.9, 3.4], off: [-47.8, 56.9], furn: FURN_FREE.og,
+      labels: [['Loggia', 714.1, 168.2], ['Eltern', 650.4, 318], ['Bad', 772.2, 318], ['Bad', 740, 400], ['Kind', 658.7, 560], ['Kind', 772.2, 560], ['Loggia', 714.1, 605.8]] }
   ]
 };
 let FLOORS = [];
@@ -69,6 +109,8 @@ let M, T, S, D, k = reduce ? 1 : 0, started = false, az = 0, el = 0, user = [0, 
 /* Runde 30 (Kundenwunsch: am Telefon schwer zu bedienen, man scrollt aus Versehen): uc ist die gezeigte Drehung, sie zieht weich
    nach user nach; vel gleitet nach dem Loslassen aus; held, solange ein Finger oder die Maus zieht */
 let uc = [0, 0], vel = 0, held = false;
+/* Runde 32: phone = Telefonlayout (Breite bis 819 px wie im CSS); fo ist das gezeigte Geschoß am Telefon (0 Erdgeschoß, 1 Obergeschoß), weich */
+let phone = false, fo = 0, foT = 0, PF = null;
 let hm = 0, hmT = 0, lt = 0, PL = null, HS = null, MATD = null;
 const V = () => new T.Vector3();
 const sm = x => x * x * (3 - 2 * x);
@@ -78,7 +120,8 @@ export function initPlan3d() {
   if (!D.st) return;
   FLOORS = (HOUSES[D.st.dataset.p3House] || HOUSES.light).map(f => ({ ...f }));
   /* Nur eine Ebene: kein Umschalten zum ganzen Haus */
-  if (FLOORS.length < 2) { const tb = D.tabs[0] && D.tabs[0].closest('.tabs'); if (tb) tb.style.display = 'none'; }
+  /* Runde 32: am Telefon bleiben die Tabs (Grundriss oder Haus), am Desktop blendet sie das CSS aus (.p3.is-one) */
+  if (FLOORS.length < 2) D.st.classList.add('is-one');
   /* Aufbau beim ersten Hinsehen: erst die Wände, dann die Möbel, dann die Namen */
   new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting || started) return; started = true;
@@ -87,10 +130,15 @@ export function initPlan3d() {
   }), { threshold: .25 }).observe(D.st);
   /* Grundriss oder ganzes Haus */
   D.tabs.forEach(b => b.addEventListener('click', () => {
-    hmT = b.dataset.p3Mode === 'haus' ? 1 : 0;
+    const mode = b.dataset.p3Mode;
+    hmT = mode === 'haus' ? 1 : 0;
+    foT = mode === 'og' ? 1 : 0;
     D.tabs.forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    D.st.classList.toggle('is-haus', !!hmT);
     if (D.tag) D.tag.textContent = hmT ? 'Ganzes Haus / Idee, kein Maßstab' : 'Grundriss / Idee, kein Maßstab';
-    if (reduce) hm = hmT;
+    /* Telefon: zurück zum Grundriss heißt wieder genau von oben, Norden oben */
+    if (phone && !hmT) { user = [0, 0]; vel = 0; }
+    if (reduce) { hm = hmT; fo = foT; }
     lt = performance.now(); loop.poke();
   }));
   drag();
@@ -156,11 +204,25 @@ async function boot() {
       return { o, h: ht, d: clamp((x - x0) / (x1 - x0)) };
     });
     /* Autos im Carport */
-    f.cars = (f.cars || []).map(([x, y, l, w, c, dir], i) => { const o = car(l / K, w / K, c); if (dir === 'w') o.rotation.y = -Math.PI / 2; o.position.set(lx(x), 0, lz(y)); g.add(o); return { o, d: .1 + i * .06 }; });
-    /* Ganzes Haus: Decke über dem Erdgeschoß (am Erdgeschoß), Dach über dem Obergeschoß */
-    const [sx0, sy0, sx1, sy1] = f.slab || f.crop, slab = solid(box, MAT.dark, boxE, LINED);
-    slab.scale.set((sx1 - sx0) / K, SLAB, (sy1 - sy0) / K); slab.position.set(lx((sx0 + sx1) / 2), f.key === 'eg' ? EGH : OGH, lz((sy0 + sy1) / 2));
-    slab.visible = false; g.add(slab); f.slab = slab;
+    f.cars = (f.cars || []).map(([x, y, l, w, c, dir], i) => { const o = car(l / K, w / K, c); if (dir === 'w') o.rotation.y = -Math.PI / 2; if (dir === 'n') o.rotation.y = Math.PI; o.position.set(lx(x), 0, lz(y)); g.add(o); return { o, d: .1 + i * .06 }; });
+    /* Ganzes Haus: Decke über dem Erdgeschoß (am Erdgeschoß), Dach über dem Obergeschoß (flach, oder Satteldach mit roof) */
+    /* Mit Satteldach nur die ausdrücklich genannten flachen Teile (Calm: das Carport) */
+    const rects = f.roof ? (f.slab && Array.isArray(f.slab[0]) ? f.slab : []) : (f.slab && Array.isArray(f.slab[0]) ? f.slab : [f.slab || f.crop]);
+    f.slabs = rects.map(([sx0, sy0, sx1, sy1]) => {
+      const slab = solid(box, MAT.dark, boxE, LINED);
+      slab.scale.set((sx1 - sx0) / K, SLAB, (sy1 - sy0) / K); slab.position.set(lx((sx0 + sx1) / 2), f.key === 'eg' ? EGH : OGH, lz((sy0 + sy1) / 2));
+      slab.visible = false; g.add(slab); slab.userData.h = SLAB; return slab;
+    });
+    if (f.roof) {
+      /* First nach Norden (Free), mit 'x' nach Osten (Calm, das lange Satteldach) */
+      const [rx0, ry0, rx1, ry1, R, ax] = f.roof, ov = .35, ex = ax === 'x';
+      const hw = (ex ? ry1 - ry0 : rx1 - rx0) / K / 2, len = (ex ? rx1 - rx0 : ry1 - ry0) / K + ov * 2;
+      const tri = new T.Shape([new T.Vector2(-hw - ov, 0), new T.Vector2(hw + ov, 0), new T.Vector2(0, R)]);
+      const rg = new T.ExtrudeGeometry(tri, { depth: len, bevelEnabled: false }); rg.translate(0, 0, -len / 2);
+      const roof = solid(rg, MAT.dark, new T.EdgesGeometry(rg, 25), LINED);
+      if (ex) roof.rotation.y = Math.PI / 2;
+      roof.position.set(lx((rx0 + rx1) / 2), f.key === 'eg' ? EGH : OGH, lz((ry0 + ry1) / 2)); roof.visible = false; roof.userData.h = 1; g.add(roof); f.slabs.push(roof);
+    }
     /* Namen auf dem Boden, dazu der Name der Ebene vor dem Sockel */
     f.labs = (f.labels || []).map(([t, x, y]) => ({ el: lab(t, 'p3__lab'), x: lx(x), z: lz(y) }));
     f.cap = { el: lab(f.cap, 'p3__cap'), x: 0, z: f.d / 2 };
@@ -236,10 +298,29 @@ function tex(svg, f) {
    Ganzes Haus: Erdgeschoß in der Mitte, Obergeschoß genau darüber, versetzt wie in den Plänen. */
 function layout() {
   if (!FLOORS[0] || !FLOORS[0].g) return;
-  const w = D.gl.clientWidth || 1, h = D.gl.clientHeight || 1;
-  narrow = w / h < 1.05;
+  phone = typeof matchMedia === 'function' && matchMedia('(max-width: 819px)').matches;
   const [a, b] = FLOORS;
   const box = (x0, x1, y0, y1, z0, z1) => { const o = []; [x0, x1].forEach(x => [y0, y1].forEach(y => [z0, z1].forEach(z => o.push([x, y, z])))); return o; };
+  /* Telefon: die Bühne so hoch, dass das größere Geschoß von oben die ganze Breite füllt (oben Reiter, unten Geschoßname und Hinweis) */
+  if (phone) {
+    const W = D.st.clientWidth || 1, s = W * .94 / Math.max(...FLOORS.map(f => f.w));
+    const hp = Math.round(clamp(Math.max(...FLOORS.map(f => f.d * Math.min(s, (W * .94) / f.w))) + 128, W * .95, W * 1.75));
+    /* die neue Höhe meldet sich über den ResizeObserver der Bühne, dann läuft layout noch einmal */
+    if (Math.abs((D.st.clientHeight || 0) - hp) > 2) D.st.style.aspectRatio = W + ' / ' + hp;
+  } else if (D.st.style.aspectRatio) D.st.style.aspectRatio = '';
+  const w = D.gl.clientWidth || 1, h = D.gl.clientHeight || 1;
+  narrow = phone || w / h < 1.05;
+  /* Telefon: jedes Geschoß für sich, untereinander mit viel Abstand; die Kamera fährt zum gewählten */
+  if (phone) {
+    const gap = 8, pa = [0, 0], pb = b ? [0, a.d / 2 + gap + b.d / 2] : null;
+    PF = [a, b].filter(Boolean).map((f, i) => { const p = i ? pb : pa; return { C: [p[0], .8, p[1]], BB: box(p[0] - f.w / 2, p[0] + f.w / 2, -.3, WALL, p[1] - f.d / 2, p[1] + f.d / 2) }; });
+    PL = { a: pa, b: pb, C: PF[0].C, BB: PF[0].BB };
+    if (!b) { HS = { a: [0, 0], C: [0, .8, 0], BB: box(-a.w / 2, a.w / 2, -.3, EGH + SLAB + (a.roof ? a.roof[4] : 0), -a.d / 2, a.d / 2) }; return; }
+    const top = EGH + SLAB + OGH + SLAB + (b.roof ? b.roof[4] : 0), off = b.off || [0, 0];
+    HS = { a: [0, 0], b: [(b.c[0] + off[0] - a.c[0]) / K, (b.c[1] + off[1] - a.c[1]) / K], C: [0, 2.4, 0], BB: box(-a.w / 2, a.w / 2, -.3, top, -a.d / 2, a.d / 2) };
+    return;
+  }
+  PF = null;
   /* Nur eine Ebene: das Geschoß in der Mitte, kein ganzes Haus */
   if (!b) {
     PL = HS = { a: [0, 0], C: [0, .8, 0], BB: box(-a.w / 2, a.w / 2, -.3, WALL, -a.d / 2, a.d / 2) };
@@ -252,16 +333,18 @@ function layout() {
   let mn = [1e9, 1e9], mx = [-1e9, -1e9];
   [[a, pa], [b, pb]].forEach(([f, p]) => { mn = [Math.min(mn[0], p[0] - f.w / 2), Math.min(mn[1], p[1] - f.d / 2)]; mx = [Math.max(mx[0], p[0] + f.w / 2), Math.max(mx[1], p[1] + f.d / 2)]; });
   PL = { a: pa, b: pb, C: [(mn[0] + mx[0]) / 2, .8, (mn[1] + mx[1]) / 2], BB: box(mn[0], mx[0], -.3, WALL, mn[1], mx[1]) };
-  const top = EGH + SLAB + OGH + SLAB, off = b.off || [0, 0];
+  const top = EGH + SLAB + OGH + SLAB + (b.roof ? b.roof[4] : 0), off = b.off || [0, 0];
   HS = { a: [0, 0], b: [(b.c[0] + off[0] - a.c[0]) / K, (b.c[1] + off[1] - a.c[1]) / K], C: [0, 2.4, 0], BB: box(-a.w / 2, a.w / 2, -.3, top, -a.d / 2, a.d / 2) };
 }
 
 /* Kameraabstand, bei dem das ganze Modell im Bild bleibt, für jede Drehung neu. Gestapelt (Telefon) mehr Luft unten für Geschoßname und Hinweis. */
-function fit(a, e, C, BB) {
+function fit(a, e, C, BB, mg) {
   let lo = 6, hi = 320; const v = V();
+  /* Ränder: seitlich, unten, oben (Anteil der halben Bildhöhe, die frei bleibt) */
+  const [mx, mb, mt] = mg || [.97, narrow ? .6 : .84, narrow ? .8 : .9];
   for (let i = 0; i < 16; i++) {
     const d = (lo + hi) / 2; S.orbit(a, e, d, C[0], C[1], C[2]); S.cam.updateMatrixWorld();
-    let o = 0; BB.forEach(p => { v.set(p[0], p[1], p[2]).project(S.cam); o = Math.max(o, Math.abs(v.x) / .97, (v.y < 0 ? -v.y / (narrow ? .6 : .84) : v.y / (narrow ? .8 : .9)), v.z > 1 ? 9 : 0); });
+    let o = 0; BB.forEach(p => { v.set(p[0], p[1], p[2]).project(S.cam); o = Math.max(o, Math.abs(v.x) / mx, (v.y < 0 ? -v.y / mb : v.y / mt), v.z > 1 ? 9 : 0); });
     if (o > 1) lo = d; else hi = d;
   }
   return hi;
@@ -293,7 +376,8 @@ function drag() {
      Hoch und runter bleibt Scrollen. Zwei Finger gehören dem Browser. */
   let lock = 'n';
   D.st.addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || e.target.closest('button')) { if (lock === 'x') stop(e.timeStamp); lock = 'n'; return; }
+    /* Runde 32: am Telefon dreht nur das ganze Haus; über dem Grundriss von oben scrollt der Finger die Seite */
+    if (e.touches.length !== 1 || e.target.closest('button') || (phone && !hmT)) { if (lock === 'x') stop(e.timeStamp); lock = 'n'; return; }
     const t = e.touches[0]; start(t.clientX, t.clientY, e.timeStamp); held = false; lock = '';
   }, { passive: true });
   D.st.addEventListener('touchmove', e => {
@@ -324,6 +408,7 @@ function tick() {
   /* Umbau zum ganzen Haus und zurück, 1,8 s */
   const now = performance.now(), dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
   if (hm !== hmT) { hm = hmT > hm ? Math.min(hmT, hm + dt / 1.8) : Math.max(hmT, hm - dt / 1.8); loop.poke(); }
+  if (fo !== foT) { fo = foT > fo ? Math.min(foT, fo + dt / .9) : Math.max(foT, fo - dt / .9); loop.poke(); }
   /* Drehung: nach dem Loslassen ausgleiten, dann weich nachziehen (mit reduzierter Bewegung sofort) */
   if (!held && Math.abs(vel) > .02) { user = [user[0] + vel * dt, user[1]]; vel *= Math.pow(.04, dt); loop.poke(); } else if (!held) vel = 0;
   const f = reduce ? 1 : 1 - Math.pow(.0004, dt);
@@ -337,13 +422,24 @@ function tick() {
   const mv = E(m, .12, .8), arc = Math.sin(Math.PI * mv) * 2.4;
   a.g.position.set(lerp(PL.a[0], HS.a[0], E(m, 0, .7)), 0, lerp(PL.a[1], HS.a[1], E(m, 0, .7)));
   if (b) b.g.position.set(lerp(PL.b[0], HS.b[0], mv), lerp(0, EGH + SLAB, mv) + arc, lerp(PL.b[1], HS.b[1], mv));
-  const C = PL.C.map((v, i) => lerp(v, HS.C[i], m)), BB = PL.BB.map((p, i) => p.map((v, j) => lerp(v, HS.BB[i][j], m)));
+  /* Telefon: Mitte und Rahmen des gezeigten Geschoßes, weich von einem zum anderen */
+  const pv = PF ? (PF[1] ? (i, j) => lerp(PF[0].BB[i][j], PF[1].BB[i][j], sm(fo)) : (i, j) => PF[0].BB[i][j]) : null;
+  const P0 = PF ? { C: PF[0].C.map((v, i) => PF[1] ? lerp(v, PF[1].C[i], sm(fo)) : v), BB: PF[0].BB.map((p, i) => p.map((_, j) => pv(i, j))) } : PL;
+  const C = P0.C.map((v, i) => lerp(v, HS.C[i], m)), BB = P0.BB.map((p, i) => p.map((v, j) => lerp(v, HS.BB[i][j], m)));
   /* leichte Drehung beim Scrollen, dazu was du selbst gedreht hast; das ganze Haus von flacher und mehr von der Seite */
   const t = through(D.st, 1, -.2);
-  /* Telefon: mehr von der Seite als von oben (Kundenwunsch 2026-11-05) */
-  az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + uc[0];
-  el = clamp(lerp(narrow ? .56 : .92, .42, m) + uc[1], .14, 1.35);
-  S.orbit(az, el, fit(az, el, C, BB), C[0], C[1], C[2]);
+  let mg;
+  if (phone) {
+    /* Runde 32: Grundriss genau von oben (Norden oben, ohne Schwanken), erst das ganze Haus kippt in die Perspektive */
+    az = lerp(0, -.55, m) + (t - .5) * .2 * m + uc[0];
+    el = clamp(lerp(1.5, .42, m) + uc[1], .14, 1.52);
+    const H = D.gl.clientHeight || 1;
+    mg = [lerp(.94, .97, m), lerp(1 - 2 * 66 / H, .62, m), lerp(1 - 2 * 58 / H, .8, m)];
+  } else {
+    az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + uc[0];
+    el = clamp(lerp(narrow ? .56 : .92, .42, m) + uc[1], .14, 1.35);
+  }
+  S.orbit(az, el, fit(az, el, C, BB, mg), C[0], C[1], C[2]);
   const gw = E(m, .04, .42), gu = E(m, .55, .86), gf = E(m, .62, .92), gs = E(m, .34, .56), gr = E(m, .8, 1);
   FLOORS.forEach(f => {
     if (!f.walls) return;
@@ -357,7 +453,7 @@ function tick() {
     /* Rahmen wird dunkel, Sockel und Boden des Obergeschoßes verschwinden, Decke und Dach wachsen */
     f.fm.color.setHex(0xCACACA).lerp(MATD.color, gf);
     if (f.fi) { const o = 1 - E(m, .06, .34); f.pm.opacity = o; f.top.material.opacity = o; f.plate.visible = f.top.visible = o > .002; f.pm.depthWrite = f.top.material.depthWrite = o > .5; }
-    const sg = f.fi ? gr : gs; f.slab.visible = sg > .002; f.slab.scale.y = Math.max(.001, SLAB * sg);
+    const sg = f.fi ? gr : gs; f.slabs.forEach(o => { o.visible = sg > .002; o.scale.y = Math.max(.001, o.userData.h * sg); });
   });
   S.render();
   /* Namen folgen dem Modell und gehen, sobald das Haus zusammengesetzt wird */
@@ -370,7 +466,9 @@ function tick() {
       v.set(p.x + L.x, p.y + y, p.z + L.z).project(S.cam);
       L.el.style.transform = `translate3d(${((v.x + 1) / 2 * W).toFixed(1)}px,${((1 - v.y) / 2 * H).toFixed(1)}px,0) translate(-50%,-50%)`;
     };
-    f.labs.forEach(L => put(L, .08, lo));
-    put(f.cap, -.3, E(k, .1, .4) * (1 - E(m, 0, .2)));
+    /* Telefon: nur das gezeigte Geschoß trägt seinen Namen */
+    const vis = phone && FLOORS[1] ? clamp(1 - Math.abs(f.fi - fo) * 1.6) : 1;
+    f.labs.forEach(L => put(L, .08, lo * vis));
+    put(f.cap, -.3, E(k, .1, .4) * (1 - E(m, 0, .2)) * vis);
   });
 }

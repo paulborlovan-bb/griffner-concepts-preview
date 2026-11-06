@@ -68,7 +68,7 @@ export function akteHtml(list) {
         <nav class="aks__nav" aria-label="Die ${n} Concepts">
           <div class="aks__navin">
             <ol class="aks__list">${list.map((c, i) => `
-              <li><a class="aks__link" href="#ak-${c.id}" data-ak-link="${c.id}"><span class="info">${NN(i + 1)}</span><span class="aks__name">${esc(c.name)}</span><i aria-hidden="true"></i></a></li>`).join('')}
+              <li><a class="aks__link" role="button" tabindex="0" data-ak-link="${c.id}"><span class="info">${NN(i + 1)}</span><span class="aks__name">${esc(c.name)}</span><i aria-hidden="true"></i></a></li>`).join('')}
             </ol>
           </div>
         </nav>

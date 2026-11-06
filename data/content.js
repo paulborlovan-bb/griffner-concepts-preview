@@ -33,7 +33,7 @@ export const CONCEPTS = [
         { img: 'assets/img/wald-innen.jpg', alt: 'Wohnraum mit Bücherwand, Sofa und raumhohen Fenstern, Visualisierung', h: 'Warm im Inneren.', p: 'Wohnen, Essen und Kochen teilen sich einen Raum. Holz am Boden und an der Wand, große Fenster holen das Grün ins Haus.' },
         { img: 'assets/img/wald-essen.jpg', alt: 'Esstisch vor dem Fenster zum Garten, Visualisierung', h: 'Der Tisch am Fenster.', p: 'Gegessen wird dort, wo der Garten am nächsten ist. Draußen bleibt die Welt, drinnen kommst du an.' }
       ],
-      plan: 'bold', planH: 'So wohnt Bold.', planP: 'Unten Wohnen, Kochen und ein Zimmer für alles, oben Eltern, Kinder und zwei Bäder. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
+      plan: 'bold', planH: 'So wohnst du Bold.', planP: 'Unten Wohnen, Kochen und ein Zimmer für alles, oben Eltern, Kinder und zwei Bäder. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
     }
   },
   {
@@ -59,7 +59,7 @@ export const CONCEPTS = [
         { img: WEB + 'DS9pFqgfFYqAglCs94KEi84z2E.jpg', alt: 'Essplatz unter einer Holzdecke, Foto, Platzhalter', h: 'Ein Raum unter dem Dach.', p: 'Unter dem offenen Satteldach liegen Wohnen, Essen und Kochen beisammen. Kein Flur, keine Treppe, nur Raum.' },
         { img: WEB + 'yUyYdoKFQZKqKrIkwklWpPDNk.jpg', alt: 'Wohnraum mit Holz und Blick ins Grüne, Foto, Platzhalter', h: 'Licht bis in die Tiefe.', p: 'Der gläserne Giebel holt das Licht weit ins Haus. Holz und Stein, sonst braucht es nichts.' }
       ],
-      plan: 'calm', planH: 'So wohnt Calm.', planP: 'Alles auf einer Ebene: vorne Wohnen, Essen und Kochen zur Terrasse, hinten Eltern, Kinder und das Bad. Zieh am Modell und sieh dich um.'
+      plan: 'calm', planH: 'So wohnst du Calm.', planP: 'Alles auf einer Ebene: vorne Wohnen, Essen und Kochen zur Terrasse, hinten Eltern, Kinder und das Bad. Zieh am Modell und sieh dich um.'
     }
   },
   {
@@ -85,7 +85,7 @@ export const CONCEPTS = [
         { img: WEB + '14QAOsBFBNn4ZxbBiuIyu7R0Z0.jpg', alt: 'Heller Wohnraum mit raumhohen Fenstern, Foto, Platzhalter', h: 'Fast schon draußen.', p: 'Raumhohe Fenster öffnen das Haus zu Terrasse und Pool. Der Tisch steht dort, wo der Sommer beginnt.' },
         { img: WEB + 'SXbkxuksx0QXTehHKkv5oNpigM.jpg', alt: 'Essplatz vor der Glasfront, Foto, Platzhalter', h: 'Oben die Terrasse.', p: 'Zwei schmale Dächer, dazwischen viel Glas. Und oben wartet die Terrasse auf lange Abende.' }
       ],
-      plan: 'light', planH: 'So wohnt Light.', planP: 'Unten ein offener Raum zum Garten, oben Rückzug und die Terrasse. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
+      plan: 'light', planH: 'So wohnst du Light.', planP: 'Unten ein offener Raum zum Garten, oben Rückzug und die Terrasse. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.'
     }
   },
   {
@@ -103,6 +103,7 @@ export const CONCEPTS = [
     m2: 185, href: 'free.html',
     page: {
       hero: { img: WEB + 'FgqcPVVxOsp6bfePRyWpzND3ylQ.jpg', alt: 'Weißes Haus mit auskragendem Obergeschoss am Abend, davor ein Pool, Foto, Platzhalter' },
+      plan: 'free', planH: 'So wohnst du Free.', planP: 'Unten Wohnen, Essen und Kochen in einem Raum, dazu Büro, Sauna und die Garage. Oben Eltern, Kinder, zwei Bäder und an jedem Giebel eine Loggia. Zieh am Modell und sieh dich um, oder setz die Geschoße zum ganzen Haus zusammen.',
       zahlenH: 'Viel Raum. Viel Licht.',
       zahlen: [['185', 'm²', 'Wohnfläche gesamt', 1], ['2', '', 'Ebenen', 1], ['Glas', '', 'Giebelfront'], ['Flach', '', 'Dachform']],
       fig: { img: WEB + 'MivYWJEaGgbGD41Wrk5KtjDWPqU.jpg', alt: 'Haus am Hang von oben, Foto, Platzhalter' },

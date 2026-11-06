@@ -40,10 +40,13 @@ export function initAkte(root) {
     const y = el.getBoundingClientRect().top + scrollY + 2;
     if (window.__griffnerJump) window.__griffnerJump(y); else scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
   };
-  links.forEach(a => a.addEventListener('click', e => {
-    const t = acts.find(x => x.dataset.ak === a.dataset.akLink);
-    if (t) { e.preventDefault(); jump(t); }
-  }));
+  /* Runde 32: die Einträge sind Knöpfe ohne href. Mit href="#ak-…" fing Framer den Anker selbst ab, schrieb ihn in Adresse und
+     Verlauf, und Zurück lief erst durch diese Stellen der Concepts Seite. */
+  const go = (a, e) => { const t = acts.find(x => x.dataset.ak === a.dataset.akLink); if (t) { e.preventDefault(); jump(t); } };
+  links.forEach(a => {
+    a.addEventListener('click', e => go(a, e));
+    a.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') go(a, e); });
+  });
   let mx = 0, my = 0;
   if (!reduce && matchMedia('(pointer:fine)').matches) addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; loop.poke(); }, { passive: true });
   const A = acts.map(el => akt(el, () => [mx, my]));
@@ -243,6 +246,7 @@ function akt(el, mouse) {
       row.style.opacity = pr.toFixed(3);
       row.style.transform = `translate3d(0,${((1 - pr) * 24).toFixed(1)}px,0)`;
       row.style.visibility = pr < .01 ? 'hidden' : '';
+      row.style.pointerEvents = pr > .5 ? '' : 'none';
     }
   };
 }
