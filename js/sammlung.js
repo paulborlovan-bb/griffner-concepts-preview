@@ -2,13 +2,13 @@
    01 bis 04 sind offen, verlinkt und stehen als weiße Volumenmodelle. 05 bis 10 kommen noch: dort steht ein Schnurgerüst
    (abgestecktes Grundstück, house3d.js Stake) mit "Coming soon". Jeder Platz baut sich auf, wenn die Kamera ankommt,
    der Zähler zählt mit. Daten kommen aus SAMMLUNG in data/content.js. */
-import { $, E, lerp, clamp, seg, ease, prog, loop, reduce } from './core.js';
+import { $, E, lerp, clamp, seg, ease, prog, loop, reduce, hex, mix, css } from './core.js';
 import { SAMMLUNG } from '../data/content.js';
 
 const OPEN = SAMMLUNG.filter(s => !s.ph).length;
 
 const GAP = 34;
-let M, S, D, H = [], LABS = [], visible = false, booting = false;
+let M, S, D, H = [], LABS = [], visible = false, booting = false, RA = null, RB = null, rl = '';
 
 export function initSammlung() {
   D = { el: $('#k-sammlung'), gl: $('[data-sm-gl]'), labs: $('[data-sm-labs]'), cnt: $('[data-sm-cnt]'), dock: $('[data-sm-dock]'), hint: $('.sammlung__hint') };
@@ -72,6 +72,11 @@ function tick() {
   S.scene.fog.near = lerp(120, 300, ov); S.scene.fog.far = lerp(380, 800, ov);
   const cx = lerp(tx + (mob ? 4 : 12), mid, ov);
   S.orbit(lerp(lerp(.55, .35, seg(p, 0, .78)), mob ? .18 : .08, ov), lerp(.12, mob ? .62 : .42, ov), lerp(mob ? 136 : 104, mob ? 450 : 300, ov), cx, lerp(15, mob ? 15 : 26, ov), 0);
+  /* Raumwechsel: solange die Oberkante vom unteren zum oberen Bildrand steigt, kommt die Bühne aus dem Schwarz der Concepts.
+     Gleiche Rechnung wie die Raumfarben (chrome.js colorAt, in Framer KonzeptKit), so entsteht keine Kante */
+  if (!RA) { const cs = getComputedStyle(D.el); RA = hex(cs.getPropertyValue('--room-k-concepts').trim() || '#000000'); RB = hex(cs.getPropertyValue('--room-k-sammlung').trim() || '#444442'); }
+  const rc = css(mix(RA, RB, clamp((vh - D.el.getBoundingClientRect().top) / vh)));
+  if (rc !== rl) { rl = rc; S.scene.background.set(rc); S.scene.fog.color.set(rc); }
   S.render();
   const floor = vh - (mob ? 56 : 72);
   H.forEach((h, i) => {

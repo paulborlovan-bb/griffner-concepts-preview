@@ -3,8 +3,8 @@
    2. die Karte wächst zur Bildfolge des Hauses (70 bis 75 % breit), beim Scrollen wechseln die Bilder
    3. die Bildfolge schrumpft zum kleinen Bild am Anfang des großen Satzes, der Satz läuft Wort für Wort herein,
       darunter Linie und großer Aufruf zur Seite des Hauses. Alles in einem gepinnten Bild, nur über das Scrollen.
-   Links eine Liste der Häuser zum Springen. Auf der Concepts Seite ohne Einleitung und ohne Aufruf, der große Titel
-   ist ein eigenes Feld („Zum Beispiel so.“), die Liste zeigt die Namen (Runde 13). Kein DOM hier: tools/pages.mjs schreibt das Markup
+   Links eine Liste der Häuser zum Springen. Auf der Concepts Seite ohne Einleitung, der große Titel ist ein eigenes Feld
+   („Zum Beispiel so.“), Liste und Aufruf zeigen die Namen (Runde 13 und 14). Kein DOM hier: tools/pages.mjs schreibt das Markup
    in index.html (Kapitel 03) und in die Seiten der Concepts (Nächstes Concept). js/akte.js bewegt es. */
 
 const NN = n => String(n).padStart(2, '0');
@@ -59,7 +59,7 @@ export function aktHtml(c, i, n, { one = false, go = true } = {}) {
 </article>`;
 }
 
-/* Kapitel 03 auf der Concepts Seite: Liste links mit den Namen, rechts die Akte mit ihrem Titel, ohne Einleitung und ohne Aufruf (Runde 13) */
+/* Kapitel 03 auf der Concepts Seite: Liste links mit den Namen, rechts die Akte mit ihrem Titel und dem Aufruf „Concept Bold ansehen“, ohne Einleitung */
 export function akteHtml(list) {
   const n = list.length;
   return `
@@ -71,7 +71,7 @@ export function akteHtml(list) {
             </ol>
           </div>
         </nav>
-        <div class="aks__main">${list.map((c, i) => aktHtml(c, i, n, { go: false })).join('')}
+        <div class="aks__main">${list.map((c, i) => aktHtml(c, i, n)).join('')}
         </div>
       </div>
 `;

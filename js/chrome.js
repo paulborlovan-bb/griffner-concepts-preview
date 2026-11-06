@@ -91,7 +91,7 @@ function mount() {
   if (ft && !ft.children.length) ft.innerHTML = FOOTER;
 }
 
-let bgl, conn, ctop, cbot, hk, sk, rooms, introAt = 0, progEl;
+let bgl, conn, ctop, cbot, hk, sk, rooms, introAt = 0, progEl, gbg = '';
 export function initChrome() {
   mount();
   bgl = $('[data-bgl]'); conn = $('[data-connector]'); ctop = conn.firstElementChild; cbot = conn.lastElementChild;
@@ -106,7 +106,9 @@ export function initChrome() {
 export function frame() {
   if (!rooms || !rooms.length) return;
   const vh = innerHeight, menu = document.documentElement.dataset.menu === 'open';
-  bgl.style.background = css(colorAt(vh / 2, rooms));
+  const bg = css(colorAt(vh / 2, rooms));
+  bgl.style.background = bg;
+  if (bg !== gbg) { gbg = bg; document.documentElement.style.setProperty('--gk-bg', bg); }
   const nk = menu ? '#FFFFFF' : ink(colorAt(44, rooms));
   const nsk = ink(colorAt(vh - 28, rooms));
   const ds = document.documentElement.style;
