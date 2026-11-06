@@ -102,6 +102,12 @@ export function initChrome() {
   document.documentElement.classList.add('is-ready');
 }
 
+/* Flächen, die selbst malen (Bühne „Auf den Punkt“ auf Weiß), geben dem Header ihre Farbe mit data-ink-bg; sonst die Raumfarbe */
+function inkAt(y) {
+  for (const el of $$('[data-ink-bg]')) { const r = el.getBoundingClientRect(); if (r.top <= y && r.bottom > y) return hex(el.dataset.inkBg); }
+  return colorAt(y, rooms);
+}
+
 /* Läuft jedes Bild, damit der Connector gleiten kann */
 export function frame() {
   if (!rooms || !rooms.length) return;
@@ -109,8 +115,8 @@ export function frame() {
   const bg = css(colorAt(vh / 2, rooms));
   bgl.style.background = bg;
   if (bg !== gbg) { gbg = bg; document.documentElement.style.setProperty('--gk-bg', bg); }
-  const nk = menu ? '#FFFFFF' : ink(colorAt(44, rooms));
-  const nsk = ink(colorAt(vh - 28, rooms));
+  const nk = menu ? '#FFFFFF' : ink(inkAt(44));
+  const nsk = ink(inkAt(vh - 28));
   const ds = document.documentElement.style;
   if (nk !== hk) { hk = nk; ds.setProperty('--header-ink', hk); }
   if (nsk !== sk) { sk = nsk; ds.setProperty('--season-ink', sk); }
