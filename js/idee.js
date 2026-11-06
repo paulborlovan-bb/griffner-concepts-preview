@@ -6,40 +6,61 @@ import { $, $$, E, seg, lerp, prog, loop, reduce } from './core.js';
 let M, VS, vH, D, I, skI, skO, ovSig = '', booted = false, WP, STEPS;
 const f2 = v => v.toFixed(2);
 
-/* Sichtbare Kanten als Linien in 3D, c = Kamerapunkt */
+/* Sichtbare Kanten als Linien in 3D, c = Kamerapunkt.
+   Runde 30 (Kundenwunsch: die Zeichnung wie das Modell in der Sammlung): die Körper kommen aus house3d.js shape(), also auch
+   Satteldach (Calm), Vordach (Light) und die Loggia im Giebel (Free). Verdeckte Kanten fallen weg: jede Kante wird in kurzen
+   Schritten gegen alle Körper geprüft, nur was man vom Kamerapunkt aus sieht, wird gezeichnet. */
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+function faceN(V, f) {
+  const n = [0, 0, 0];
+  f.forEach((i, k) => { const a = V[i], b = V[f[(k + 1) % f.length]]; n[0] += (a[1] - b[1]) * (a[2] + b[2]); n[1] += (a[2] - b[2]) * (a[0] + b[0]); n[2] += (a[0] - b[0]) * (a[1] + b[1]); });
+  const l = Math.hypot(n[0], n[1], n[2]) || 1; return n.map(v => v / l);
+}
 function segs(P, c) {
-  const out = [], L = (a, b) => out.push([a, b]), ext = P.slope * 1.86;
+  const { solids, glass } = M.shape(P);
   const Lm = Math.max(P.L0, P.L1 * P.up), sx = P.sx * P.up;
-  const vis = (cc, h, ax, s) => s * (c[ax] - (cc[ax] + s * h[ax])) > 0;
-  const box = (cc, h) => {
-    for (let a = 0; a < 3; a++) {
-      const b = (a + 1) % 3, d = (a + 2) % 3;
-      for (const sb of [-1, 1]) for (const sd of [-1, 1]) {
-        if (!vis(cc, h, b, sb) && !vis(cc, h, d, sd)) continue;
-        const p0 = [0, 0, 0], p1 = [0, 0, 0];
-        p0[a] = cc[a] - h[a]; p1[a] = cc[a] + h[a]; p0[b] = p1[b] = cc[b] + sb * h[b]; p0[d] = p1[d] = cc[d] + sd * h[d];
-        L(p0, p1);
+  const raw = [[[-Lm * .95 + Math.min(0, sx), 0, P.D / 2 + 2.6], [Lm * .95 + Math.max(0, sx), 0, P.D / 2 + 2.6]]];
+  /* Ebenen jedes Körpers, Normalen nach außen */
+  const PL = solids.map(s => {
+    const cen = [0, 1, 2].map(j => s.V.reduce((t, v) => t + v[j], 0) / s.V.length);
+    return s.F.map(f => { let n = faceN(s.V, f); const v0 = s.V[f[0]]; if (dot(n, sub(v0, cen)) < 0) n = n.map(v => -v); return { n, d: dot(n, v0), f }; });
+  });
+  /* Kanten, an denen mindestens eine zugewandte Fläche liegt */
+  solids.forEach((s, si) => {
+    const E = new Map();
+    PL[si].forEach(({ n, f }) => {
+      const vis = dot(n, sub(c, s.V[f[0]])) > 1e-6;
+      f.forEach((i, k) => { const j = f[(k + 1) % f.length], key = i < j ? i + ',' + j : j + ',' + i; const e = E.get(key) || [i, j, false]; e[2] = e[2] || vis; E.set(key, e); });
+    });
+    E.forEach(([i, j, v]) => { if (v) raw.push([s.V[i], s.V[j]]); });
+  });
+  glass.forEach(g => raw.push(g));
+  /* Verdeckt: der Strahl vom Auge zum Punkt geht vorher durch einen Körper */
+  const hidden = p => {
+    const dv = sub(p, c), len = Math.hypot(dv[0], dv[1], dv[2]) || 1, tmax = 1 - .03 / len;
+    for (const pl of PL) {
+      let t0 = 0, t1 = tmax, ok = true;
+      for (const { n, d } of pl) {
+        const den = dot(n, dv), num = d - dot(n, c);
+        if (Math.abs(den) < 1e-9) { if (num < 0) { ok = false; break; } continue; }
+        const t = num / den;
+        if (den < 0) t0 = Math.max(t0, t); else t1 = Math.min(t1, t);
+        if (t0 > t1) { ok = false; break; }
       }
+      if (ok && t1 - t0 > 1e-4) return true;
     }
+    return false;
   };
-  L([-Lm * .95 + Math.min(0, sx), 0, P.D / 2 + 2.6], [Lm * .95 + Math.max(0, sx), 0, P.D / 2 + 2.6]);
-  const H0 = P.H1 + ext;
-  box([0, H0 / 2, 0], [P.L0 / 2, H0 / 2, P.D / 2]);
-  const H2 = P.H2 * P.up;
-  if (H2 > .05) box([sx, H0 + H2 / 2, 0], [P.L1 / 2, H2 / 2, P.D / 2]);
-  if (c[2] > P.D / 2) {
-    const z = P.D / 2;
-    const band = (n, len, x0, yc, h, amt) => {
-      if (amt < .02) return;
-      const span = len * .84 * amt, wd = span / n * .78;
-      for (let i = 0; i < n; i++) {
-        const x = x0 - span / 2 + span / n * (i + .5), a = x - wd / 2, b = x + wd / 2, y0 = yc - h / 2, y1 = yc + h / 2;
-        L([a, y0, z], [b, y0, z]); L([b, y0, z], [b, y1, z]); L([b, y1, z], [a, y1, z]); L([a, y1, z], [a, y0, z]); L([x, y0, z], [x, y1, z]);
-      }
-    };
-    band(3, P.L0, 0, ext + P.H1 * .44, P.H1 * .7, P.gl);
-    if (H2 > .05) band(3, P.L1, sx, H0 + H2 * .5, H2 * .6, P.gu);
-  }
+  const out = [];
+  raw.forEach(([a, b]) => {
+    const n = Math.max(6, Math.ceil(Math.hypot(...sub(b, a)) / .18));
+    let run = null;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, q = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], vis = !hidden(q);
+      if (vis) { if (run) run[1] = q; else run = [q, q]; }
+      if ((!vis || i === n) && run) { if (Math.hypot(...sub(run[1], run[0])) > .04) out.push(run); run = null; }
+    }
+  });
   return out;
 }
 const svgLines = (L, col, sw) => L.map(([a, b]) => `<line x1="${f2(a[0])}" y1="${f2(a[1])}" x2="${f2(b[0])}" y2="${f2(b[1])}" stroke="${col}" stroke-width="${sw}" vector-effect="non-scaling-stroke" stroke-linecap="square" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"></line>`).join('');

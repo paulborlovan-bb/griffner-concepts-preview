@@ -32,7 +32,10 @@ export const h = (tag, attrs = {}, html = '') => { const el = document.createEle
 /* Runde 29 (Kundenwunsch: am Telefon läuft nicht alles sauber, Chrome und Safari): eine Bildschirmhöhe, die beim Scrollen gleich bleibt.
    innerHeight wächst am Telefon, sobald die Leiste des Browsers wegfährt, die Bühnen sind aber 100svh hoch. Dann sprang der
    Fortschritt mitten im Scrollen. Die Höhe des Dokumentfensters ist die kleine Höhe (wie svh) und ändert sich dabei nicht. */
-export const vhs = () => document.documentElement.clientHeight || innerHeight;
+/* Runde 30: in Framer ist document eine Hülle (framer/src/kit-runtime.ts), deren documentElement die eigene Sektion ist. Dort kam
+   hier die Höhe der Sektion heraus (Concepts 14544 statt 900) und alle Strecken liefen falsch. Darum das echte Dokument über globalThis. */
+const realDoc = () => (typeof globalThis !== 'undefined' && globalThis.document) || document;
+export const vhs = () => realDoc().documentElement.clientHeight || innerHeight;
 /* h: Höhe der gepinnten Bühne, wenn sie nicht 100svh ist */
 export function prog(el, h) {
   const r = el.getBoundingClientRect(), vh = vhs();

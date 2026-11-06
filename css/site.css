@@ -738,6 +738,9 @@ main,.ft{position:relative}
 .p3__hint{position:absolute;right:16px;top:16px;z-index:2;padding:7px 10px 6px;border:1px solid rgba(255,255,255,.55);color:var(--griffner-weiss);transition:opacity 700ms var(--ease);pointer-events:none}
 .p3__hint.is-off{opacity:0}
 .p3>.tag{left:16px;bottom:16px}
+/* Runde 30: Drehen auch ohne Ziehen (Telefon, Tastatur), unten rechts */
+.p3__turn{position:absolute;right:16px;bottom:16px;z-index:3;display:flex;gap:8px}
+.p3__turn .ak__arrow{background:rgba(0,0,0,.35)}
 /* Grundriss oder ganzes Haus: weiße Rahmen auf Schwarz, gewählt weiß gefüllt */
 .p3__tabs{position:absolute;left:16px;top:16px;z-index:3;color:var(--griffner-weiss)}
 .p3__tabs .tab{padding:9px 13px 8px;background:var(--griffner-schwarz)}
@@ -750,6 +753,8 @@ main,.ft{position:relative}
   .p3__hint{display:none}
   .p3__tabs{left:12px;top:12px}
   .p3>.tag{left:12px;bottom:12px}
+  .p3__turn{right:12px;bottom:12px}
+  .p3__turn .ak__arrow{width:44px;height:44px}
 }
 /* Wald: Raum und Licht, viel Luft, Bilder öffnen sich beim Kommen und schließen sich beim Gehen */
 .wl{color:var(--griffner-weiss)}

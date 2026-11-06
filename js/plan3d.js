@@ -66,6 +66,9 @@ const HOUSES = {
 let FLOORS = [];
 
 let M, T, S, D, k = reduce ? 1 : 0, started = false, az = 0, el = 0, user = [0, 0], touched = false, narrow = null;
+/* Runde 30 (Kundenwunsch: am Telefon schwer zu bedienen, man scrollt aus Versehen): uc ist die gezeigte Drehung, sie zieht weich
+   nach user nach; vel gleitet nach dem Loslassen aus; held, solange ein Finger oder die Maus zieht */
+let uc = [0, 0], vel = 0, held = false;
 let hm = 0, hmT = 0, lt = 0, PL = null, HS = null, MATD = null;
 const V = () => new T.Vector3();
 const sm = x => x * x * (3 - 2 * x);
@@ -265,23 +268,53 @@ function fit(a, e, C, BB) {
 }
 
 function drag() {
-  let id = null, sx = 0, sy = 0, u0 = [0, 0];
+  let id = null, sx = 0, sy = 0, u0 = [0, 0], lx = 0, lt0 = 0;
+  const hint = () => { if (!touched) { touched = true; D.hint.classList.add('is-off'); } };
+  const turn = (dx, dy) => { user = [u0[0] - dx, clamp(u0[1] + dy, -.5, .5)]; loop.poke(); };
+  /* Tempo der letzten Bewegung (rad/s), für das Ausgleiten */
+  const track = (x, t) => { const d = t - lt0; if (d > 4) { vel = lerp(vel, -(x - lx) / 260 / d * 1000, .6); lx = x; lt0 = t; } };
+  const start = (x, y, t) => { sx = x; sy = y; u0 = [...user]; vel = 0; lx = x; lt0 = t; held = true; };
+  const stop = t => { held = false; D.st.classList.remove('is-drag'); if (t - lt0 > 90) vel = 0; vel = clamp(vel, -6, 6); loop.poke(); };
+  /* Maus und Stift: Zeiger, seitlich drehen, hoch und runter kippen */
   D.st.addEventListener('pointerdown', e => {
-    if (e.button > 0 || e.target.closest('button')) return;
-    id = e.pointerId; sx = e.clientX; sy = e.clientY; u0 = [...user];
+    if (e.pointerType === 'touch' || e.button > 0 || e.target.closest('button')) return;
+    id = e.pointerId; start(e.clientX, e.clientY, e.timeStamp);
     D.st.setPointerCapture(id); D.st.classList.add('is-drag');
   });
   D.st.addEventListener('pointermove', e => {
     if (e.pointerId !== id) return;
-    const dx = (e.clientX - sx) / 260, dy = e.pointerType === 'mouse' ? (e.clientY - sy) / 320 : 0;
-    /* Runde 22 (Kundenwunsch „360 rotable, now is just 180“): seitlich ohne Anschlag ganz herum, gehalten in ±π, damit die Zahl nicht wächst */
-    const a = u0[0] - dx;
-    user = [Math.atan2(Math.sin(a), Math.cos(a)), clamp(u0[1] + dy, -.5, .5)];
-    if (!touched && Math.abs(e.clientX - sx) > 6) { touched = true; D.hint.classList.add('is-off'); }
-    loop.poke();
+    /* Runde 22 (Kundenwunsch „360 rotable, now is just 180“): seitlich ohne Anschlag ganz herum */
+    turn((e.clientX - sx) / 260, (e.clientY - sy) / 320); track(e.clientX, e.timeStamp);
+    if (Math.abs(e.clientX - sx) > 6) hint();
   });
-  const end = e => { if (e.pointerId !== id) return; id = null; D.st.classList.remove('is-drag'); };
+  const end = e => { if (e.pointerId !== id) return; id = null; stop(e.timeStamp); };
   D.st.addEventListener('pointerup', end); D.st.addEventListener('pointercancel', end);
+  /* Finger: erst nach ein paar Pixeln entscheiden. Seitlich heißt drehen, dann scrollt die Seite nicht mit (auch nicht schräg).
+     Hoch und runter bleibt Scrollen. Zwei Finger gehören dem Browser. */
+  let lock = 'n';
+  D.st.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1 || e.target.closest('button')) { if (lock === 'x') stop(e.timeStamp); lock = 'n'; return; }
+    const t = e.touches[0]; start(t.clientX, t.clientY, e.timeStamp); held = false; lock = '';
+  }, { passive: true });
+  D.st.addEventListener('touchmove', e => {
+    if (lock === 'n' || lock === 'y') return;
+    if (e.touches.length !== 1) { if (lock === 'x') stop(e.timeStamp); lock = 'n'; return; }
+    const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (!lock) {
+      if (Math.hypot(dx, dy) < 7) return;
+      lock = Math.abs(dx) > Math.abs(dy) * .8 ? 'x' : 'y';
+      if (lock === 'y') return;
+      held = true; D.st.classList.add('is-drag'); hint();
+    }
+    if (e.cancelable) e.preventDefault();
+    turn(dx / 230, 0); track(t.clientX, e.timeStamp);
+  }, { passive: false });
+  const tend = e => { if (lock === 'x') stop(e.timeStamp); lock = 'n'; };
+  D.st.addEventListener('touchend', tend); D.st.addEventListener('touchcancel', tend);
+  /* Pfeile: je ein Achtel herum, weich */
+  $$('[data-p3-turn]', D.st).forEach(b => b.addEventListener('click', () => {
+    vel = 0; user = [user[0] + Number(b.dataset.p3Turn) * Math.PI / 4, user[1]]; hint(); loop.poke();
+  }));
 }
 
 function tick() {
@@ -291,6 +324,13 @@ function tick() {
   /* Umbau zum ganzen Haus und zurück, 1,8 s */
   const now = performance.now(), dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
   if (hm !== hmT) { hm = hmT > hm ? Math.min(hmT, hm + dt / 1.8) : Math.max(hmT, hm - dt / 1.8); loop.poke(); }
+  /* Drehung: nach dem Loslassen ausgleiten, dann weich nachziehen (mit reduzierter Bewegung sofort) */
+  if (!held && Math.abs(vel) > .02) { user = [user[0] + vel * dt, user[1]]; vel *= Math.pow(.04, dt); loop.poke(); } else if (!held) vel = 0;
+  const f = reduce ? 1 : 1 - Math.pow(.0004, dt);
+  uc = uc.map((v, i) => v + (user[i] - v) * f);
+  if (Math.abs(user[0] - uc[0]) > .0004 || Math.abs(user[1] - uc[1]) > .0004) loop.poke(); else uc = [...user];
+  /* ganz herum ohne Anschlag, die Zahl bleibt klein */
+  if (!held && Math.abs(uc[0]) > Math.PI) { const w = Math.sign(uc[0]) * 2 * Math.PI; uc[0] -= w; user = [user[0] - w, user[1]]; }
   const m = sm(hm), [a, b] = FLOORS;
   if (!a.g) return;
   /* Lage der Geschoße: das Obergeschoß hebt ab, schwebt hinüber und setzt sich auf die Decke */
@@ -301,8 +341,8 @@ function tick() {
   /* leichte Drehung beim Scrollen, dazu was du selbst gedreht hast; das ganze Haus von flacher und mehr von der Seite */
   const t = through(D.st, 1, -.2);
   /* Telefon: mehr von der Seite als von oben (Kundenwunsch 2026-11-05) */
-  az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + user[0];
-  el = clamp(lerp(narrow ? .56 : .92, .42, m) + user[1], .14, 1.35);
+  az = lerp(narrow ? -.24 : -.4, narrow ? -.55 : -.62, m) + (t - .5) * (narrow ? .2 : .34) + uc[0];
+  el = clamp(lerp(narrow ? .56 : .92, .42, m) + uc[1], .14, 1.35);
   S.orbit(az, el, fit(az, el, C, BB), C[0], C[1], C[2]);
   const gw = E(m, .04, .42), gu = E(m, .55, .86), gf = E(m, .62, .92), gs = E(m, .34, .56), gr = E(m, .8, 1);
   FLOORS.forEach(f => {
