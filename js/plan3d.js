@@ -274,7 +274,9 @@ function drag() {
   D.st.addEventListener('pointermove', e => {
     if (e.pointerId !== id) return;
     const dx = (e.clientX - sx) / 260, dy = e.pointerType === 'mouse' ? (e.clientY - sy) / 320 : 0;
-    user = [clamp(u0[0] - dx, -1.3, 1.3), clamp(u0[1] + dy, -.5, .5)];
+    /* Runde 22 (Kundenwunsch „360 rotable, now is just 180“): seitlich ohne Anschlag ganz herum, gehalten in ±π, damit die Zahl nicht wächst */
+    const a = u0[0] - dx;
+    user = [Math.atan2(Math.sin(a), Math.cos(a)), clamp(u0[1] + dy, -.5, .5)];
     if (!touched && Math.abs(e.clientX - sx) > 6) { touched = true; D.hint.classList.add('is-off'); }
     loop.poke();
   });
