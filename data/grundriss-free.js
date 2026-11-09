@@ -10,7 +10,7 @@ export default {
   name: 'Free', key: 'free',
   K: 28.35,
   floor: 'eiche',
-  desc: 'Erdgeschoß in Stein, Obergeschoß in Lärche, Satteldach mit Giebeln aus Glas über den Loggien.',
+  desc: 'Erdgeschoß in Stein, Obergeschoß in Lärche, Satteldach mit einem Rahmen aus Holz, im Giebel Glas genau über den Fenstern der Loggien.',
   view: [-.62, .42],
   /* Höhen in m: Erdgeschoß, Obergeschoß, Decke, Schnitt im Grundriss (so hoch stehen die Wände, solange ein Geschoß allein steht) */
   h: { eg: 2.9, og: 2.75, slab: .34, cut: 2.1 },
@@ -113,10 +113,19 @@ export default {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-free-og',
       crop: [590, 130, 838, 637], off: [-47.8, 56.9],
       out: { x0: [600.3], x1: [827.2], y0: [196.6, 139.9], y1: [584.4, 626.9] }, skin: 'holz', baseSide: 'holz',
+      /* Runde 40: die Rückwand der Loggien ist verputzt (Bild 9), die Seiten bleiben Holz */
+      skins: [[612, 570, 816, 590, 'putz'], [612, 190, 816, 212, 'putz']],
       house: [600.3, 196.6, 827.2, 584.4],
       base: [[600.3, 139.9, 827.2, 626.9]],
-      /* Satteldach, First von Nord nach Süd, Stehfalz dunkel; Giebel über den Loggien aus Glas mit einem hellen Feld in der Mitte (Runde 39, wie auf den Bildern) */
-      roofs: [{ type: 'gable', r: [600.3, 139.9, 827.2, 626.9], rise: 3.4, axis: 'y', edge: 'holz', gables: [{ at: 196.6, kind: 'glas', mid: .26, mat: 'putz' }, { at: 584.4, kind: 'glas', mid: .26, mat: 'putz' }] }],
+      /* Satteldach, First von Nord nach Süd, Stehfalz dunkel, Traufe fast bündig. Runde 40 (Bilder 9 bis 11): vorne an jeder Stirn ein Rahmen
+         aus Holz; der Giebel an der Rückwand der Loggia ist verputzt, Glas nur genau über den Fenstern darunter, mit denselben Pfosten:
+         im Süden über den zwei Fenstern, im Norden über der großen Schiebetür */
+      roofs: [{ type: 'gable', r: [600.3, 139.9, 827.2, 626.9], rise: 3.4, axis: 'y', ov: .06, edge: 'holz',
+        gables: [
+          { at: 134.2, band: .5, mat: 'holz' }, { at: 632.6, band: .5, mat: 'holz' },
+          { at: 202.3, dep: .4, tb: .12, parts: [[600.3, 641.1, 'putz'], [641.1, 786.3, 'glas', { sp: 3 }], [786.3, 827.2, 'putz']] },
+          { at: 578.7, dep: .4, tb: .12, parts: [[600.3, 638.6, 'putz'], [638.6, 693.3, 'glas', { sp: 1 }], [693.3, 734.1, 'putz'], [734.1, 788.8, 'glas', { sp: 1 }], [788.8, 827.2, 'putz']] }
+        ] }],
       rooms: [
         { n: 'Eltern', list: 'Eltern', f: 'eiche', r: [[611.7, 208.1, 712, 336.7]], at: [655, 322] },
         { n: 'Bad', list: 'Bad bei den Eltern', f: 'fliese', r: [[712, 208.1, 815.8, 336.7], [716.4, 336.7, 815.8, 363.6]], at: [786, 296] },
@@ -132,9 +141,10 @@ export default {
       void: [611.7, 342, 678.5, 420],
       rugs: [[628, 236, 62, 76, 'sand'], [628, 489, 44, 50, 'kalk'], [752, 489, 44, 50, 'kalk']],
       windows: [
-        [641.1, 196.6, 786.3, 208.1, 0, 2.5, 'schiebe'],
-        [638.6, 573, 693.3, 584.4, 0, 2.5, 'glas', { sp: 1 }],
-        [734.1, 573, 788.8, 584.4, 0, 2.5, 'glas', { sp: 1 }],
+        /* Runde 40: die Fenster der Loggien raumhoch, das Glas im Giebel steht genau darüber */
+        [641.1, 196.6, 786.3, 208.1, 0, 2.75, 'schiebe'],
+        [638.6, 573, 693.3, 584.4, 0, 2.75, 'glas', { sp: 1 }],
+        [734.1, 573, 788.8, 584.4, 0, 2.75, 'glas', { sp: 1 }],
         [600.3, 351.8, 611.7, 366.8, .9, 2.3, 'glas'], [600.3, 396.6, 611.7, 411.6, .9, 2.3, 'glas'], [600.3, 441.4, 611.7, 456.4, .9, 2.3, 'glas'],
         [815.8, 399.3, 827.2, 414.3, 1, 2.3, 'glas'], [815.8, 450.4, 827.2, 465.4, 1.2, 2.3, 'glas']
       ],

@@ -1,8 +1,9 @@
 /* Runde 39: Concept Calm als realistischer Grundriss (grundrisse.html, js/grundriss.js). Ein Geschoß, Satteldach.
    Alles in Punkt aus dem CAD Plan (Langhaus, Relaunch), 1 m = 28,35 pt, Norden oben, y nach unten. Wände aus data/plan-geo.js (plan-calm-eg).
-   Material nach den Bildern: helles Holz senkrecht, die Nordseite und die Wände der überdachten Terrasse in hellem Ziegel,
-   Satteldach mit dunklen flachen Ziegeln, im Osten ein tiefer Holzrahmen (Dach und Wandenden 0,5 m vor der Wand),
-   darin der Giebel aus Glas mit einem Pfeiler aus Ziegel; Carport und Gang zum Eingang mit flachem Dach in Holz.
+   Material nach den Bildern: helles Holz senkrecht, die Nordseite und der Pfeiler mit der Wand der überdachten Terrasse in hellem Ziegel,
+   Satteldach mit dunklen flachen Ziegeln, im Osten ein tiefer Holzrahmen (Dach und Wandenden 0,5 m vor der Wand). Ostgiebel seit Runde 40
+   wie das Bild: Holz, schmales Küchenfenster, Ziegelpfeiler bis zum First, zurückgesetzt das Glas vom Essen mit Pfosten, Holz;
+   Carport und Gang zum Eingang mit flachem Dach in Holz.
    Flächen gibt der Plan nicht als Liste, sie stehen als „ca.“ aus den Rechtecken. */
 export default {
   name: 'Calm', key: 'calm',
@@ -19,7 +20,7 @@ export default {
       out: { x0: [329.8, 588.7], x1: [891.3, 826.1, 904.8, 770.1], y0: [390.4, 141.9], y1: [640, 520.9, 337.5] },
       skin: 'holzhell',
       /* Ziegel: die ganze Nordseite, die Ostwand der Küche, die Wände der überdachten Terrasse */
-      skins: [[340, 385, 892, 400, 'ziegel'], [875, 400, 895, 525, 'ziegel'], [810, 505, 892, 645, 'ziegel']],
+      skins: [[340, 385, 892, 400, 'ziegel'], [875, 470, 895, 525, 'ziegel'], [810, 505, 892, 525, 'ziegel']],
       /* Carport: Wandscheiben ganz in Holz */
       mats: [[585, 138, 775, 341, 'holzhell']],
       house: [329.8, 390.4, 891.3, 640],
@@ -49,8 +50,9 @@ export default {
         [329.8, 390.4, 341.3, 457.9, .5, 2.4, 'glas', { sp: 1 }],
         [471.7, 390.4, 623.9, 401.8, 1.6, 2.2, 'glas', { sp: 4 }],
         [654.5, 390.4, 698, 401.8, 0, 2.4, 'tuer', { leaf: 1.0 }],
-        [879.9, 449.7, 891.3, 476, .9, 2.4, 'glas'],
-        [814.7, 523.8, 826.1, 610.4, 0, 2.5, 'schiebe'],
+        /* Runde 40, Ostgiebel wie das Bild: Küche schmal raumhoch, Essen mit Pfosten, beide mit dunklem Kämpfer an der Traufe */
+        [879.9, 449.7, 891.3, 476, 0, 2.75, 'glas', { tr: [2.45], trh: .3 }],
+        [814.7, 523.8, 826.1, 610.4, 0, 2.75, 'glas', { m: [542], tr: [2.45], trh: .3 }],
         [364.6, 628.6, 433.5, 640, 0, 2.4, 'schiebe'],
         [488.2, 628.6, 514.6, 640, .3, 2.4, 'glas'],
         [556, 628.6, 582.4, 640, .3, 2.4, 'glas'],
@@ -110,9 +112,17 @@ export default {
       ],
       cars: [[671.6, 196.1, 133.4, 50.6, 0x2f3032, 'w'], [671.6, 278.9, 138, 55.2, 0xE9E7E2, 'w']],
       roofs: [
-        /* Satteldach, First von West nach Ost, Ziegel dunkel, Kante und Untersicht in Holz; Westgiebel Holz, Ostgiebel Glas mit Ziegelpfeiler */
-        { type: 'gable', r: [329.8, 390.4, 904.8, 640], rise: 4.2, axis: 'x', ext: .3, cover: 'ziegel', edge: 'holzhell', under: 'holzhell',
-          gables: [{ at: 329.8, kind: 'holzhell' }, { at: 891.3, kind: 'glas', mid: .17, mat: 'ziegel' }] },
+        /* Satteldach, First von West nach Ost, Ziegel dunkel, Kante und Untersicht in Holz, Traufe fast bündig; Westgiebel Holz.
+           Ostgiebel (Runde 40, wie das Bild): vorne ein Holzrahmen unter der Stirn, dahinter im Norden Holz, das Küchenfenster und der
+           Ziegelpfeiler bis zum First, die Ziegelwand der Terrasse bis unters Dach, im Süden zurückgesetzt das Glas vom Essen mit Pfosten und Holz */
+        { type: 'gable', r: [329.8, 390.4, 904.8, 640], rise: 4.2, axis: 'x', ext: .3, ov: .06, cover: 'ziegel', edge: 'holzhell', under: 'holzhell',
+          gables: [
+            { at: 329.8, kind: 'holzhell' },
+            { at: 907.6, band: .5, mat: 'holzhell' },
+            { at: 885.6, dep: .4, tb: .07, parts: [[390.4, 449.7, 'holzhell'], [449.7, 476, 'glas'], [476, 520.9, 'ziegel']] },
+            { at: 853, parts: [[509.5, 520.9, 'ziegel', { dep: 2.7 }]] },
+            { at: 820.4, dep: .4, tb: .07, parts: [[520.9, 523.8, 'ziegel'], [523.8, 610.4, 'glas', { m: [542] }], [610.4, 640, 'holzhell']] }
+          ] },
         /* Carport und Gang zum Eingang: flach, Kante und Untersicht in Holz */
         { type: 'flat', r: [[588.7, 141.9, 770.1, 337.5], [629.5, 337.5, 720, 390.4]], t: .3, top: 'kies', side: 'holzhell', under: 'holzhell' }
       ]

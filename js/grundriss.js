@@ -417,7 +417,8 @@ function stairPolys(sp) {
 
 /* Ein Fenster (oder Tür, Tor) in der Wandöffnung: Brüstung, Glas mit schwarzem Rahmen und Sprossen, Sturz bis zur Wandkrone.
    Türen: o.leaf Breite des Blatts in m (so breit wie die Öffnung: Tür ohne Seitenteil), o.at 'r' Blatt am anderen Ende,
-   o.c 'dunkel' dunkles Blatt */
+   o.c 'dunkel' dunkles Blatt. Felder: o.sp gleich verteilte Pfosten (gilt auch für 'schiebe'), o.m Pfosten an Planstellen in pt,
+   o.tr Kämpfer in m über dem Boden, o.trh ihre Höhe (Runde 40) */
 function windowPart(grp, w, F, X, Z, skin, d) {
   const [x0, y0, x1, y1, sill, head, kind, o = {}] = w, alongX = (x1 - x0) > (y1 - y0);
   const len = (alongX ? x1 - x0 : y1 - y0) / K, th = (alongX ? y1 - y0 : x1 - x0) / K;
@@ -441,12 +442,15 @@ function windowPart(grp, w, F, X, Z, skin, d) {
     const xs = [-len / 2 + fr / 2, len / 2 - fr / 2]; if (leaf && gl > .05) xs.push(rs * (-len / 2 + leaf + fr / 2));
     if (gl > .12) {
       P.glass = B(g2, gl - fr, 1, .02, M.glass, gx, 0, fz); P.glass.castShadow = false;
-      const sp = kind === 'schiebe' ? Math.max(1, Math.round(gl / 1.5)) : (o.sp || 0);
+      const sp = o.sp != null ? o.sp : kind === 'schiebe' ? Math.max(1, Math.round(gl / 1.5)) : 0;
       for (let i = 1; i <= sp; i++) xs.push(gx - gl / 2 + gl * i / (sp + 1));
+      /* Runde 40: o.m Pfosten an Planstellen (pt, entlang der Öffnung), o.tr Kämpfer in m über Boden, o.trh ihre Höhe */
+      (o.m || []).forEach(v => xs.push(alongX ? (v - (x0 + x1) / 2) / K : -(v - (y0 + y1) / 2) / K));
       P.rb = B(g2, gl, fr, .08, M.black, gx, 0, fz);
     }
     P.posts = xs.map(x => B(g2, fr, 1, .08, M.black, x, 0, fz));
     P.rt = B(g2, len, fr, .08, M.black, 0, 0, fz);
+    P.trh = o.trh || fr; P.trs = (o.tr || []).map(h => [B(g2, len, 1, .08, M.black, 0, 0, fz), h]);
   }
   const part = (m, a, b) => { if (!m) return; const h = b - a; m.visible = h > .004; if (m.visible) { m.position.y = a; m.scale.y = h; } };
   /* Wt: Höhe der Wandkrone gerade jetzt */
@@ -458,6 +462,7 @@ function windowPart(grp, w, F, X, Z, skin, d) {
       if (kind === 'tor') { part(P.door, 0, hd); P.grooves.forEach((m, i) => { m.visible = hd > (i + 1) * .5; m.position.y = (i + 1) * .5; }); return; }
       part(P.door, 0, hd); if (P.handle) { P.handle.visible = Wt > 1.3; P.handle.position.y = .8; }
       part(P.glass, s, hd); P.posts.forEach(m => part(m, s, hd));
+      P.trs.forEach(([m, h]) => part(m, Math.min(h, hd), Math.min(h + P.trh, hd)));
       if (P.rb) { P.rb.visible = Wt > s + fr && sill > 0; P.rb.position.y = s; }
       if (P.rt) { P.rt.visible = Wt >= head - .001; P.rt.position.y = head - fr; }
     }
@@ -488,8 +493,9 @@ function buildFlat(st, rf) {
   return { g: grp, y, top: (st.fi ? HT.eg + HT.slab : 0) + y + t };
 }
 
-/* Satteldach: First entlang y (Free) oder x (Calm), Traufe auf der Wandkrone. Giebel: Glas mit schwarzen Pfosten,
-   mit mittlerem Feld (mid: Anteil der Breite, mat: Fassade), oder geschlossen in einer Fassade (kind = Fassade) */
+/* Satteldach: First entlang y (Free) oder x (Calm), Traufe auf der Wandkrone, rf.ov Überstand an der Traufe. Giebel: Glas mit schwarzen
+   Pfosten, mit mittlerem Feld (mid: Anteil der Breite, mat: Fassade), geschlossen in einer Fassade (kind = Fassade), in Feldern
+   (parts, Runde 40) oder als Rahmen an der Stirn (band, Runde 40) */
 function buildGable(st, rf) {
   const [x0, y0, x1, y1] = rf.r, X = st.X, Z = st.Z, ax = rf.axis || 'y', Rh = rf.rise;
   const across = (ax === 'y' ? x1 - x0 : y1 - y0) / K, along = (ax === 'y' ? y1 - y0 : x1 - x0) / K;
@@ -504,13 +510,45 @@ function buildGable(st, rf) {
   const ug = new T.ExtrudeGeometry(und, { depth: L - .04, bevelEnabled: false }); ug.translate(0, 0, -(L - .04) / 2);
   grp.add(new T.Mesh(ug, skinMat(rf.under || 'holz')));
   const hAt = x => Rh * (1 - Math.abs(x) / hw);
+  /* Planwert quer zum First in lokales x: First entlang y, dann x; entlang x (gedreht), dann zeigt lokal +x nach Norden */
+  const lxOf = v => ax === 'y' ? X(v) - grp.position.x : -(Z(v) - grp.position.z);
   (rf.gables || []).forEach(gb => {
     const z = ax === 'y' ? Z(gb.at) - grp.position.z : X(gb.at) - grp.position.x;
-    const tri = (a, b, mat, dep) => {
-      const pts = [new T.Vector2(a, 0), new T.Vector2(b, 0)]; if (b > 0 && a < 0) { pts.push(new T.Vector2(b, hAt(b)), new T.Vector2(0, Rh), new T.Vector2(a, hAt(a))); } else pts.push(new T.Vector2(b, hAt(b)), new T.Vector2(a, hAt(a)));
+    const ext = (pts, mat, dep) => {
       const tg = new T.ExtrudeGeometry(new T.Shape(pts), { depth: dep, bevelEnabled: false }); tg.translate(0, 0, -dep / 2);
       const m = new T.Mesh(tg, mat); m.position.z = z; m.castShadow = mat !== M.glass; m.receiveShadow = true; grp.add(m); return m;
     };
+    const tri = (a, b, mat, dep) => {
+      const pts = [new T.Vector2(a, 0), new T.Vector2(b, 0)]; if (b > 0 && a < 0) { pts.push(new T.Vector2(b, hAt(b)), new T.Vector2(0, Rh), new T.Vector2(a, hAt(a))); } else pts.push(new T.Vector2(b, hAt(b)), new T.Vector2(a, hAt(a)));
+      return ext(pts, mat, dep);
+    };
+    /* Runde 40, band: Rahmen an der Dachstirn, gb.band m breit (quer zur Dachneigung) unter der Deckung bis zur Traufe */
+    if (gb.band) {
+      const e = hw + ov, yb = -ov * s, d = gb.band * Math.hypot(hw, Rh) / hw, xi = e - d / s;
+      ext([new T.Vector2(-e, yb), new T.Vector2(-xi, yb), new T.Vector2(0, Rh - d), new T.Vector2(xi, yb), new T.Vector2(e, yb), new T.Vector2(0, Rh)].reverse(), skinMat(gb.mat || 'holz'), gb.dep ?? .1);
+      return;
+    }
+    /* Runde 40, parts: Giebel in Feldern [a, b, Art, {sp, m}] in Plan pt quer zum First; Glas mit Rahmen nur über dem eigenen Feld,
+       sonst Fassade bis unter das Dach. gb.dep Tiefe der Fassadenfelder, gb.tb Höhe des unteren Rahmens (Kämpfer über dem Fenster) */
+    if (gb.parts) {
+      gb.parts.forEach(([pa, pb, kind, po = {}]) => {
+        let a = lxOf(pa), b = lxOf(pb); if (a > b) [a, b] = [b, a]; a = Math.max(a, -hw); b = Math.min(b, hw);
+        if (b - a < .01) return;
+        if (kind !== 'glas') { tri(a, b, skinMat(kind), po.dep ?? gb.dep ?? .4); return; }
+        tri(a, b, M.glass, .02);
+        B(grp, b - a, gb.tb ?? .07, .1, M.black, (a + b) / 2, 0, z);
+        const xs = [a + .03, b - .03], n = po.sp || 0;
+        for (let i = 1; i <= n; i++) xs.push(a + (b - a) * i / (n + 1));
+        (po.m || []).forEach(v => xs.push(lxOf(v)));
+        xs.forEach(px => B(grp, .06, hAt(px), .09, M.black, px, 0, z));
+        const rake = (u, v) => {
+          if (v - u < .01) return; const dy = hAt(v) - hAt(u), l = Math.hypot(v - u, dy);
+          const r = B(grp, l, .07, .1, M.black, (u + v) / 2, (hAt(u) + hAt(v)) / 2 - .035, z); r.rotation.z = Math.atan2(dy, v - u);
+        };
+        if (a < 0 && b > 0) { rake(a, 0); rake(0, b); } else rake(a, b);
+      });
+      return;
+    }
     if (gb.kind !== 'glas') { tri(-hw, hw, skinMat(gb.kind), .12); return; }
     const mw = (gb.mid || 0) * hw;
     if (mw) { tri(-mw, mw, skinMat(gb.mat || 'putz'), .14); tri(-hw, -mw, M.glass, .02); tri(mw, hw, M.glass, .02); }

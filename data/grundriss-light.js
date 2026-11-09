@@ -3,7 +3,8 @@
    Wände aus data/plan-geo.js (plan-eg, plan-og); das Obergeschoß liegt um off [17,3; −9,9] verschoben auf dem Erdgeschoß
    (gemessen an der Ostwand und der Nordwand, die in beiden Plänen übereinander stehen).
    Flächen: die Pläne nennen die Nettoraumflächen nach DIN 277, die stehen als a genau so in der Liste (ohne „ca.“).
-   Material nach den Bildern: unten heller gespaltener Kalkstein, ein Feld in Holz an der Südseite, oben helles Holz,
+   Material nach den Bildern: unten heller gespaltener Kalkstein, Holz im Osten (Nordseite neben dem Eingang, Ostseite, Südseite
+   zwischen den Fenstern, Runde 40), oben helles Holz, dunkle Latten neben dem Eingang und am Carport,
    zwei dünne Flachdächer mit dunkler Kante, Glasgeländer auf der Terrasse, Carport mit Holzlamellen. Böden: unten heller
    Stein, oben helle Eiche, Bäder in Stein.
    Nicht im Plan, aber auf den Bildern: der Pool im Süden und Fenster des Büros nach Norden (Plan gilt). */
@@ -13,7 +14,7 @@ export default {
   K: 28.35,
   h: { eg: 2.8, og: 2.7, slab: .35, cut: 2.1 },
   floor: 'stein',
-  desc: 'Erdgeschoß in hellem Stein, Obergeschoß in Holz, zwei flache Dächer und die Terrasse oben.',
+  desc: 'Erdgeschoß in hellem Stein und Holz, Obergeschoß in Holz, zwei flache Dächer und die Terrasse oben.',
   build: 'Das Haus wird gebaut: erst das Erdgeschoß, dann die Vordächer, das Obergeschoß und das Dach.',
   floors: [
     {
@@ -21,8 +22,9 @@ export default {
       crop: [230, 85, 785, 440],
       out: { x0: [418.1, 338.7, 237.5, 769.4], x1: [738.5, 523.2, 778.2, 249.5], y0: [117.2, 245, 350.4, 95.9, 213.7], y1: [355.5, 434.9, 257, 433.5, 135.7] },
       skin: 'kalkstein',
-      /* Holz: das Wandstück zwischen Schiebetür und Fenster im Süden, die Wände des Carports */
-      skins: [[610, 340, 690, 360, 'holzhell'], [230, 90, 255, 260, 'holzhell']],
+      /* Holz (Runde 40 nach den Bildern): Süden zwischen Flügel und Ostecke, Norden östlich vom Eingang, die ganze Ostseite;
+         die Wände des Carports. Stein bleibt: Norden bis zum Eingang, der Flügel im Westen und Süden, die Mauer an der Terrasse */
+      skins: [[505, 338, 745, 362, 'holzhell'], [615, 110, 745, 135, 'holzhell'], [722, 128, 745, 345, 'holzhell'], [230, 90, 255, 260, 'holzhell']],
       mats: [[230, 90, 255, 260, 'holzhell']],
       house: [418.1, 117.2, 738.5, 355.5],
       base: [[418.1, 117.2, 738.5, 355.5], [338.7, 245, 523.2, 434.9], [523.2, 355.5, 778.2, 434.9], [237.5, 90, 418.1, 257], [418.1, 90, 646.3, 117.2]],
@@ -47,11 +49,12 @@ export default {
       ],
       rugs: [[636, 262, 66, 58, 'kalk'], [392, 360, 80, 48, 'sand']],
       windows: [
-        [454.5, 117.2, 475.3, 128.7, 1.5, 2.2, 'glas'],
-        [562.5, 117.2, 620.1, 128.7, 0, 2.4, 'tuer', { leaf: 1.1, at: 'r' }],
+        /* Runde 40: kleines Fenster hoch im Stein, Eingang mit dunklem Flügel im Osten und Glas daneben (Bild 8) */
+        [454.5, 117.2, 475.3, 128.7, 1.65, 2.4, 'glas'],
+        [562.5, 117.2, 620.1, 128.7, 0, 2.65, 'tuer', { leaf: .55, at: 'r', c: 'dunkel' }],
         [727.1, 150.8, 738.5, 205.6, .5, 2.4, 'glas'],
         [727.1, 258.7, 738.5, 313.4, 0, 2.4, 'glas'],
-        [535, 344.1, 618.1, 355.5, 0, 2.5, 'schiebe'],
+        [535, 344.1, 618.1, 355.5, 0, 2.5, 'glas', { sp: 1 }],
         [680.4, 344.1, 723.8, 355.5, 0, 2.5, 'glas'],
         [338.7, 278.5, 350.1, 304.9, .9, 2.3, 'glas'],
         [338.7, 356.4, 350.1, 434.9, 0, 2.5, 'glas', { sp: 1 }],
@@ -96,7 +99,10 @@ export default {
         ['ochair', 622, 388, 9, 9, { f: 'o', out: 1 }], ['ochair', 665.4, 388, 9, 9, { f: 'w', out: 1 }],
         ['osofa', 700, 412, 54, 18, { f: 'n' }],
         /* Carport: Holzlamellen zwischen den Wandscheiben im Westen */
-        ['slats', 240.5, 135.7, 6, 78, { h: 2.8, gap: .26, fin: .07 }]
+        ['slats', 240.5, 135.7, 6, 78, { h: 2.8, gap: .26, fin: .07 }],
+        /* Runde 40 (Bild 8): dunkle Latten unter dem Vordach, östlich vom Eingang und am Ende der Steinwand zum Carport */
+        ['slats', 620.1, 112.7, 36, 4.5, { h: 2.8, gap: .25, fin: .07, c: 'dunkel' }],
+        ['slats', 388.5, 112.7, 29.6, 4.5, { h: 2.8, gap: .26, fin: .09, c: 'dunkel' }]
       ],
       cars: [[285.5, 155.5, 133, 51, 0xE9E7E2, 's'], [360, 157, 138, 54, 0x3f4042, 's']],
       /* Treppe: gerade nach Norden, Viertelwendel, zwei Stufen nach Osten (oben an der Galerie) */
@@ -136,15 +142,17 @@ export default {
       void: [510.8, 203.9, 563.7, 302.5],
       rugs: [[425, 265, 44, 70, 'kalk']],
       windows: [
-        [437.3, 127.1, 458, 138.5, 1.2, 2.3, 'glas'],
-        [546.6, 127.1, 601.4, 138.5, 1.1, 2.3, 'glas'],
-        [643.2, 127.1, 697.9, 138.5, .5, 2.3, 'glas'],
-        [709.8, 160.7, 721.3, 215.4, .5, 2.3, 'glas'],
-        [709.8, 269, 721.3, 323.7, .5, 2.3, 'glas'],
-        [400.8, 354, 474.3, 365.4, 0, 2.4, 'schiebe'],
+        /* Runde 40 (Bild 8): im Norden zwei kleine Fenster hoch oben mit Pfosten (eines ein Drittel, eines etwas mehr als die Hälfte
+           vom Osten her), im Westen ein schmales hohes mit Kämpfer; im Osten mittelhoch mit Pfosten; im Süden zwei Felder */
+        [437.3, 127.1, 458, 138.5, .1, 2.4, 'glas', { tr: [1.0] }],
+        [546.6, 127.1, 601.4, 138.5, 1.4, 2.4, 'glas', { m: [571.3] }],
+        [643.2, 127.1, 697.9, 138.5, 1.4, 2.4, 'glas', { m: [679.7] }],
+        [709.8, 160.7, 721.3, 215.4, 1.0, 2.4, 'glas', { sp: 1 }],
+        [709.8, 269, 721.3, 323.7, 1.0, 2.4, 'glas', { sp: 1 }],
+        [400.8, 354, 474.3, 365.4, 0, 2.4, 'glas', { sp: 1 }],
         [400.8, 326.1, 412.2, 354, 0, 2.4, 'glas'],
-        [531.9, 354, 586.6, 365.4, 0, 2.4, 'schiebe'],
-        [651.8, 354, 706.5, 365.4, 0, 2.4, 'schiebe']
+        [531.9, 354, 586.6, 365.4, 0, 2.4, 'glas', { sp: 1 }],
+        [651.8, 354, 706.5, 365.4, 0, 2.4, 'glas', { sp: 1 }]
       ],
       furn: [
         /* Bad mit Wanne und Dusche */
