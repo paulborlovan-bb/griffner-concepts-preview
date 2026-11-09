@@ -6,7 +6,7 @@ import { CONCEPTS } from '../data/content.js';
 import { initAkte } from './akte.js';
 import { initChrome, frame } from './chrome.js';
 import { initIdee } from './idee.js';
-import { initPlan3d } from './plan3d.js';
+import { startGrundriss } from './grundriss-start.js';
 import { initKontakt } from './kontakt.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
@@ -95,7 +95,8 @@ run('hero', initHero);
 run('count', initCount);
 run('idee', initIdee);
 run('film', initFilm);
-run('plan3d', initPlan3d);
+/* Runde 43: realistischer Grundriss statt plan3d */
+run('grundriss', startGrundriss);
 run('licht', initLicht);
 run('next', initNext);
 run('form', initForm);

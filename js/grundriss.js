@@ -1109,14 +1109,16 @@ export async function initGrundriss() {
     opener = e && e.currentTarget; cueN = 0;
     await activate(h); if (dlg.open || CUR !== h) return;
     from = h;
-    document.documentElement.classList.add('grv-open');
+    /* Runde 43: das echte <html> (in Framer ist document auf die Sektion begrenzt), damit die Seite dahinter stillsteht */
+    globalThis.document.documentElement.classList.add('grv-open');
     if (!reduce) { dlg.classList.add('is-intro'); dlg.style.setProperty('--grv-dim', '0'); }
     dlgHouse();
     dlg.showModal();
     if (!reduce) { morph = { dir: 1, dur: 720, el: stageEl, dlg, base: DLG.insets, r0: cardBox(), res: opened }; morphApply(morph, 0); }
     attach(DLG); syncUI(); kick();
     if (reduce) cueShow(4500);
-    history.pushState({ grv: 1 }, '');
+    /* Zurück schließt die Großansicht; den Zustand der Seite (Framers Router) behalten */
+    history.pushState({ ...(history.state || {}), grv: 1 }, '');
     announce(`Großansicht, Concept ${HOUSE.name}. ${floorName()}. Ein Finger dreht, zwei Finger verschieben und zoomen.`);
   };
   /* zurück auf die Seite, gleich nach dlg.close(), damit die Karte keinen Moment leer ist */
@@ -1124,7 +1126,7 @@ export async function initGrundriss() {
     if (host !== DLG) return;
     morph = null; clearTimeout(cueWait); cueHide();
     stageEl.style.clipPath = ''; dlg.classList.remove('is-intro'); dlg.style.removeProperty('--grv-dim');
-    document.documentElement.classList.remove('grv-open'); tilt = false; focus = null;
+    globalThis.document.documentElement.classList.remove('grv-open'); tilt = false; focus = null;
     attach(from); reframe(false); syncUI();
     if (history.state && history.state.grv) history.back();
     if (opener) opener.focus({ preventScroll: true });
