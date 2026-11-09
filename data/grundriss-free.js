@@ -7,8 +7,11 @@
    Fenster: [x0, y0, x1, y1 (die Öffnung in der Wand), Brüstung m, Sturz m, Art glas|schiebe|tuer|tor, {sp: Sprossen}].
    Flächen in m² rechnet js/grundriss.js aus den Rechtecken (Innenmaß), gezeigt als „ca.“. */
 export default {
-  name: 'Free',
+  name: 'Free', key: 'free',
   K: 28.35,
+  floor: 'eiche',
+  desc: 'Erdgeschoß in Stein, Obergeschoß in Lärche, Satteldach mit Giebeln aus Glas über den Loggien.',
+  view: [-.62, .42],
   /* Höhen in m: Erdgeschoß, Obergeschoß, Decke, Schnitt im Grundriss (so hoch stehen die Wände, solange ein Geschoß allein steht) */
   h: { eg: 2.9, og: 2.75, slab: .34, cut: 2.1 },
   floors: [
@@ -93,7 +96,9 @@ export default {
         ['ochair', 744, 216, 9, 9, { f: 'w', out: 1 }], ['ochair', 744, 228, 9, 9, { f: 'w', out: 1 }],
         ['plant', 762, 202, 14, 14, { big: 1 }], ['plant', 624, 202, 12, 12],
         /* Vorplatz */
-        ['plant', 654, 652, 12, 12, { big: 1 }]
+        ['plant', 654, 652, 12, 12, { big: 1 }],
+        /* Runde 39: Holzlamellen vor der Südseite (Eingang und Büro), so hoch wie das Erdgeschoß */
+        ['slats', 663, 641.2, 133, 5, { h: 2.9, gap: .1, fin: .05 }]
       ],
       /* Autos in der Garage: Mitte x, y, Länge, Breite, Lack, Schnauze */
       cars: [[430.8, 549.8, 134, 50, 0xE9E7E2, 'n'], [500, 549.8, 134, 50, 0x3f4042, 'n']],
@@ -107,13 +112,11 @@ export default {
     {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-free-og',
       crop: [590, 130, 838, 637], off: [-47.8, 56.9],
-      out: { x0: [600.3], x1: [827.2], y0: [196.6, 139.9], y1: [584.4, 626.9] }, skin: 'holz',
+      out: { x0: [600.3], x1: [827.2], y0: [196.6, 139.9], y1: [584.4, 626.9] }, skin: 'holz', baseSide: 'holz',
       house: [600.3, 196.6, 827.2, 584.4],
       base: [[600.3, 139.9, 827.2, 626.9]],
-      /* Satteldach, First von Nord nach Süd: x0, y0, x1, y1, Firsthöhe über der Traufe in m */
-      roof: [600.3, 139.9, 827.2, 626.9, 3.4],
-      /* Giebel aus Glas über den Loggien */
-      gables: [196.6, 584.4],
+      /* Satteldach, First von Nord nach Süd, Stehfalz dunkel; Giebel über den Loggien aus Glas mit einem hellen Feld in der Mitte (Runde 39, wie auf den Bildern) */
+      roofs: [{ type: 'gable', r: [600.3, 139.9, 827.2, 626.9], rise: 3.4, axis: 'y', edge: 'holz', gables: [{ at: 196.6, kind: 'glas', mid: .26, mat: 'putz' }, { at: 584.4, kind: 'glas', mid: .26, mat: 'putz' }] }],
       rooms: [
         { n: 'Eltern', list: 'Eltern', f: 'eiche', r: [[611.7, 208.1, 712, 336.7]], at: [655, 322] },
         { n: 'Bad', list: 'Bad bei den Eltern', f: 'fliese', r: [[712, 208.1, 815.8, 336.7], [716.4, 336.7, 815.8, 363.6]], at: [786, 296] },

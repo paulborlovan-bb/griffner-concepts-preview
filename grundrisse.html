@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grundrisse / GRIFFNER Concepts</title>
+<meta name="description" content="Die Grundrisse von Concept Bold, Calm, Light und Free als Modell mit Möbeln und Raumnamen.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/grundriss.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body data-page="grundrisse">
+<!-- ERZEUGT von tools/grundrisse-seite.mjs (Runde 39). Nicht von Hand ändern. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <!-- Header, Menü und Footer wie griffner.com, gefüllt von js/chrome.js -->
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+
+    <!-- 00 GRUNDRISSE: alle vier Concepts, Sprungmarken -->
+    <section id="g-top" class="wp" data-room="w-plan">
+      <div class="wrap pad-y">
+        <div class="g12">
+          <h1 class="h-xl c-1-8" data-reveal="0">Grundrisse.</h1>
+          <p class="txt c-9-4 al-end" data-reveal="120">Alle vier Concepts mit Möbeln und Raumnamen, so wie sie gebaut werden. Tippe auf einen Grundriss, dann drehst du ihn frei, gehst durch die Geschoße und baust das ganze Haus.</p>
+        </div>
+        <nav class="gr-jump" aria-label="Concepts" data-reveal="200">
+          <a class="info" href="#g-bold">Bold</a>
+          <a class="info" href="#g-calm">Calm</a>
+          <a class="info" href="#g-light">Light</a>
+          <a class="info" href="#g-free">Free</a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- 01 CONCEPT BOLD: Karte mit Poster, das Modell kommt, wenn die Karte zu sehen ist -->
+    <section id="g-bold" class="wp gr-sec" data-room="w-plan" aria-labelledby="g-bold-h">
+      <div class="wrap pad-y">
+        <div class="g12">
+          <h2 class="h-xl c-1-8" id="g-bold-h" data-reveal="0">So wohnst du Bold.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Unten Wohnen, Kochen und ein Zimmer für alles, dazu Garage und Abstellraum. Oben Eltern mit Ankleide, zwei Kinder, zwei Bäder und die Terrasse über der Garage. Öffne den Grundriss, dann siehst du dich frei um und baust das Haus Geschoß für Geschoß.</p>
+        </div>
+        <div class="gr" data-gr data-gr-house="bold">
+          <div class="gr__card">
+            <div class="gr__stage" data-gr-stage role="img" data-gr-desc aria-label="Erdgeschoß von Concept Bold mit Möbeln und Raumnamen, von oben">
+              <picture class="gr__poster"><source media="(max-width: 819px)" srcset="assets/img/grundriss-bold-q.webp" width="1080" height="1080"><img src="assets/img/grundriss-bold-w.webp" alt="" width="1600" height="900" loading="eager" decoding="async"></picture>
+              <canvas class="gr__snap" aria-hidden="true"></canvas>
+            </div>
+            <button type="button" class="gr__hit" data-gr-open aria-label="Grundriss von Concept Bold groß öffnen, mit Drehen, Zoomen und Haus bauen"></button>
+          </div>
+          <div class="gr__bar">
+            <div class="tabs gr__tabs" role="group" aria-label="Ansicht">
+              <button type="button" class="tab info" data-gr-mode="eg" aria-pressed="true" aria-label="Erdgeschoß">EG</button>
+              <button type="button" class="tab info" data-gr-mode="og" aria-pressed="false" aria-label="Obergeschoß">OG</button>
+              <button type="button" class="tab info" data-gr-mode="haus" aria-pressed="false">Ganzes Haus</button>
+            </div>
+            <button type="button" class="gr__open info" data-gr-open>Grundriss öffnen</button>
+          </div>
+          <p class="gr-sr" data-gr-live aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 CONCEPT CALM: Karte mit Poster, das Modell kommt, wenn die Karte zu sehen ist -->
+    <section id="g-calm" class="wp gr-sec" data-room="w-plan" aria-labelledby="g-calm-h">
+      <div class="wrap pad-y">
+        <div class="g12">
+          <h2 class="h-xl c-1-8" id="g-calm-h" data-reveal="0">So wohnst du Calm.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Alles auf einer Ebene: auf der einen Seite Wohnen, Essen und Kochen mit der überdachten Terrasse, auf der anderen Eltern mit Ankleide, zwei Kinder und zwei Bäder. Öffne den Grundriss, dann siehst du dich frei um und baust das Haus bis zum Dach.</p>
+        </div>
+        <div class="gr" data-gr data-gr-house="calm">
+          <div class="gr__card">
+            <div class="gr__stage" data-gr-stage role="img" data-gr-desc aria-label="Grundriss von Concept Calm mit Möbeln und Raumnamen, von oben">
+              <picture class="gr__poster"><source media="(max-width: 819px)" srcset="assets/img/grundriss-calm-q.webp" width="1080" height="1080"><img src="assets/img/grundriss-calm-w.webp" alt="" width="1600" height="900" loading="lazy" decoding="async"></picture>
+              <canvas class="gr__snap" aria-hidden="true"></canvas>
+            </div>
+            <button type="button" class="gr__hit" data-gr-open aria-label="Grundriss von Concept Calm groß öffnen, mit Drehen, Zoomen und Haus bauen"></button>
+          </div>
+          <div class="gr__bar">
+            <div class="tabs gr__tabs is-single" role="group" aria-label="Ansicht">
+              <button type="button" class="tab info" data-gr-mode="eg" aria-pressed="true" aria-label="Grundriss">Grundriss</button>
+              <button type="button" class="tab info" data-gr-mode="haus" aria-pressed="false">Ganzes Haus</button>
+            </div>
+            <button type="button" class="gr__open info" data-gr-open>Grundriss öffnen</button>
+          </div>
+          <p class="gr-sr" data-gr-live aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 CONCEPT LIGHT: Karte mit Poster, das Modell kommt, wenn die Karte zu sehen ist -->
+    <section id="g-light" class="wp gr-sec" data-room="w-plan" aria-labelledby="g-light-h">
+      <div class="wrap pad-y">
+        <div class="g12">
+          <h2 class="h-xl c-1-8" id="g-light-h" data-reveal="0">So wohnst du Light.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Unten ein offener Raum zum Garten, dazu Büro, Technik und das WC mit Dusche. Oben Eltern mit Ankleide, zwei Kinder, zwei Bäder und die Terrasse. Öffne den Grundriss, dann siehst du dich frei um und baust das Haus Geschoß für Geschoß.</p>
+        </div>
+        <div class="gr" data-gr data-gr-house="light">
+          <div class="gr__card">
+            <div class="gr__stage" data-gr-stage role="img" data-gr-desc aria-label="Erdgeschoß von Concept Light mit Möbeln und Raumnamen, von oben">
+              <picture class="gr__poster"><source media="(max-width: 819px)" srcset="assets/img/grundriss-light-q.webp" width="1080" height="1080"><img src="assets/img/grundriss-light-w.webp" alt="" width="1600" height="900" loading="lazy" decoding="async"></picture>
+              <canvas class="gr__snap" aria-hidden="true"></canvas>
+            </div>
+            <button type="button" class="gr__hit" data-gr-open aria-label="Grundriss von Concept Light groß öffnen, mit Drehen, Zoomen und Haus bauen"></button>
+          </div>
+          <div class="gr__bar">
+            <div class="tabs gr__tabs" role="group" aria-label="Ansicht">
+              <button type="button" class="tab info" data-gr-mode="eg" aria-pressed="true" aria-label="Erdgeschoß">EG</button>
+              <button type="button" class="tab info" data-gr-mode="og" aria-pressed="false" aria-label="Obergeschoß">OG</button>
+              <button type="button" class="tab info" data-gr-mode="haus" aria-pressed="false">Ganzes Haus</button>
+            </div>
+            <button type="button" class="gr__open info" data-gr-open>Grundriss öffnen</button>
+          </div>
+          <p class="gr-sr" data-gr-live aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 CONCEPT FREE: Karte mit Poster, das Modell kommt, wenn die Karte zu sehen ist -->
+    <section id="g-free" class="wp gr-sec is-last" data-room="w-plan" aria-labelledby="g-free-h">
+      <div class="wrap pad-y">
+        <div class="g12">
+          <h2 class="h-xl c-1-8" id="g-free-h" data-reveal="0">So wohnst du Free.</h2>
+          <p class="txt c-9-4 al-end" data-reveal="120">Unten Wohnen, Essen und Kochen in einem Raum, dazu Büro, Sauna und die Garage. Oben Eltern, Kinder, zwei Bäder und an jedem Giebel eine Loggia. Öffne den Grundriss, dann siehst du dich frei um und baust das Haus Geschoß für Geschoß.</p>
+        </div>
+        <div class="gr" data-gr data-gr-house="free">
+          <div class="gr__card">
+            <div class="gr__stage" data-gr-stage role="img" data-gr-desc aria-label="Erdgeschoß von Concept Free mit Möbeln und Raumnamen, von oben">
+              <picture class="gr__poster"><source media="(max-width: 819px)" srcset="assets/img/grundriss-free-q.webp" width="1080" height="1080"><img src="assets/img/grundriss-free-w.webp" alt="" width="1600" height="900" loading="lazy" decoding="async"></picture>
+              <canvas class="gr__snap" aria-hidden="true"></canvas>
+            </div>
+            <button type="button" class="gr__hit" data-gr-open aria-label="Grundriss von Concept Free groß öffnen, mit Drehen, Zoomen und Haus bauen"></button>
+          </div>
+          <div class="gr__bar">
+            <div class="tabs gr__tabs" role="group" aria-label="Ansicht">
+              <button type="button" class="tab info" data-gr-mode="eg" aria-pressed="true" aria-label="Erdgeschoß">EG</button>
+              <button type="button" class="tab info" data-gr-mode="og" aria-pressed="false" aria-label="Obergeschoß">OG</button>
+              <button type="button" class="tab info" data-gr-mode="haus" aria-pressed="false">Ganzes Haus</button>
+            </div>
+            <button type="button" class="gr__open info" data-gr-open>Grundriss öffnen</button>
+          </div>
+          <p class="gr-sr" data-gr-live aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+
+<!-- Großansicht: ein Dialog für alle Häuser, js/grundriss.js setzt Titel und Geschoße (Calm: Grundriss und Ganzes Haus) -->
+<dialog class="grv" data-grv aria-labelledby="grv-title">
+  <div class="grv__top">
+    <p class="grv__title" id="grv-title"><span class="info">Concept</span><span class="grv__floor" data-grv-floor>Erdgeschoß</span></p>
+    <button type="button" class="grv__close info" data-grv-close>Schließen</button>
+  </div>
+  <div class="grv__stage" data-grv-stage tabindex="0" autofocus role="img" data-gr-desc aria-label="3D Modell" aria-describedby="grv-keys"></div>
+  <p class="gr-sr" id="grv-keys">Pfeiltasten drehen, Plus und Minus zoomen, Umschalt und Pfeiltasten schieben, Null zeigt wieder alles.</p>
+  <p class="grv__cue info" data-grv-cue aria-hidden="true"><span class="grv__dots"><i></i><i></i></span><span class="is-touch">Mit zwei Fingern verschieben</span><span class="is-fine">Ziehen dreht, Mausrad zoomt, rechte Taste verschiebt</span></p>
+  <div class="grv__side" role="group" aria-label="Ansicht">
+    <button type="button" data-grv-zoom="0.75" aria-label="Näher heran">+</button>
+    <button type="button" data-grv-zoom="1.33" aria-label="Weiter weg">−</button>
+    <span class="grv__sp" aria-hidden="true"></span>
+    <button type="button" data-grv-turn="1" aria-label="Nach links drehen">←</button>
+    <button type="button" data-grv-turn="-1" aria-label="Nach rechts drehen">→</button>
+  </div>
+  <div class="grv__bottom">
+    <div class="tabs grv__tabs" role="group" aria-label="Geschoß">
+      <button type="button" class="tab info" data-gr-mode="eg" aria-pressed="true" aria-label="Erdgeschoß">EG</button>
+      <button type="button" class="tab info" data-gr-mode="og" aria-pressed="false" aria-label="Obergeschoß">OG</button>
+      <button type="button" class="tab info" data-gr-mode="haus" aria-pressed="false">Ganzes Haus</button>
+    </div>
+    <div class="grv__acts">
+      <button type="button" class="info" data-grv-rooms-btn aria-expanded="false" aria-controls="grv-rooms">Räume</button>
+      <button type="button" class="info" data-grv-top aria-pressed="false">3D Ansicht</button>
+      <button type="button" class="info grv__build" data-grv-build>Haus bauen</button>
+    </div>
+  </div>
+  <div class="grv__rooms" id="grv-rooms" data-grv-rooms hidden role="region" aria-labelledby="grv-rooms-title">
+    <div class="grv__rhead">
+      <h2 class="info" id="grv-rooms-title" data-grv-rooms-title>Räume</h2>
+      <button type="button" class="info" data-grv-rooms-done>Fertig</button>
+    </div>
+    <ul class="grv__list" data-grv-list></ul>
+  </div>
+  <p class="gr-sr" data-gr-live aria-live="polite"></p>
+</dialog>
+<script type="module" src="js/grundrisse.js"></script>
+</body>
+</html>

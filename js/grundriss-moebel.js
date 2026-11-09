@@ -47,7 +47,7 @@ export const M = {
 /* Stoffe etwas dunkler als die Markenfarben, sonst verschwinden Sofa und Betten im hellen Licht */
 const FAB = { kalk: std(0xA8A39A, { roughness: 1 }), sand: std(0xBBA98F, { roughness: 1 }), salbei: std(0x7F8670, { roughness: 1 }), dark: M.dark, kupfer: M.kupfer };
 
-const UBOX = new T.BoxGeometry(1, 1, 1).translate(0, .5, 0);
+export const UBOX = new T.BoxGeometry(1, 1, 1).translate(0, .5, 0);
 const UCYL = new T.CylinderGeometry(.5, .5, 1, 28).translate(0, .5, 0);
 const RB = new Map();
 const rbox = (w, h, d, r) => {
@@ -55,6 +55,10 @@ const rbox = (w, h, d, r) => {
   if (!RB.has(key)) RB.set(key, new RoundedBoxGeometry(w, h, d, 3, Math.min(r, w / 2 - .001, h / 2 - .001, d / 2 - .001)).translate(0, h / 2, 0));
   return RB.get(key);
 };
+/* Runde 39: was alle Häuser teilen (Materialien, Grundformen) wird beim Abbauen eines Hauses nicht freigegeben */
+const SHARED = new Set([...Object.values(M), ...Object.values(FAB), UBOX, UCYL]);
+export const isShared = o => SHARED.has(o) || (o && o.isBufferGeometry && [...RB.values()].includes(o));
+export const share = o => { SHARED.add(o); return o; };
 const add = (g, m, x, y, z, cast = true) => { m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; g.add(m); return m; };
 /* Quader: Breite, Höhe, Tiefe, Material, Mitte unten bei x, y, z */
 export const B = (g, w, h, d, mat, x = 0, y = 0, z = 0) => { const m = new T.Mesh(UBOX, mat); m.scale.set(w, h, d); return add(g, m, x, y, z); };
@@ -336,6 +340,14 @@ function rail(w, d) {
   B(g, Math.max(w, .04), .04, Math.max(d, .04), M.anthrazit, 0, 1.0, 0);
   return g;
 }
+/* Runde 39: Lamellen aus Holz (Bold Raumteiler, Light Carport), Lamellen quer zur langen Seite, Höhe o.h, Abstand o.gap */
+function slats(w, d, o) {
+  const g = new T.Group(), h = o.h || 2.4, gap = o.gap || .1, fin = o.fin || .045, mat = o.c === 'dunkel' ? M.black : M.oakL;
+  const along = w >= d, L = along ? w : d, th = along ? d : w, n = Math.max(1, Math.round(L / gap));
+  for (let i = 0; i < n; i++) { const t = -L / 2 + (i + .5) * L / n; if (along) B(g, fin, h, th, mat, t, 0, 0); else B(g, th, h, fin, mat, 0, 0, t); }
+  if (o.top) { if (along) B(g, w, .05, d, mat, 0, h - .05, 0); else B(g, w, .05, d, mat, 0, h - .05, 0); }
+  return g;
+}
 function osofa(w, d, o) { return sofa(w, d, { ...o, out: 1, arms: 'b', c: 'kalk' }); }
 function otable(w, d, o) {
   const g = new T.Group(), h = o.h || .4;
@@ -365,5 +377,5 @@ export function car(L, W, paint) {
   return g;
 }
 
-export const BUILD = { sofa, coffee, lowboard, table, chair, stool, plant, island, tall, shelf, counter, desk, ochair, wardrobe, bed, night, toilet, basin, vanity, tub, shower, glass, cab, washer, tech, bench, stove, rail, osofa, otable };
+export const BUILD = { slats, sofa, coffee, lowboard, table, chair, stool, plant, island, tall, shelf, counter, desk, ochair, wardrobe, bed, night, toilet, basin, vanity, tub, shower, glass, cab, washer, tech, bench, stove, rail, osofa, otable };
 export { pendant };

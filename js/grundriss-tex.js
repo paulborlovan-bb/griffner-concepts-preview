@@ -3,7 +3,9 @@
    Wandfüßen und unter den Möbeln (wie Umgebungsverdeckung, nur einmal gemalt). Dazu kachelnde Bilder für Stein- und
    Lärchenfassade, Blechdach und Kies. Zufall mit festem Samen: jedes Laden sieht gleich aus. */
 
-export const PPM = 100;
+/* Runde 39: am Telefon weniger Pixel je Meter (Speicher), sonst 100 */
+export let PPM = 100;
+export const setPPM = v => { PPM = v; };
 
 export function rng(seed = 7) {
   let s = seed >>> 0;
@@ -105,7 +107,42 @@ function rug(x, R, X0, Y0, W, H, c = 'sand') {
   for (let i = 0; i < W * H / 6; i++) { x.fillStyle = hsl(hu, s, l + (R() - .5) * 14, .35); x.fillRect(X0 + R() * W, Y0 + R() * H, 1.3, 1.3); }
   const bd = .06 * PPM; x.strokeStyle = hsl(hu, s + 4, l - 12, .8); x.lineWidth = 2; x.strokeRect(X0 + bd, Y0 + bd, W - bd * 2, H - bd * 2);
 }
-const FLOOR = { eiche: oak, fliese: tiles, beton: concrete, platten: slabs, deck, fichte: spruce };
+/* Runde 39: helle Eiche (Calm, Light oben), Kalkstein in großen Platten (Light unten), Fischgrät (Bold) */
+function oakLight(x, R, X0, Y0, W, H) { oak(x, R, X0, Y0, W, H, 14); }
+function limestone(x, R, X0, Y0, W, H) {
+  const a = 1.2 * PPM, b = .6 * PPM;
+  let row = 0;
+  for (let py = Y0 - (Y0 % b); py < Y0 + H; py += b, row++) for (let px = X0 - (X0 % a) - (row % 2 ? a / 2 : 0); px < X0 + W; px += a) {
+    x.fillStyle = hsl(38 + R() * 5, 16 + R() * 6, 80 + R() * 4); x.fillRect(px, py, a, b);
+    for (let i = 0; i < 26; i++) { x.fillStyle = `rgba(${R() < .5 ? '150,130,100' : '255,252,245'},${.05 + R() * .07})`; const r = 2 + R() * 9; x.fillRect(px + R() * a, py + R() * b, r, r * .6); }
+    x.fillStyle = 'rgba(140,125,100,.55)'; x.fillRect(px, py, a, 1.2); x.fillRect(px, py, 1.2, b);
+  }
+}
+function herring(x, R, X0, Y0, W, H) {
+  const L = .6 * PPM, w = .1 * PPM, k = Math.SQRT1_2;
+  const cx = X0 + W / 2, cy = Y0 + H / 2, D = (W + H) * k / 2 + L;
+  x.save(); x.translate(cx, cy); x.rotate(Math.PI / 4);
+  const plank = (px, py, pw, ph, along) => {
+    const l = 31 + R() * 7, hu = 24 + R() * 5, s = 34 + R() * 10;
+    x.fillStyle = hsl(hu, s, l); x.fillRect(px, py, pw, ph);
+    for (let g = 0; g < 3; g++) {
+      x.fillStyle = hsl(hu - 3, s + 6, l - 12, .16 + R() * .1);
+      if (along) x.fillRect(px, py + 1 + R() * (ph - 2), pw, .7); else x.fillRect(px + 1 + R() * (pw - 2), py, .7, ph);
+    }
+    x.strokeStyle = 'rgba(30,18,10,.42)'; x.lineWidth = .9; x.strokeRect(px, py, pw, ph);
+  };
+  /* Treppe aus waagrechten und senkrechten Dielen, alle 2 L nach unten wiederholt, dann um 45 Grad gedreht */
+  for (let i = Math.floor(-D / w) - 6; i <= D / w; i++) {
+    const b0 = Math.floor((-D - i * w - L) / (2 * L)), b1 = Math.ceil((D - i * w) / (2 * L));
+    for (let bb = b0; bb <= b1; bb++) {
+      const oy = i * w + 2 * L * bb;
+      plank(i * w, oy, L, w, true);
+      plank(i * w, oy + w, w, L, false);
+    }
+  }
+  x.restore();
+}
+const FLOOR = { eiche: oak, eichehell: oakLight, stein: limestone, fischgrat: herring, fliese: tiles, beton: concrete, platten: slabs, deck, fichte: spruce };
 
 /* Schatten nur als Schein: die Form weit links zeichnen, den Schatten zurückschieben */
 function halo(x, path, blur, color) {
@@ -117,17 +154,18 @@ function halo(x, path, blur, color) {
 export function floorCanvas(F, K, walls, foot, steps) {
   const [cx0, cy0, cx1, cy1] = F.crop, S = PPM / K;
   const c = canvas((cx1 - cx0) * S, (cy1 - cy0) * S), x = c.getContext('2d');
-  const R = rng(F.key === 'eg' ? 11 : 23);
+  const R = rng((F.key === 'eg' ? 11 : 23) + (F.seed || 0));
   const X = v => (v - cx0) * S, Y = v => (v - cy0) * S;
   const rectPath = r => x.rect(X(r[0]), Y(r[1]), (r[2] - r[0]) * S, (r[3] - r[1]) * S);
-  /* Grund: überall Eiche, wo Sockel ist */
+  /* Grund: überall der Boden des Hauses (Runde 39: def, sonst Eiche), wo Sockel ist */
+  const def = F.floor || 'eiche';
   x.save(); x.beginPath(); F.base.forEach(rectPath); x.clip();
   const bb = F.base.reduce((a, r) => [Math.min(a[0], r[0]), Math.min(a[1], r[1]), Math.max(a[2], r[2]), Math.max(a[3], r[3])], [1e9, 1e9, -1e9, -1e9]);
-  oak(x, R, X(bb[0]), Y(bb[1]), (bb[2] - bb[0]) * S, (bb[3] - bb[1]) * S);
+  FLOOR[def](x, R, X(bb[0]), Y(bb[1]), (bb[2] - bb[0]) * S, (bb[3] - bb[1]) * S);
   x.restore();
   /* Räume mit eigenem Boden */
   for (const rm of F.rooms) {
-    if (!rm.f || rm.f === 'eiche' || !rm.r) continue;
+    if (!rm.f || rm.f === def || !rm.r || !FLOOR[rm.f]) continue;
     x.save(); x.beginPath(); rm.r.forEach(rectPath); x.clip();
     const b = rm.r.reduce((a, r) => [Math.min(a[0], r[0]), Math.min(a[1], r[1]), Math.max(a[2], r[2]), Math.max(a[3], r[3])], [1e9, 1e9, -1e9, -1e9]);
     FLOOR[rm.f](x, R, X(b[0]), Y(b[1]), (b[2] - b[0]) * S, (b[3] - b[1]) * S);
@@ -140,11 +178,14 @@ export function floorCanvas(F, K, walls, foot, steps) {
   }
   /* Treppenauge (Obergeschoß): die Stufen darunter, je tiefer, desto dunkler */
   if (steps && steps.length) {
+    /* Runde 39: nur im Treppenauge, was außerhalb liegt, ist unter dem Boden des Obergeschoßes */
+    x.save(); if (F.void) { x.beginPath(); rectPath(F.void); x.clip(); }
     for (const [pts, d] of steps) {
       x.beginPath(); pts.forEach(([px, py], i) => (i ? x.lineTo : x.moveTo).call(x, X(px), Y(py))); x.closePath();
       x.fillStyle = hsl(31, 30 - d * 12, 62 - d * 44); x.fill();
       x.strokeStyle = `rgba(20,14,8,${.35 + d * .3})`; x.lineWidth = 1.4; x.stroke();
     }
+    x.restore();
   }
   /* Schatten an den Wandfüßen: zwei Lagen, weit und weich, eng und dunkler */
   const wallPath = () => { x.beginPath(); for (const n of walls) { for (let i = 0; i + 1 < n.length; i += 2) (i ? x.lineTo : x.moveTo).call(x, X(n[i]), Y(n[i + 1])); x.closePath(); } };
@@ -214,4 +255,82 @@ export function contactCanvas(rects, pad = 1.6) {
   const S = 40, w = (b[2] - b[0] + pad * 2) * S, h = (b[3] - b[1] + pad * 2) * S, c = canvas(w, h), x = c.getContext('2d');
   halo(x, () => { x.beginPath(); rects.forEach(r => x.rect((r[0] - b[0] + pad) * S, (r[1] - b[1] + pad) * S, (r[2] - r[0]) * S, (r[3] - r[1]) * S)); }, .7 * S, 'rgba(0,0,0,.55)');
   return { c, x0: b[0] - pad, z0: b[1] - pad, w: w / S, d: h / S };
+}
+
+/* ---------- Runde 39: Fassaden der anderen Concepts (kachelnd) ---------- */
+
+/* Kalkstein in Lagen, hell und cremefarben, gespaltene Kante (Light unten), 2 × 2 m */
+export function limeCanvas() {
+  const N = 512, c = canvas(N, N), x = c.getContext('2d'), R = rng(15), px = N / 2;
+  x.fillStyle = '#cfc4ae'; x.fillRect(0, 0, N, N);
+  let y = 0;
+  while (y < N) {
+    const rh = Math.min(N - y, (.06 + R() * .07) * px);
+    let xx = -R() * .5 * px;
+    while (xx < N) {
+      const sw = (.3 + R() * .5) * px, l = 80 + R() * 8, h = 38 + R() * 6, s = 18 + R() * 10;
+      const draw = ox => {
+        x.fillStyle = hsl(h, s, l); x.fillRect(ox + xx + 1, y + 1, sw - 2, rh - 2);
+        for (let i = 0; i < 22; i++) { x.fillStyle = `rgba(${R() < .55 ? '140,120,90' : '255,252,244'},${.07 + R() * .1})`; x.fillRect(ox + xx + R() * sw, y + R() * rh, 3 + R() * 9, 1 + R() * 2); }
+        x.fillStyle = 'rgba(255,255,250,.22)'; x.fillRect(ox + xx + 1, y + 1, sw - 2, 1.5);
+        x.fillStyle = 'rgba(110,95,70,.25)'; x.fillRect(ox + xx + 1, y + rh - 2.5, sw - 2, 1.5);
+      };
+      draw(0); if (xx + sw > N) draw(-N); if (xx < 0) draw(N);
+      xx += sw;
+    }
+    y += rh;
+  }
+  return c;
+}
+/* helles Holz, senkrechte Bretter mit feiner Fuge (Calm, Light oben), 1 × 1 m */
+export function woodLightCanvas() {
+  const N = 256, c = canvas(N, N), x = c.getContext('2d'), R = rng(19), bw = .14 * N;
+  for (let px = 0; px < N; px += bw) {
+    const l = 74 + R() * 6; x.fillStyle = hsl(35 + R() * 4, 26 + R() * 8, l); x.fillRect(px, 0, bw, N);
+    for (let g = 0; g < 7; g++) { x.fillStyle = hsl(32, 24, l - 14, .1 + R() * .1); x.fillRect(px + 2 + R() * (bw - 4), 0, .8 + R(), N); }
+    x.fillStyle = 'rgba(90,70,50,.45)'; x.fillRect(px, 0, 1.6, N);
+  }
+  return c;
+}
+/* Latten vor dunklem Grund (Bold), warmes Holz, 1 × 1 m */
+export function battenCanvas() {
+  const N = 256, c = canvas(N, N), x = c.getContext('2d'), R = rng(21), p = .06 * N, bw = p * .72;
+  x.fillStyle = '#231d18'; x.fillRect(0, 0, N, N);
+  for (let px = 0; px < N; px += p) {
+    const l = 50 + R() * 8; x.fillStyle = hsl(29 + R() * 4, 44 + R() * 8, l); x.fillRect(px, 0, bw, N);
+    for (let g = 0; g < 3; g++) { x.fillStyle = hsl(26, 40, l - 14, .14 + R() * .1); x.fillRect(px + 1 + R() * (bw - 2), 0, .8, N); }
+    x.fillStyle = 'rgba(255,235,205,.16)'; x.fillRect(px, 0, 1.2, N);
+    x.fillStyle = 'rgba(0,0,0,.28)'; x.fillRect(px + bw - 1.4, 0, 1.4, N);
+  }
+  return c;
+}
+/* heller Klinker, sandfarben, im Verband (Calm), 1 × 1 m */
+export function brickCanvas() {
+  const N = 256, c = canvas(N, N), x = c.getContext('2d'), R = rng(25), bh = .065 * N, bl = .24 * N;
+  x.fillStyle = '#d8cfbf'; x.fillRect(0, 0, N, N);
+  let row = 0;
+  for (let py = 0; py < N; py += bh, row++) for (let px = -(row % 2 ? bl / 2 : 0); px < N; px += bl) {
+    x.fillStyle = hsl(36 + R() * 6, 24 + R() * 10, 66 + R() * 9); x.fillRect(px + 1, py + 1, bl - 2, bh - 2);
+    for (let i = 0; i < 8; i++) { x.fillStyle = `rgba(${R() < .5 ? '120,100,75' : '250,245,232'},${.08 + R() * .1})`; x.fillRect(px + 1 + R() * (bl - 3), py + 1 + R() * (bh - 3), 1 + R() * 3, 1 + R() * 2); }
+  }
+  return c;
+}
+/* dunkle Fläche, matt mit leichtem Korn (Bold Rahmen, Kanten), 1 × 1 m */
+export function darkCanvas() {
+  const N = 128, c = canvas(N, N), x = c.getContext('2d'), R = rng(27);
+  x.fillStyle = '#34312e'; x.fillRect(0, 0, N, N);
+  for (let i = 0; i < 1600; i++) { x.fillStyle = `rgba(${R() < .5 ? '0,0,0' : '255,255,255'},${R() * .05})`; x.fillRect(R() * N, R() * N, 1 + R() * 2, 1 + R() * 2); }
+  return c;
+}
+/* Dachziegel, flach, anthrazit (Calm), Reihen quer zum Gefälle, 2 × 2 m */
+export function tileRoofCanvas() {
+  const N = 256, c = canvas(N, N), x = c.getContext('2d'), R = rng(29), th = N / 2 / 3.2, tw = N / 2 / 3;
+  x.fillStyle = '#2f2e2d'; x.fillRect(0, 0, N, N);
+  let row = 0;
+  for (let py = 0; py < N; py += th, row++) for (let px = -(row % 2 ? tw / 2 : 0); px < N; px += tw) {
+    x.fillStyle = hsl(30, 3, 20 + R() * 6); x.fillRect(px + 1, py, tw - 2, th - 1);
+    x.fillStyle = 'rgba(255,255,255,.07)'; x.fillRect(px + 1, py, tw - 2, 2);
+    x.fillStyle = 'rgba(0,0,0,.45)'; x.fillRect(px, py + th - 2.5, tw, 2.5);
+  }
+  return c;
 }
