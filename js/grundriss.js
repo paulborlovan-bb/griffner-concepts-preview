@@ -31,6 +31,9 @@ let shadowDirty = true, anims = [], seq = 0, mode = 'eg', tilt = false, labelsOn
 /* Kamera: gezeigt (c) und Ziel (g); Azimut, Höhe, Abstand, Zielpunkt */
 const c = { az: -.32, el: .98, dist: 30, t: new T.Vector3() }, g = { az: -.32, el: .98, dist: 30, t: new T.Vector3() };
 let fitD = 30, box = null, vel = 0; const TV = new T.Vector3();
+/* Runde 38: Übergang Karte zu Vollbild (morph) und der Hinweis auf zwei Finger (cue) */
+let morph = null, cueT = 0, cueN = 0, two = false;
+try { two = localStorage.getItem('gr-two') === '1'; } catch (e) { /* ohne Speicher: Hinweis bei jedem Öffnen */ }
 
 /* ---------- Aufbau ---------- */
 
@@ -423,7 +426,7 @@ function modeBox(m) {
   return { b, y0: -.3, y1 };
 }
 function corners(bx) { const o = []; [bx.b[0], bx.b[2]].forEach(x => [bx.y0, bx.y1].forEach(y => [bx.b[1], bx.b[3]].forEach(z => o.push(new T.Vector3(x, y, z))))); return o; }
-function insets() { return host && host.insets ? host.insets() : { t: 8, b: 8, l: 8, r: 8 }; }
+function insets() { return morph && morph.ins ? morph.ins : host && host.insets ? host.insets() : { t: 8, b: 8, l: 8, r: 8 }; }
 function place(o, at = cam) {
   at.position.set(o.t.x + Math.sin(o.az) * Math.cos(o.el) * o.dist, o.t.y + Math.sin(o.el) * o.dist, o.t.z + Math.cos(o.az) * Math.cos(o.el) * o.dist);
   at.lookAt(o.t);
@@ -442,14 +445,17 @@ function fitDist(bx, az, el, t) {
 }
 /* Runde 37: Grundriss von oben wie ein Verkaufsplan (Norden oben, leicht perspektivisch); „3D Ansicht“ kippt ihn schräg */
 const DEF = { plan: [0, 1.5], tilt: [-.32, .98], tiltTall: [-.14, 1.12], haus: [-.62, .42] };
-function reframe(anim) {
-  if (!host || !cam) return;
+function fitGoal() {
   box = modeBox(mode);
   const tall = (host.el.clientHeight || 1) > (host.el.clientWidth || 1) * 1.05;
   const [az, el] = mode === 'haus' ? DEF.haus : tilt ? (tall ? DEF.tiltTall : DEF.tilt) : DEF.plan;
   const t = new T.Vector3((box.b[0] + box.b[2]) / 2, mode === 'haus' ? TOP * .38 : .5, (box.b[1] + box.b[3]) / 2);
   fitD = fitDist(box, az, el, t);
   g.az = az; g.el = el; g.dist = fitD; g.t.copy(t); vel = 0;
+}
+function reframe(anim) {
+  if (!host || !cam) return;
+  fitGoal();
   if (!anim || reduce) { c.az = g.az; c.el = g.el; c.dist = g.dist; c.t.copy(g.t); }
   kick();
 }
@@ -476,13 +482,14 @@ function frame(now) {
     const p = a.dur ? clamp((now - a.t0) / a.dur) : 1; S[a.k] = lerp(a.from, a.to, p);
     shadowDirty = true; if (p >= 1) { a.res(); return false; } busy = true; return true;
   });
+  if (morph) { morphStep(now); busy = true; }
   if (!dragging && Math.abs(vel) > .01) { g.az += vel * dt; vel *= Math.pow(.008, dt); busy = true; }
   const f = reduce ? 1 : 1 - Math.pow(dragging ? 1e-7 : .0012, dt);
   const before = c.az + c.el + c.dist + c.t.x + c.t.y + c.t.z;
   c.az += (g.az - c.az) * f; c.el += (g.el - c.el) * f; c.dist += (g.dist - c.dist) * f; c.t.lerp(g.t, f);
   if (Math.abs(before - (c.az + c.el + c.dist + c.t.x + c.t.y + c.t.z)) > 1e-4) busy = true;
   render();
-  if (busy) raf = requestAnimationFrame(frame);
+  if (busy && !raf) raf = requestAnimationFrame(frame);
 }
 function render() {
   if (!host) return;
@@ -561,6 +568,43 @@ function labels(W, H) {
 
 /* ---------- Bühne: Seite oder Vollbild ---------- */
 
+/* Runde 38: die Großansicht wächst aus der Karte. Die Bühne liegt sofort im Vollbild, nur ein Ausschnitt (clip-path) wächst
+   von der Karte bis zum ganzen Bildschirm, der Grundriss bleibt dabei in den Ausschnitt eingepasst und die Seite dahinter wird
+   schwarz. Die Leisten kommen erst gegen Ende dazu. Schließen läuft rückwärts und bringt die Ansicht dabei zurück zum Ganzen. */
+const easeOut = t => 1 - Math.pow(1 - t, 4);
+function morphApply(m, k) {
+  m.k = k;
+  const W = m.el.clientWidth || 1, H = m.el.clientHeight || 1, a = m.r0, q = 1 - k;
+  const l = a[0] * q, t = a[1] * q, r = (W - a[2]) * q, b = (H - a[3]) * q;
+  m.el.style.clipPath = `inset(${t.toFixed(1)}px ${r.toFixed(1)}px ${b.toFixed(1)}px ${l.toFixed(1)}px)`;
+  m.dlg.style.setProperty('--grv-dim', Math.min(1, k * 1.5).toFixed(3));
+  const f = m.base();
+  m.ins = { t: t + lerp(14, f.t, k), b: b + lerp(14, f.b, k), l: l + lerp(10, f.l, k), r: r + lerp(10, f.r, k) };
+}
+function morphStep(now) {
+  const m = morph; if (!m.t0) m.t0 = now;
+  const p = clamp((now - m.t0) / m.dur);
+  if (m.dir > 0) {
+    morphApply(m, easeOut(p));
+    if (p > .45 && !m.bars) { m.bars = 1; m.dlg.classList.remove('is-intro'); }
+    fitGoal(); c.az = g.az; c.el = g.el; c.dist = g.dist; c.t.copy(g.t);
+  } else {
+    const e = ease(p); morphApply(m, m.k0 * (1 - e));
+    fitGoal();
+    const s = m.cs, az = g.az + Math.round((s.az - g.az) / (2 * Math.PI)) * 2 * Math.PI;
+    c.az = g.az = lerp(s.az, az, e); c.el = g.el = lerp(s.el, g.el, e); c.dist = g.dist = s.dist * Math.pow(g.dist / s.dist, e);
+    c.t.lerpVectors(s.t, g.t, e); g.t.copy(c.t);
+  }
+  if (p >= 1) { morph = null; m.res(); }
+}
+
+/* Hinweis unten links: am Telefon „Mit zwei Fingern verschieben“, mit Maus die Maustasten. Kommt nach dem Öffnen und wieder,
+   wenn jemand mit einem Finger zieht (dreht), höchstens dreimal. Wer einmal zwei Finger, Mausrad oder rechte Taste benutzt hat,
+   sieht ihn nicht mehr (localStorage gr-two). */
+function cueShow(ms) { if (!UI.cue || two || !dlgEl || !dlgEl.open) return; UI.cue.classList.add('is-on'); clearTimeout(cueT); cueT = setTimeout(cueHide, ms); kick(); }
+function cueHide() { clearTimeout(cueT); if (UI.cue && UI.cue.classList.contains('is-on')) { UI.cue.classList.remove('is-on'); kick(); } }
+function learned() { if (!two) { two = true; try { localStorage.setItem('gr-two', '1'); } catch (e) { /* egal */ } } cueHide(); }
+
 function attach(h) {
   host = h;
   h.el.prepend(R.domElement); h.el.appendChild(labsEl);
@@ -610,7 +654,7 @@ function openRooms() { fillRooms(); UI.rooms.hidden = false; kick(); UI.roomsBtn
 function closeRooms(back = true) { if (UI.rooms.hidden) return; UI.rooms.hidden = true; kick(); UI.roomsBtn.setAttribute('aria-expanded', 'false'); if (back) UI.roomsBtn.focus(); }
 
 function gestures(el) {
-  const P = new Map(); let p0 = null, lastTap = 0, moved = 0, lastMove = 0;
+  const P = new Map(); let p0 = null, lastTap = 0, moved = 0, lastMove = 0, multi = false;
   const wpp = () => 2 * c.dist * Math.tan(cam.fov * Math.PI / 360) / (host.el.clientHeight || 1);
   const pan = (dx, dy) => {
     const k = wpp(), rx = Math.cos(c.az), rz = -Math.sin(c.az), fx = -Math.sin(c.az), fz = -Math.cos(c.az), sy = 1 / Math.max(.35, Math.sin(c.el));
@@ -621,18 +665,20 @@ function gestures(el) {
   const untop = () => { if (tilt) { tilt = false; syncUI(); } };
   const snap = () => { const v = [...P.values()]; if (v.length >= 2) { const [a, b] = v; return { two: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; } if (v.length === 1) return { two: false, x: v[0].x, y: v[0].y, t: performance.now() }; return null; };
   el.addEventListener('pointerdown', e => {
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button') || morph) return;
+    if (!P.size) multi = false;
     el.setPointerCapture(e.pointerId); P.set(e.pointerId, { x: e.clientX, y: e.clientY, btn: e.button, shift: e.shiftKey || e.ctrlKey || e.metaKey });
-    p0 = snap(); moved = 0; dragging = true; vel = 0; hideHint();
+    if (P.size > 1) multi = true;
+    p0 = snap(); moved = 0; dragging = true; vel = 0;
   });
   el.addEventListener('pointermove', e => {
     if (!P.has(e.pointerId)) return;
     const pt = P.get(e.pointerId), dx = e.clientX - pt.x, dy = e.clientY - pt.y, now = e.timeStamp || performance.now(), et = Math.max(8, now - (pt.t || now - 16)) / 1000; pt.x = e.clientX; pt.y = e.clientY; pt.t = now;
     moved += Math.abs(dx) + Math.abs(dy);
     const s = snap();
-    if (s && s.two && p0 && p0.two) { zoom(p0.d / s.d); pan(s.mx - p0.mx, s.my - p0.my); }
+    if (s && s.two && p0 && p0.two) { zoom(p0.d / s.d); pan(s.mx - p0.mx, s.my - p0.my); if (moved > 12) learned(); }
     else if (s && !s.two) {
-      if (pt.btn === 2 || pt.shift) pan(dx, dy);
+      if (pt.btn === 2 || pt.shift) { pan(dx, dy); if (moved > 12) learned(); }
       else { g.az -= dx * .0075; g.el = clamp(g.el + dy * .0055, .1, 1.53); vel = lerp(vel, -dx * .0075 / et, .5); if (Math.abs(dy) > 1) untop(); if (Math.abs(dx) > 1) untop(); }
     }
     p0 = s; lastMove = performance.now(); kick();
@@ -645,12 +691,14 @@ function gestures(el) {
         const now = performance.now();
         if (now - lastTap < 320) { lastTap = 0; dbl(e.clientX, e.clientY); } else lastTap = now;
       } else lastTap = 0;
+      /* mit einem Finger gezogen (das dreht): zeigen, dass zwei Finger verschieben */
+      if (e.pointerType === 'touch' && !multi && moved > 30 && !two && cueN < 3) { cueN++; cueShow(2600); }
       kick();
     }
   };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   el.addEventListener('contextmenu', e => e.preventDefault());
-  el.addEventListener('wheel', e => { e.preventDefault(); zoom(Math.exp(e.deltaY * (e.deltaMode ? .05 : .0015))); hideHint(); kick(); }, { passive: false });
+  el.addEventListener('wheel', e => { e.preventDefault(); if (morph) return; zoom(Math.exp(e.deltaY * (e.deltaMode ? .05 : .0015))); learned(); kick(); }, { passive: false });
   /* doppelt tippen: dorthin heranzoomen, nochmal: zurück zum Ganzen */
   const dbl = (x, y) => {
     if (g.dist < fitD * .55) { reframe(true); return; }
@@ -668,11 +716,10 @@ function gestures(el) {
     else if (k === '+' || k === '=') zoom(.8); else if (k === '-' || k === '_') zoom(1.25);
     else if (k === '0' || k === 'Home') reframe(true);
     else used = false;
-    if (used) { e.preventDefault(); hideHint(); kick(); }
+    if (used) { e.preventDefault(); cueHide(); kick(); }
   });
   return { zoom, turn: a => { g.az += a; untop(); kick(); } };
 }
-function hideHint() { if (UI.hint && !UI.hint.classList.contains('is-off')) { UI.hint.classList.add('is-off'); kick(); } }
 
 /* Geschoß wählen: drei Knöpfe, gedrückt ist das gezeigte (aria-pressed); nochmal drücken zeigt wieder alles */
 function tabs(list) {
@@ -709,7 +756,7 @@ export async function initGrundriss() {
   root.querySelectorAll('.gr__tabs').forEach(tabs);
   /* Vollbild */
   UI = {
-    floor: dlg.querySelector('[data-grv-floor]'), top: dlg.querySelector('[data-grv-top]'), hint: dlg.querySelector('[data-grv-hint]'),
+    floor: dlg.querySelector('[data-grv-floor]'), top: dlg.querySelector('[data-grv-top]'), cue: dlg.querySelector('[data-grv-cue]'),
     rooms: dlg.querySelector('[data-grv-rooms]'), roomsBtn: dlg.querySelector('[data-grv-rooms-btn]'), roomList: dlg.querySelector('[data-grv-list]'), roomTitle: dlg.querySelector('[data-grv-rooms-title]')
   };
   dlg.querySelectorAll('.grv__tabs').forEach(tabs);
@@ -724,38 +771,66 @@ export async function initGrundriss() {
     /* Flächen der Bedienung über dem Bild: dort steht kein Raumname */
     block: () => {
       const s0 = stageEl.getBoundingClientRect();
-      return [...dlg.querySelectorAll('.grv__top,.grv__bottom,.grv__side,.grv__rooms:not([hidden]),.grv__hint:not(.is-off)')].map(e => { const q = e.getBoundingClientRect(); return [q.left - s0.left - 4, q.top - s0.top - 4, q.right - s0.left + 4, q.bottom - s0.top + 4]; });
+      return [...dlg.querySelectorAll('.grv__top,.grv__bottom,.grv__side,.grv__rooms:not([hidden]),.grv__cue.is-on')].map(e => { const q = e.getBoundingClientRect(); return [q.left - s0.left - 4, q.top - s0.top - 4, q.right - s0.left + 4, q.bottom - s0.top + 4]; });
     }
   };
-  let opener = null;
+  let opener = null, cueWait = 0;
+  const card = root.querySelector('.gr__card');
+  const box4 = r => { const s0 = stageEl.getBoundingClientRect(); return [r.left - s0.left, r.top - s0.top, r.right - s0.left, r.bottom - s0.top]; };
+  /* Karte außer Sicht (zum Beispiel nach dem Drehen des Telefons): dann aus der Mitte */
+  const cardBox = () => {
+    const r = card.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+    if (r.bottom > 60 && r.top < H - 60) return box4(r);
+    const w = W * .8, h = w * r.height / (r.width || 1);
+    return box4({ left: (W - w) / 2, top: (H - h) / 2, right: (W + w) / 2, bottom: (H + h) / 2 });
+  };
+  const opened = () => {
+    stageEl.style.clipPath = ''; dlg.classList.remove('is-intro'); dlg.style.removeProperty('--grv-dim');
+    clearTimeout(cueWait); cueWait = setTimeout(() => cueShow(4500), 250);
+  };
   const open = e => {
-    opener = e && e.currentTarget; if (dlg.open) return;
-    dlg.showModal(); document.documentElement.classList.add('grv-open');
-    attach(DLG); syncUI();
-    UI.hint.classList.remove('is-off'); clearTimeout(open.t); open.t = setTimeout(hideHint, 6000);
+    if (dlg.open) return;
+    opener = e && e.currentTarget; cueN = 0;
+    document.documentElement.classList.add('grv-open');
+    if (!reduce) { dlg.classList.add('is-intro'); dlg.style.setProperty('--grv-dim', '0'); }
+    dlg.showModal();
+    if (!reduce) { morph = { dir: 1, dur: 720, el: stageEl, dlg, base: DLG.insets, r0: cardBox(), res: opened }; morphApply(morph, 0); }
+    attach(DLG); syncUI(); kick();
+    if (reduce) cueShow(4500);
     history.pushState({ grv: 1 }, '');
-    announce(`Großansicht. ${mode === 'og' ? OGF.name : mode === 'haus' ? 'Ganzes Haus' : EGF.name}. Ein Finger dreht, zwei Finger zoomen.`);
+    announce(`Großansicht. ${mode === 'og' ? OGF.name : mode === 'haus' ? 'Ganzes Haus' : EGF.name}. Ein Finger dreht, zwei Finger verschieben und zoomen.`);
   };
-  const close = (fromPop) => {
-    if (!dlg.open) return;
-    closeRooms(false); dlg.close();
-  };
-  dlg.addEventListener('close', () => {
-    document.documentElement.classList.remove('grv-open'); tilt = false;
+  /* zurück auf die Seite, gleich nach dlg.close(), damit die Karte keinen Moment leer ist */
+  const after = () => {
+    if (host !== DLG) return;
+    morph = null; clearTimeout(cueWait); cueHide();
+    stageEl.style.clipPath = ''; dlg.classList.remove('is-intro'); dlg.style.removeProperty('--grv-dim');
+    document.documentElement.classList.remove('grv-open'); tilt = false; focus = null;
     attach(INL); reframe(false); syncUI();
     if (history.state && history.state.grv) history.back();
     if (opener) opener.focus({ preventScroll: true });
-  });
-  addEventListener('popstate', () => { if (dlg.open) { dlg.close(); } });
+  };
+  const close = () => {
+    if (!dlg.open || (morph && morph.dir < 0)) return;
+    closeRooms(false); clearTimeout(cueWait); cueHide();
+    if (reduce) { dlg.close(); after(); return; }
+    const k0 = morph ? morph.k : 1;
+    tilt = false; focus = null; syncUI(); dlg.classList.add('is-intro');
+    morph = { dir: -1, dur: 580, k0, el: stageEl, dlg, base: DLG.insets, r0: cardBox(), cs: { az: c.az, el: c.el, dist: c.dist, t: c.t.clone() }, res: () => { dlg.close(); after(); } };
+    kick();
+  };
+  dlg.addEventListener('close', after);
+  addEventListener('popstate', () => { if (dlg.open) close(); });
   root.querySelectorAll('[data-gr-open]').forEach(b => b.addEventListener('click', open));
   dlg.querySelector('[data-grv-close]').addEventListener('click', () => close());
-  dlg.addEventListener('cancel', e => { if (!UI.rooms.hidden) { e.preventDefault(); closeRooms(); } });
+  /* Escape: erst die Raumliste, dann animiert schließen (geht das nicht, schließt der Browser direkt und after() räumt auf) */
+  dlg.addEventListener('cancel', e => { if (!e.cancelable) return; e.preventDefault(); if (!UI.rooms.hidden) closeRooms(); else close(); });
   dlg.querySelector('[data-grv-build]').addEventListener('click', () => { tilt = false; setMode('haus', { build: true }); });
   UI.top.addEventListener('click', () => { tilt = !tilt; syncUI(); reframe(true); announce(tilt ? '3D Ansicht, schräg von oben.' : 'Grundriss von oben, Norden oben.'); });
   UI.roomsBtn.addEventListener('click', () => (UI.rooms.hidden ? openRooms() : closeRooms()));
   dlg.querySelector('[data-grv-rooms-done]').addEventListener('click', () => closeRooms());
-  dlg.querySelectorAll('[data-grv-zoom]').forEach(b => b.addEventListener('click', () => { ctl.zoom(Number(b.dataset.grvZoom)); hideHint(); kick(); }));
-  dlg.querySelectorAll('[data-grv-turn]').forEach(b => b.addEventListener('click', () => { ctl.turn(Number(b.dataset.grvTurn) * Math.PI / 8); hideHint(); }));
+  dlg.querySelectorAll('[data-grv-zoom]').forEach(b => b.addEventListener('click', () => { ctl.zoom(Number(b.dataset.grvZoom)); kick(); }));
+  dlg.querySelectorAll('[data-grv-turn]').forEach(b => b.addEventListener('click', () => { ctl.turn(Number(b.dataset.grvTurn) * Math.PI / 8); }));
   syncUI();
 }
 
