@@ -4,7 +4,7 @@
    (gemessen an der Ostwand und der Nordwand, die in beiden Plänen übereinander stehen).
    Flächen: die Pläne nennen die Nettoraumflächen nach DIN 277, die stehen als a genau so in der Liste (ohne „ca.“).
    Material nach den Bildern: unten heller gespaltener Kalkstein, Holz im Osten (Nordseite neben dem Eingang, Ostseite, Südseite
-   zwischen den Fenstern, Runde 40), oben helles Holz, dunkle Latten am Carport,
+   zwischen den Fenstern, Runde 40), oben helles Holz, Fassade im Osten ohne Absatz zwischen den Geschoßen (Runde 42),
    zwei dünne Flachdächer mit dunkler Kante, Glasgeländer auf der Terrasse, Carport mit Holzlamellen. Böden: Parkett in Eiche
    wie in allen Häusern, Bäder und WC in Stein (Runde 41).
    Nicht im Plan, aber auf den Bildern: der Pool im Süden und Fenster des Büros nach Norden (Plan gilt). */
@@ -52,7 +52,8 @@ export default {
         /* Runde 40: kleines Fenster hoch im Stein; Eingang (Runde 41): dunkler Flügel im Osten so breit wie das Glas daneben */
         [454.5, 117.2, 475.3, 128.7, 1.65, 2.4, 'glas'],
         [562.5, 117.2, 620.1, 128.7, 0, 2.65, 'tuer', { leaf: 1.016, at: 'r', c: 'dunkel' }],
-        [727.1, 150.8, 738.5, 205.6, .5, 2.4, 'glas'],
+        /* Runde 42 (Bild): im Osten beide bis zum Boden, das beim Büro mit zwei Feldern */
+        [727.1, 150.8, 738.5, 205.6, 0, 2.4, 'glas', { sp: 1 }],
         [727.1, 258.7, 738.5, 313.4, 0, 2.4, 'glas'],
         [535, 344.1, 618.1, 355.5, 0, 2.5, 'glas', { sp: 1 }],
         [680.4, 344.1, 723.8, 355.5, 0, 2.5, 'glas'],
@@ -100,8 +101,6 @@ export default {
         ['osofa', 700, 412, 54, 18, { f: 'n' }],
         /* Carport: Holzlamellen zwischen den Wandscheiben im Westen */
         ['slats', 240.5, 135.7, 6, 78, { h: 2.8, gap: .26, fin: .07 }],
-        /* Runde 40 (Bild 8): dunkle Latten unter dem Vordach am Ende der Steinwand zum Carport (die neben dem Eingang sind seit Runde 41 weg) */
-        ['slats', 388.5, 112.7, 29.6, 4.5, { h: 2.8, gap: .26, fin: .09, c: 'dunkel' }]
       ],
       cars: [[285.5, 155.5, 133, 51, 0xE9E7E2, 's'], [360, 157, 138, 54, 0x3f4042, 's']],
       /* Treppe: gerade nach Norden, Viertelwendel, zwei Stufen nach Osten (oben an der Galerie) */
@@ -113,7 +112,9 @@ export default {
         ]
       },
       /* Vordächer und die Decke unter dem Obergeschoß: dünn, dunkle Kante, unten hell, oben Kies */
-      slabs: [{ r: [[213.5, 71.1, 646.3, 117.2], [213.5, 117.2, 418.1, 279.1], [315.3, 279.1, 418.1, 457.1], [418.1, 355.5, 802.3, 457.1], [738.5, 324.7, 802.3, 355.5], [418.1, 117.2, 738.5, 355.5]], t: .35, top: 'kies', side: 'anthrazit', under: 'weiss' }]
+      /* Runde 42: die Decke unter dem Obergeschoß hat außen Holz wie die Fassade (im Osten und Norden ohne dunklen Absatz, Bild) */
+      slabs: [{ r: [[213.5, 71.1, 646.3, 117.2], [213.5, 117.2, 418.1, 279.1], [315.3, 279.1, 418.1, 457.1], [418.1, 355.5, 802.3, 457.1], [738.5, 324.7, 802.3, 355.5]], t: .35, top: 'kies', side: 'anthrazit', under: 'weiss' },
+        { r: [[418.1, 117.2, 738.5, 355.5]], t: .35, top: 'kies', side: 'holzhell', under: 'weiss' }]
     },
     {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-og',

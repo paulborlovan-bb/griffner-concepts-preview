@@ -423,13 +423,19 @@ function windowPart(grp, w, F, X, Z, skin, d) {
   const [x0, y0, x1, y1, sill, head, kind, o = {}] = w, alongX = (x1 - x0) > (y1 - y0);
   const len = (alongX ? x1 - x0 : y1 - y0) / K, th = (alongX ? y1 - y0 : x1 - x0) / K;
   const g2 = new T.Group(); g2.position.set((X(x0) + X(x1)) / 2, 0, (Z(y0) + Z(y1)) / 2); if (!alongX) g2.rotation.y = Math.PI / 2; grp.add(g2);
-  /* außen: welche Seite (lokal −z oder +z) */
+  /* außen: welche Seite (lokal −z oder +z). Gedreht (Wand entlang y) zeigt lokal +z nach Osten: Westseite −1, Ostseite +1
+     (Runde 42: vorher vertauscht, die Fassade um Fenster in Ost und West lag innen) */
   const ou = F.out; let outZ = 0;
   if (alongX) { if (ou.y0.some(v => Math.abs(y0 - v) < 1)) outZ = -1; else if (ou.y1.some(v => Math.abs(y1 - v) < 1)) outZ = 1; }
-  else { if (ou.x0.some(v => Math.abs(x0 - v) < 1)) outZ = 1; else if (ou.x1.some(v => Math.abs(x1 - v) < 1)) outZ = -1; }
+  else { if (ou.x0.some(v => Math.abs(x0 - v) < 1)) outZ = -1; else if (ou.x1.some(v => Math.abs(x1 - v) < 1)) outZ = 1; }
   const wallBox = () => { const m = new T.Mesh(UBOX, [M.wall, M.wall, M.cap, M.wall, M.wall, M.wall]); m.castShadow = m.receiveShadow = true; m.scale.set(len, 1, th); g2.add(m); return m; };
   const P = { sill: sill > 0 ? wallBox() : null, lin: wallBox(), parts: [], posts: [] };
-  if (outZ && skin) { P.sk1 = B(g2, len, 1, .035, skin, 0, 0, outZ * (th / 2 + .0175)); P.sk2 = B(g2, len, 1, .035, skin, 0, 0, outZ * (th / 2 + .0175)); }
+  if (outZ && skin) {
+    P.sk1 = B(g2, len, 1, .035, skin, 0, 0, outZ * (th / 2 + .0175)); P.sk2 = B(g2, len, 1, .035, skin, 0, 0, outZ * (th / 2 + .0175));
+    /* Runde 42: Laibung außen (seitlich und oben) in der Fassade, vor dem Rahmen bis zur Außenkante; sonst sieht man den hellen Wandkern */
+    const ld = th / 2 + .035 - .04, lz = outZ * (.04 + ld / 2);
+    P.jb = [-1, 1].map(sd => B(g2, .02, 1, ld, skin, sd * (len / 2 - .01), 0, lz)); P.hl = B(g2, len, 1, ld, skin, 0, 0, lz);
+  }
   const fr = .055, fz = 0;
   if (kind === 'tor') {
     P.door = B(g2, len, 1, .06, M.anthrazit, 0, 0, outZ * (th / 2 - .05));
@@ -459,6 +465,7 @@ function windowPart(grp, w, F, X, Z, skin, d) {
       const s = Math.min(sill, Wt), hd = Math.min(head, Wt);
       part(P.sill, 0, s); part(P.sk1, 0, sill > 0 ? s : 0);
       part(P.lin, head, Wt); part(P.sk2, head, Wt);
+      if (P.jb) { P.jb.forEach(m => part(m, s, hd)); part(P.hl, Math.min(head - .02, Wt), Wt > head + .001 ? head : 0); }
       if (kind === 'tor') { part(P.door, 0, hd); P.grooves.forEach((m, i) => { m.visible = hd > (i + 1) * .5; m.position.y = (i + 1) * .5; }); return; }
       part(P.door, 0, hd); if (P.handle) { P.handle.visible = Wt > 1.3; P.handle.position.y = .8; }
       part(P.glass, s, hd); P.posts.forEach(m => part(m, s, hd));
