@@ -4,16 +4,16 @@
    (gemessen an der Ostwand und der Nordwand, die in beiden Plänen übereinander stehen).
    Flächen: die Pläne nennen die Nettoraumflächen nach DIN 277, die stehen als a genau so in der Liste (ohne „ca.“).
    Material nach den Bildern: unten heller gespaltener Kalkstein, Holz im Osten (Nordseite neben dem Eingang, Ostseite, Südseite
-   zwischen den Fenstern, Runde 40), oben helles Holz, dunkle Latten neben dem Eingang und am Carport,
-   zwei dünne Flachdächer mit dunkler Kante, Glasgeländer auf der Terrasse, Carport mit Holzlamellen. Böden: unten heller
-   Stein, oben helle Eiche, Bäder in Stein.
+   zwischen den Fenstern, Runde 40), oben helles Holz, dunkle Latten am Carport,
+   zwei dünne Flachdächer mit dunkler Kante, Glasgeländer auf der Terrasse, Carport mit Holzlamellen. Böden: Parkett in Eiche
+   wie in allen Häusern, Bäder und WC in Stein (Runde 41).
    Nicht im Plan, aber auf den Bildern: der Pool im Süden und Fenster des Büros nach Norden (Plan gilt). */
 const yl = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => +(a + (b - a) * i / n).toFixed(2));
 export default {
   name: 'Light', key: 'light',
   K: 28.35,
   h: { eg: 2.8, og: 2.7, slab: .35, cut: 2.1 },
-  floor: 'stein',
+  floor: 'eiche',
   desc: 'Erdgeschoß in hellem Stein und Holz, Obergeschoß in Holz, zwei flache Dächer und die Terrasse oben.',
   build: 'Das Haus wird gebaut: erst das Erdgeschoß, dann die Vordächer, das Obergeschoß und das Dach.',
   floors: [
@@ -43,15 +43,15 @@ export default {
         { n: 'Büro', a: 11.92, r: [[627.9, 128.7, 727.1, 225.2]], at: [655, 200] },
         { n: 'Eingang', a: 9.25, r: [[492.5, 128.7, 624.4, 183.8]], at: [590, 165] },
         { n: 'Technik', list: 'Technik, Hauswirtschaft und Speis', a: 10.69, r: [[429.5, 189, 524.5, 252.8], [528, 189, 559.8, 264.7]], at: [470, 220] },
-        { n: 'WC', list: 'WC mit Dusche', a: 4.08, r: [[429.5, 128.7, 489, 183.8]], at: [468, 168] },
+        { n: 'WC', list: 'WC mit Dusche', a: 4.08, f: 'stein', r: [[429.5, 128.7, 489, 183.8]], at: [468, 168] },
         { n: 'Terrasse', f: 'platten', r: [[523.2, 355.5, 769.4, 434.9]], at: [600, 410], out: 1 },
         { n: 'Carport', f: 'beton', r: [[249.5, 95.8, 418.1, 245]], at: [330, 225], out: 1 }
       ],
       rugs: [[636, 262, 66, 58, 'kalk'], [392, 360, 80, 48, 'sand']],
       windows: [
-        /* Runde 40: kleines Fenster hoch im Stein, Eingang mit dunklem Flügel im Osten und Glas daneben (Bild 8) */
+        /* Runde 40: kleines Fenster hoch im Stein; Eingang (Runde 41): dunkler Flügel im Osten so breit wie das Glas daneben */
         [454.5, 117.2, 475.3, 128.7, 1.65, 2.4, 'glas'],
-        [562.5, 117.2, 620.1, 128.7, 0, 2.65, 'tuer', { leaf: .55, at: 'r', c: 'dunkel' }],
+        [562.5, 117.2, 620.1, 128.7, 0, 2.65, 'tuer', { leaf: 1.016, at: 'r', c: 'dunkel' }],
         [727.1, 150.8, 738.5, 205.6, .5, 2.4, 'glas'],
         [727.1, 258.7, 738.5, 313.4, 0, 2.4, 'glas'],
         [535, 344.1, 618.1, 355.5, 0, 2.5, 'glas', { sp: 1 }],
@@ -100,8 +100,7 @@ export default {
         ['osofa', 700, 412, 54, 18, { f: 'n' }],
         /* Carport: Holzlamellen zwischen den Wandscheiben im Westen */
         ['slats', 240.5, 135.7, 6, 78, { h: 2.8, gap: .26, fin: .07 }],
-        /* Runde 40 (Bild 8): dunkle Latten unter dem Vordach, östlich vom Eingang und am Ende der Steinwand zum Carport */
-        ['slats', 620.1, 112.7, 36, 4.5, { h: 2.8, gap: .25, fin: .07, c: 'dunkel' }],
+        /* Runde 40 (Bild 8): dunkle Latten unter dem Vordach am Ende der Steinwand zum Carport (die neben dem Eingang sind seit Runde 41 weg) */
         ['slats', 388.5, 112.7, 29.6, 4.5, { h: 2.8, gap: .26, fin: .09, c: 'dunkel' }]
       ],
       cars: [[285.5, 155.5, 133, 51, 0xE9E7E2, 's'], [360, 157, 138, 54, 0x3f4042, 's']],
@@ -120,7 +119,7 @@ export default {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-og',
       crop: [315, 100, 768, 450], off: [17.3, -9.9],
       out: { x0: [400.8, 321.2], x1: [721.3, 761], y0: [127.1, 289.2, 358.3], y1: [365.4, 445.2] },
-      skin: 'holzhell', baseSide: 'anthrazit', floor: 'eichehell',
+      skin: 'holzhell', baseSide: 'anthrazit',
       skins: [[315, 285, 405, 450, 'anthrazit'], [395, 435, 765, 450, 'anthrazit'], [715, 355, 765, 450, 'anthrazit']],
       house: [400.8, 127.1, 721.3, 365.4],
       base: [[400.8, 127.1, 721.3, 365.4], [321.2, 289.2, 400.8, 445.2], [400.8, 365.4, 761, 445.2], [721.3, 358.3, 761, 365.4]],

@@ -3,14 +3,14 @@
    Wände aus data/plan-geo.js (plan-bold-eg, plan-bold-og); das Obergeschoß liegt um off [8,5; −25] verschoben
    (gemessen am Treppenauge, das oben genau über der Treppe liegt, und am dunklen Rahmen im Osten).
    Material nach den Bildern: senkrechte Holzlatten unten und oben, dunkle dicke Platte über dem Erdgeschoß (auch die Terrasse oben),
-   dunkler Rahmen: im Westen die Wand neben der Garage, im Osten die Stirnwand oben, dunkles Flachdach. Boden Fischgrät, Bäder in Stein.
+   dunkler Rahmen: im Westen die Wand neben der Garage, im Osten die Stirnwand oben, dunkles Flachdach. Boden Parkett in Eiche wie in allen Häusern (Runde 41), Bäder und WC in Stein und Fliesen, Garage in Beton.
    Flächen gibt der Plan nicht als Liste, sie stehen als „ca.“ aus den Rechtecken. */
 const yl = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => +(a + (b - a) * i / n).toFixed(2));
 export default {
   name: 'Bold', key: 'bold',
   K: 28.35,
   h: { eg: 2.9, og: 2.75, slab: .5, cut: 2.1 },
-  floor: 'fischgrat',
+  floor: 'eiche',
   desc: 'Holzlatten unten und oben, dazwischen eine dunkle Platte, oben ein dunkles Flachdach und die Terrasse über der Garage.',
   build: 'Das Haus wird gebaut: erst das Erdgeschoß mit der Garage, dann die dunkle Platte, das Obergeschoß und das Dach.',
   view: [-.7, .4],
@@ -40,7 +40,7 @@ export default {
         { n: 'Eingang', r: [[391.4, 168.5, 449.8, 269.4]], at: [420, 230] },
         { n: 'Garderobe', r: [[335.1, 168.5, 387.8, 217.7]], at: [362, 200] },
         { n: 'WC', f: 'fliese', r: [[335.1, 221.2, 387.8, 269.4]], at: [372, 250] },
-        { n: 'Technik', f: 'beton', r: [[516.5, 168.5, 570.4, 235.1]], at: [545, 200] },
+        { n: 'Technik', r: [[516.5, 168.5, 570.4, 235.1]], at: [545, 200] },
         { n: 'Garage', f: 'beton', r: [[167.8, 168.5, 323.7, 324.5]], at: [245, 300] },
         { n: 'Abstellraum', f: 'beton', r: [[167.8, 329.7, 323.7, 374.2]], at: [245, 352] }
       ],
@@ -127,7 +127,7 @@ export default {
         { f: 'platten', r: [[133.5, 154.5, 155, 467.5], [133.5, 154.5, 691.7, 161], [133.5, 460.4, 691.7, 467.5]] },
         { n: 'Bad', list: 'Bad mit Wanne und Dusche', f: 'stein', r: [[326.7, 193.7, 437.8, 260.7]], at: [380, 232] },
         { n: 'WC', f: 'stein', r: [[326.7, 264.2, 380.2, 295.4]], at: [362, 288] },
-        { n: 'Waschen', f: 'stein', r: [[511.5, 193.7, 579.6, 260.7]], at: [535, 230] },
+        { n: 'Waschen', r: [[511.5, 193.7, 579.6, 260.7]], at: [535, 230] },
         { n: 'Flur', r: [[383.8, 264.2, 579.6, 295.4], [441.3, 260.7, 508, 264.2]], at: [530, 280] },
         { n: 'Kind', list: 'Kind, Westseite', r: [[326.7, 299, 451.4, 399.4]], at: [400, 320] },
         { n: 'Kind', list: 'Kind, Ostseite', r: [[454.9, 299, 579.6, 399.4]], at: [530, 320] },
