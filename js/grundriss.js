@@ -9,7 +9,7 @@ import * as T from 'three';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js';
 import { PLAN_GEO } from '../data/plan-geo.js';
 import HOUSE from '../data/grundriss-free.js';
-import { floorCanvas, stoneCanvas, larchCanvas, roofCanvas, gravelCanvas, contactCanvas } from './grundriss-tex.js';
+import { floorCanvas, stoneCanvas, larchCanvas, roofCanvas, gravelCanvas } from './grundriss-tex.js';
 import { M, B, BUILD, pendant, car } from './grundriss-moebel.js';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -50,7 +50,8 @@ function stage() {
   /* Schatten nur neu rechnen, wenn sich am Modell etwas bewegt (nicht beim Drehen der Kamera): halbiert die Arbeit am Telefon */
   R.shadowMap.autoUpdate = false;
   R.domElement.className = 'gr__gl';
-  scene = new T.Scene(); scene.background = new T.Color(0xffffff);
+  /* Runde 36: auf Schwarz wie die Website (Grundriss am Desktop: weißes Modell auf Schwarz) */
+  scene = new T.Scene(); scene.background = new T.Color(0x000000);
   const pm = new T.PMREMGenerator(R); scene.environment = pm.fromScene(new RoomEnvironment(R), .04).texture; pm.dispose();
   cam = new T.PerspectiveCamera(28, 1, .3, 400);
   scene.add(new T.HemisphereLight(0xffffff, 0xcfc8bd, .35));
@@ -58,9 +59,6 @@ function stage() {
   sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .025; sun.shadow.radius = 3;
   Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 15, bottom: -15, near: 1, far: 120 });
   scene.add(sun, sun.target);
-  /* Boden: nur der Schatten, dazu ein weicher Kontaktschatten unter dem Sockel */
-  const gr = new T.Mesh(new T.PlaneGeometry(400, 400), new T.ShadowMaterial({ opacity: .16 }));
-  gr.rotation.x = -Math.PI / 2; gr.position.y = -.3; gr.receiveShadow = true; scene.add(gr);
   /* Materialien mit Bildern */
   const stone = worldUV(new T.MeshStandardMaterial({ map: ctex(stoneCanvas(), 1), roughness: .95 }), .5);
   const larch = worldUV(new T.MeshStandardMaterial({ map: ctex(larchCanvas(), 1), roughness: .85 }), 1);
@@ -92,12 +90,6 @@ function buildFloor(F, fi, SK) {
   const dl = (x, y) => clamp(((x - cx0) / span[0]) * .55 + ((y - cy0) / span[1]) * .45);
   /* Sockel (im Obergeschoß die Decke darunter, außen in Lärche wie die Fassade) */
   const pmat = fi ? [SK.holz, SK.holz, M.base, SK.holz, SK.holz, SK.holz] : M.base;
-  /* weicher Kontaktschatten unter dem Sockel, je Geschoß (das Obergeschoß hat seinen nur, solange es am Boden steht) */
-  {
-    const cr = contactCanvas(F.base.map(r => [X(r[0]), Z(r[1]), X(r[2]), Z(r[3])]));
-    const cm = new T.Mesh(new T.PlaneGeometry(cr.w, cr.d), new T.MeshBasicMaterial({ map: ctex(cr.c), transparent: true, opacity: .55, depthWrite: false }));
-    cm.rotation.x = -Math.PI / 2; cm.position.set(cr.x0 + cr.w / 2, -.298, cr.z0 + cr.d / 2); cm.renderOrder = -1; grp.add(cm); st.contact = cm;
-  }
   F.base.forEach(r => { const m = new T.Mesh(new T.BoxGeometry(1, 1, 1).translate(0, .5, 0), pmat); m.scale.set((r[2] - r[0]) / K, .3, (r[3] - r[1]) / K); m.position.set((X(r[0]) + X(r[2])) / 2, -.3, (Z(r[1]) + Z(r[3])) / 2); m.receiveShadow = true; m.castShadow = true; grp.add(m); st.base.push(m); });
   /* Wände: die Wandflächen des Plans, oben dunkel geschnitten */
   const wallsPts = [];
@@ -162,7 +154,9 @@ function buildFloor(F, fi, SK) {
   st.rooms = F.rooms.filter(r => r.n).map(r => {
     const area = r.r ? r.r.reduce((a, q) => a + (q[2] - q[0]) * (q[3] - q[1]), 0) / (K * K) : 0;
     const bb = r.r ? r.r.reduce((a, q) => [Math.min(a[0], q[0]), Math.min(a[1], q[1]), Math.max(a[2], q[2]), Math.max(a[3], q[3])], [1e9, 1e9, -1e9, -1e9]) : [r.at[0] - 40, r.at[1] - 40, r.at[0] + 40, r.at[1] + 40];
-    return { n: r.n, list: r.list || r.n, part: !!r.part, area, out: !!r.out, pos: new T.Vector3(X(r.at[0]), .05, Z(r.at[1])), bb: [X(bb[0]), Z(bb[1]), X(bb[2]), Z(bb[3])], fi };
+    /* Fläche, in die der Name passen muss: das Rechteck des Raums unter dem Namen (Teile eines Raums: 2,8 m rundum) */
+    const fr = (r.r || []).find(q => r.at[0] >= q[0] && r.at[0] <= q[2] && r.at[1] >= q[1] && r.at[1] <= q[3]) || [r.at[0] - 40, r.at[1] - 40, r.at[0] + 40, r.at[1] + 40];
+    return { n: r.n, list: r.list || r.n, part: !!r.part, area, out: !!r.out, pos: new T.Vector3(X(r.at[0]), .05, Z(r.at[1])), bb: [X(bb[0]), Z(bb[1]), X(bb[2]), Z(bb[3])], fit: [X(fr[0]), Z(fr[1]), X(fr[2]), Z(fr[3])], fi };
   });
   return st;
 }
@@ -267,7 +261,6 @@ function apply() {
     const W0 = lerp(HT.cut, full, ext);
     st.base.forEach(m => { m.scale.y = Math.max(.001, .3 * E(b, 0, .12)); m.position.y = -.3 * E(b, 0, .12); });
     st.plane.visible = b > .05;
-    st.contact.material.opacity = .55 * E(b, 0, .15) * (fi ? 1 - clamp(S.lift * 3) : 1); st.contact.visible = st.contact.material.opacity > .005;
     const grow = d => E(b, .08 + d * .3, .42 + d * .3);
     st.walls.forEach(w => { const h = (w.low ? 1 : W0) * grow(w.d); w.m.scale.y = Math.max(.001, h); w.m.visible = h > .003; });
     st.skins.forEach(w => { const h = (w.low ? 1 : W0) * grow(w.d); w.m.scale.y = Math.max(.001, h); w.m.visible = h > .003; });
@@ -368,7 +361,7 @@ function fitDist(bx, az, el, t) {
   }
   return hi;
 }
-const DEF = { floor: [-.32, .98], floorTall: [-.3, 1.14], haus: [-.62, .42], top: [0, 1.52] };
+const DEF = { floor: [-.32, .98], floorTall: [-.14, 1.14], haus: [-.62, .42], top: [0, 1.52] };
 function reframe(anim) {
   if (!host || !cam) return;
   box = modeBox(mode);
@@ -426,28 +419,61 @@ function render() {
   labels(W, H);
 }
 
-/* Namen der Räume: auf dem Boden, nur was Platz hat; zuerst die großen, dann ohne Fläche, sonst weg */
+/* Namen der Räume (Runde 36, fürs Telefon): ein Name steht nur dort, wo er in seinen Raum passt, nicht über einem anderen Namen
+   und nicht unter der Bedienung. Passt er an seinem Platz nicht, rückt er zur Mitte des Raums; passt er dann noch nicht,
+   steht nur der Name ohne Fläche, sonst gar nichts. Näher heran zeigt mehr. Der gewählte Raum steht immer da (gelb). */
+const LV = new T.Vector3();
+const scr = (x, y, z, o, W, H) => { LV.set(x + o.x, y + o.y, z + o.z).project(cam); return [(LV.x + 1) / 2 * W, (1 - LV.y) / 2 * H, LV.z]; };
+function inQuad(Q, px, py) {
+  let s = 0;
+  for (let i = 0; i < Q.length; i++) {
+    const a = Q[i], b = Q[(i + 1) % Q.length], c = (b[0] - a[0]) * (py - a[1]) - (b[1] - a[1]) * (px - a[0]);
+    if (Math.abs(c) > 1e-6) { const g = Math.sign(c); if (s && g !== s) return false; s = g; }
+  }
+  return true;
+}
+const hits = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+function measure(r) {
+  const el = r.el, b = el.querySelector('b'), cs = getComputedStyle(el);
+  el.classList.remove('is-compact');
+  const px = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight), py = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const full = [el.offsetWidth, el.offsetHeight, false], name = [b.offsetWidth + px, b.offsetHeight + py, true];
+  r.sz = r.part || !r.area ? [name] : [full, name];
+}
 function labels(W, H) {
   if (!labsEl) return;
-  const show = labelsOn && S.ext < .05 && mode !== 'haus', v = new T.Vector3(), taken = [];
+  const show = labelsOn && S.ext < .05 && mode !== 'haus', taken = [], blk = host.block ? host.block() : [];
   const all = FL.flatMap(st => st.rooms.map(r => ({ r, st })));
-  all.sort((a, b) => (b.r === focus) - (a.r === focus) || (b.r.part ? 20 : b.r.area) - (a.r.part ? 20 : a.r.area));
+  all.sort((a, b) => (b.r === focus) - (a.r === focus) || (b.r.part ? 6 : b.r.area) - (a.r.part ? 6 : a.r.area));
   for (const { r, st } of all) {
     const el = r.el; if (!el) continue;
     const bld = st.fi ? S.og : S.eg, op = show ? E(bld, .86, 1) : 0;
     if (op <= .01 || !st.g.visible) { el.style.opacity = '0'; continue; }
-    v.copy(r.pos).add(st.g.position).project(cam);
-    const x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H;
-    if (v.z > 1 || x < 0 || x > W || y < 0 || y > H) { el.style.opacity = '0'; continue; }
-    if (!r.sz) r.sz = [el.offsetWidth, el.offsetHeight, el.querySelector('b').offsetWidth + 10, el.querySelector('b').offsetHeight + 6];
-    const fits = (w, h) => { const q = [x - w / 2 - 2, y - h / 2 - 2, x + w / 2 + 2, y + h / 2 + 2]; return taken.every(t => q[2] < t[0] || q[0] > t[2] || q[3] < t[1] || q[1] > t[3]) ? q : null; };
-    let q = fits(r.sz[0], r.sz[1]), compact = false;
-    if (!q && r !== focus) { q = fits(r.sz[2], r.sz[3]); compact = true; }
-    if (!q && r !== focus) { el.style.opacity = '0'; continue; }
-    taken.push(q || [x, y, x, y]);
-    el.classList.toggle('is-compact', compact); el.classList.toggle('is-on', r === focus);
+    const o = st.g.position, [x, y, z] = scr(r.pos.x, r.pos.y, r.pos.z, o, W, H);
+    if (z > 1) { el.style.opacity = '0'; continue; }
+    const [f0, f1, f2, f3] = r.fit, Q = [[f0, f1], [f2, f1], [f2, f3], [f0, f3]].map(([a, b]) => scr(a, .05, b, o, W, H));
+    const cx = (Q[0][0] + Q[1][0] + Q[2][0] + Q[3][0]) / 4, cy = (Q[0][1] + Q[1][1] + Q[2][1] + Q[3][1]) / 4;
+    if (!r.sz) measure(r);
+    let best = null;
+    for (const [w, h, cmp] of r.sz) {
+      for (const t of [0, .35, .7, 1]) {
+        const px = x + (cx - x) * t, py = y + (cy - y) * t, bx = [px - w / 2, py - h / 2, px + w / 2, py + h / 2];
+        if (bx[0] < 4 || bx[1] < 4 || bx[2] > W - 4 || bx[3] > H - 4) continue;
+        if (blk.some(q => hits(bx, q))) continue;
+        if (taken.some(q => hits([bx[0] - 3, bx[1] - 3, bx[2] + 3, bx[3] + 3], q))) continue;
+        /* darf etwas über die Wand ragen, aber nicht in den nächsten Raum */
+        const sx = w * .14, sy = h * .22;
+        if (![[bx[0] + sx, bx[1] + sy], [bx[2] - sx, bx[1] + sy], [bx[2] - sx, bx[3] - sy], [bx[0] + sx, bx[3] - sy]].every(([a, b]) => inQuad(Q, a, b))) continue;
+        best = [px, py, bx, cmp]; break;
+      }
+      if (best) break;
+    }
+    if (!best && r === focus) { const [w, h] = r.sz[0]; best = [x, y, [x - w / 2, y - h / 2, x + w / 2, y + h / 2], false]; }
+    if (!best) { el.style.opacity = '0'; continue; }
+    taken.push(best[2]);
+    el.classList.toggle('is-compact', best[3]); el.classList.toggle('is-on', r === focus);
     el.style.opacity = op.toFixed(2);
-    el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`;
+    el.style.transform = `translate3d(${best[0].toFixed(1)}px,${best[1].toFixed(1)}px,0) translate(-50%,-50%)`;
   }
 }
 
@@ -458,6 +484,8 @@ function attach(h) {
   h.el.prepend(R.domElement); h.el.appendChild(labsEl);
   R.setPixelRatio(Math.min(devicePixelRatio || 1, h.dpr));
   const fit = () => { R.setSize(h.el.clientWidth || 1, h.el.clientHeight || 1, false); FL.forEach(st => st.rooms.forEach(r => { r.sz = null; })); reframe(false); render(); };
+  /* Schrift geladen: Namen neu messen */
+  if (document.fonts && !attach.f) { attach.f = 1; document.fonts.ready.then(() => { FL.forEach(st => st.rooms.forEach(r => { r.sz = null; })); kick(); }); }
   if (attach.ro) attach.ro.disconnect();
   attach.ro = new ResizeObserver(fit); attach.ro.observe(h.el);
   fit();
@@ -496,8 +524,8 @@ function fillRooms() {
     });
   });
 }
-function openRooms() { fillRooms(); UI.rooms.hidden = false; UI.roomsBtn.setAttribute('aria-expanded', 'true'); UI.rooms.querySelector('button').focus(); }
-function closeRooms(back = true) { if (UI.rooms.hidden) return; UI.rooms.hidden = true; UI.roomsBtn.setAttribute('aria-expanded', 'false'); if (back) UI.roomsBtn.focus(); }
+function openRooms() { fillRooms(); UI.rooms.hidden = false; kick(); UI.roomsBtn.setAttribute('aria-expanded', 'true'); UI.rooms.querySelector('button').focus(); }
+function closeRooms(back = true) { if (UI.rooms.hidden) return; UI.rooms.hidden = true; kick(); UI.roomsBtn.setAttribute('aria-expanded', 'false'); if (back) UI.roomsBtn.focus(); }
 
 function gestures(el) {
   const P = new Map(); let p0 = null, lastTap = 0, moved = 0, lastMove = 0;
@@ -610,6 +638,11 @@ export async function initGrundriss() {
       const wide = stageEl.clientWidth >= 820, bh = bt ? bt.offsetHeight : 140;
       dlg.style.setProperty('--grv-bottom', bh + 'px');
       return { t: (tp ? tp.offsetHeight : 60) + 8, b: wide ? bh + 40 : bh + 10, l: wide ? 40 : 10, r: wide ? (sd ? sd.offsetWidth : 48) + 56 : 14 };
+    },
+    /* Flächen der Bedienung über dem Bild: dort steht kein Raumname */
+    block: () => {
+      const s0 = stageEl.getBoundingClientRect();
+      return [...dlg.querySelectorAll('.grv__top,.grv__bottom,.grv__side,.grv__rooms:not([hidden])')].map(e => { const q = e.getBoundingClientRect(); return [q.left - s0.left - 4, q.top - s0.top - 4, q.right - s0.left + 4, q.bottom - s0.top + 4]; });
     }
   };
   let opener = null;
