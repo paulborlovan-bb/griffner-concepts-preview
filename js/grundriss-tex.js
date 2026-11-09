@@ -16,12 +16,12 @@ const canvas = (w, h) => { const c = document.createElement('canvas'); c.width =
 
 /* Eichendielen, längs nach Norden; w, h in px, Breite einer Diele 19 cm */
 function oak(x, R, X0, Y0, W, H, light = 0) {
-  const pw = .19 * PPM;
+  const pw = .21 * PPM;
   for (let px = X0 - (X0 % pw); px < X0 + W; px += pw) {
     let py = Y0 - R() * 2.2 * PPM;
     while (py < Y0 + H) {
-      const len = (1.3 + R() * 1.3) * PPM;
-      const l = 55 + R() * 9 + light, s = 40 + R() * 12, hu = 28 + R() * 6;
+      const len = (1.6 + R() * 1.6) * PPM;
+      const l = 42 + R() * 6 + light, s = 20 + R() * 8, hu = 27 + R() * 5;
       x.fillStyle = hsl(hu, s, l); x.fillRect(px, py, pw, len);
       /* Maserung */
       for (let g = 0; g < 7; g++) {
@@ -33,10 +33,10 @@ function oak(x, R, X0, Y0, W, H, light = 0) {
         x.stroke();
       }
       if (R() < .12) { x.fillStyle = hsl(hu - 6, s + 10, l - 26, .28); x.beginPath(); x.ellipse(px + pw * (.3 + R() * .4), py + len * R(), 1.6, 3.2, 0, 0, Math.PI * 2); x.fill(); }
-      x.fillStyle = 'rgba(70,48,28,.28)'; x.fillRect(px, py, pw, 1);
+      x.fillStyle = 'rgba(40,26,14,.38)'; x.fillRect(px, py, pw, 1.1);
       py += len;
     }
-    x.fillStyle = 'rgba(70,48,28,.22)'; x.fillRect(px, Y0, 1, H);
+    x.fillStyle = 'rgba(40,26,14,.32)'; x.fillRect(px, Y0, 1.1, H);
   }
 }
 /* Fichte (Sauna): schmal und hell */
@@ -52,16 +52,16 @@ function spruce(x, R, X0, Y0, W, H) {
 function tiles(x, R, X0, Y0, W, H, size = .6) {
   const t = size * PPM;
   for (let py = Y0 - (Y0 % t); py < Y0 + H; py += t) for (let px = X0 - (X0 % t); px < X0 + W; px += t) {
-    x.fillStyle = hsl(40, 6 + R() * 3, 84 + R() * 3); x.fillRect(px, py, t, t);
+    x.fillStyle = hsl(35, 4 + R() * 3, 60 + R() * 5); x.fillRect(px, py, t, t);
     for (let i = 0; i < 14; i++) { x.fillStyle = `rgba(${R() < .5 ? '255,255,255' : '90,85,78'},${.05 + R() * .06})`; x.fillRect(px + R() * t, py + R() * t, 2 + R() * 6, 2 + R() * 6); }
   }
-  x.fillStyle = 'rgba(150,145,136,.85)';
+  x.fillStyle = 'rgba(70,66,60,.7)';
   for (let py = Y0 - (Y0 % t); py < Y0 + H; py += t) x.fillRect(X0, py - .7, W, 1.4);
   for (let px = X0 - (X0 % t); px < X0 + W; px += t) x.fillRect(px - .7, Y0, 1.4, H);
 }
 /* Estrich, geschliffen (Garage, Technik, Abstellraum) */
 function concrete(x, R, X0, Y0, W, H) {
-  x.fillStyle = '#b9b6af'; x.fillRect(X0, Y0, W, H);
+  x.fillStyle = '#8f8c86'; x.fillRect(X0, Y0, W, H);
   for (let i = 0; i < W * H / 900; i++) {
     const r = 12 + R() * 70; const cx = X0 + R() * W, cy = Y0 + R() * H;
     const g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
@@ -77,7 +77,7 @@ function slabs(x, R, X0, Y0, W, H) {
   const a = 1.2 * PPM, b = .6 * PPM;
   let row = 0;
   for (let py = Y0; py < Y0 + H; py += b, row++) for (let px = X0 - (row % 2 ? a / 2 : 0); px < X0 + W; px += a) {
-    x.fillStyle = hsl(36 + R() * 6, 6 + R() * 5, 66 + R() * 6); x.fillRect(px, py, a, b);
+    x.fillStyle = hsl(34 + R() * 6, 5 + R() * 4, 54 + R() * 6); x.fillRect(px, py, a, b);
     for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(${R() < .5 ? '70,66,60' : '245,242,236'},${.06 + R() * .08})`; x.fillRect(px + R() * a, py + R() * b, 1 + R() * 2.4, 1 + R() * 2.4); }
     x.fillStyle = 'rgba(95,90,82,.7)'; x.fillRect(px, py, a, 2); x.fillRect(px, py, 2, b);
   }
@@ -88,7 +88,7 @@ function deck(x, R, X0, Y0, W, H) {
   for (let py = Y0; py < Y0 + H; py += bw) {
     let px = X0 - R() * 2 * PPM;
     while (px < X0 + W) {
-      const len = (2 + R() * 2) * PPM, l = 58 + R() * 8;
+      const len = (2 + R() * 2) * PPM, l = 44 + R() * 9;
       x.fillStyle = hsl(32 + R() * 5, 20 + R() * 8, l); x.fillRect(px, py, len, bw - gap);
       for (let g = 0; g < 4; g++) { x.fillStyle = hsl(28, 20, l - 16, .12); x.fillRect(px, py + 1 + R() * (bw - gap - 2), len, .8); }
       x.fillStyle = 'rgba(60,50,40,.35)'; x.fillRect(px, py, 1.2, bw - gap);
@@ -97,7 +97,8 @@ function deck(x, R, X0, Y0, W, H) {
     x.fillStyle = '#5d554b'; x.fillRect(X0, py + bw - gap, W, gap);
   }
 }
-const RUG = { sand: [36, 18, 80], kalk: [40, 4, 82], salbei: [75, 8, 62] };
+/* Teppiche in Taupe und Grau wie auf einem Verkaufsplan */
+const RUG = { sand: [32, 12, 66], kalk: [30, 4, 72], salbei: [70, 7, 52] };
 function rug(x, R, X0, Y0, W, H, c = 'sand') {
   const [hu, s, l] = RUG[c] || RUG.sand;
   x.fillStyle = hsl(hu, s, l); x.fillRect(X0, Y0, W, H);
@@ -148,8 +149,8 @@ export function floorCanvas(F, K, walls, foot, steps) {
   /* Schatten an den Wandfüßen: zwei Lagen, weit und weich, eng und dunkler */
   const wallPath = () => { x.beginPath(); for (const n of walls) { for (let i = 0; i + 1 < n.length; i += 2) (i ? x.lineTo : x.moveTo).call(x, X(n[i]), Y(n[i + 1])); x.closePath(); } };
   x.save(); x.beginPath(); F.base.forEach(rectPath); x.clip();
-  halo(x, wallPath, .5 * PPM, 'rgba(45,32,20,.42)');
-  halo(x, wallPath, .12 * PPM, 'rgba(35,25,15,.45)');
+  halo(x, wallPath, .55 * PPM, 'rgba(25,16,8,.5)');
+  halo(x, wallPath, .12 * PPM, 'rgba(18,12,6,.55)');
   /* unter den Möbeln */
   for (const [fx, fy, fw, fd, k] of foot) halo(x, () => { x.beginPath(); x.rect(X(fx), Y(fy), fw * S, fd * S); }, (.08 + k * .1) * PPM, `rgba(35,25,15,${.22 + k * .2})`);
   x.restore();

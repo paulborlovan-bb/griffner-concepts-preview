@@ -27,7 +27,7 @@ const fmtA = a => 'ca. ' + Math.round(a) + ' m²';
 
 let R, scene, cam, sun, FL = [], EGSLAB = null, ROOF = null, host = null, labsEl = null, lives = [], dlgEl = null, raf = 0, last = 0;
 const S = { eg: 0, og: 0, ext: 0, slab: 0, roof: 0, lift: 0 };
-let shadowDirty = true, anims = [], seq = 0, mode = 'eg', topView = false, labelsOn = true, focus = null, dragging = false;
+let shadowDirty = true, anims = [], seq = 0, mode = 'eg', tilt = false, labelsOn = true, focus = null, dragging = false;
 /* Kamera: gezeigt (c) und Ziel (g); Azimut, Höhe, Abstand, Zielpunkt */
 const c = { az: -.32, el: .98, dist: 30, t: new T.Vector3() }, g = { az: -.32, el: .98, dist: 30, t: new T.Vector3() };
 let fitD = 30, box = null, vel = 0; const TV = new T.Vector3();
@@ -53,7 +53,7 @@ function stage() {
   /* Runde 36: auf Schwarz wie die Website (Grundriss am Desktop: weißes Modell auf Schwarz) */
   scene = new T.Scene(); scene.background = new T.Color(0x000000);
   const pm = new T.PMREMGenerator(R); scene.environment = pm.fromScene(new RoomEnvironment(R), .04).texture; pm.dispose();
-  cam = new T.PerspectiveCamera(28, 1, .3, 400);
+  cam = new T.PerspectiveCamera(32, 1, .3, 400);
   scene.add(new T.HemisphereLight(0xffffff, 0xcfc8bd, .35));
   sun = new T.DirectionalLight(0xfff1e0, 2.2); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .025; sun.shadow.radius = 3;
@@ -91,13 +91,15 @@ function buildFloor(F, fi, SK) {
   /* Sockel (im Obergeschoß die Decke darunter, außen in Lärche wie die Fassade) */
   const pmat = fi ? [SK.holz, SK.holz, M.base, SK.holz, SK.holz, SK.holz] : M.base;
   F.base.forEach(r => { const m = new T.Mesh(new T.BoxGeometry(1, 1, 1).translate(0, .5, 0), pmat); m.scale.set((r[2] - r[0]) / K, .3, (r[3] - r[1]) / K); m.position.set((X(r[0]) + X(r[2])) / 2, -.3, (Z(r[1]) + Z(r[3])) / 2); m.receiveShadow = true; m.castShadow = true; grp.add(m); st.base.push(m); });
-  /* Wände: die Wandflächen des Plans, oben dunkel geschnitten */
-  const wallsPts = [];
+  /* Runde 37: heller Rand rund um den Sockel (20 cm), solange ein Geschoß allein steht: auf Schwarz bekommt das Haus so seine Kante */
+  st.rim = F.base.map(r => { const e = .2, m = new T.Mesh(new T.BoxGeometry(1, 1, 1).translate(0, .5, 0), M.edge); m.scale.set((r[2] - r[0]) / K + e * 2, .3, (r[3] - r[1]) / K + e * 2); m.position.set((X(r[0]) + X(r[2])) / 2, -.316, (Z(r[1]) + Z(r[3])) / 2); m.receiveShadow = true; grp.add(m); return m; });
+  /* Wände: die Wandflächen des Plans, oben schwarz geschnitten */
+  const wallsPts = [], wb = [];
   for (const n of geo.w) {
     const pts = []; for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i], n[i + 1]]);
     const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), b = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
     if (Math.min(b[2] - b[0], b[3] - b[1]) < 1.5 || (b[2] - b[0]) * (b[3] - b[1]) < 20) continue;
-    wallsPts.push(n);
+    wallsPts.push(n); wb.push(b);
     const shp = new T.Shape(pts.map(([x, y]) => new T.Vector2(X(x), -Z(y))));
     const eg = new T.ExtrudeGeometry(shp, { depth: 1, bevelEnabled: false }); eg.rotateX(-Math.PI / 2);
     const m = new T.Mesh(eg, [M.cap, M.wall]); m.castShadow = m.receiveShadow = true; grp.add(m);
@@ -111,6 +113,8 @@ function buildFloor(F, fi, SK) {
     o.y0.forEach(v => { if (Math.abs(b[1] - v) < 1) face((X(b[0]) + X(b[2])) / 2, Z(v) - t / 2, (b[2] - b[0]) / K + t * 2, t); });
     o.y1.forEach(v => { if (Math.abs(b[3] - v) < 1) face((X(b[0]) + X(b[2])) / 2, Z(v) + t / 2, (b[2] - b[0]) / K + t * 2, t); });
   }
+  /* Innentüren: in jeder Lücke von 0,78 bis 1,1 m zwischen zwei Wandstücken steht ein offenes Türblatt (wie auf dem Verkaufsplan) */
+  for (const dr of doorGaps(F, wb)) { const o = doorLeaf(dr, X, Z); grp.add(o); st.furn.push({ m: o, d: dl(dr.cx, dr.cy) }); }
   /* Fenster, Türen, Tor */
   for (const w of F.windows || []) st.wins.push(windowPart(grp, w, F, X, Z, SK[F.skin], dl((w[0] + w[2]) / 2, (w[1] + w[3]) / 2)));
   /* Möbel */
@@ -151,14 +155,88 @@ function buildFloor(F, fi, SK) {
   const pl = new T.Mesh(new T.PlaneGeometry(span[0] / K, span[1] / K), fm);
   pl.rotation.x = -Math.PI / 2; pl.position.set((X(cx0) + X(cx1)) / 2, .003, (Z(cy0) + Z(cy1)) / 2); pl.receiveShadow = true; grp.add(pl); st.plane = pl;
   /* Räume: Namen und Flächen */
+  /* alles, was am Boden steht (auch Duschen, Glas, Hocker), dazu die Autos */
+  const obst = (F.furn || []).filter(f => f[0] !== 'pendant').map(([, x, y, w, d]) => [x - 2, y - 2, x + w + 2, y + d + 2]);
+  for (const [x, y, l, w, , dir] of F.cars || []) { const n = dir === 'n'; obst.push([x - (n ? w : l) / 2 - 2, y - (n ? l : w) / 2 - 2, x + (n ? w : l) / 2 + 2, y + (n ? l : w) / 2 + 2]); }
+  if (F.stair) { const t = F.stair; obst.push([t.wind.rect[0], t.run1.y[0], Math.max(...t.run1.x, ...t.run2.x), t.run2.y[1]]); }
+  if (F.void) obst.push(F.void);
   st.rooms = F.rooms.filter(r => r.n).map(r => {
     const area = r.r ? r.r.reduce((a, q) => a + (q[2] - q[0]) * (q[3] - q[1]), 0) / (K * K) : 0;
     const bb = r.r ? r.r.reduce((a, q) => [Math.min(a[0], q[0]), Math.min(a[1], q[1]), Math.max(a[2], q[2]), Math.max(a[3], q[3])], [1e9, 1e9, -1e9, -1e9]) : [r.at[0] - 40, r.at[1] - 40, r.at[0] + 40, r.at[1] + 40];
     /* Fläche, in die der Name passen muss: das Rechteck des Raums unter dem Namen (Teile eines Raums: 2,8 m rundum) */
     const fr = (r.r || []).find(q => r.at[0] >= q[0] && r.at[0] <= q[2] && r.at[1] >= q[1] && r.at[1] <= q[3]) || [r.at[0] - 40, r.at[1] - 40, r.at[0] + 40, r.at[1] + 40];
-    return { n: r.n, list: r.list || r.n, part: !!r.part, area, out: !!r.out, pos: new T.Vector3(X(r.at[0]), .05, Z(r.at[1])), bb: [X(bb[0]), Z(bb[1]), X(bb[2]), Z(bb[3])], fit: [X(fr[0]), Z(fr[1]), X(fr[2]), Z(fr[3])], fi };
+    /* Runde 37: der Name steht auf freiem Boden, nicht auf Möbeln, Autos oder der Treppe (wie auf einem Verkaufsplan) */
+    const sp = clearSpot(fr, r.at, obst);
+    return { n: r.n, list: r.list || r.n, part: !!r.part, area, out: !!r.out, pos: new T.Vector3(X(sp[0]), .05, Z(sp[1])), bb: [X(bb[0]), Z(bb[1]), X(bb[2]), Z(bb[3])], fit: [X(fr[0]), Z(fr[1]), X(fr[2]), Z(fr[3])], fi };
   });
   return st;
+}
+
+/* Freier Platz für einen Namen im Rechteck fr (Plan pt): der Punkt mit dem meisten Abstand zu Möbeln und Wänden,
+   gemessen wie ein Kasten, der 2,6 mal so breit wie hoch ist (so liegt Schrift); bei Gleichstand näher am gewünschten Punkt at. */
+function clearSpot(fr, at, obs) {
+  const [x0, y0, x1, y1] = fr, in_ = obs.filter(o => o[0] < x1 && o[2] > x0 && o[1] < y1 && o[3] > y0);
+  let best = at, bs = -1e9;
+  for (let y = y0 + 6; y <= y1 - 6; y += 3) for (let x = x0 + 6; x <= x1 - 6; x += 3) {
+    let c = Math.min(Math.min(x - x0, x1 - x) / 2.6, Math.min(y - y0, y1 - y));
+    for (const o of in_) { const dx = Math.max(o[0] - x, 0, x - o[2]), dy = Math.max(o[1] - y, 0, y - o[3]); c = Math.min(c, Math.max(dx / 2.6, dy)); if (c <= 0) break; }
+    const sc = Math.min(c, 16) - Math.hypot(x - at[0], y - at[1]) * .03;
+    if (sc > bs) { bs = sc; best = [x, y]; }
+  }
+  return best;
+}
+
+/* Türöffnungen aus den Wandflächen: zwei Wandstücke auf derselben Linie mit einer Lücke von 0,78 bis 1,1 m, nichts dazwischen,
+   nicht dort, wo schon ein Fenster oder eine Außentür ist. Das Blatt schlägt in den Raum auf, nicht in Flur, Eingang oder Wohnen. */
+const CIRC = new Set(['Eingang', 'Wohnen']);
+function doorGaps(F, W) {
+  const out = [], win = (F.windows || []).map(w => w.slice(0, 4)), seen = new Set();
+  const free = (q, a, b) => !W.some(c => c !== a && c !== b && c[0] < q[2] - 1 && c[2] > q[0] + 1 && c[1] < q[3] - 1 && c[3] > q[1] + 1);
+  for (const a of W) for (const b of W) {
+    if (a === b) continue;
+    for (const ax of ['h', 'v']) {
+      const h = ax === 'h', i0 = h ? 0 : 1, i1 = h ? 1 : 0;
+      const ov = Math.min(a[i1 + 2], b[i1 + 2]) - Math.max(a[i1], b[i1]), gap = b[i0] - a[i0 + 2];
+      if (ov <= 3 || gap < 22 || gap > 31.2) continue;
+      const lo = Math.max(a[i1], b[i1]), hi = Math.min(a[i1 + 2], b[i1 + 2]);
+      if (hi - lo > 16) continue;
+      const q = h ? [a[2], lo, b[0], hi] : [lo, a[3], hi, b[1]];
+      if (!free(q, a, b) || win.some(w => w[0] < q[2] + 2 && w[2] > q[0] - 2 && w[1] < q[3] + 2 && w[3] > q[1] - 2)) continue;
+      const key = q.map(v => Math.round(v)).join(); if (seen.has(key)) continue; seen.add(key);
+      out.push({ h, q, cx: (q[0] + q[2]) / 2, cy: (q[1] + q[3]) / 2 });
+    }
+  }
+  const area = rm => rm.r.reduce((s, q) => s + (q[2] - q[0]) * (q[3] - q[1]), 0);
+  const roomAt = (px, py) => {
+    let best = null, rect = null;
+    for (const rm of F.rooms) { if (!rm.r) continue; const q = rm.r.find(q => px >= q[0] && px <= q[2] && py >= q[1] && py <= q[3]); if (q && (!best || area(rm) < area(best))) { best = rm; rect = q; } }
+    return best && { rm: best, rect, circ: CIRC.has(best.n) || (!best.n && best.f === 'eiche'), a: area(best) };
+  };
+  return out.map(d => {
+    const p = 14, [x0, y0, x1, y1] = d.q;
+    const sides = [-1, 1].map(s => ({ s, r: d.h ? roomAt(d.cx, s > 0 ? y1 + p : y0 - p) : roomAt(s > 0 ? x1 + p : x0 - p, d.cy) })).filter(o => o.r);
+    if (!sides.length) return null;
+    sides.sort((u, v) => (u.r.circ - v.r.circ) || (u.r.a - v.r.a));
+    const { s, r } = sides[0], q = r.rect;
+    /* Angel an dem Ende, das näher an einer Wand des Raums liegt; dort lehnt das offene Blatt */
+    const e0 = d.h ? x0 - q[0] : y0 - q[1], e1 = d.h ? q[2] - x1 : q[3] - y1;
+    return { ...d, s, hinge: e0 <= e1 ? 0 : 1 };
+  }).filter(Boolean);
+}
+function doorLeaf(d, X, Z) {
+  const g = new T.Group(), t = .045, H = 2.02, [x0, y0, x1, y1] = d.q;
+  const len = ((d.h ? x1 - x0 : y1 - y0) / K) - .03;
+  if (d.h) {
+    const hx = X(d.hinge ? x1 : x0) + (d.hinge ? -t / 2 - .015 : t / 2 + .015), fz = Z(d.s > 0 ? y1 : y0);
+    B(g, t, H, len, M.door, hx, 0, fz + d.s * len / 2);
+    B(g, .1, .02, .02, M.steel, hx, 1, fz + d.s * (len - .08));
+  } else {
+    const hz = Z(d.hinge ? y1 : y0) + (d.hinge ? -t / 2 - .015 : t / 2 + .015), fx = X(d.s > 0 ? x1 : x0);
+    B(g, len, H, t, M.door, fx + d.s * len / 2, 0, hz);
+    B(g, .02, .02, .1, M.steel, fx + d.s * (len - .08), 1, hz);
+  }
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  return g;
 }
 
 /* Treppe als Stufenflächen in Plan pt (Erdgeschoß) mit Oberkante in m: Lauf nach Westen, Wendel, Lauf nach Osten */
@@ -261,6 +339,7 @@ function apply() {
     const W0 = lerp(HT.cut, full, ext);
     st.base.forEach(m => { m.scale.y = Math.max(.001, .3 * E(b, 0, .12)); m.position.y = -.3 * E(b, 0, .12); });
     st.plane.visible = b > .05;
+    const rimOn = b > .1 && S.ext < .5 && (!fi || S.lift < .02); st.rim.forEach(m => { m.visible = rimOn; });
     const grow = d => E(b, .08 + d * .3, .42 + d * .3);
     st.walls.forEach(w => { const h = (w.low ? 1 : W0) * grow(w.d); w.m.scale.y = Math.max(.001, h); w.m.visible = h > .003; });
     st.skins.forEach(w => { const h = (w.low ? 1 : W0) * grow(w.d); w.m.scale.y = Math.max(.001, h); w.m.visible = h > .003; });
@@ -361,12 +440,13 @@ function fitDist(bx, az, el, t) {
   }
   return hi;
 }
-const DEF = { floor: [-.32, .98], floorTall: [-.14, 1.14], haus: [-.62, .42], top: [0, 1.52] };
+/* Runde 37: Grundriss von oben wie ein Verkaufsplan (Norden oben, leicht perspektivisch); „3D Ansicht“ kippt ihn schräg */
+const DEF = { plan: [0, 1.5], tilt: [-.32, .98], tiltTall: [-.14, 1.12], haus: [-.62, .42] };
 function reframe(anim) {
   if (!host || !cam) return;
   box = modeBox(mode);
   const tall = (host.el.clientHeight || 1) > (host.el.clientWidth || 1) * 1.05;
-  const [az, el] = topView && mode !== 'haus' ? DEF.top : mode === 'haus' ? DEF.haus : tall ? DEF.floorTall : DEF.floor;
+  const [az, el] = mode === 'haus' ? DEF.haus : tilt ? (tall ? DEF.tiltTall : DEF.tilt) : DEF.plan;
   const t = new T.Vector3((box.b[0] + box.b[2]) / 2, mode === 'haus' ? TOP * .38 : .5, (box.b[1] + box.b[3]) / 2);
   fitD = fitDist(box, az, el, t);
   g.az = az; g.el = el; g.dist = fitD; g.t.copy(t); vel = 0;
@@ -443,6 +523,8 @@ function measure(r) {
 function labels(W, H) {
   if (!labsEl) return;
   const show = labelsOn && S.ext < .05 && mode !== 'haus', taken = [], blk = host.block ? host.block() : [];
+  /* von oben stehen die Namen als Schrift auf dem Boden; schräg (3D) kämen sie über die Wände, dort mit schwarzem Feld */
+  labsEl.classList.toggle('is-plate', c.el < 1.3);
   const all = FL.flatMap(st => st.rooms.map(r => ({ r, st })));
   all.sort((a, b) => (b.r === focus) - (a.r === focus) || (b.r.part ? 6 : b.r.area) - (a.r.part ? 6 : a.r.area));
   for (const { r, st } of all) {
@@ -462,7 +544,7 @@ function labels(W, H) {
         if (blk.some(q => hits(bx, q))) continue;
         if (taken.some(q => hits([bx[0] - 3, bx[1] - 3, bx[2] + 3, bx[3] + 3], q))) continue;
         /* darf etwas über die Wand ragen, aber nicht in den nächsten Raum */
-        const sx = w * .14, sy = h * .22;
+        const sx = w * .05, sy = h * .1;
         if (![[bx[0] + sx, bx[1] + sy], [bx[2] - sx, bx[1] + sy], [bx[2] - sx, bx[3] - sy], [bx[0] + sx, bx[3] - sy]].every(([a, b]) => inQuad(Q, a, b))) continue;
         best = [px, py, bx, cmp]; break;
       }
@@ -503,7 +585,7 @@ function syncUI() {
   });
   const name = mode === 'og' ? OGF.name : mode === 'haus' ? 'Ganzes Haus' : EGF.name;
   if (UI.floor) UI.floor.textContent = name;
-  if (UI.top) { UI.top.disabled = mode === 'haus'; UI.top.setAttribute('aria-pressed', String(topView && mode !== 'haus')); }
+  if (UI.top) { UI.top.disabled = mode === 'haus'; UI.top.setAttribute('aria-pressed', String(tilt && mode !== 'haus')); }
   const n = mode === 'haus' ? 0 : FL[mode === 'og' ? 1 : 0].rooms.filter(r => !r.part).length;
   const desc = `Concept ${HOUSE.name}, ${name} als 3D Modell` + (n ? `, ${n} Räume. Die Räume mit Fläche stehen in der Liste Räume.` : '. Erdgeschoß in Stein, Obergeschoß in Lärche, Satteldach.');
   document.querySelectorAll('[data-gr-desc]').forEach(el => el.setAttribute('aria-label', desc));
@@ -536,7 +618,7 @@ function gestures(el) {
     const b = box.b; g.t.x = clamp(g.t.x, b[0] - 2, b[2] + 2); g.t.z = clamp(g.t.z, b[1] - 2, b[3] + 2);
   };
   const zoom = f => { g.dist = clamp(g.dist * f, fitD * .16, fitD * 1.8); };
-  const untop = () => { if (topView) { topView = false; syncUI(); } };
+  const untop = () => { if (tilt) { tilt = false; syncUI(); } };
   const snap = () => { const v = [...P.values()]; if (v.length >= 2) { const [a, b] = v; return { two: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; } if (v.length === 1) return { two: false, x: v[0].x, y: v[0].y, t: performance.now() }; return null; };
   el.addEventListener('pointerdown', e => {
     if (e.target.closest('button')) return;
@@ -590,12 +672,12 @@ function gestures(el) {
   });
   return { zoom, turn: a => { g.az += a; untop(); kick(); } };
 }
-function hideHint() { if (UI.hint && !UI.hint.classList.contains('is-off')) UI.hint.classList.add('is-off'); }
+function hideHint() { if (UI.hint && !UI.hint.classList.contains('is-off')) { UI.hint.classList.add('is-off'); kick(); } }
 
 /* Geschoß wählen: drei Knöpfe, gedrückt ist das gezeigte (aria-pressed); nochmal drücken zeigt wieder alles */
 function tabs(list) {
   list.querySelectorAll('[data-gr-mode]').forEach(b => b.addEventListener('click', () => {
-    if (b.dataset.grMode === mode && !anims.length) { topView = false; syncUI(); reframe(true); return; }
+    if (b.dataset.grMode === mode && !anims.length) { tilt = false; syncUI(); reframe(true); return; }
     setMode(b.dataset.grMode); announce(b.getAttribute('aria-label') || b.textContent);
   }));
 }
@@ -642,7 +724,7 @@ export async function initGrundriss() {
     /* Flächen der Bedienung über dem Bild: dort steht kein Raumname */
     block: () => {
       const s0 = stageEl.getBoundingClientRect();
-      return [...dlg.querySelectorAll('.grv__top,.grv__bottom,.grv__side,.grv__rooms:not([hidden])')].map(e => { const q = e.getBoundingClientRect(); return [q.left - s0.left - 4, q.top - s0.top - 4, q.right - s0.left + 4, q.bottom - s0.top + 4]; });
+      return [...dlg.querySelectorAll('.grv__top,.grv__bottom,.grv__side,.grv__rooms:not([hidden]),.grv__hint:not(.is-off)')].map(e => { const q = e.getBoundingClientRect(); return [q.left - s0.left - 4, q.top - s0.top - 4, q.right - s0.left + 4, q.bottom - s0.top + 4]; });
     }
   };
   let opener = null;
@@ -659,7 +741,7 @@ export async function initGrundriss() {
     closeRooms(false); dlg.close();
   };
   dlg.addEventListener('close', () => {
-    document.documentElement.classList.remove('grv-open'); topView = false;
+    document.documentElement.classList.remove('grv-open'); tilt = false;
     attach(INL); reframe(false); syncUI();
     if (history.state && history.state.grv) history.back();
     if (opener) opener.focus({ preventScroll: true });
@@ -668,8 +750,8 @@ export async function initGrundriss() {
   root.querySelectorAll('[data-gr-open]').forEach(b => b.addEventListener('click', open));
   dlg.querySelector('[data-grv-close]').addEventListener('click', () => close());
   dlg.addEventListener('cancel', e => { if (!UI.rooms.hidden) { e.preventDefault(); closeRooms(); } });
-  dlg.querySelector('[data-grv-build]').addEventListener('click', () => { topView = false; setMode('haus', { build: true }); });
-  UI.top.addEventListener('click', () => { topView = !topView; syncUI(); reframe(true); announce(topView ? 'Von oben, Norden oben.' : 'Schräg von oben.'); });
+  dlg.querySelector('[data-grv-build]').addEventListener('click', () => { tilt = false; setMode('haus', { build: true }); });
+  UI.top.addEventListener('click', () => { tilt = !tilt; syncUI(); reframe(true); announce(tilt ? '3D Ansicht, schräg von oben.' : 'Grundriss von oben, Norden oben.'); });
   UI.roomsBtn.addEventListener('click', () => (UI.rooms.hidden ? openRooms() : closeRooms()));
   dlg.querySelector('[data-grv-rooms-done]').addEventListener('click', () => closeRooms());
   dlg.querySelectorAll('[data-grv-zoom]').forEach(b => b.addEventListener('click', () => { ctl.zoom(Number(b.dataset.grvZoom)); hideHint(); kick(); }));

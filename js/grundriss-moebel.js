@@ -7,7 +7,10 @@ import { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/e
 const std = (color, o = {}) => new T.MeshStandardMaterial({ color, roughness: .85, metalness: 0, ...o });
 export const M = {
   wall: std(0xF2F0EB, { roughness: .95 }),
-  cap: std(0x2c2b29, { roughness: .8 }),
+  /* Wandkrone schwarz wie auf einem Verkaufsplan; Rand des Sockels hell, damit das Haus auf Schwarz seine Kante hat */
+  cap: std(0x141413, { roughness: .9 }),
+  edge: std(0xD9D5CD, { roughness: .95 }),
+  door: std(0x86613f, { roughness: .5 }),
   base: std(0xE2DFD8, { roughness: 1 }),
   oak: std(0xB88C5F, { roughness: .62 }),
   oakL: std(0xCBA77D, { roughness: .6 }),
