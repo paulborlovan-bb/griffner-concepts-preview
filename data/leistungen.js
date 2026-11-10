@@ -138,7 +138,8 @@ export const UI = {
   weiter: 'Weiterlesen', weniger: 'Weniger', mehrDazu: 'Mehr dazu', mehrErfahren: 'Mehr erfahren',
   haus: 'Concept Bold im Schnitt', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
   zurueck: 'Zur Übersicht Services', vergleich: 'Im Vergleich', schliessen: 'Schließen',
-  position: 'Position', positionen: 'Positionen'
+  position: 'Position', positionen: 'Positionen', bereich: 'Bereich', bereiche: 'Bereiche',
+  stufeWaehlen: 'Wähle eine Stufe. Das Haus zeigt, was dazukommt.', stufe: 'Stufe', alle: 'Alle', ansehen: 'ansehen'
 };
 
 /* Schnitt Notizen im 3D Haus (aus „Besser leben“ auf der Startseite, gekürzt auf die Maße) */
@@ -330,7 +331,9 @@ export const STUFEN = [
     ]
   }
 ];
-/* EIGEN: was das Modell je Stufe neu zeigt (Bildunterschrift unter dem 3D Haus) */
+/* EIGEN (Runde 47): je Stufe in einer Zeile, was dazukommt (Stufe 1 = Quelle). Steht unter dem Namen der Stufe. */
+export const STUFEN_KURZ = ['Hülle, Dach, Fenster, Türen.', 'Wärme, Elektro, Sanitär, Estrich.', 'Böden, Fliesen, Bad, Türen, Wände.'];
+/* EIGEN: was das Modell je Stufe neu zeigt (steht in der geöffneten Stufe) */
 export const STUFEN_MODELL = [
   'Hülle, Dach, Fenster und Haustür stehen, innen die rohe Gipsfaserplatte und die Rohbautreppe.',
   'Dazu Wärmepumpe, Fußbodenheizung im Estrich, Elektro und Sanitär. Am Schnitt siehst du die Rohre unter dem Estrich.',

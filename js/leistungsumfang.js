@@ -1,11 +1,11 @@
 /* Services Leistungsumfang (leistungsumfang.html, Runde 45, Runde 46). Der Unterschied in acht Dingen als Bildfolge (gepinnt):
    links das Bild, rechts das Muster in 3D und der Satz, der Vergleich auf Wunsch → „Aufpreis“ wird durchgestrichen
-   → drei Ausbaustufen, Concept Bold im Schnitt baut sich auf, die Positionen je Gruppe zum Aufklappen → was dazu kommt → Katalog. */
+   → drei Ausbaustufen untereinander, die gewählte offen, Concept Bold im Schnitt baut sich mit (Runde 47) → was dazu kommt, Punkt für Punkt → Katalog. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initPlan } from './svc-plan.js';
 import { initFolge, initMore, initAcc } from './svc-ui.js';
-import { ACHT, STUFEN, STUFEN_MODELL } from '../data/leistungen.js';
+import { ACHT } from '../data/leistungen.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 run('chrome', initChrome);
@@ -18,6 +18,7 @@ run('mehr-text', () => initMore(document));
 run('acht', initAcht);
 run('inbegriffen', initInb);
 run('stufen', initStufen);
+run('dazu', initDazu);
 run('acc', () => initAcc(document));
 
 /* lädt, sobald der Bereich 900 px vor dem Bild ist */
@@ -60,30 +61,67 @@ function initInb() {
   io.observe(el);
 }
 
-/* ---------- 03 Ausbaustufen, das Haus baut sich auf ---------- */
+/* ---------- 03 Ausbaustufen (Runde 47): die drei Stufen untereinander, die gewählte ist offen und zeigt, was dazukommt.
+   Das Haus links bleibt stehen und baut sich mit, die Leiste darunter füllt sich bis zur gewählten Stufe. ---------- */
 function initStufen() {
   const box = $('[data-st]'); if (!box) return;
-  const tabs = $$('[data-st-tab]', box), grps = $$('[data-st-grp]', box), stage = $('[data-st-stage]', box);
-  const cap = $('[data-st-cap]', box), sub = $('[data-st-sub]', box), panel = $('#st-panel', box);
+  const its = $$('[data-stp]', box), segs = $$('[data-st-seg]', box), stage = $('[data-st-stage]', box);
   let api = null, n = 1;
-  const set = (k, focus) => {
+  const set = (k, from) => {
+    if (k === n) return;
     n = k;
-    tabs.forEach(t => { const on = +t.dataset.stTab === k; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
-    grps.forEach(g => { const on = +g.dataset.stGrp === k; g.hidden = !on; g.classList.toggle('is-new', on); });
-    panel.setAttribute('aria-labelledby', 'st-tab-' + k);
-    cap.textContent = STUFEN_MODELL[k - 1]; sub.textContent = STUFEN[k - 1].sub;
-    [cap, sub].forEach(e => { e.classList.remove('is-new'); void e.offsetWidth; e.classList.add('is-new'); });
-    if (api) api.stage(k);
-  };
-  tabs.forEach((t, i) => {
-    t.tabIndex = i ? -1 : 0;
-    t.addEventListener('click', () => set(+t.dataset.stTab));
-    t.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return;
-      e.preventDefault(); set(((n - 1 + d + 3) % 3) + 1, true);
+    its.forEach(it => {
+      const on = +it.dataset.stp === k;
+      it.classList.toggle('is-on', on);
+      $('.stp__body', it).hidden = !on;
+      if (!on) { const al = $('[data-stp-all]', it); al.setAttribute('aria-expanded', 'false'); $('.stp__more', it).hidden = true; }
+      $('[data-st-tab]', it).setAttribute('aria-expanded', on ? 'true' : 'false');
     });
-  });
+    segs.forEach(sg => { const v = +sg.dataset.stSeg; sg.classList.toggle('is-on', v <= k); sg.classList.toggle('is-cur', v === k); });
+    /* geht darüber eine lange, offene Liste zu, rutscht die gewählte Zeile nach oben: dann zurück ins Bild holen */
+    if (from) { const t = from.getBoundingClientRect().top; if (t < 110) scrollBy({ top: t - 140, behavior: 'instant' }); }
+    if (api) api.stage(k);
+    loop.poke();
+  };
+  $$('[data-st-tab]', box).forEach(b => b.addEventListener('click', () => set(+b.dataset.stTab, b)));
+  /* „Alle Positionen ansehen“: die Bereiche der offenen Stufe zum Aufklappen */
+  $$('[data-stp-all]', box).forEach(b => b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !open;
+    loop.poke();
+  }));
+  /* die Leiste unter dem Haus wählt auch; die Zeile der Stufe kommt ins Bild, wenn sie weit weg ist */
+  segs.forEach(sg => sg.addEventListener('click', () => {
+    const k = +sg.dataset.stSeg, b = $(`[data-st-tab="${k}"]`, box);
+    set(k, b);
+    const r = b.getBoundingClientRect();
+    if (r.top > innerHeight * .8) scrollBy({ top: r.top - innerHeight * .3, behavior: reduce ? 'auto' : 'smooth' });
+  }));
   near(stage, () => import('./schnitthaus.js').then(m => m.createSchnitthaus(stage, { mode: 'stufen', items: [], bg: 0xffffff })).then(a => {
     api = a; stage.classList.add('is-live'); api.stage(n);
   }).catch(e => { console.warn('Haus im Schnitt nicht geladen', e); stage.classList.add('is-fallback'); }));
+}
+
+/* ---------- 04 Dazu kommt (Runde 47): jeder Punkt läuft Wort für Wort herein, sobald er ins Bild kommt.
+   Hell ist der Punkt, der der Bildmitte am nächsten ist, die große Zahl links zählt mit. ---------- */
+function initDazu() {
+  const box = $('[data-dz]'); if (!box) return;
+  const its = $$('[data-dz-it]', box), nr = $('[data-dz-nr]', box);
+  let cur = 0;
+  if (reduce) its.forEach(it => it.classList.add('is-in'));
+  loop.add({ tick() {
+    const r = box.getBoundingClientRect(), vh = innerHeight;
+    if (r.bottom < -vh * .2 || r.top > vh * 1.2) return;
+    let best = 0, bd = Infinity;
+    its.forEach((it, i) => {
+      const q = it.getBoundingClientRect();
+      if (q.top < vh * .86 && !it.classList.contains('is-in')) it.classList.add('is-in');
+      const d = Math.abs(q.top + q.height / 2 - vh * .5);
+      if (d < bd) { bd = d; best = i; }
+    });
+    if (best === cur) return;
+    its[cur].classList.remove('is-cur'); its[best].classList.add('is-cur'); cur = best;
+    if (nr) { nr.textContent = String(best + 1).padStart(2, '0'); if (!reduce) { nr.classList.remove('is-new'); void nr.offsetWidth; nr.classList.add('is-new'); } }
+  } });
 }
