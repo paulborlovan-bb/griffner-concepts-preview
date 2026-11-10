@@ -170,7 +170,7 @@ export const MAT = {
 /* Innenseite der Fenster (Leistungsumfang: Natur lasiert, Weiß lasiert oder Schwarz) */
 export const FRAME_COL = { natur: 0xc19a6b, weiss: 0xf1eee8, schwarz: 0x232322 };
 
-/* Schichten der GRIFFNER Wand von außen nach innen, gesamt 42,25 cm. Schichtfolge und Dicken im Modell schematisch
+/* Neun Schichten der GRIFFNER Wand von außen nach innen, gesamt 42,25 cm (Quelle: neunschichtig, Holzwerkstoffplatten in der Mehrzahl). Schichtfolge und Dicken im Modell schematisch
    (Quelle nennt: dreischalig, hinterlüftet, 42,25 cm, Holz, Holzwerkstoffplatten, Holzfaser, Zellulose, Gipsfaserplatte,
    eigene Installationsebene, Fassadenbahn). Namen ohne Maße in der Oberfläche. */
 export const WALL = [
@@ -180,7 +180,8 @@ export const WALL = [
   { k: 'holzfaser', d: .06, m: 'fibre', name: 'Holzfaser' },
   { k: 'zellulose', d: .22, m: 'cellulose', name: 'Holz und Zellulose' },
   { k: 'osb', d: .015, m: 'osb', name: 'Holzwerkstoffplatte' },
-  { k: 'install', d: .05, m: 'install', name: 'Installationsebene' },
+  { k: 'install', d: .035, m: 'install', name: 'Installationsebene' },
+  { k: 'osb2', d: .015, m: 'osb', name: 'Holzwerkstoffplatte' },
   { k: 'gips', d: .0125, m: 'gipsRaw', name: 'Gipsfaserplatte' }
 ];
 /* Dach von innen nach außen (Quelle: Sparren-Pfettendach bis zum First offen, Holzfaser und Zellulose, Betondachstein) */
