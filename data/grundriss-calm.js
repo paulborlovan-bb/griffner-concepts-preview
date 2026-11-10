@@ -23,6 +23,9 @@ export default {
       skins: [[340, 385, 892, 400, 'ziegel'], [875, 470, 895, 525, 'ziegel'], [810, 505, 892, 525, 'ziegel']],
       /* Carport: Wandscheiben ganz in Holz */
       mats: [[585, 138, 775, 341, 'holzhell']],
+      /* Runde 44: keine Türblätter an der offenen Seite der Dusche im Bad, im WC (Nische mit Waschbecken, Wandstück),
+         zwischen Ankleide und Eltern und im Durchgang zum Wohnen (offen im Plan des Architekten) */
+      noDoor: [[456.9, 463.4], [614.8, 450.2], [632.2, 465.4], [424.9, 533.3], [647.8, 497.9]],
       house: [329.8, 390.4, 891.3, 640],
       base: [[329.8, 390.4, 904.8, 640], [588.7, 141.9, 770.1, 352], [588, 352, 958, 390.4], [904.8, 390.4, 958, 694], [339.8, 640, 958, 694]],
       rooms: [
@@ -78,11 +81,12 @@ export default {
         ['plant', 800, 612, 13, 13, { big: 1 }],
         /* Eingang: Schrank in der Nische, Speis */
         ['wardrobe', 634, 401.8, 14.1, 46.6, { f: 'o' }],
-        ['tall', 706.9, 401.8, 17, 76.9, { f: 'o' }], ['shelf', 734, 401.8, 12.2, 50, { f: 'w' }],
+        /* Runde 44: das Regal der Speis an der Ostwand südlich der Tür, die Tür geht frei auf */
+        ['tall', 706.9, 401.8, 17, 76.9, { f: 'o' }], ['shelf', 734, 451, 12.2, 27.7, { f: 'w' }],
         /* WC */
         ['toilet', 609.1, 405.1, 11.4, 18.5, { f: 's' }], ['basin', 631.8, 459.5, 13.3, 13.4, { f: 'w' }],
-        /* Technik */
-        ['tech', 578.5, 401.8, 17.2, 34, { f: 'w' }], ['washer', 538, 401.8, 17, 17, { f: 's' }], ['shelf', 536.4, 466.7, 40, 12, { f: 'n' }],
+        /* Technik (Runde 44: das Regal an der Westwand, die Tür geht frei auf) */
+        ['tech', 578.5, 401.8, 17.2, 34, { f: 'w' }], ['washer', 538, 401.8, 17, 17, { f: 's' }], ['shelf', 536.4, 420, 12, 34, { f: 'o' }],
         /* Duschbad */
         ['toilet', 480.4, 404.7, 11.4, 18.4, { f: 's' }], ['basin', 500, 401.8, 32, 14.2, { f: 's' }],
         ['shower', 473.3, 444.7, 25.8, 34], ['glass', 498.5, 444.7, 1.5, 34],

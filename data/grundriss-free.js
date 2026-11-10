@@ -17,6 +17,8 @@ export default {
   floors: [
     {
       key: 'eg', name: 'Erdgeschoß', short: 'EG', geo: 'plan-free-eg',
+      /* Runde 44: offene Durchgänge ohne Tür im Plan des Architekten (kein Türbogen im CAD), dort steht kein Türblatt */
+      noDoor: [[470, 344.2], [749.6, 479.4]],
       crop: [360, 185, 820, 725],
       /* Außenkanten der Hauswände (für die Steinfassade), Sockel (Haus, Terrasse im Norden, Vorplatz im Süden) */
       out: { x0: [371], x1: [807.7], y0: [253.5], y1: [641.2] }, skin: 'stein',
@@ -88,7 +90,8 @@ export default {
         ['plant', 530, 267, 11, 11], ['plant', 541, 289, 11, 11], ['shelf', 535.5, 316, 16.5, 40, { f: 'w', towels: 1 }],
         /* Technik, Abstellraum */
         ['tech', 535.3, 365, 17.2, 82, { f: 'w' }],
-        ['shelf', 382.4, 396, 12, 50, { f: 'o' }], ['shelf', 396, 436, 50, 12, { f: 'n' }],
+        /* Runde 44: Regale im Abstellraum in der Nordostecke, die Tür von der Garage geht frei auf */
+        ['shelf', 402, 363.6, 50, 12, { f: 's' }], ['shelf', 453.7, 377.6, 12, 50, { f: 'w' }],
         /* Terrasse unter dem Obergeschoß */
         ['osofa', 562, 203, 54, 18, { f: 's' }], ['otable', 574, 226, 26, 13, { h: .38 }],
         ['table', 700, 213, 44, 24, { out: 1 }],
@@ -111,6 +114,8 @@ export default {
     },
     {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-free-og',
+      /* Runde 44: offene Durchgänge ohne Tür im Plan des Architekten (kein Türbogen im CAD), dort steht kein Türblatt */
+      noDoor: [[626.1, 426.8], [713.8, 454.5]],
       crop: [590, 130, 838, 637], off: [-47.8, 56.9],
       out: { x0: [600.3], x1: [827.2], y0: [196.6, 139.9], y1: [584.4, 626.9] }, skin: 'holz', baseSide: 'holz',
       /* Runde 40: die Rückwand der Loggien ist verputzt (Bild 9), die Seiten bleiben Holz */

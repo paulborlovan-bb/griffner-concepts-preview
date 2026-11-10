@@ -33,7 +33,8 @@ export default {
       /* die Wand unter der Treppe (Abstellraum darunter) endet unter den Stufen */
       caps: [[524.5, 264.7, 563.3, 268.3, 1.05]],
       /* Schiebetüren zur Technik: kein Türblatt */
-      noDoor: [[512, 186.4], [510.8, 254.6]],
+      /* Runde 44: dazu die offenen Durchgänge im Carport und an der Terrasse (kein Türbogen im CAD) */
+      noDoor: [[512, 186.4], [510.8, 254.6], [264.6, 251], [754, 353]],
       rooms: [
         { f: 'beton', r: [[237.5, 90, 418.1, 257]] },
         { f: 'platten', r: [[418.1, 90, 646.3, 117.2]] },
@@ -90,8 +91,9 @@ export default {
         /* Eingang */
         ['wardrobe', 492.5, 128.7, 62.4, 17, { f: 's' }],
         ['shelf', 563.3, 208.7, 8.5, 59.6, { f: 'o' }],
-        /* Technik, Hauswirtschaft, Speis */
-        ['tech', 429.5, 189, 17.2, 34, { f: 'o' }], ['washer', 429.5, 230, 17, 17, { f: 'o' }],
+        /* Technik, Hauswirtschaft, Speis (Runde 44: Technik und Waschmaschine an der Südwand, die Tür vom Carport bleibt frei;
+           das Regal der Speis bleibt im Norden unter der Treppe, dort ist sie hoch genug) */
+        ['washer', 429.5, 235.8, 17, 17, { f: 'n' }], ['tech', 448, 235.6, 34, 17.2, { f: 'n' }],
         ['shelf', 462, 189, 34, 12, { f: 's' }], ['shelf', 528, 189, 31.8, 10, { f: 's' }],
         /* Terrasse: Tisch für sechs */
         ['table', 631.2, 381.2, 34, 22.7, { out: 1 }],

@@ -110,6 +110,8 @@ export default {
     },
     {
       key: 'og', name: 'Obergeschoß', short: 'OG', geo: 'plan-bold-og',
+      /* Runde 44: offene Durchgänge ohne Tür im Plan des Architekten (kein Türbogen im CAD), dort steht kein Türblatt */
+      noDoor: [[616.2, 289.9], [598.8, 317.1], [439.5, 279.8], [509.8, 279.8]],
       crop: [125, 145, 725, 475], off: [8.5, -25],
       out: { x0: [315.2, 691.7], x1: [717.2], y0: [182.3, 154.5], y1: [410.8, 467.5] },
       skin: 'latten', baseSide: 'dunkel',
