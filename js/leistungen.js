@@ -1,13 +1,16 @@
-/* Services Übersicht (leistungen.html, Runde 45). Die Geschichte in sechs Schritten:
-   Hero „Der Plan“ → das Übliche wird durchgestrichen → drei Versprechen → 01 Open Space Grundriss (Wände wandern, selbst zeichnen)
-   → 02 zehn Monate auf einer Linie (der Connector ist der Punkt) → 03 Haus im Schnitt mit den acht Dingen → Leistungsumfang → Katalog. */
-import { loop, reveal, $, $$, prog, clamp, seg, E, reduce } from './core.js';
+/* Services Übersicht (leistungen.html, Runde 45, Runde 46). Die Geschichte in sechs Schritten:
+   Hero „Der Plan“ → das Übliche wird durchgestrichen → drei Versprechen als Bildfolge → 01 Open Space Grundriss (Wände wandern, selbst zeichnen)
+   → 02 zehn Monate auf einer Linie (der Connector ist der Punkt) → 03 Concept Bold im Schnitt mit den acht Dingen
+   → das Feld öffnet sich zum Bild, Weg zum Leistungsumfang → Katalog. */
+import { loop, reveal, $, $$, prog, clamp, seg, E, reduce, vhs } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initPlan } from './svc-plan.js';
-import { ACHT, UEBERSICHT as U, WAHL, DETAIL } from '../data/leistungen.js';
+import { initFolge, initMore } from './svc-ui.js';
+import { ACHT, UEBERSICHT as U, WAHL, DETAIL, UI } from '../data/leistungen.js';
 
-/* Kurze Beschriftung der Nummern am Haus */
-const MARK = { openspace: 'Open Space', wand: 'Wand 42,25 cm', dach: 'Offener First', fenster: 'Holz-Alu, dreifach', decke: 'Massivholzdecke', parkett: 'Eiche, 21,5 cm', raumhoehe: '2,72 m', fassade: 'Lärche oder Putz' };
+/* Kurze Beschriftung der Nummern am Haus (beim Zeigen) */
+const MARK = { openspace: 'Open Space', wand: 'Wand 42,25 cm', dach: 'Flachdach in Massivholz', fenster: 'Holz-Alu, dreifach', decke: 'Massivholzdecke', parkett: 'Eiche, 21,5 cm', raumhoehe: '2,72 m', fassade: 'Lärche oder Putz' };
+const io2 = t => (t < .5 ? 2 * t * t : 1 - (2 - 2 * t) * (2 - 2 * t) / 2);
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 run('chrome', initChrome);
 reveal(document);
@@ -16,11 +19,28 @@ if (document.fonts) document.fonts.ready.then(() => loop.poke());
 addEventListener('load', () => loop.poke());
 run('plan', () => initPlan(document));
 run('gewohnt', initGewohnt);
-run('drei', initDrei);
+run('drei', () => initFolge($('.fo--drei')));
+run('mehr-text', () => initMore(document));
 run('openspace', initOpenSpace);
 run('zeit', initZeit);
 run('haus', initHaus);
-run('mehr', () => { const r = $('[data-mehr]'); if (!r) return; const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { r.classList.add('is-in'); io.disconnect(); } }, { rootMargin: '0px 0px -12% 0px' }); io.observe(r); });
+run('mehr', initMehr);
+
+/* ---------- Mehr: das Feld öffnet sich zum Bild, wie das Intro auf griffner.com ---------- */
+function initMehr() {
+  const el = $('[data-mehr]'); if (!el) return;
+  const fig = $('[data-mehr-img]', el), pic = $('img', fig);
+  loop.add({ tick() {
+    const { p, on } = prog(el); if (!on) return;
+    const vw = innerWidth, vh = vhs(), fw = Math.min(vw * (vw < 810 ? .5 : .24), 380), fh = fw * .8;
+    const e = reduce ? 1 : io2(seg(p, .04, .6));
+    const t = (vh - fh) / 2 * (1 - e), l = (vw - fw) / 2 * (1 - e);
+    fig.style.clipPath = `inset(${t.toFixed(1)}px ${l.toFixed(1)}px ${t.toFixed(1)}px ${l.toFixed(1)}px)`;
+    if (!reduce) pic.style.transform = `scale(${(1 + (1 - e) * .16).toFixed(4)})`;
+    const open = e > .9;
+    if (el.classList.contains('is-open') !== open) el.classList.toggle('is-open', open);
+  } });
+}
 
 /* ---------- Das Übliche, durchgestrichen ---------- */
 function initGewohnt() {
@@ -41,14 +61,6 @@ function initGewohnt() {
     const e = E(p, .8, .9);
     end.style.opacity = e.toFixed(3); end.style.transform = `translateY(${((1 - e) * 24).toFixed(1)}px)`;
   } });
-}
-
-/* ---------- Drei Versprechen: Hilfslinie an der Unterkante der Felder ---------- */
-function initDrei() {
-  const row = $('.drei__row'); if (!row) return;
-  const pf = $('.pf', row);
-  const set = () => row.style.setProperty('--pf-h', pf.offsetHeight + 'px');
-  new ResizeObserver(set).observe(pf); set();
 }
 
 /* ---------- 01 Open Space: Grundriss mit zwei Ableitungspunkten ---------- */
@@ -215,48 +227,63 @@ function initZeit() {
   } });
 }
 
-/* ---------- 03 Haus im Schnitt ---------- */
+/* ---------- 03 Concept Bold im Schnitt: Nummern am Haus und unter dem Haus, die Karte zeigt das Gewählte, Details auf Wunsch ---------- */
 function initHaus() {
   const box = $('[data-sh]'); if (!box) return;
-  const stage = $('[data-sh-stage]', box), intro = $('[data-sh-intro]', box), det = $('[data-sh-det]', box), home = $('[data-sh-home]', box);
-  let api = null, wanted = null, loading = false;
+  const stage = $('[data-sh-stage]', box), card = $('[data-sh-card]', box), home = $('[data-sh-home]', box);
+  const nums = $$('[data-sh-item]', box);
+  let api = null, wanted = null, loading = false, sel = null, openMore = false;
   const items = ACHT.map(a => ({ ...a, mark: MARK[a.key] }));
+  const wide = () => innerWidth >= 1100;
+  /* Breit: die Karte liegt rechts im Bild, das Haus rückt nach links */
+  const pad = () => { if (api && api.pad) api.pad(sel && wide() ? card.offsetWidth + 48 : 0); };
   const go = () => {
     if (loading) return; loading = true;
     import('./schnitthaus.js').then(m => m.createSchnitthaus(stage, { mode: 'erkunden', items, onSelect: render })).then(a => {
-      api = a; stage.classList.add('is-live'); const p = $('.sh__poster', stage); if (p) p.remove();
+      api = a; stage.classList.add('is-live');
       if (wanted) api.select(wanted);
     }).catch(e => { console.warn('Haus im Schnitt nicht geladen', e); stage.classList.add('is-fallback'); });
   };
   const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { go(); io.disconnect(); } }, { rootMargin: '900px 0px' });
   io.observe(box);
   const pick = k => { if (api) api.select(k); else { wanted = k; render(k); go(); } };
-  $$('[data-sh-item]', box).forEach(b => b.addEventListener('click', () => pick(b.dataset.shItem)));
+  nums.forEach(b => b.addEventListener('click', () => pick(sel === b.dataset.shItem ? null : b.dataset.shItem)));
   home.addEventListener('click', () => pick(null));
+  addEventListener('resize', pad);
   function render(k) {
-    home.hidden = !k;
-    if (!k) { det.hidden = true; intro.hidden = false; return; }
-    const i = ACHT.findIndex(a => a.key === k), a = ACHT[i], wahl = WAHL[k], st = api ? api.wahl : {};
+    const was = sel; sel = k || null;
+    box.classList.toggle('has-card', !!sel);
+    home.hidden = !sel;
+    nums.forEach(b => b.setAttribute('aria-pressed', b.dataset.shItem === sel ? 'true' : 'false'));
+    if (!sel) { card.hidden = true; card.innerHTML = ''; pad(); return; }
+    if (sel !== was) openMore = false;
+    const i = ACHT.findIndex(a => a.key === sel), a = ACHT[i], wahl = WAHL[sel], st = api ? api.wahl : {};
     const prev = ACHT[(i + 7) % 8], next = ACHT[(i + 1) % 8];
-    const group = (name, opts, curv) => `<div class="tabs" role="group" aria-label="${name}">${opts.map(([v, l]) => `<button type="button" class="tab info" data-w="${name}" data-v="${v}" aria-pressed="${curv === v}">${l}</button>`).join('')}</div>`;
-    det.innerHTML = `
-      <div class="sh__top"><span class="info">${a.nr} / 08</span><button type="button" class="sh__back info" data-back>Alle acht</button></div>
-      <h3 class="h-l">${a.name}.</h3>
-      <p class="sh__claim">${a.claim}</p>
-      ${DETAIL[k] ? `<p class="sh__p">${DETAIL[k]}</p>` : ''}
-      <ul class="sh__fk">${a.fakten.map(f => `<li class="info">${f}</li>`).join('')}</ul>
-      ${wahl ? `<div class="sh__wahl"><span class="info">${wahl.label}</span>${group(k === 'decke' ? 'decke' : k, wahl.opts, st[k === 'decke' ? 'decke' : k] || wahl.opts[0][0])}${wahl.opts2 ? group('farbe', wahl.opts2, st.farbe || 'natur') : ''}</div>` : ''}
-      <dl class="vs"><div><dt class="info">GRIFFNER</dt><dd>${a.griffner}</dd></div><div><dt class="info">Üblich</dt><dd>${a.ueblich}</dd></div></dl>
-      <div class="sh__nav"><button type="button" class="info" data-go="${prev.key}">${prev.nr} ${prev.kurz}</button><button type="button" class="info" data-go="${next.key}">${next.nr} ${next.kurz}</button></div>`;
-    det.hidden = false; intro.hidden = true;
-    $('[data-back]', det).addEventListener('click', () => pick(null));
-    $$('[data-go]', det).forEach(b => b.addEventListener('click', () => pick(b.dataset.go)));
-    $$('[data-w]', det).forEach(b => b.addEventListener('click', () => {
-      $$(`[data-w="${b.dataset.w}"]`, det).forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
-      api && api.set(b.dataset.w, b.dataset.v);
+    const group = (name, opts, curv) => `<div class="ttabs" role="group" aria-label="${name}">${opts.map(([v, l]) => `<button type="button" class="ttab info" data-w="${name}" data-v="${v}" aria-pressed="${curv === v}">${l}</button>`).join('')}</div>`;
+    const wk = sel === 'decke' ? 'decke' : sel;
+    card.innerHTML = `
+      <div class="shc__top"><span class="info">${a.nr} / 08</span><button type="button" class="shc__x info" data-back>${UI.schliessen}</button></div>
+      <h3 class="shc__h">${a.name}.</h3>
+      <p class="shc__claim">${a.claim}</p>
+      ${wahl ? `<div class="shc__wahl"><span class="info">${wahl.label}</span>${group(wk, wahl.opts, st[wk] || wahl.opts[0][0])}${wahl.opts2 ? group('farbe', wahl.opts2, st.farbe || 'natur') : ''}</div>` : ''}
+      <button type="button" class="shc__more info" aria-expanded="${openMore}" aria-controls="shc-body" data-shc-more>${UI.mehrErfahren}</button>
+      <div class="shc__body" id="shc-body"${openMore ? '' : ' hidden'}>
+        ${DETAIL[sel] ? `<p class="shc__p">${DETAIL[sel]}</p>` : ''}
+        <dl class="vs"><div><dt class="info">GRIFFNER</dt><dd>${a.griffner}</dd></div><div><dt class="info">Üblich</dt><dd>${a.ueblich}</dd></div></dl>
+      </div>
+      <div class="shc__nav"><button type="button" class="info" data-go="${prev.key}" aria-label="${prev.nr} ${prev.kurz}">← ${prev.nr}</button><button type="button" class="info" data-go="${next.key}" aria-label="${next.nr} ${next.kurz}">${next.nr} →</button></div>`;
+    card.hidden = false;
+    pad();
+    $('[data-back]', card).addEventListener('click', () => pick(null));
+    $$('[data-go]', card).forEach(b => b.addEventListener('click', () => pick(b.dataset.go)));
+    const mb = $('[data-shc-more]', card), body = $('#shc-body', card);
+    mb.addEventListener('click', () => { openMore = !openMore; mb.setAttribute('aria-expanded', openMore ? 'true' : 'false'); body.hidden = !openMore; });
+    $$('[data-w]', card).forEach(b => b.addEventListener('click', () => {
+      $$(`[data-w="${b.dataset.w}"]`, card).forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      if (api) api.set(b.dataset.w, b.dataset.v);
     }));
-    /* Telefon: Panel liegt unter dem Haus, dorthin mitnehmen, wenn es aus dem Bild ist */
-    if (innerWidth < 1100) { const r = det.getBoundingClientRect(); if (r.top > innerHeight * .85) det.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }); }
+    /* Telefon: die Karte liegt unter dem Haus, dorthin mitnehmen, wenn sie aus dem Bild ist */
+    if (!wide()) { const r = card.getBoundingClientRect(); if (r.top > innerHeight * .8) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }); }
   }
 }
-void U;
+void U; void E; void clamp;

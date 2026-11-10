@@ -119,6 +119,19 @@ function slabWoodCanvas(white) {
   }
   return c;
 }
+/* Concept Bold (Runde 46): senkrechte Lärchenlatten 4,25 cm, dazwischen 2 cm dunkle Fuge, 16 Latten je Meter (Kachel 1 m) */
+function slatsCanvas() {
+  const N = 512, c = canvas(N, N), x = c.getContext('2d'), R = rng(71), P = N / 16, sw = P * .68;
+  x.fillStyle = '#2a2622'; x.fillRect(0, 0, N, N);
+  for (let px = 0; px < N; px += P) {
+    const l = 56 + R() * 9, s = 30 + R() * 10, hu = 29 + R() * 6;
+    x.fillStyle = hsl(hu, s, l); x.fillRect(px, 0, sw, N);
+    for (let g = 0; g < 5; g++) { x.fillStyle = hsl(hu - 3, s + 4, l - 14, .1 + R() * .12); x.fillRect(px + 1 + R() * (sw - 2), 0, .7 + R(), N); }
+    x.fillStyle = 'rgba(255,240,215,.16)'; x.fillRect(px, 0, 1.2, N);
+    x.fillStyle = 'rgba(30,20,12,.35)'; x.fillRect(px + sw - 1.4, 0, 1.4, N);
+  }
+  return c;
+}
 /* Rasen, gedämpft */
 const grassCanvas = () => noise('#7d8466', 14000, R => (R() < .5 ? `rgba(60,70,44,${.2 + R() * .3})` : `rgba(160,166,128,${.18 + R() * .25})`), 59, 256, .5, 1.8);
 /* Erde im Schnitt */
@@ -136,6 +149,8 @@ const std = (o) => new T.MeshStandardMaterial({ roughness: .9, metalness: 0, ...
 /* Neue Materialien je Aufruf (jedes Teil dimmt für sich), Bilder werden geteilt */
 export const MAT = {
   larch: () => std({ map: tex('larch', larchCanvas, 1), roughness: .82 }),
+  slats: () => std({ map: tex('slats', slatsCanvas, 1), roughness: .8 }),
+  frame: () => std({ color: 0x2e2e2c, roughness: .72 }),
   putz: () => std({ map: tex('putz', plasterCanvas, 1.2), roughness: .95 }),
   gap: () => std({ color: 0x24211e, roughness: 1 }),
   membrane: () => std({ color: 0x33363a, roughness: .7 }),
@@ -192,6 +207,12 @@ export const ROOF = [
   { k: 'luft', d: .05, m: 'gap', name: 'Hinterlüftung' },
   { k: 'lattung', d: .03, m: 'spruce', name: 'Lattung' },
   { k: 'ziegel', d: .026, m: 'tiles', name: 'Betondachstein' }
+];
+/* Flachdach von innen nach außen (Quelle: Flachdach in Massivholz, Wärmedämmung beim Flachdach, Attikaverblechung). Nur im Haus, ohne Beschriftung */
+export const ROOF_FLAT = [
+  { k: 'massiv', d: .2, m: 'slab', name: 'Massivholz, sichtbar' },
+  { k: 'daemmung', d: .28, m: 'fibre', name: 'Wärmedämmung' },
+  { k: 'abdichtung', d: .012, m: 'membrane', name: 'Abdichtung' }
 ];
 /* Fußboden von unten nach oben, 21,5 cm in fünf Ebenen (Quelle) */
 export const FLOOR = [

@@ -1,47 +1,52 @@
-/* Services (Runde 45): GRIFFNER Haus im Schnitt, three.js.
-   Ein zweigeschoßiges Haus mit Satteldach, bis zum First offen, bei x = 0 aufgeschnitten wie ein Hausschnitt: an der Schnittfläche
-   siehst du die GRIFFNER Wand, den Fußboden mit 21,5 cm, die Massivholzdecke und das Dach in Schichten.
+/* Services (Runde 45, Runde 46): Concept Bold im Schnitt, three.js.
+   Runde 46 (Kundenwunsch: das Haus soll eines von unseren sein): Concept Bold, zwei Ebenen, Flachdach, dunkler Rahmen um beide Geschoße,
+   dazwischen senkrechte Lärchenlatten, raumhohe Fenster (wie die Bilder wald-garten.jpg und wald-strasse.jpg). Das Haus ist bei x = 0
+   aufgeschnitten wie ein Hausschnitt: an der Schnittfläche siehst du die GRIFFNER Wand, den Fußboden mit 21,5 cm, die Massivholzdecke und das Dach.
    Modus „erkunden“ (leistungen.html): Nummern 01 bis 08 am Modell, Klick auf Nummer oder Bauteil fliegt hin, der Rest wird hell
    wie ein weißes Architekturmodell. Modus „stufen“ (leistungsumfang.html): Ausbaustufe 1 bis 3 baut sich auf.
-   Maße in m. x entlang des Firsts (0 = Schnitt, LX = Giebel), y nach oben, z quer (+ vorne mit Eingang). */
+   Maße in m. x entlang des Hauses (0 = Schnitt, LX = Stirnseite), y nach oben, z quer (+ Gartenseite). */
 import * as T from 'three';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js';
-import { prism, cube, MAT, FRAME_COL, WALL, ROOF, FLOOR } from './svc-geo.js';
+import { prism, cube, MAT, FRAME_COL, WALL, FLOOR } from './svc-geo.js';
 import { BUILD, pendant, M as FM } from './grundriss-moebel.js';
 
 /* ---------- Maße ---------- */
-const W = .4225, D = 10.64, HD = D / 2, ZI = HD - W, LX = 7.2;
-const F0 = .215, H = 2.72, C0 = F0 + H, C1 = C0 + .2, F1 = C1 + .16;
-const AL = 35 * Math.PI / 180, TA = Math.tan(AL), CO = Math.cos(AL);
-const YK = F1 + 1.5, YR = YK + TA * ZI;
-const roofIn = z => YR - TA * Math.abs(z);
-const RT = ROOF.reduce((s, l) => s + l.d, 0), OV = .45, OVG = .3, ZE = HD + OV;
+/* LX: Erdgeschoß, LO: Obergeschoß (kürzer, darüber das Flachdach des Erdgeschoßes wie bei Bold über der Garage) */
+const W = .4225, D = 9.0, HD = D / 2, ZI = HD - W, LX = 11.2, LO = 8.0;
+const F0 = .215, H = 2.72, C0 = F0 + H, C1 = C0 + .2, F1 = C1 + .16, R0 = F1 + H, YW = R0 + .2;
+/* Flachdach: Dämmung, Abdichtung, Attika; der dunkle Rahmen steht PJ vor der Fassade, ein Band zwischen den Geschoßen, eines am Dach */
+const RD = .28, YT = YW + RD + .012, AT = YT + .22, PJ = .28;
+const B0 = C0 - .12, B1 = F1 + .24, RB0 = R0 - .1, YM = (B0 + B1) / 2;
 /* Treppe entlang der Rückwand, 16 Steigungen */
 const SX = 1.0, SW = 1.0, NR = 16, GO = .27, SX0 = 1.75, SX1 = SX + GO * (NR - 1);
-/* Öffnungen: vorne (z+) Fenster bodentief und Haustür mit Seitenteil, hinten ein Fenster, Giebel unten und oben */
-const OPEN_F = [{ x0: .9, x1: 3.5, y0: F0, y1: F0 + 2.42, k: 'fenster' }, { x0: 4.4, x1: 5.9, y0: F0, y1: F0 + 2.35, k: 'tuer' }];
-const OPEN_B = [{ x0: 5.6, x1: 6.6, y0: F0 + .9, y1: F0 + 2.3, k: 'fenster' }];
-const OPEN_G = [{ z0: -1.0, z1: 2.4, y0: F0, y1: F0 + 2.42 }, { z0: -1.9, z1: 1.9, y0: F1, y1: F1 + 2.9 }];
+/* Öffnungen in x und y: Gartenseite (z+) raumhoch, Straßenseite (z−) Haustür, Fenster */
+const OG0 = B1 + .06, OG1 = R0 - .2;
+const OPEN = {
+  front: [{ x0: .7, x1: 3.3, y0: F0, y1: F0 + 2.5, split: 1 }, { x0: 4.3, x1: 6.9, y0: F0, y1: F0 + 2.5, split: 1 }, { x0: 8.1, x1: 10.5, y0: F0, y1: F0 + 2.5, split: 1 },
+    { x0: 1.0, x1: 2.9, y0: OG0, y1: OG1 }, { x0: 4.6, x1: 6.9, y0: OG0, y1: OG1, split: 1 }],
+  back: [{ x0: 5.6, x1: 6.9, y0: F0, y1: F0 + 2.35, door: 1 }, { x0: 7.15, x1: 7.65, y0: F0, y1: F0 + 2.5 }, { x0: 9.0, x1: 10.4, y0: F0 + .9, y1: F0 + 2.5 }, { x0: 5.6, x1: 6.9, y0: 4.2, y1: OG1 }]
+};
 const POSTS = [[2.0, -.3], [5.27, -.3]];
 
 /* Anker der Nummern und Blickpunkte (Ziel, Azimut, Höhe, Abstand) */
 const ANCH = {
-  openspace: [2.0, 1.75, -.3], wand: [-.02, 1.35, HD - W / 2], dach: [-.02, roofIn(2.3) + RT / CO / 2, 2.3],
-  fenster: [2.2, 1.5, HD + .02], decke: [-.02, (C0 + C1) / 2, -1.2], parkett: [.8, F0 + .02, -1.3],
-  raumhoehe: [-.08, (F0 + C0) / 2, -2.7], fassade: [6.55, 1.7, HD + .03]
+  openspace: [2.0, 1.75, -.3], wand: [-.02, 1.35, HD - W / 2], dach: [-.02, YW + RD / 2, HD - 1.1],
+  fenster: [2.0, 1.5, HD + .02], decke: [-.02, (C0 + C1) / 2, -1.2], parkett: [.8, F0 + .02, -1.3],
+  raumhoehe: [-.08, (F0 + C0) / 2, -2.7], fassade: [3.75, 4.7, HD + .03]
 };
 const VIEW = {
-  home: { t: [3.3, 3.5, .2], az: -.78, el: .3, d: 33 },
+  home: { t: [5.4, 2.8, .4], az: -.8, el: .28, d: 33 },
   openspace: { t: [3.6, 1.4, -.3], az: -1.22, el: .16, d: 11 },
   wand: { t: [0, 1.45, HD - W / 2], az: -1.12, el: .14, d: 2.9 },
-  dach: { t: [0, 6.7, 2.4], az: -1.3, el: .08, d: 4.8 },
-  fenster: { t: [2.3, 1.5, 5.0], az: -.32, el: .1, d: 8.5 },
+  dach: { t: [.4, YW - .2, HD - 1.4], az: -1.1, el: .22, d: 7 },
+  fenster: { t: [2.6, 1.7, 4.5], az: -.3, el: .1, d: 9 },
   decke: { t: [2.4, 2.7, .4], az: -1.12, el: -.06, d: 10 },
   parkett: { t: [1.6, .3, .2], az: -1.05, el: .42, d: 7.5 },
   raumhoehe: { t: [0, 1.7, -.6], az: -1.5, el: .04, d: 13 },
-  fassade: { t: [5.2, 2.3, 5.0], az: .32, el: .12, d: 13 },
-  stufen: { t: [3.3, 2.6, 0], az: -.92, el: .34, d: 29 }
+  fassade: { t: [5.4, 3.0, 4.5], az: .3, el: .1, d: 19 },
+  stufen: { t: [5.4, 2.9, .2], az: -.9, el: .32, d: 35 }
 };
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const easeIO = t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const eo = t => 1 - Math.pow(1 - t, 3);
 
@@ -83,14 +88,14 @@ export async function createSchnitthaus(host, opt = {}) {
   const staged = [];
   const stage = (n, kind = 'grow', y0 = 0, until = 3) => { const g = new T.Group(); g.position.y = y0; root.add(g); const inner = new T.Group(); inner.position.y = -y0; g.add(inner); staged.push({ g, n, until, kind, k: 1 }); return inner; };
 
-  /* ---------- Gelände: Sockel aus Erde, Rasen, Kiesstreifen, Weg ---------- */
-  const XP = LX + 2.6, ZP = HD + 2.6, GR = -.15;
+  /* ---------- Gelände: Sockel aus Erde, Rasen, Kiesstreifen, Terrasse aus Platten auf der Gartenseite ---------- */
+  const LE = LX + PJ, HE = HD + PJ, XP = LE + 2.6, ZP = HE + 2.8, GR = -.15;
   const ushape = (xi, zi) => [[0, -ZP], [XP, -ZP], [XP, ZP], [0, ZP], [0, zi], [xi, zi], [xi, -zi], [0, -zi]];
   add(cube(0, -1.1, -ZP, XP, -.25, ZP), pm('g', 'earth'), null);
-  add(prism('y', ushape(LX, HD), -.25, -.2), pm('g', 'earth'), null);
-  add(prism('y', ushape(LX + .4, HD + .4), -.2, GR), pm('g', 'grass'), null);
-  add(prism('y', [[0, -HD - .4], [LX + .4, -HD - .4], [LX + .4, HD + .4], [0, HD + .4], [0, HD], [LX, HD], [LX, -HD], [0, -HD]], -.2, GR + .015), pm('g', 'gravel'), null);
-  for (let i = 0; i < 3; i++) add(cube(4.5, GR + .015, HD + .55 + i * .68, 5.8, GR + .05, HD + 1.1 + i * .68), pm('g', 'concrete'), null);
+  add(prism('y', ushape(LE, HE), -.25, -.2), pm('g', 'earth'), null);
+  add(prism('y', ushape(LE + .4, HE + .4), -.2, GR), pm('g', 'grass'), null);
+  add(prism('y', [[0, -HE - .4], [LE + .4, -HE - .4], [LE + .4, HE + .4], [0, HE + .4], [0, HE], [LE, HE], [LE, -HE], [0, -HE]], -.2, GR + .015), pm('g', 'gravel'), null);
+  for (let x = 0; x < LE - .1; x += 1.2) add(cube(x + .01, GR + .015, HE + .45, Math.min(LE, x + 1.19), GR + .05, HE + 2.25), pm('g', 'concrete'), null);
   const catcher = new T.Mesh(new T.PlaneGeometry(200, 200), new T.ShadowMaterial({ opacity: .14 }));
   catcher.rotation.x = -Math.PI / 2; catcher.position.y = -1.1; catcher.receiveShadow = true; scene.add(catcher);
 
@@ -116,36 +121,46 @@ export async function createSchnitthaus(host, opt = {}) {
     });
   }
 
-  /* ---------- Wände ---------- */
+  /* ---------- Wände: je Schicht ein Prisma mit den Öffnungen als Löcher ---------- */
   const facade = [], gipsM = [], depth = [];
   { let a = 0; WALL.forEach(L => { depth.push([a, a + L.d]); a += L.d; }); }
-  const wallMat = (L, key) => (L.k === 'fassade' ? pm('fassade', 'larch') : L.k === 'gips' ? pm('wand', 'gipsRaw') : pm('wand', L.m));
-  const track = (m, L) => { if (L.k === 'fassade') facade.push(m); if (L.k === 'gips') gipsM.push(m); return m; };
-  const wallX = (s, open) => WALL.forEach((L, i) => {
-    const [a, b] = depth[i], zo = s * (HD - a), zi = s * (HD - b), xEnd = LX - a, key = L.k === 'fassade' ? 'fassade' : 'wand';
-    const quad = (y0, y1) => [[zi, y0], [zo, y0], [zo, y1 == null ? roofIn(zo) : y1], [zi, y1 == null ? roofIn(zi) : y1]];
-    const cuts = [0, ...open.flatMap(o => [o.x0, o.x1]), xEnd];
-    for (let k = 0; k < cuts.length - 1; k++) {
-      const x0 = cuts[k], x1 = Math.min(cuts[k + 1], xEnd); if (x1 - x0 < 1e-4) continue;
-      const o = open.find(o => o.x0 <= x0 + 1e-6 && o.x1 >= x1 - 1e-6);
-      const polys = o ? [o.y0 > .001 ? quad(0, o.y0) : null, quad(o.y1, null)].filter(Boolean) : [quad(0, null)];
-      polys.forEach(p => track(add(prism('x', p, x0, x1), wallMat(L), key), L));
-    }
+  const wallMat = L => (L.k === 'fassade' ? pm('fassade', 'slats') : L.k === 'gips' ? pm('wand', 'gipsRaw') : pm('wand', L.m));
+  const hole = o => [[o.x0, o.y0], [o.x1, o.y0], [o.x1, o.y1], [o.x0, o.y1]];
+  /* Erdgeschoß bis YM (hinter dem Band), Obergeschoß darüber und kürzer (bis LO) */
+  const wallZ = (s, open) => WALL.forEach((L, i) => {
+    const [a, b] = depth[i];
+    const z0 = s > 0 ? HD - b : -(HD - a), z1 = s > 0 ? HD - a : -(HD - b);
+    [[0, YM, LX - a, false], [YM, YW, LO - a, true]].forEach(([y0, y1, xEnd, og]) => {
+      const hs = open.filter(o => o.y0 >= y0 && o.y1 <= y1).map(hole);
+      const m = add(prism('z', [[0, y0], [xEnd, y0], [xEnd, y1], [0, y1]], z0, z1, hs), wallMat(L), L.k === 'fassade' ? 'fassade' : 'wand');
+      if (L.k === 'fassade') { m.userData.og = og; facade.push(m); }
+      if (L.k === 'gips') gipsM.push(m);
+    });
   });
-  wallX(1, OPEN_F); wallX(-1, OPEN_B);
-  WALL.forEach((L, i) => {
-    const [a, b] = depth[i], zl = HD - b, key = L.k === 'fassade' ? 'fassade' : 'wand';
-    const poly = [[-zl, 0], [zl, 0], [zl, roofIn(zl)], [0, YR], [-zl, roofIn(zl)]];
-    const holes = OPEN_G.map(o => [[o.z0, o.y0], [o.z1, o.y0], [o.z1, o.y1], [o.z0, o.y1]]);
-    track(add(prism('x', poly, LX - b, LX - a, holes), wallMat(L), key), L);
-  });
-  /* Sockelblech rundum */
-  add(prism('x', [[HD, GR], [HD + .012, GR], [HD + .012, .05], [HD, .05]], 0, LX + .012), pm('fassade', 'alu'), 'fassade');
-  add(prism('x', [[-HD - .012, GR], [-HD, GR], [-HD, .05], [-HD - .012, .05]], 0, LX + .012), pm('fassade', 'alu'), 'fassade');
-  add(cube(LX, GR, -HD - .012, LX + .012, .05, HD + .012), pm('fassade', 'alu'), 'fassade');
+  wallZ(1, OPEN.front); wallZ(-1, OPEN.back);
+  /* Stirnseiten ohne Öffnungen (Erdgeschoß bei LX, Obergeschoß bei LO), liegen hinter dem dunklen Rahmen */
+  [[LX, 0, YM], [LO, YM, YW]].forEach(([xe, y0, y1]) => WALL.forEach((L, i) => {
+    const [a, b] = depth[i], zl = HD - b;
+    const m = add(prism('x', [[-zl, y0], [zl, y0], [zl, y1], [-zl, y1]], xe - b, xe - a), L.k === 'fassade' ? pm('fassade', 'frame') : wallMat(L), L.k === 'fassade' ? 'fassade' : 'wand');
+    if (L.k === 'gips') gipsM.push(m);
+  }));
+  /* Der dunkle Rahmen von Concept Bold: Band zwischen den Geschoßen, Band am Dach, Stirnseite bis zum Boden */
+  {
+    const dk = pm('fassade', 'frame');
+    [[B0, B1, LE], [RB0, AT, LO + PJ]].forEach(([y0, y1, xe]) => {
+      add(cube(0, y0, HD, xe, y1, HE), dk, 'fassade');
+      add(cube(0, y0, -HE, xe, y1, -HD), dk, 'fassade');
+    });
+    add(cube(LX, 0, -HE, LE, B1, HE), dk, 'fassade');
+    add(cube(LO, B0, -HE, LO + PJ, AT, HE), dk, 'fassade');
+  }
+  /* Sockelblech an Garten- und Straßenseite */
+  add(cube(0, GR, HD, LX, .05, HD + .012), pm('fassade', 'alu'), 'fassade');
+  add(cube(0, GR, -HD - .012, LX, .05, -HD), pm('fassade', 'alu'), 'fassade');
 
   /* ---------- Decke (Massivholz oder Tram) mit Treppenloch, Obergeschoß ---------- */
-  const notch = [[0, -ZI], [SX0, -ZI], [SX0, -ZI + SW], [SX1, -ZI + SW], [SX1, -ZI], [LX - W, -ZI], [LX - W, ZI], [0, ZI]];
+  const notchAt = xe => [[0, -ZI], [SX0, -ZI], [SX0, -ZI + SW], [SX1, -ZI + SW], [SX1, -ZI], [xe, -ZI], [xe, ZI], [0, ZI]];
+  const notch = notchAt(LX - W), notchOG = notchAt(LO - W);
   const ceil = add(prism('y', notch, C0, C1), pm('decke', 'slab'), 'decke');
   const beams = new T.Group(); root.add(beams); beams.visible = false;
   for (let x = .35; x < LX - W - .1; x += .8) add(cube(x - .07, C0 - .18, x > SX0 - .1 && x < SX1 + .1 ? -ZI + SW : -ZI, x + .07, C0, ZI), pm('decke', 'slab'), 'decke', beams);
@@ -154,32 +169,24 @@ export async function createSchnitthaus(host, opt = {}) {
   {
     let y = C1;
     [['fill', .055], ['insul', .03], ['screed', .06], ['oak', .015]].forEach(([m, d]) => {
-      add(prism('y', notch, y, y + d), pm('parkett', m), 'parkett', m === 'oak' ? floorOG3 : floorOG); y += d;
+      add(prism('y', notchOG, y, y + d), pm('parkett', m), 'parkett', m === 'oak' ? floorOG3 : floorOG); y += d;
     });
   }
 
-  /* ---------- Dach, bis zum First offen ---------- */
+  /* ---------- Flachdach in Massivholz, Wärmedämmung, Abdichtung, Attika mit Verblechung; dasselbe über dem längeren Erdgeschoß ---------- */
   {
-    let t = 0;
-    ROOF.forEach(L => {
-      const t0 = t, t1 = t + L.d; t = t1;
-      [1, -1].forEach(s => {
-        const y0 = YR + t0 / CO, y1 = YR + t1 / CO;
-        add(prism('x', [[0, y0], [0, y1], [s * ZE, y1 - TA * ZE], [s * ZE, y0 - TA * ZE]], 0, LX + OVG), pm('dach', L.m), 'dach');
-      });
-    });
-    [1, -1].forEach(s => {
-      /* Ortgang, Traufe und Rinne in Aluminium */
-      const yA = YR - .02 / CO, yB = YR + (RT + .025) / CO;
-      add(prism('x', [[0, yA], [0, yB], [s * (ZE + .02), yB - TA * (ZE + .02)], [s * (ZE + .02), yA - TA * (ZE + .02)]], LX + OVG, LX + OVG + .025), pm('dach', 'alu'), 'dach');
-      const yi = YR - TA * ZE;
-      add(prism('x', [[s * ZE, yi - .03], [s * (ZE + .02), yi - .03], [s * (ZE + .02), yi + RT / CO], [s * ZE, yi + RT / CO]], 0, LX + OVG), pm('dach', 'alu'), 'dach');
-      add(prism('x', [[s * (ZE + .02), yi + .12], [s * (ZE + .16), yi + .12], [s * (ZE + .16), yi + .3], [s * (ZE + .02), yi + .3]], 0, LX + OVG), pm('dach', 'alu'), 'dach');
-    });
-    /* Firstziegel */
-    add(cube(0, YR + RT / CO - .03, -.13, LX + OVG + .025, YR + RT / CO + .05, .13), pm('dach', 'alu'), 'dach');
-    /* Firstpfette, sichtbar */
-    add(prism('x', [[-.1, YR - .32], [.1, YR - .32], [.1, roofIn(.1)], [0, YR], [-.1, roofIn(.1)]], 0, LX - W), pm('dach', 'spruce'), 'dach');
+    const e = .3, al = pm('dach', 'alu');
+    add(prism('y', [[0, -ZI], [LO - W, -ZI], [LO - W, ZI], [0, ZI]], R0, YW), pm('dach', 'slab'), 'dach');
+    const flat = (x0, x1, y, top) => {
+      const r = [[x0, -(HD - e)], [x1 - e, -(HD - e)], [x1 - e, HD - e], [x0, HD - e]];
+      add(prism('y', r, y, y + RD), pm('dach', 'fibre'), 'dach');
+      add(prism('y', r, y + RD, y + RD + .012), pm('dach', 'membrane'), 'dach');
+      add(cube(x0, y, HD - e, x1, top, HD), al, 'dach');
+      add(cube(x0, y, -HD, x1, top, -(HD - e)), al, 'dach');
+      add(cube(x1 - e, y, -(HD - e), x1, top, HD - e), al, 'dach');
+    };
+    flat(0, LO, YW, AT);
+    flat(LO, LX, C1, B1);
   }
 
   /* ---------- Open Space: zwei Ableitungspunkte ---------- */
@@ -221,24 +228,22 @@ export async function createSchnitthaus(host, opt = {}) {
     add(cube(u0, v1 - s, 0, u1, v1, wOut), outer, key, g);
     add(cube(u0, v0, 0, u0 + s, v1 - s, wOut), outer, key, g); add(cube(u1 - s, v0, 0, u1, v1 - s, wOut), outer, key, g);
   }
-  const gF = wallFrame('front'), gB = wallFrame('back'), gG = wallFrame('gable');
-  /* vorne: u = -x */
-  window(gF, -3.5, -.9, F0, F0 + 2.42, { split: true });
-  window(gB, 5.6, 6.6, F0 + .9, F0 + 2.3);
-  window(gG, -1.0, 2.4, F0, F0 + 2.42, { split: true });
-  window(gG, -1.9, 1.9, F1, F1 + 2.9, { split: true });
-  /* Haustür Holz-Alu mit Seitenteil, Stangengriff außen */
+  const gF = wallFrame('front'), gB = wallFrame('back');
+  /* Gartenseite: u = −x */
+  OPEN.front.forEach(o => window(gF, -o.x1, -o.x0, o.y0, o.y1, { split: o.split }));
+  OPEN.back.filter(o => !o.door).forEach(o => window(gB, o.x0, o.x1, o.y0, o.y1, { split: o.split }));
+  /* Haustür Holz-Alu mit Seitenteil auf der Straßenseite, Stangengriff außen */
   {
-    const u0 = -5.9, u1 = -4.4, v0 = F0, v1 = F0 + 2.35, fw = .085;
+    const d = OPEN.back.find(o => o.door), u0 = d.x0, u1 = d.x1, v0 = d.y0, v1 = d.y1, fw = .085;
     const al = pm('tuer', 'alu'), wd = pm('tuer', 'frameNatur');
-    add(cube(u0, v1 - fw, .07, u1, v1, .175), al, null, gF); add(cube(u0, v0, .07, u0 + fw, v1 - fw, .175), al, null, gF); add(cube(u1 - fw, v0, .07, u1, v1 - fw, .175), al, null, gF);
-    add(cube(u0 + fw, v0, .07, u0 + fw + .07, v1 - fw, .175), al, null, gF);
+    add(cube(u0, v1 - fw, .07, u1, v1, .175), al, null, gB); add(cube(u0, v0, .07, u0 + fw, v1 - fw, .175), al, null, gB); add(cube(u1 - fw, v0, .07, u1, v1 - fw, .175), al, null, gB);
+    add(cube(u0 + fw, v0, .07, u0 + fw + .07, v1 - fw, .175), al, null, gB);
     const lu0 = u0 + fw + .07, lu1 = u1 - fw;
-    add(cube(lu0, v0 + .01, .075, lu1, v1 - fw, .1), al, null, gF);
-    add(cube(lu0, v0 + .01, .1, lu1, v1 - fw, .165), wd, null, gF);
-    add(cube(lu0 + .12, v0 + .35, .035, lu0 + .155, v0 + 1.95, .07), pm('tuer', 'steel'), null, gF);
-    [.11, .127].forEach(w => add(cube(u0 + fw, v0 + .02, w, u0 + fw + .07, v1 - fw, w + .006), glass, null, gF, { cast: false }));
-    reveal(gF, u0, u1, v0, v1, pm('tuer', 'paint'), al, null, .175, .07);
+    add(cube(lu0, v0 + .01, .075, lu1, v1 - fw, .1), al, null, gB);
+    add(cube(lu0, v0 + .01, .1, lu1, v1 - fw, .165), wd, null, gB);
+    add(cube(lu1 - .155, v0 + .35, .035, lu1 - .12, v0 + 1.95, .07), pm('tuer', 'steel'), null, gB);
+    [.11, .127].forEach(w => add(cube(u0 + fw, v0 + .02, w, u0 + fw + .07, v1 - fw, w + .006), glass, null, gB, { cast: false }));
+    reveal(gB, u0, u1, v0, v1, pm('tuer', 'paint'), al, null, .175, .07);
   }
 
   /* ---------- Treppe: Rohbautreppe (Stufe 1 bis 2), Eiche mit Setzstufen und Geländer (Stufe 3) ---------- */
@@ -266,25 +271,25 @@ export async function createSchnitthaus(host, opt = {}) {
   /* ---------- Haustechnik (Stufe 2): Wärmepumpe außen, Schalter und Steckdosen ---------- */
   {
     const hp = stage(2, 'drop', GR + .02);
-    const x = LX + 1.05, z = HD - .9;
+    const x = LE + 1.0, z = HD - .9;
     add(cube(x - .2, GR + .02, z - .55, x + .26, GR + 1.0, z + .55), pm('g', 'white'), null, hp);
     add(cube(x + .26, GR + .1, z - .45, x + .275, GR + .92, z + .45), pm('g', 'dark'), null, hp);
     add(cube(x - .25, GR + .015, z - .62, x + .32, GR + .03, z + .62), pm('g', 'concrete'), null, hp);
     const el = stage(2, 'drop', 0);
-    [[1.2, .45], [3.0, .45], [6.2, .45], [5.95, 1.05]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, -ZI, x + .04, F0 + y + .04, -ZI + .012), pm('g', 'white'), null, el, { cast: false }));
-    [[3.9, 1.05], [6.4, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, ZI - .012, x + .04, F0 + y + .04, ZI), pm('g', 'white'), null, el, { cast: false }));
+    [[7.3, .45], [5.35, 1.05], [.5, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, -ZI, x + .04, F0 + y + .04, -ZI + .012), pm('g', 'white'), null, el, { cast: false }));
+    [[3.8, .45], [7.6, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, ZI - .012, x + .04, F0 + y + .04, ZI), pm('g', 'white'), null, el, { cast: false }));
   }
 
   /* ---------- Möbel (nur „erkunden“) ---------- */
   if (EXPL) {
     const put = (obj, x, y, z, ry = 0) => { obj.position.set(x, y, z); obj.rotation.y = ry; obj.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.userData.part = null; (parts.moebel || (parts.moebel = [])).push(o); } }); root.add(obj); };
-    put(BUILD.sofa(2.6, .98, { c: 'kalk' }), 2.75, F0, 3.2, -Math.PI / 2);
-    put(BUILD.coffee(1.0, .6, {}), 1.6, F0, 3.2);
+    put(BUILD.sofa(2.6, .98, { c: 'kalk' }), 2.75, F0, 2.55, -Math.PI / 2);
+    put(BUILD.coffee(1.0, .6, {}), 1.6, F0, 2.55);
     put(BUILD.table(2.0, .95, {}), 3.65, F0, -1.85, Math.PI / 2);
     [[-.5, -1], [.5, -1], [-.5, 1], [.5, 1]].forEach(([dz, s]) => put(BUILD.chair(.48, .52, {}), 3.65 + s * .66, F0, -1.85 + dz, s * -Math.PI / 2));
     put(pendant(C0 - F0), 3.65, F0, -1.85);
-    put(BUILD.lowboard(1.8, .45, {}), 6.5, F0, 3.5, -Math.PI / 2);
-    put(BUILD.plant(.5, .5, {}), .45, F0, 4.5);
+    put(BUILD.lowboard(1.8, .45, {}), LX - W - .25, F0, 1.6, -Math.PI / 2);
+    put(BUILD.plant(.5, .5, {}), .45, F0, 3.65);
     put(BUILD.bed(1.8, 2.1, { c: 'sand' }), 4.4, F1, 1.0, Math.PI / 2);
     put(BUILD.plant(.5, .5, {}), 6.3, F1, -2.6);
   }
@@ -302,11 +307,9 @@ export async function createSchnitthaus(host, opt = {}) {
   /* ---------- Wahl: Fassade, Fensterfarbe innen, Decke ---------- */
   const state = { fassade: 'holz', fenster: 'natur', decke: 'massiv', farbe: 'natur' };
   function applyWahl() {
-    const larch = pm('fassade', 'larch'), putz = pm('fassade', 'putz');
-    facade.forEach(m => {
-      const gable = m.geometry.boundingSphere.center.x > LX - .5;
-      m.material = state.fassade === 'holz' ? larch : state.fassade === 'putz' ? putz : (gable ? larch : putz);
-    });
+    const larch = pm('fassade', 'slats'), putz = pm('fassade', 'putz');
+    /* Beides: unten Putz, oben Lärche */
+    facade.forEach(m => { m.material = state.fassade === 'holz' ? larch : state.fassade === 'putz' ? putz : (m.userData.og ? larch : putz); });
     frameWood.color.setHex(FRAME_COL[state.fenster] || FRAME_COL.natur);
     const slab = state.farbe === 'weiss' ? pm('decke', 'slabWhite') : pm('decke', 'slab');
     ceil.material = slab; beams.children.forEach(b => b.material = slab); beams.visible = state.decke === 'tram';
@@ -443,10 +446,18 @@ export async function createSchnitthaus(host, opt = {}) {
       if (k >= 1) tw = null; busy = true; need = true;
     }
     staged.forEach(s => { if (s.g.visible && s.k < 1) { s.k = Math.max(0, (now - s.t0) / 900); apply(s); busy = true; need = true; } });
+    /* Platz für die Karte rechts: das Bild rückt weich nach links */
+    if (Math.abs(padT - padC) > .5) { padC += (padT - padC) * .16; if (Math.abs(padT - padC) <= .5) padC = padT; offset(); busy = true; need = true; }
     if (need && visible) { place(); R.render(scene, cam); updateMarks(); need = false; }
     if (busy || need) raf = requestAnimationFrame(frame);
   }
-  const fit = () => { const w = host.clientWidth || 1, h = host.clientHeight || 1; R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); poke(); };
+  let padT = 0, padC = 0;
+  function offset() {
+    const w = host.clientWidth || 1, h = host.clientHeight || 1;
+    if (padC > .5) cam.setViewOffset(w, h, padC / 2, 0, w, h); else cam.clearViewOffset();
+    cam.updateProjectionMatrix();
+  }
+  const fit = () => { const w = host.clientWidth || 1, h = host.clientHeight || 1; R.setSize(w, h, false); cam.aspect = w / h; offset(); poke(); };
   const ro = new ResizeObserver(fit); ro.observe(host); fit();
   const io = new IntersectionObserver(es => { visible = es.some(e => e.isIntersecting); if (visible) poke(); }, { rootMargin: '200px 0px' }); io.observe(host);
 
@@ -462,6 +473,7 @@ export async function createSchnitthaus(host, opt = {}) {
     get wahl() { return { ...state }; },
     stage(n) { if (n !== curStage) setStageNow(n, true); },
     home() { fly(VIEW[sel || (EXPL ? 'home' : 'stufen')]); },
+    pad(px) { padT = Math.max(0, px || 0); if (reduceMotion) { padC = padT; offset(); } poke(); },
     dispose() { ro.disconnect(); io.disconnect(); R.dispose(); }
   };
   setStageNow(curStage, false);

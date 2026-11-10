@@ -17,7 +17,7 @@
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body data-page="leistungen">
-<!-- ERZEUGT von tools/services-seiten.mjs (Runde 45), Texte in data/leistungen.js. Nicht von Hand ändern. -->
+<!-- ERZEUGT von tools/services-seiten.mjs (Runde 46), Texte in data/leistungen.js. Nicht von Hand ändern. -->
 <div class="site">
   <div class="bgl" data-bgl aria-hidden="true"></div>
   <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
@@ -37,7 +37,7 @@
         <p class="lead svh__sub" data-reveal="160">Besser planen. Besser bauen. Besser leben.</p>
         <div class="svh__foot">
           <p class="txt" data-reveal="240">Wir bauen Häuser aus Holz, wie sonst niemand sie baut. Für Menschen, die wissen, dass ein Zuhause mehr ist als vier Wände und ein Dach.</p>
-          <ul class="svh__fakten" data-reveal="320"><li><b>Seit 1950</b><span class="info">in Griffen, Kärnten</span></li><li><b>9.985+</b><span class="info">Häuser gebaut</span></li><li><b>85 %</b><span class="info">Made in Austria</span></li></ul>
+          
         </div>
       </div>
       <p class="svh__scroll info" aria-hidden="true"><i></i></p>
@@ -59,32 +59,35 @@
       </div>
     </section>
 
-    <!-- 02 DREI VERSPRECHEN: drei Felder im Plan, je mit Bild, springen in die Kapitel -->
+    <!-- 02 DREI VERSPRECHEN: Zahlen wie auf den Concept Seiten, dann die Bildfolge (gepinnt, js/svc-folge.js) -->
     <section id="s-drei" class="drei" data-room="s-drei">
-      <div class="wrap pad-y">
-        <p class="info drei__k" data-reveal="0">Besser planen. Besser bauen. Besser leben.</p>
-        <div class="drei__row">
-          <a class="drei__c" href="#s-planen" data-reveal="0">
-            <span class="pf" data-pf><i></i><i></i><i></i><i></i><span class="pf__in"><img src="assets/img/svc-planen.jpg" alt="Zwei Menschen aus dem Architekturteam besprechen einen Plan" loading="lazy" decoding="async"></span></span>
-            <span class="drei__nr info">01</span>
-            <span class="h-l drei__h">Besser planen.</span>
-            <span class="txt drei__t">Frei planen mit unserem eigenen Architekturteam. Grundrissänderungen ohne Aufpreis, dank Open Space Konzept.</span>
-            <span class="drei__go info">Mehr dazu</span>
-          </a>
-          <a class="drei__c" href="#s-bauen" data-reveal="120">
-            <span class="pf" data-pf><i></i><i></i><i></i><i></i><span class="pf__in"><img src="assets/img/svc-bauen.jpg" alt="Fertigungshalle der Manufaktur in Griffen mit Wandelementen" loading="lazy" decoding="async"></span></span>
-            <span class="drei__nr info">02</span>
-            <span class="h-l drei__h">Besser bauen.</span>
-            <span class="txt drei__t">Zehn Monate bis zum Einzug, garantierter Festpreis. Ein Projektmanager begleitet dich bis zum Schlüssel.</span>
-            <span class="drei__go info">Mehr dazu</span>
-          </a>
-          <a class="drei__c" href="#s-leben" data-reveal="240">
-            <span class="pf" data-pf><i></i><i></i><i></i><i></i><span class="pf__in"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Holz, Licht und Blick ins Grüne" loading="lazy" decoding="async"></span></span>
-            <span class="drei__nr info">03</span>
-            <span class="h-l drei__h">Besser leben.</span>
-            <span class="txt drei__t">GRIFFNER Wand, Holz-Alu-Fenster, sichtbare Holzdecken, mehr Raumhöhe. Wohngesund und sparsam, ein Leben lang.</span>
-            <span class="drei__go info">Mehr dazu</span>
-          </a>
+      <div class="wrap drei__top">
+        <ul class="kz" data-reveal="0"><li><b>Seit 1950</b><span class="info">in Griffen, Kärnten</span></li><li><b>9.985+</b><span class="info">Häuser gebaut</span></li><li><b>85 %</b><span class="info">Made in Austria</span></li></ul>
+      </div>
+      <div class="fo fo--drei" data-fo style="--fo-n:3">
+        <div class="fo__st">
+          <div class="fo__frame" data-fo-frame><figure class="fo__sl" data-fo-sl><img src="assets/img/svc-planen.jpg" alt="Zwei Menschen aus dem Architekturteam besprechen einen Plan" decoding="async"></figure><figure class="fo__sl" data-fo-sl aria-hidden="true"><img src="assets/img/svc-bauen.jpg" alt="Fertigungshalle der Manufaktur in Griffen mit Wandelementen" loading="lazy" decoding="async"></figure><figure class="fo__sl" data-fo-sl aria-hidden="true"><img src="assets/img/wald-innen.jpg" alt="Wohnraum mit Holz, Licht und Blick ins Grüne" loading="lazy" decoding="async"></figure></div>
+          <div class="fo__txt">
+            <p class="fo__count info" aria-hidden="true"><span data-fo-nr>01</span> / 03</p>
+            <div class="fo__items">
+              <div class="fo__it is-on" data-fo-it>
+                <h3 class="fo__h"><span class="w"><span style="--i:0">Besser</span></span> <span class="w"><span style="--i:1">planen.</span></span></h3>
+                <p class="fo__p">Frei planen mit unserem eigenen Architekturteam. Grundrissänderungen ohne Aufpreis, dank Open Space Konzept.</p>
+                <a class="fo__go info" href="#s-planen">Mehr dazu</a>
+              </div>
+              <div class="fo__it" data-fo-it>
+                <h3 class="fo__h"><span class="w"><span style="--i:0">Besser</span></span> <span class="w"><span style="--i:1">bauen.</span></span></h3>
+                <p class="fo__p">Zehn Monate bis zum Einzug, garantierter Festpreis. Ein Projektmanager begleitet dich bis zum Schlüssel.</p>
+                <a class="fo__go info" href="#s-bauen" tabindex="-1">Mehr dazu</a>
+              </div>
+              <div class="fo__it" data-fo-it>
+                <h3 class="fo__h"><span class="w"><span style="--i:0">Besser</span></span> <span class="w"><span style="--i:1">leben.</span></span></h3>
+                <p class="fo__p">GRIFFNER Wand, Holz-Alu-Fenster, sichtbare Holzdecken, mehr Raumhöhe. Wohngesund und sparsam, ein Leben lang.</p>
+                <a class="fo__go info" href="#s-leben" tabindex="-1">Mehr dazu</a>
+              </div>
+            </div>
+            <div class="fo__bar" aria-hidden="true"><i data-fo-bar></i></div>
+          </div>
         </div>
       </div>
     </section>
@@ -93,18 +96,23 @@
     <section id="s-planen" class="svl" data-room="s-planen">
       <div class="wrap pad-y">
         <div class="kap info" data-reveal="0"><span>01</span><span>Besser planen</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Frag nicht, was extra kostet. Frag, was du willst.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Bei den meisten Anbietern kostet jede Änderung extra, weil die Innenwände das Haus tragen. Bei uns trägt das patentierte Open Space Konzept dein Haus über wenige Punkte. Fast keine Innenwand muss tragen. Du gestaltest frei, mit echten Architektur- und Design-Profis an deiner Seite.</p>
+        <div class="g12 khd">
+          <h2 class="h-xl c-1-7" data-reveal="0">Frag nicht, was extra kostet. Frag, was du willst.</h2>
+          <div class="c-9-4 al-end khd__txt" data-reveal="120">
+          <div class="more" data-more>
+            <p class="txt">Bei den meisten Anbietern kostet jede Änderung extra, weil die Innenwände das Haus tragen.<span class="more__rest" id="mehr-1" hidden> Bei uns trägt das patentierte Open Space Konzept dein Haus über wenige Punkte. Fast keine Innenwand muss tragen. Du gestaltest frei, mit echten Architektur- und Design-Profis an deiner Seite.</span></p>
+            <button type="button" class="more__btn info" aria-expanded="false" aria-controls="mehr-1" data-more-btn><span>Weiterlesen</span><span>Weniger</span></button>
+          </div>
+          </div>
         </div>
         <div class="os" data-os data-reveal="160">
           <div class="os__bar">
-            <div class="tabs os__tabs" role="group" aria-label="Grundriss">
-              <button type="button" class="tab info" data-os-tab="wohnen" aria-pressed="true">Offenes Wohnen</button>
-              <button type="button" class="tab info" data-os-tab="arbeiten" aria-pressed="false">Arbeiten zu Hause</button>
-              <button type="button" class="tab info" data-os-tab="bewegung" aria-pressed="false">Bewegung zu Hause</button>
-              <button type="button" class="tab info" data-os-tab="kinder" aria-pressed="false">Mit Kindern</button>
-              <button type="button" class="tab info" data-os-tab="stift" aria-pressed="false">Selbst zeichnen</button>
+            <div class="os__tabs" role="group" aria-label="Grundriss">
+              <button type="button" class="ttab info" data-os-tab="wohnen" aria-pressed="true">Offenes Wohnen</button>
+              <button type="button" class="ttab info" data-os-tab="arbeiten" aria-pressed="false">Arbeiten zu Hause</button>
+              <button type="button" class="ttab info" data-os-tab="bewegung" aria-pressed="false">Bewegung zu Hause</button>
+              <button type="button" class="ttab info" data-os-tab="kinder" aria-pressed="false">Mit Kindern</button>
+              <button type="button" class="ttab info" data-os-tab="stift" aria-pressed="false">Selbst zeichnen</button>
             </div>
             <button type="button" class="os__clear info" data-os-clear hidden>Neu beginnen</button>
           </div>
@@ -127,9 +135,14 @@
     <section id="s-bauen" class="tlsec" data-room="s-bauen">
       <div class="wrap pad-t">
         <div class="kap info" data-reveal="0"><span>02</span><span>Besser bauen</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Beim Hausbau geht die meiste Zeit beim Warten verloren. Bei uns nicht: ein Projektmanager und aufeinander abgestimmte Prozesse führen dich zügig durch die ganze Journey, bis zum Schlüssel in zehn Monaten.</p>
+        <div class="g12 khd">
+          <h2 class="h-xl c-1-7" data-reveal="0">Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.</h2>
+          <div class="c-9-4 al-end khd__txt" data-reveal="120">
+          <div class="more" data-more>
+            <p class="txt">Beim Hausbau geht die meiste Zeit beim Warten verloren.<span class="more__rest" id="mehr-2" hidden> Bei uns nicht: ein Projektmanager und aufeinander abgestimmte Prozesse führen dich zügig durch die ganze Journey, bis zum Schlüssel in zehn Monaten.</span></p>
+            <button type="button" class="more__btn info" aria-expanded="false" aria-controls="mehr-2" data-more-btn><span>Weiterlesen</span><span>Weniger</span></button>
+          </div>
+          </div>
         </div>
       </div>
       <div class="tl" data-tl>
@@ -157,60 +170,58 @@
       </div>
     </section>
 
-    <!-- 05 KAPITEL 03 BESSER LEBEN: das Haus im Schnitt, die acht Dinge zum Antippen -->
+    <!-- 05 KAPITEL 03 BESSER LEBEN: Concept Bold im Schnitt, die acht Dinge als Nummern am Haus, Details erst auf Wunsch -->
     <section id="s-leben" class="svl" data-room="s-leben">
       <div class="wrap pad-y">
         <div class="kap info" data-reveal="0"><span>03</span><span>Besser leben</span></div>
-        <div class="g12">
-          <h2 class="h-xl c-1-8" data-reveal="0">Das Beste an deinem Haus wirst du nie sehen.</h2>
-          <p class="txt c-9-4 al-end" data-reveal="120">Du optimierst deinen Schlaf, dein Training, dein Essen. Und den Ort, an dem 90 Prozent davon stattfinden? Die meisten Häuser lösen ihre Probleme mit Geräten: Lüftungsanlage gegen schlechte Luft, Klimagerät gegen Hitze, Luftbefeuchter gegen trockene Winterluft. Wir haben die Probleme vorher gelöst, in der Konstruktion.</p>
+        <div class="g12 khd">
+          <h2 class="h-xl c-1-7" data-reveal="0">Das Beste an deinem Haus wirst du nie sehen.</h2>
+          <div class="c-9-4 al-end khd__txt" data-reveal="120">
+          <div class="more" data-more>
+            <p class="txt">Du optimierst deinen Schlaf, dein Training, dein Essen.<span class="more__rest" id="mehr-3" hidden> Und den Ort, an dem 90 Prozent davon stattfinden? Die meisten Häuser lösen ihre Probleme mit Geräten: Lüftungsanlage gegen schlechte Luft, Klimagerät gegen Hitze, Luftbefeuchter gegen trockene Winterluft. Wir haben die Probleme vorher gelöst, in der Konstruktion.</span></p>
+            <button type="button" class="more__btn info" aria-expanded="false" aria-controls="mehr-3" data-more-btn><span>Weiterlesen</span><span>Weniger</span></button>
+          </div>
+          </div>
         </div>
-        <div class="sh" data-sh>
+        <div class="sh" data-sh data-reveal="120">
           <div class="sh__stage" data-sh-stage>
             <div class="sh__ui">
-              <button type="button" class="sh__home info" data-sh-home hidden>Ganzes Haus</button>
+              <p class="sh__name info" aria-hidden="true">Concept Bold im Schnitt</p>
               <p class="sh__drag info" aria-hidden="true">Ziehen dreht das Haus</p>
             </div>
           </div>
-          <aside class="sh__panel" data-sh-panel aria-live="polite">
-            <div class="sh__intro" data-sh-intro>
-              <p class="info">Der Leistungsumfang, schwarz auf weiß</p>
-              <h3 class="h-l">Serienmäßig, was woanders extra kostet.</h3>
-              <p class="sh__hint">Tippe auf das Haus oder auf eine Nummer.</p>
-              <ol class="sh__list">
-                <li><button type="button" data-sh-item="openspace"><span class="info">01</span><b>Open Space, patentiert</b></button></li>
-                <li><button type="button" data-sh-item="wand"><span class="info">02</span><b>Die GRIFFNER Wand</b></button></li>
-                <li><button type="button" data-sh-item="dach"><span class="info">03</span><b>Dach mit Holzfaser-Zellulosedämmung</b></button></li>
-                <li><button type="button" data-sh-item="fenster"><span class="info">04</span><b>Holz-Alu-Fenster</b></button></li>
-                <li><button type="button" data-sh-item="decke"><span class="info">05</span><b>Sichtbare Massivholzdecke</b></button></li>
-                <li><button type="button" data-sh-item="parkett"><span class="info">06</span><b>Naturparkettböden</b></button></li>
-                <li><button type="button" data-sh-item="raumhoehe"><span class="info">07</span><b>Raumhöhe 2,72 Meter</b></button></li>
-                <li><button type="button" data-sh-item="fassade"><span class="info">08</span><b>Fassade in Holz oder Putz</b></button></li>
+          <div class="sh__card" data-sh-card hidden aria-live="polite"></div>
+          <div class="sh__bar">
+            <p class="sh__say">Serienmäßig, was woanders extra kostet.</p>
+            <div class="sh__nav" role="group" aria-label="Die acht Dinge">
+              <ol class="sh__nums">
+                <li><button type="button" class="sh__num info" data-sh-item="openspace" aria-pressed="false" aria-label="01 Patentiertes Open Space Konzept"><span>01</span><em class="tip" role="tooltip">Open Space, patentiert</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="wand" aria-pressed="false" aria-label="02 Die GRIFFNER Wand"><span>02</span><em class="tip" role="tooltip">Die GRIFFNER Wand</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="dach" aria-pressed="false" aria-label="03 Dach mit Holzfaser-Zellulosedämmung"><span>03</span><em class="tip" role="tooltip">Dach mit Holzfaser-Zellulosedämmung</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="fenster" aria-pressed="false" aria-label="04 Holz-Alu-Fenster"><span>04</span><em class="tip" role="tooltip">Holz-Alu-Fenster</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="decke" aria-pressed="false" aria-label="05 Sichtbare Holzdecke"><span>05</span><em class="tip" role="tooltip">Sichtbare Massivholzdecke</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="parkett" aria-pressed="false" aria-label="06 Naturparkettböden"><span>06</span><em class="tip" role="tooltip">Naturparkettböden</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="raumhoehe" aria-pressed="false" aria-label="07 Raumhöhe 2,72 Meter"><span>07</span><em class="tip" role="tooltip">Raumhöhe 2,72 Meter</em></button></li>
+                <li><button type="button" class="sh__num info" data-sh-item="fassade" aria-pressed="false" aria-label="08 Fassade in Holz oder Putz"><span>08</span><em class="tip" role="tooltip">Fassade in Holz oder Putz</em></button></li>
               </ol>
+              <button type="button" class="sh__home info" data-sh-home hidden>Ganzes Haus</button>
             </div>
-            <div class="sh__det" data-sh-det hidden></div>
-          </aside>
+          </div>
+          <p class="sh__hint info">Tippe auf das Haus oder auf eine Nummer.</p>
         </div>
         <p class="svl__end" data-reveal="0">Du baust einmal. Wir bauen für das eine Mal.</p>
       </div>
     </section>
 
-    <!-- 06 MEHR: zum kompletten Leistungsumfang -->
+    <!-- 06 MEHR: das gelbe Feld öffnet sich zum Bild (wie das Intro auf griffner.com), darauf der Weg zum Leistungsumfang -->
     <section id="s-mehr" class="mehr" data-room="s-mehr">
-      <div class="wrap pad-y">
-        <div class="mehr__row" data-mehr>
-          <figure class="mehr__f" style="--i:0"><img src="assets/img/wald-innen.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">01 Open Space, patentiert</figcaption></figure>
-          <figure class="mehr__f" style="--i:1"><img src="assets/img/svc-wand.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">02 Die GRIFFNER Wand</figcaption></figure>
-          <figure class="mehr__f" style="--i:2"><img src="assets/img/duene-2.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">03 Dach mit Holzfaser-Zellulosedämmung</figcaption></figure>
-          <figure class="mehr__f" style="--i:3"><img src="assets/img/wald-fenster.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">04 Holz-Alu-Fenster</figcaption></figure>
-          <figure class="mehr__f" style="--i:4"><img src="assets/img/svc-decke.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">05 Sichtbare Massivholzdecke</figcaption></figure>
-          <figure class="mehr__f" style="--i:5"><img src="assets/img/wald-sessel.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">06 Naturparkettböden</figcaption></figure>
-          <figure class="mehr__f" style="--i:6"><img src="assets/img/svc-hoehe.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">07 Raumhöhe 2,72 Meter</figcaption></figure>
-          <figure class="mehr__f" style="--i:7"><img src="assets/img/wald-eingang.jpg" alt="" loading="lazy" decoding="async"><figcaption class="info">08 Fassade in Holz oder Putz</figcaption></figure>
-        </div>
-        <div class="g12 mehr__body">
-          <h2 class="h-xl c-1-9" data-reveal="0">Der Ort, an dem du 90 Prozent deines Lebens verbringst, verdient mehr als das Übliche.</h2>
-          <div class="c-1-9 mehr__go" data-reveal="120"><a class="ak__go" href="leistungsumfang.html">Den kompletten Leistungsumfang ansehen</a></div>
+      <div class="mehr__pin" data-mehr>
+        <div class="mehr__st">
+          <figure class="mehr__img" data-mehr-img><img src="assets/img/wald-garten-ecke-1800.jpg" alt="Concept Bold zwischen Kiefern, zwei Ebenen mit dunklem Rahmen und Lärche, Visualisierung" loading="lazy" decoding="async"></figure>
+          <div class="mehr__in" data-mehr-in>
+            <h2 class="h-xl mehr__h"><span class="w"><span style="--i:0">Der</span></span> <span class="w"><span style="--i:1">Ort,</span></span> <span class="w"><span style="--i:2">an</span></span> <span class="w"><span style="--i:3">dem</span></span> <span class="w"><span style="--i:4">du</span></span> <span class="w"><span style="--i:5">90</span></span> <span class="w"><span style="--i:6">Prozent</span></span> <span class="w"><span style="--i:7">deines</span></span> <span class="w"><span style="--i:8">Lebens</span></span> <span class="w"><span style="--i:9">verbringst,</span></span> <span class="w"><span style="--i:10">verdient</span></span> <span class="w"><span style="--i:11">mehr</span></span> <span class="w"><span style="--i:12">als</span></span> <span class="w"><span style="--i:13">das</span></span> <span class="w"><span style="--i:14">Übliche.</span></span></h2>
+            <a class="ak__go" href="leistungsumfang.html">Den kompletten Leistungsumfang ansehen</a>
+          </div>
         </div>
       </div>
     </section>

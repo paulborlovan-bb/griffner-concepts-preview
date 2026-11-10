@@ -2,7 +2,7 @@
    Quelle: hausbaugehtbesser.com (Startseite) und hausbaugehtbesser.com/leistungsumfang, Stand 10.11.2026, wörtlich übernommen.
    Eigene Zeilen (nicht aus der Quelle) sind mit EIGEN markiert und in TEXTE.md gelistet. Du-Form, keine Gedankenstriche, kein Ausrufezeichen. */
 
-/* Die acht Dinge, Reihenfolge wie auf /leistungsumfang. key = Teil im 3D Haus (js/schnitthaus.js) und Muster (js/muster3d.js) */
+/* Die acht Dinge, Reihenfolge wie auf /leistungsumfang. key = Teil im 3D Haus (js/schnitthaus.js, Concept Bold) und Muster (js/muster3d.js) */
 export const ACHT = [
   {
     key: 'openspace', nr: '01', name: 'Patentiertes Open Space Konzept', kurz: 'Open Space, patentiert',
@@ -128,8 +128,17 @@ export const UEBERSICHT = {
     hint: 'Tippe auf das Haus oder auf eine Nummer.', /* EIGEN */
     end: 'Du baust einmal. Wir bauen für das eine Mal.'
   },
-  mehr: { h: 'Der Ort, an dem du 90 Prozent deines Lebens verbringst, verdient mehr als das Übliche.', link: 'Den kompletten Leistungsumfang ansehen' },
+  mehr: { h: 'Der Ort, an dem du 90 Prozent deines Lebens verbringst, verdient mehr als das Übliche.', link: 'Den kompletten Leistungsumfang ansehen',
+    bild: 'assets/img/wald-garten-ecke-1800.jpg', alt: 'Concept Bold zwischen Kiefern, zwei Ebenen mit dunklem Rahmen und Lärche, Visualisierung' },
   cta: { h: 'Jetzt weißt du, worauf es ankommt.', txt: 'Hol dir den GRIFFNER Katalog mit allen Häusern und dem kompletten Leistungsumfang. Kostenlos und unverbindlich.' }
+};
+
+/* EIGEN (Runde 46): Bedienung, Knöpfe und kurze Hinweise */
+export const UI = {
+  weiter: 'Weiterlesen', weniger: 'Weniger', mehrDazu: 'Mehr dazu', mehrErfahren: 'Mehr erfahren',
+  haus: 'Concept Bold im Schnitt', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
+  zurueck: 'Zur Übersicht Services', vergleich: 'Im Vergleich', schliessen: 'Schließen',
+  position: 'Position', positionen: 'Positionen'
 };
 
 /* Schnitt Notizen im 3D Haus (aus „Besser leben“ auf der Startseite, gekürzt auf die Maße) */
