@@ -339,3 +339,54 @@ export const STUFEN_MODELL = [
   'Dazu Wärmepumpe, Fußbodenheizung im Estrich, Elektro und Sanitär. Am Schnitt siehst du die Rohre unter dem Estrich.',
   'Dazu Eichenparkett, die Treppe in Eiche, gestrichene Wände und die Innentüren. Du kannst einziehen.'
 ];
+
+/* ================= Runde 48 (10.11.2026): alles aus einer Hand ================= */
+/* Kundenwunsch: GRIFFNER baut auf Wunsch alles, vom Fundament über Haus und Interior bis zu Garten, Pool und Carport.
+   Das Grundstück im 3D Modell (js/grundstueck3d.js, Lage aus data/grundstueck.js) ist nach einem Gartenplan nachgebaut, ohne Namen und ohne den Plan selbst.
+   EIGEN, wo nicht anders vermerkt; Q = wörtlich aus dem Leistungsumfang oder von der Startseite (hausbaugehtbesser.com). */
+export const GRUND = {
+  kap: 'Alles aus einer Hand',
+  h: 'Vom Fundament bis zum Garten.', /* EIGEN */
+  txt: 'Ein Haus steht nicht allein. Darunter liegt das Fundament, drinnen die Einrichtung, draußen Carport, Terrasse, Pool und Garten. Wir planen und bauen alles mit dir, aus einer Hand.', /* EIGEN */
+  schritte: [
+    { key: 'grundstueck', h: 'Dein Grundstück.', txt: 'Alles beginnt mit dem Ort. Wir klären, was auf deinem Grundstück erlaubt ist, und setzen dein Haus richtig hinein.',
+      fakten: ['Erhebung der Bebauungsbestimmungen für dein Grundstück', 'Situierung des Hauses und Höhenaufnahme am Grundstück'] /* Q */ },
+    { key: 'fundament', h: 'Das Fundament.', txt: 'Bevor das Haus kommt, liegt das Fundament. Abgestimmt auf Boden, Statik und Gelände.',
+      fakten: ['Statik, abgestimmt auf Standort und Bauplatz', 'GRIFFNER Bauleiter ab dem ersten Termin auf deinem Grundstück'] /* Q */ },
+    { key: 'haus', h: 'Das Haus.', txt: 'Eine Woche Manufaktur in Griffen, dann steht es mit Dach und Fenstern.' /* Q, Monat 7 */,
+      fakten: ['95 % deines Hauses entstehen in der eigenen Manufaktur in Griffen', 'Die GRIFFNER Wand, 42,25 cm', 'Holz-Alu-Fenster, dreifach verglast'] /* Q */ },
+    { key: 'innen', h: 'Innenausbau und Interior.', txt: 'Türen, Böden, Bäder. Jetzt wird es deins. Auf Wunsch planen wir mit dir auch die Einrichtung.' /* 1. Satz Q, Rest EIGEN */,
+      fakten: ['Eichenparkett als Diele, gebürstet und naturmatt versiegelt', 'Ein eigenes Architektur- und Designteam, das dein Zuhause mit dir plant'] /* Q */ },
+    { key: 'carport', h: 'Carport.', txt: 'Mit Eingangsüberdachung, in derselben Ausführung wie dein Haus. Du kommst trocken an die Tür.',
+      fakten: ['Carport mit Eingangsüberdachung lt. Plan', 'Vorbereitung für die Wallbox'] /* Q */ },
+    { key: 'terrasse', h: 'Terrasse.', txt: 'Holz unter den Füßen, ein Dach darüber, die Lounge für den Abend.',
+      fakten: ['Terrassenüberdachung lt. Plan, mit Attika und EPDM-Abdichtung im Gefälle' /* Q */, 'Holzterrasse mit Lounge'] },
+    { key: 'pool', h: 'Pool.', txt: 'Drei mal sieben Meter, eingelassen ins Holzdeck. Geplant mit dem Haus, nicht danach.',
+      fakten: ['Pool 3 × 7 m', 'Holzdeck und Außendusche'] },
+    { key: 'garten', h: 'Garten.', txt: 'Rasen, Bäume, Hecken, Kräuter vor der Küche. Der Garten wird mitgeplant, wie die Räume im Haus.',
+      fakten: ['Gartenwasseranschluss mit Frostschutzarmatur' /* Q */, 'Hochbeete, Beeren, Bäume'] },
+    { key: 'extras', h: 'Sauna, Glashaus, Gartenhütte.', txt: 'Die kleinen Häuser im Garten. Aus derselben Hand wie das große.',
+      fakten: ['Outdoor-Sauna 2,1 × 2,6 m', 'Glashaus 2 × 3 m', 'Gartenhütte 2 × 2 m'] },
+    { key: 'alles', h: 'Ein Ansprechpartner.', txt: 'Vom Fundament bis zum letzten Baum. Ein Ansprechpartner für alle Gewerke, keine Koordination zwischen Firmen.' /* 2. Satz Q (Dazu kommt) */,
+      fakten: [] }
+  ],
+  hint: 'Tippe auf eine Nummer und sieh dich um.'
+};
+export const GRUND_UI = { drehen: 'Ziehen dreht das Modell', zurueck: 'Ganzes Grundstück', weiter: 'Weiter', modell: 'Grundstück im Modell', schritt: 'Schritt', naeher: 'Näher', weiter2: 'Weiter weg' };
+
+/* Ausbaustufen als Geschichte (Runde 48): je Bereich der Teil im Haus, der hell bleibt (js/schnitthaus.js). null = ganzes Haus */
+export const STUFEN_TEIL = {
+  'Beratung und Planung': 'openspace', 'Baustelle': null, 'Die GRIFFNER Wand': 'wand', 'Fassade': 'fassade', 'Dach': 'dach',
+  'Geschossdecke': 'decke', 'Fenster': 'fenster', 'Haustür': 'tuer', 'Beschattung und Insektenschutz': 'fenster', 'Feuchtemonitoring': 'dach',
+  'Spengler': 'fassade', 'Terrasse, Carport und Überdachungen': null,
+  'Wärme': 'technik', 'Elektro': 'technik', 'Sanitärinstallation': 'technik', 'Estrich und Fußbodenaufbau': 'parkett',
+  'Böden, Treppe, Türen': 'treppe', 'Bodenbelag': 'parkett', 'Fliesen': null, 'Innentüren': null, 'Sanitäreinrichtung': null, 'Oberflächen': 'wand', 'Übergabe': null
+};
+/* EIGEN: Abschluss der drei Stufen und der Weg nach draußen (Leistungsumfang) */
+export const RUND = {
+  schluss: 'Schlüsselfertig. Du kannst einziehen.',
+  info: 'Rund ums Haus', h: 'Und alles, was dazugehört.',
+  txt: 'Schlüsselfertig ist das Haus. Auf Wunsch bauen wir weiter, vom Fundament bis zum Garten, mit demselben Ansprechpartner.',
+  liste: ['Fundament', 'Das Haus', 'Innenausbau und Interior', 'Carport', 'Terrasse', 'Pool', 'Garten', 'Sauna, Glashaus, Gartenhütte'],
+  link: 'Im 3D Modell ansehen'
+};

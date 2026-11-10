@@ -112,8 +112,8 @@ export async function createSchnitthaus(host, opt = {}) {
         add(cube(1.2, y, -ZI, LX - W, y1, ZI), pm('parkett', 'screed'), 'parkett', floorEG);
         /* Heizrohre am Schnitt: Stufe 2 offen, in Stufe 3 ist der Estrich bis zum Schnitt gegossen */
         const pipes = stage(2, 'grow', y, 2);
-        for (let z = -ZI + .2; z < ZI - .1; z += .15) add(cube(.06, y, z - .009, 1.2, y + .018, z + .009), pm('parkett', 'pipe'), 'parkett', pipes, { cast: false });
-        for (let z = -ZI + .2; z < ZI - .25; z += .3) { add(cube(.06, y, z, .078, y + .018, z + .15), pm('parkett', 'pipe'), 'parkett', pipes, { cast: false }); }
+        for (let z = -ZI + .2; z < ZI - .1; z += .15) add(cube(.06, y, z - .009, 1.2, y + .018, z + .009), pm('technik', 'pipe'), 'technik', pipes, { cast: false });
+        for (let z = -ZI + .2; z < ZI - .25; z += .3) { add(cube(.06, y, z, .078, y + .018, z + .15), pm('technik', 'pipe'), 'technik', pipes, { cast: false }); }
         const fill = stage(3, 'grow', y);
         add(cube(0, y, -ZI, 1.2, y1, ZI), pm('parkett', 'screed'), 'parkett', fill);
       } else add(cube(0, y, -ZI, LX - W, y1, ZI), pm('parkett', L.m), 'parkett', floorEG);
@@ -236,48 +236,48 @@ export async function createSchnitthaus(host, opt = {}) {
   {
     const d = OPEN.back.find(o => o.door), u0 = d.x0, u1 = d.x1, v0 = d.y0, v1 = d.y1, fw = .085;
     const al = pm('tuer', 'alu'), wd = pm('tuer', 'frameNatur');
-    add(cube(u0, v1 - fw, .07, u1, v1, .175), al, null, gB); add(cube(u0, v0, .07, u0 + fw, v1 - fw, .175), al, null, gB); add(cube(u1 - fw, v0, .07, u1, v1 - fw, .175), al, null, gB);
-    add(cube(u0 + fw, v0, .07, u0 + fw + .07, v1 - fw, .175), al, null, gB);
+    add(cube(u0, v1 - fw, .07, u1, v1, .175), al, 'tuer', gB); add(cube(u0, v0, .07, u0 + fw, v1 - fw, .175), al, 'tuer', gB); add(cube(u1 - fw, v0, .07, u1, v1 - fw, .175), al, 'tuer', gB);
+    add(cube(u0 + fw, v0, .07, u0 + fw + .07, v1 - fw, .175), al, 'tuer', gB);
     const lu0 = u0 + fw + .07, lu1 = u1 - fw;
-    add(cube(lu0, v0 + .01, .075, lu1, v1 - fw, .1), al, null, gB);
-    add(cube(lu0, v0 + .01, .1, lu1, v1 - fw, .165), wd, null, gB);
-    add(cube(lu1 - .155, v0 + .35, .035, lu1 - .12, v0 + 1.95, .07), pm('tuer', 'steel'), null, gB);
-    [.11, .127].forEach(w => add(cube(u0 + fw, v0 + .02, w, u0 + fw + .07, v1 - fw, w + .006), glass, null, gB, { cast: false }));
-    reveal(gB, u0, u1, v0, v1, pm('tuer', 'paint'), al, null, .175, .07);
+    add(cube(lu0, v0 + .01, .075, lu1, v1 - fw, .1), al, 'tuer', gB);
+    add(cube(lu0, v0 + .01, .1, lu1, v1 - fw, .165), wd, 'tuer', gB);
+    add(cube(lu1 - .155, v0 + .35, .035, lu1 - .12, v0 + 1.95, .07), pm('tuer', 'steel'), 'tuer', gB);
+    [.11, .127].forEach(w => add(cube(u0 + fw, v0 + .02, w, u0 + fw + .07, v1 - fw, w + .006), glass, 'tuer', gB, { cast: false }));
+    reveal(gB, u0, u1, v0, v1, pm('tuer', 'paint'), al, 'tuer', .175, .07);
   }
 
   /* ---------- Treppe: Rohbautreppe (Stufe 1 bis 2), Eiche mit Setzstufen und Geländer (Stufe 3) ---------- */
   {
     const raw = stage(1, 'grow', 0, 2);
     const r1 = C1 / NR;
-    for (let i = 0; i < NR - 1; i++) add(cube(SX + GO * i, r1 * (i + 1) - .05, -ZI + .06, SX + GO * (i + 1) + .02, r1 * (i + 1), -ZI + SW - .06), pm('g', 'spruce'), null, raw);
-    [-ZI + .06, -ZI + SW - .06].forEach(z => add(prism('z', [[SX, 0], [SX + .3, 0], [SX1 + .02, C1 - .25], [SX1 + .02, C1], [SX1 - .3, C1]], z - .05, z), pm('g', 'spruce'), null, raw));
+    for (let i = 0; i < NR - 1; i++) add(cube(SX + GO * i, r1 * (i + 1) - .05, -ZI + .06, SX + GO * (i + 1) + .02, r1 * (i + 1), -ZI + SW - .06), pm('treppe', 'spruce'), 'treppe', raw);
+    [-ZI + .06, -ZI + SW - .06].forEach(z => add(prism('z', [[SX, 0], [SX + .3, 0], [SX1 + .02, C1 - .25], [SX1 + .02, C1], [SX1 - .3, C1]], z - .05, z), pm('treppe', 'spruce'), 'treppe', raw));
     const oak = stage(3, 'grow', 0);
     const r = (F1 - F0) / NR;
     for (let i = 0; i < NR - 1; i++) {
       const y = F0 + r * (i + 1);
-      add(cube(SX + GO * i - .03, y - .045, -ZI, SX + GO * (i + 1), y, -ZI + SW), pm('g', 'oak'), null, oak);
-      add(cube(SX + GO * i, y - r, -ZI, SX + GO * i + .02, y - .045, -ZI + SW), pm('g', 'oak'), null, oak);
+      add(cube(SX + GO * i - .03, y - .045, -ZI, SX + GO * (i + 1), y, -ZI + SW), pm('treppe', 'oak'), 'treppe', oak);
+      add(cube(SX + GO * i, y - r, -ZI, SX + GO * i + .02, y - .045, -ZI + SW), pm('treppe', 'oak'), 'treppe', oak);
     }
-    add(cube(SX + GO * (NR - 1), F1 - r, -ZI, SX + GO * (NR - 1) + .02, F1 - .015, -ZI + SW), pm('g', 'oak'), null, oak);
-    add(prism('z', [[SX, F0], [SX + .32, F0], [SX1, F1 - .18], [SX1, F1], [SX1 - .32, F1]], -ZI + SW, -ZI + SW + .05), pm('g', 'oak'), null, oak);
+    add(cube(SX + GO * (NR - 1), F1 - r, -ZI, SX + GO * (NR - 1) + .02, F1 - .015, -ZI + SW), pm('treppe', 'oak'), 'treppe', oak);
+    add(prism('z', [[SX, F0], [SX + .32, F0], [SX1, F1 - .18], [SX1, F1], [SX1 - .32, F1]], -ZI + SW, -ZI + SW + .05), pm('treppe', 'oak'), 'treppe', oak);
     /* Geländer in Eiche am Treppenloch */
-    for (let x = SX0 + .06; x < SX1 - .02; x += .11) add(cube(x, F1, -ZI + SW - .04, x + .035, F1 + .98, -ZI + SW), pm('g', 'oak'), null, oak);
-    add(cube(SX0, F1 + .98, -ZI + SW - .06, SX1, F1 + 1.03, -ZI + SW + .01), pm('g', 'oak'), null, oak);
-    for (let z = -ZI + .06; z < -ZI + SW - .05; z += .11) add(cube(SX0, F1, z, SX0 + .035, F1 + .98, z + .035), pm('g', 'oak'), null, oak);
-    add(cube(SX0 - .02, F1 + .98, -ZI, SX0 + .05, F1 + 1.03, -ZI + SW), pm('g', 'oak'), null, oak);
+    for (let x = SX0 + .06; x < SX1 - .02; x += .11) add(cube(x, F1, -ZI + SW - .04, x + .035, F1 + .98, -ZI + SW), pm('treppe', 'oak'), 'treppe', oak);
+    add(cube(SX0, F1 + .98, -ZI + SW - .06, SX1, F1 + 1.03, -ZI + SW + .01), pm('treppe', 'oak'), 'treppe', oak);
+    for (let z = -ZI + .06; z < -ZI + SW - .05; z += .11) add(cube(SX0, F1, z, SX0 + .035, F1 + .98, z + .035), pm('treppe', 'oak'), 'treppe', oak);
+    add(cube(SX0 - .02, F1 + .98, -ZI, SX0 + .05, F1 + 1.03, -ZI + SW), pm('treppe', 'oak'), 'treppe', oak);
   }
 
   /* ---------- Haustechnik (Stufe 2): Wärmepumpe außen, Schalter und Steckdosen ---------- */
   {
     const hp = stage(2, 'drop', GR + .02);
     const x = LE + 1.0, z = HD - .9;
-    add(cube(x - .2, GR + .02, z - .55, x + .26, GR + 1.0, z + .55), pm('g', 'white'), null, hp);
-    add(cube(x + .26, GR + .1, z - .45, x + .275, GR + .92, z + .45), pm('g', 'dark'), null, hp);
+    add(cube(x - .2, GR + .02, z - .55, x + .26, GR + 1.0, z + .55), pm('technik', 'white'), 'technik', hp);
+    add(cube(x + .26, GR + .1, z - .45, x + .275, GR + .92, z + .45), pm('technik', 'dark'), 'technik', hp);
     add(cube(x - .25, GR + .015, z - .62, x + .32, GR + .03, z + .62), pm('g', 'concrete'), null, hp);
     const el = stage(2, 'drop', 0);
-    [[7.3, .45], [5.35, 1.05], [.5, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, -ZI, x + .04, F0 + y + .04, -ZI + .012), pm('g', 'white'), null, el, { cast: false }));
-    [[3.8, .45], [7.6, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, ZI - .012, x + .04, F0 + y + .04, ZI), pm('g', 'white'), null, el, { cast: false }));
+    [[7.3, .45], [5.35, 1.05], [.5, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, -ZI, x + .04, F0 + y + .04, -ZI + .012), pm('technik', 'white'), 'technik', el, { cast: false }));
+    [[3.8, .45], [7.6, .45]].forEach(([x, y]) => add(cube(x - .04, F0 + y - .04, ZI - .012, x + .04, F0 + y + .04, ZI), pm('technik', 'white'), 'technik', el, { cast: false }));
   }
 
   /* ---------- Möbel (nur „erkunden“) ---------- */
@@ -401,7 +401,7 @@ export async function createSchnitthaus(host, opt = {}) {
     ray.setFromCamera({ x: (e.clientX - r.left) / r.width * 2 - 1, y: -(e.clientY - r.top) / r.height * 2 + 1 }, cam);
     pickList = pickList || pickables();
     const hits = ray.intersectObjects(pickList, false).filter(h => visibleChain(h.object));
-    const h = hits.find(h => h.object.userData.part && h.object.userData.part !== 'tuer');
+    const h = hits.find(h => h.object.userData.part && VIEW[h.object.userData.part]);
     return h ? h.object.userData.part : null;
   }
   let hovT = 0;
@@ -468,6 +468,8 @@ export async function createSchnitthaus(host, opt = {}) {
       host.classList.toggle('has-sel', !!sel);
       opt.onSelect && opt.onSelect(sel);
     },
+    /* Runde 48: nur hell machen, der Blick bleibt (Ausbaustufen, der Bereich, den du gerade liest) */
+    focus(k) { if ((k || null) === sel) return; sel = k || null; applyDim(); host.classList.toggle('has-sel', !!sel); poke(); },
     get selected() { return sel; },
     set(k, v) { state[k] = v; applyWahl(); },
     get wahl() { return { ...state }; },

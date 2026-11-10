@@ -17,7 +17,7 @@
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body data-page="leistungsumfang">
-<!-- ERZEUGT von tools/services-seiten.mjs (Runde 46), Texte in data/leistungen.js. Nicht von Hand ändern. -->
+<!-- ERZEUGT von tools/services-seiten.mjs (Runde 48), Texte in data/leistungen.js. Nicht von Hand ändern. -->
 <div class="site">
   <div class="bgl" data-bgl aria-hidden="true"></div>
   <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
@@ -181,10 +181,10 @@
       </div>
     </section>
 
-    <!-- 03 LIEFERUMFANG (Runde 47): links Concept Bold im Schnitt (bleibt stehen) mit der Leiste 01 02 03, rechts die drei Stufen
-         untereinander. Die gewählte Stufe ist offen und zeigt direkt darunter, was dazukommt, das Haus baut sich mit. -->
+    <!-- 03 LIEFERUMFANG (Runde 48): die drei Stufen als Geschichte. Links bleibt Concept Bold im Schnitt stehen, mit großer Nummer und der Leiste,
+         die sich beim Lesen füllt. Rechts jede Stufe mit allen Positionen offen; das Haus baut sich mit und macht den Bereich hell, den du gerade liest. -->
     <section id="u-stufen" class="svl" data-room="u-stufen">
-      <div class="wrap pad-y">
+      <div class="wrap pad-t">
         <div class="kap info" data-reveal="0"><span>Der Lieferumfang, schwarz auf weiß</span><span>Ausbaustufen</span></div>
         <div class="g12 khd">
           <h2 class="h-xl c-1-7" data-reveal="0">So entsteht dein Haus.</h2>
@@ -192,153 +192,171 @@
           <p class="txt">Ausbaufertig, belagsfertig, schlüsselfertig. Jede Stufe schließt die vorige ein. Alles, was hier steht, ist im Preis inbegriffen.</p>
           </div>
         </div>
-        <div class="st" data-st>
-          <div class="st__vis">
-            <div class="st__stage" data-st-stage><p class="sh__name info" aria-hidden="true">Concept Bold im Schnitt</p><p class="sh__drag info" aria-hidden="true">Ziehen dreht das Haus</p></div>
-            <div class="st__meter" aria-hidden="true">
-              <button type="button" class="st__seg is-on is-cur" tabindex="-1" data-st-seg="1"><i></i><span class="info">01<span class="st__segn"> Ausbaufertig</span></span></button>
-              <button type="button" class="st__seg" tabindex="-1" data-st-seg="2"><i></i><span class="info">02<span class="st__segn"> Belagsfertig</span></span></button>
-              <button type="button" class="st__seg" tabindex="-1" data-st-seg="3"><i></i><span class="info">03<span class="st__segn"> Schlüsselfertig</span></span></button>
+      </div>
+      <div class="wrap">
+        <div class="sts" data-sts>
+          <div class="sts__vis">
+            <div class="sts__top">
+              <p class="sts__nr" aria-hidden="true"><span class="info sts__k">Ausbaustufe</span><span class="sts__big"><span data-sts-nr>01</span></span><span class="info sts__of">/ 03</span></p>
+              <div class="sts__names" aria-hidden="true"><span class="sts__name is-on" data-sts-name>Ausbaufertig</span><span class="sts__name" data-sts-name>Belagsfertig</span><span class="sts__name" data-sts-name>Schlüsselfertig</span></div>
+            </div>
+            <div class="st__stage sts__stage" data-st-stage><p class="sh__name info sts__now" aria-hidden="true"><span>Concept Bold im Schnitt</span><b data-sts-now></b></p><p class="sh__drag info" aria-hidden="true">Ziehen dreht das Haus</p></div>
+            <div class="sts__meter" aria-hidden="true">
+              <span class="sts__seg is-cur" data-sts-seg><i></i><span class="info">01<span class="sts__segn"> Ausbaufertig</span></span></span>
+              <span class="sts__seg" data-sts-seg><i></i><span class="info">02<span class="sts__segn"> Belagsfertig</span></span></span>
+              <span class="sts__seg" data-sts-seg><i></i><span class="info">03<span class="sts__segn"> Schlüsselfertig</span></span></span>
             </div>
           </div>
-          <div class="st__list">
-            <p class="st__hint info">Wähle eine Stufe. Das Haus zeigt, was dazukommt.</p>
-            <ol class="stp">
-              <li class="stp__it is-on" data-stp="1">
-                <button type="button" class="stp__btn" aria-expanded="true" aria-controls="stp-1" data-st-tab="1">
-                  <span class="stp__nr info">01</span><span class="stp__name">Ausbaufertig</span><span class="stp__lead">Hülle, Dach, Fenster, Türen.</span>
-                </button>
-                <div class="stp__body" id="stp-1">
-                  
-                  <p class="stp__p">Hülle, Dach, Fenster und Haustür stehen, innen die rohe Gipsfaserplatte und die Rohbautreppe.</p>
-                  <button type="button" class="stp__all info" aria-expanded="false" aria-controls="stp-all-1" data-stp-all><span>Alle 57 Positionen ansehen</span><span>Schließen</span></button>
-                  <div class="stp__more" id="stp-all-1" hidden>
-                  <ul class="acc">
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-1" data-acc><span class="acc__h">Beratung und Planung</span><span class="acc__n info"><span>14 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-1" hidden><ul><li>Persönlicher Projektmanager vom ersten Schritt bis zur Übergabe</li><li>Beratung durch Architektur- und Design-Profis</li><li>Erhebung der Bebauungsbestimmungen für dein Grundstück</li><li>Situierung des Hauses und Höhenaufnahme am Grundstück</li><li>Besichtigung der Zufahrt vor der Montage</li><li>Unterstützung bei allen behördlichen Wegen</li><li>Begleitung bei den Fragen rund um die Finanzierung</li><li>GRIFFNER Open Space: wenige Lastenpunkte ermöglichen ein flexibles Raumkonzept</li><li>Einreichplanung samt Energieausweis</li><li>Werkplanung deines Hauses bis ins letzte Detail</li><li>Statik, abgestimmt auf Standort und Bauplatz</li><li>Detaillösungen aus der Erfahrung von über 75 Jahren Holzbau</li><li>Planung der Schnittstellen zu Baumeister und Eigenleistung</li><li>GRIFFNER Bauleiter ab dem ersten Termin auf deinem Grundstück</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-2" data-acc><span class="acc__h">Baustelle</span><span class="acc__n info"><span>4 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-2" hidden><ul><li>Kran, LKW, Gerüst und Baustellen-WC für die Montage</li><li>Erhöht regensichere Dachhaut in einem Arbeitsgang, dein Haus steht von Anfang an trocken</li><li>Rohbautreppe für die Bauphase</li><li>Baustellenabfallentsorgung</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-3" data-acc><span class="acc__h">Die GRIFFNER Wand</span><span class="acc__n info"><span>6 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-3" hidden><ul><li>Dreischaliger Aufbau, hinterlüftet, 42,25 cm stark, ohne PVC-Folien</li><li>Eigene Installationsebene, Leitungen bleiben jederzeit zugänglich</li><li>U-Wert 0,147 W/m²K, diffusionsoffener Aufbau</li><li>Ökologische Baustoffe: Holz, Holzwerkstoffplatten, Holzfaser, Zellulose, Gipsfaserplatte</li><li>Trockene Bauweise, wohngesund ab dem ersten Tag</li><li>Fassade in Putz und Holz, aufwertbar auf Platte, Stein, Glas oder PV-Panel</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-4" data-acc><span class="acc__h">Fassade</span><span class="acc__n info"><span>6 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-4" hidden><ul><li>Holzfassade in Lärche unbehandelt, Rhombus mit offener Fuge, aufwertbar in vorvergrauten oder dunklen Farbtönen</li><li>Horizontal oder vertikal, je nach Architektur des Hauses</li><li>oder Putzfassade, auf der Baustelle geputzt oder werkseitig vorgefertigt</li><li>Vollflächige Fassadenbahn als zweite wasserführende Ebene</li><li>Verbesserung des sommerlichen Hitzeschutzes durch hinterlüftete Fassade</li><li>Sockelbleche in pulverbeschichtetem Aluminium</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-5" data-acc><span class="acc__h">Dach</span><span class="acc__n info"><span>7 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-5" hidden><ul><li>Flachdach in Massivholz</li><li>Sparren-Pfettendach bis zum First offen, Raumhöhen bis zu 5 m im Obergeschoss</li><li>Dacheindeckung in Betondachstein</li><li>Zwischensparrendämmung aus Holzfaser und Zellulose, U-Wert 0,13 W/m²K</li><li>Wärmedämmung beim Flachdach, U-Wert 0,14 W/m²K</li><li>Sicherheitsset für Arbeiten am Dach, für Rauchfangkehrer, PV-Installateure und Wartungspersonal</li><li>Lastabtragung der PV bereits berücksichtigt</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-6" data-acc><span class="acc__h">Geschossdecke</span><span class="acc__n info"><span>4 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-6" hidden><ul><li>Decken- und Dachkonstruktion für dein Haus einzeln bemessen, nach Statik und Grundriss als Massivholzdecke oder Tramdecke</li><li>Massivholzdecke in Sichtqualität, Farbe frei wählbar (natur oder weiß lasiert)</li><li>Sichttramdecke mit sichtbaren Balken, Farbe frei wählbar (natur oder weiß lasiert)</li><li>Raumhöhe 272 cm</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-7" data-acc><span class="acc__h">Fenster</span><span class="acc__n info"><span>5 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-7" hidden><ul><li>Holz-Alu-Fenster mit 3-fach-Verglasung, Ug 0,6 W/m²K</li><li>Verdeckt liegende Beschläge, kein sichtbares Scharnier</li><li>Innenseite in Natur lasiert, Weiß lasiert oder Schwarz, frei wählbar</li><li>Verbundsicherheitsglas in allen bodentiefen Elementen</li><li>Fensterbänke innen in Holz, außen in Aluminium, dicht an die Fassade angeschlossen</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-8" data-acc><span class="acc__h">Haustür</span><span class="acc__n info"><span>4 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-8" hidden><ul><li>Hochwertige, robuste Haustür in Holz-Aluminium mit Seitenteil</li><li>Schallschutz 27 dB, einbruchhemmende Mehrfachverriegelung</li><li>Stangengriff außen, Drücker innen, Edelstahl gebürstet</li><li>Elektrischer Türöffner, abgestimmt auf die Gegensprechanlage</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-9" data-acc><span class="acc__h">Beschattung und Insektenschutz</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-9" hidden><ul><li>Raffstore elektrisch bedienbar, stufenlos verstellbare Z-Lamelle 60 mm</li><li>Insektenschutz in Fensterfarbe, mindestens ein Element pro Raum</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-10" data-acc><span class="acc__h">Feuchtemonitoring</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-10" hidden><ul><li>Feuchtemonitoring im Bad, direkt auf der Holzdecke</li><li>Feuchtemonitoring im Flachdach</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-11" data-acc><span class="acc__h">Spengler</span><span class="acc__n info"><span>1 Position</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-11" hidden><ul><li>Spenglerarbeiten, Fensterbänke außen, Regenrinnen, Fallrohre, Geschoßtrennungen und Sockelbleche in beschichtetem Aluminium</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-1-12" data-acc><span class="acc__h">Terrasse, Carport und Überdachungen</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-1-12" hidden><ul><li>Terrassenüberdachung lt. Plan, mit Attika, EPDM-Abdichtung im Gefälle und Attikaverblechung</li><li>Carport mit Eingangsüberdachung lt. Plan, in derselben Ausführung</li></ul></div>
-                    </li>
-                  </ul>
-                  </div>
-                </div>
-              </li>
-              <li class="stp__it" data-stp="2">
-                <button type="button" class="stp__btn" aria-expanded="false" aria-controls="stp-2" data-st-tab="2">
-                  <span class="stp__nr info">02</span><span class="stp__name">Belagsfertig</span><span class="stp__lead">Wärme, Elektro, Sanitär, Estrich.</span>
-                </button>
-                <div class="stp__body" id="stp-2" hidden>
-                  <p class="stp__inc info">Zusätzlich zu Ausbaustufe 1.</p>
-                  <p class="stp__p">Dazu Wärmepumpe, Fußbodenheizung im Estrich, Elektro und Sanitär. Am Schnitt siehst du die Rohre unter dem Estrich.</p>
-                  <button type="button" class="stp__all info" aria-expanded="false" aria-controls="stp-all-2" data-stp-all><span>Alle 20 Positionen ansehen</span><span>Schließen</span></button>
-                  <div class="stp__more" id="stp-all-2" hidden>
-                  <ul class="acc">
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-2-1" data-acc><span class="acc__h">Wärme</span><span class="acc__n info"><span>4 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-2-1" hidden><ul><li>Wärmepumpe Viessmann Vitocal 250-A inklusive Kühlfunktion</li><li>Kühlen im Sommer über dieselbe Fußbodenheizung</li><li>Warmwasserspeicher 300 Liter</li><li>Fußbodenheizung in allen Räumen, händisch regelbar</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-2-2" data-acc><span class="acc__h">Elektro</span><span class="acc__n info"><span>9 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-2-2" hidden><ul><li>Komplette Elektroinstallation inklusive Sicherungs- und Erdungsanlage</li><li>Anzahl der Auslässe lt. Plan, abgestimmt auf dein Haus</li><li>Schalter und Steckdosen in hochwertigem Markendesign</li><li>Alle bodengeführten Leitungen im Schutzrohr, jederzeit nachziehbar</li><li>Rauchmelder in allen Wohn- und Schlafräumen</li><li>Gegensprechanlage</li><li>Patchkasten für das Hausnetzwerk</li><li>Vorbereitung für Photovoltaik</li><li>Vorbereitung für die Wallbox</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-2-3" data-acc><span class="acc__h">Sanitärinstallation</span><span class="acc__n info"><span>3 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-2-3" hidden><ul><li>Sanitäre Rohinstallation in korrosionsfreiem Verbundrohr</li><li>Gartenwasseranschluss mit Frostschutzarmatur</li><li>Vorbereitung für Entkalkungsanlage und Zirkulationsleitung</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-2-4" data-acc><span class="acc__h">Estrich und Fußbodenaufbau</span><span class="acc__n info"><span>4 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-2-4" hidden><ul><li>Fußbodenaufbau 21,5 cm in fünf Ebenen</li><li>Massiv-Estrich, ummantelt jedes Heizungsrohr vollflächig</li><li>Hohe Schüttungsebene, in der die Haustechnik verschwindet</li><li>Wärme- und Trittschalldämmung unterhalb des Estrichs</li></ul></div>
-                    </li>
-                  </ul>
-                  </div>
-                </div>
-              </li>
-              <li class="stp__it" data-stp="3">
-                <button type="button" class="stp__btn" aria-expanded="false" aria-controls="stp-3" data-st-tab="3">
-                  <span class="stp__nr info">03</span><span class="stp__name">Schlüsselfertig</span><span class="stp__lead">Böden, Fliesen, Bad, Türen, Wände.</span>
-                </button>
-                <div class="stp__body" id="stp-3" hidden>
-                  <p class="stp__inc info">Zusätzlich zu Ausbaustufe 1 und 2.</p>
-                  <p class="stp__p">Dazu Eichenparkett, die Treppe in Eiche, gestrichene Wände und die Innentüren. Du kannst einziehen.</p>
-                  <button type="button" class="stp__all info" aria-expanded="false" aria-controls="stp-all-3" data-stp-all><span>Alle 23 Positionen ansehen</span><span>Schließen</span></button>
-                  <div class="stp__more" id="stp-all-3" hidden>
-                  <ul class="acc">
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-1" data-acc><span class="acc__h">Böden, Treppe, Türen</span><span class="acc__n info"><span>1 Position</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-1" hidden><ul><li>Treppe und Geländer in Eiche, inklusive Setzstufen</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-2" data-acc><span class="acc__h">Bodenbelag</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-2" hidden><ul><li>Eichenparkett als Diele, gebürstet und naturmatt versiegelt</li><li>Erhöhte Sesselleiste aus Massivholz, passend zum Boden</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-3" data-acc><span class="acc__h">Fliesen</span><span class="acc__n info"><span>6 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-3" hidden><ul><li>Großformatige italienische Feinsteinzeugfliesen für Boden, Wand und Sockel</li><li>Wandfliesen raumhoch bis 240 cm in der Dusche</li><li>120 cm bei WC und Waschtisch, überall dort wo Wasser hinkommt</li><li>An den übrigen Wänden Sockelfliesen, darüber freie Wandfläche in Wandfarbe</li><li>Vielfältige Farbtöne zur Wahl</li><li>Abschlussschienen in eloxiertem Aluminium</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-4" data-acc><span class="acc__h">Innentüren</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-4" hidden><ul><li>Markeninnentüren in Weiß matt, gefälzt mit Umfassungszarge, 2,15 m Höhe</li><li>Drücker und Rosette in Edelstahl gebürstet oder Schwarz</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-5" data-acc><span class="acc__h">Sanitäreinrichtung</span><span class="acc__n info"><span>9 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-5" hidden><ul><li>Sanitärkeramik und Armaturen namhafter Markenhersteller</li><li>Bodengleiche Dusche 140 x 90 cm mit Edelstahlrinne</li><li>Walk-In-Glasabtrennung 140 x 200 cm</li><li>Showerpipe mit Kopf- und Handbrause und Thermostat</li><li>Doppelwaschtisch 130 cm mit Unterschrank, vier Auszüge</li><li>LED-Lichtspiegel 130 x 60 cm</li><li>Wand-WC spülrandlos mit Absenkautomatik</li><li>Badewanne 180 x 80 cm mit Wannenmischer und Brauseset</li><li>Handwaschbecken im Gäste-WC mit Unterschrank</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-6" data-acc><span class="acc__h">Oberflächen</span><span class="acc__n info"><span>2 Positionen</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-6" hidden><ul><li>Spachtelung in Oberflächengüte Q3</li><li>Zweifacher deckender Anstrich mit Silikatfarbe</li></ul></div>
-                    </li>
-                    <li class="acc__it">
-                      <button type="button" class="acc__btn" aria-expanded="false" aria-controls="acc-3-7" data-acc><span class="acc__h">Übergabe</span><span class="acc__n info"><span>1 Position</span><span>Schließen</span></span></button>
-                      <div class="acc__body" id="acc-3-7" hidden><ul><li>Projektmanagement und Bauleitung</li></ul></div>
-                    </li>
-                  </ul>
-                  </div>
-                </div>
-              </li>
+          <div class="sts__list">
+            <article class="stx" id="stufe-1" data-stx="1">
+              <header class="stx__head" data-stx-head>
+                <p class="stx__k info">Ausbaustufe 01 / 03</p>
+                <h3 class="stx__h"><span class="w"><span style="--i:0">Ausbaufertig.</span></span></h3>
+                <p class="stx__lead">Hülle, Dach, Fenster, Türen.</p>
+                <p class="stx__p">Hülle, Dach, Fenster und Haustür stehen, innen die rohe Gipsfaserplatte und die Rohbautreppe.</p>
+                <ul class="stx__meta info"><li><b>57</b> Positionen</li><li><b>12</b> Bereiche</li></ul>
+              </header>
+              <section class="stg" data-stg data-teil="openspace" data-name="Beratung und Planung">
+                <h4 class="stg__h"><span>Beratung und Planung</span><span class="info">14</span></h4>
+                <ul class="stg__l"><li style="--j:0">Persönlicher Projektmanager vom ersten Schritt bis zur Übergabe</li><li style="--j:1">Beratung durch Architektur- und Design-Profis</li><li style="--j:2">Erhebung der Bebauungsbestimmungen für dein Grundstück</li><li style="--j:3">Situierung des Hauses und Höhenaufnahme am Grundstück</li><li style="--j:4">Besichtigung der Zufahrt vor der Montage</li><li style="--j:5">Unterstützung bei allen behördlichen Wegen</li><li style="--j:6">Begleitung bei den Fragen rund um die Finanzierung</li><li style="--j:7">GRIFFNER Open Space: wenige Lastenpunkte ermöglichen ein flexibles Raumkonzept</li><li style="--j:8">Einreichplanung samt Energieausweis</li><li style="--j:9">Werkplanung deines Hauses bis ins letzte Detail</li><li style="--j:10">Statik, abgestimmt auf Standort und Bauplatz</li><li style="--j:11">Detaillösungen aus der Erfahrung von über 75 Jahren Holzbau</li><li style="--j:12">Planung der Schnittstellen zu Baumeister und Eigenleistung</li><li style="--j:13">GRIFFNER Bauleiter ab dem ersten Termin auf deinem Grundstück</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Baustelle">
+                <h4 class="stg__h"><span>Baustelle</span><span class="info">04</span></h4>
+                <ul class="stg__l"><li style="--j:0">Kran, LKW, Gerüst und Baustellen-WC für die Montage</li><li style="--j:1">Erhöht regensichere Dachhaut in einem Arbeitsgang, dein Haus steht von Anfang an trocken</li><li style="--j:2">Rohbautreppe für die Bauphase</li><li style="--j:3">Baustellenabfallentsorgung</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="wand" data-name="Die GRIFFNER Wand">
+                <h4 class="stg__h"><span>Die GRIFFNER Wand</span><span class="info">06</span></h4>
+                <ul class="stg__l"><li style="--j:0">Dreischaliger Aufbau, hinterlüftet, 42,25 cm stark, ohne PVC-Folien</li><li style="--j:1">Eigene Installationsebene, Leitungen bleiben jederzeit zugänglich</li><li style="--j:2">U-Wert 0,147 W/m²K, diffusionsoffener Aufbau</li><li style="--j:3">Ökologische Baustoffe: Holz, Holzwerkstoffplatten, Holzfaser, Zellulose, Gipsfaserplatte</li><li style="--j:4">Trockene Bauweise, wohngesund ab dem ersten Tag</li><li style="--j:5">Fassade in Putz und Holz, aufwertbar auf Platte, Stein, Glas oder PV-Panel</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="fassade" data-name="Fassade">
+                <h4 class="stg__h"><span>Fassade</span><span class="info">06</span></h4>
+                <ul class="stg__l"><li style="--j:0">Holzfassade in Lärche unbehandelt, Rhombus mit offener Fuge, aufwertbar in vorvergrauten oder dunklen Farbtönen</li><li style="--j:1">Horizontal oder vertikal, je nach Architektur des Hauses</li><li style="--j:2">oder Putzfassade, auf der Baustelle geputzt oder werkseitig vorgefertigt</li><li style="--j:3">Vollflächige Fassadenbahn als zweite wasserführende Ebene</li><li style="--j:4">Verbesserung des sommerlichen Hitzeschutzes durch hinterlüftete Fassade</li><li style="--j:5">Sockelbleche in pulverbeschichtetem Aluminium</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="dach" data-name="Dach">
+                <h4 class="stg__h"><span>Dach</span><span class="info">07</span></h4>
+                <ul class="stg__l"><li style="--j:0">Flachdach in Massivholz</li><li style="--j:1">Sparren-Pfettendach bis zum First offen, Raumhöhen bis zu 5 m im Obergeschoss</li><li style="--j:2">Dacheindeckung in Betondachstein</li><li style="--j:3">Zwischensparrendämmung aus Holzfaser und Zellulose, U-Wert 0,13 W/m²K</li><li style="--j:4">Wärmedämmung beim Flachdach, U-Wert 0,14 W/m²K</li><li style="--j:5">Sicherheitsset für Arbeiten am Dach, für Rauchfangkehrer, PV-Installateure und Wartungspersonal</li><li style="--j:6">Lastabtragung der PV bereits berücksichtigt</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="decke" data-name="Geschossdecke">
+                <h4 class="stg__h"><span>Geschossdecke</span><span class="info">04</span></h4>
+                <ul class="stg__l"><li style="--j:0">Decken- und Dachkonstruktion für dein Haus einzeln bemessen, nach Statik und Grundriss als Massivholzdecke oder Tramdecke</li><li style="--j:1">Massivholzdecke in Sichtqualität, Farbe frei wählbar (natur oder weiß lasiert)</li><li style="--j:2">Sichttramdecke mit sichtbaren Balken, Farbe frei wählbar (natur oder weiß lasiert)</li><li style="--j:3">Raumhöhe 272 cm</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="fenster" data-name="Fenster">
+                <h4 class="stg__h"><span>Fenster</span><span class="info">05</span></h4>
+                <ul class="stg__l"><li style="--j:0">Holz-Alu-Fenster mit 3-fach-Verglasung, Ug 0,6 W/m²K</li><li style="--j:1">Verdeckt liegende Beschläge, kein sichtbares Scharnier</li><li style="--j:2">Innenseite in Natur lasiert, Weiß lasiert oder Schwarz, frei wählbar</li><li style="--j:3">Verbundsicherheitsglas in allen bodentiefen Elementen</li><li style="--j:4">Fensterbänke innen in Holz, außen in Aluminium, dicht an die Fassade angeschlossen</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="tuer" data-name="Haustür">
+                <h4 class="stg__h"><span>Haustür</span><span class="info">04</span></h4>
+                <ul class="stg__l"><li style="--j:0">Hochwertige, robuste Haustür in Holz-Aluminium mit Seitenteil</li><li style="--j:1">Schallschutz 27 dB, einbruchhemmende Mehrfachverriegelung</li><li style="--j:2">Stangengriff außen, Drücker innen, Edelstahl gebürstet</li><li style="--j:3">Elektrischer Türöffner, abgestimmt auf die Gegensprechanlage</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="fenster" data-name="Beschattung und Insektenschutz">
+                <h4 class="stg__h"><span>Beschattung und Insektenschutz</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Raffstore elektrisch bedienbar, stufenlos verstellbare Z-Lamelle 60 mm</li><li style="--j:1">Insektenschutz in Fensterfarbe, mindestens ein Element pro Raum</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="dach" data-name="Feuchtemonitoring">
+                <h4 class="stg__h"><span>Feuchtemonitoring</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Feuchtemonitoring im Bad, direkt auf der Holzdecke</li><li style="--j:1">Feuchtemonitoring im Flachdach</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="fassade" data-name="Spengler">
+                <h4 class="stg__h"><span>Spengler</span><span class="info">01</span></h4>
+                <ul class="stg__l"><li style="--j:0">Spenglerarbeiten, Fensterbänke außen, Regenrinnen, Fallrohre, Geschoßtrennungen und Sockelbleche in beschichtetem Aluminium</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Terrasse, Carport und Überdachungen">
+                <h4 class="stg__h"><span>Terrasse, Carport und Überdachungen</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Terrassenüberdachung lt. Plan, mit Attika, EPDM-Abdichtung im Gefälle und Attikaverblechung</li><li style="--j:1">Carport mit Eingangsüberdachung lt. Plan, in derselben Ausführung</li></ul>
+              </section>
+            </article>
+            <article class="stx" id="stufe-2" data-stx="2">
+              <header class="stx__head" data-stx-head>
+                <p class="stx__k info">Ausbaustufe 02 / 03</p>
+                <h3 class="stx__h"><span class="w"><span style="--i:0">Belagsfertig.</span></span></h3>
+                <p class="stx__lead">Wärme, Elektro, Sanitär, Estrich.</p>
+                <p class="stx__p">Dazu Wärmepumpe, Fußbodenheizung im Estrich, Elektro und Sanitär. Am Schnitt siehst du die Rohre unter dem Estrich.</p>
+                <ul class="stx__meta info"><li><b>20</b> Positionen</li><li><b>4</b> Bereiche</li><li>Zusätzlich zu Ausbaustufe 1</li></ul>
+              </header>
+              <section class="stg" data-stg data-teil="technik" data-name="Wärme">
+                <h4 class="stg__h"><span>Wärme</span><span class="info">04</span></h4>
+                <ul class="stg__l"><li style="--j:0">Wärmepumpe Viessmann Vitocal 250-A inklusive Kühlfunktion</li><li style="--j:1">Kühlen im Sommer über dieselbe Fußbodenheizung</li><li style="--j:2">Warmwasserspeicher 300 Liter</li><li style="--j:3">Fußbodenheizung in allen Räumen, händisch regelbar</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="technik" data-name="Elektro">
+                <h4 class="stg__h"><span>Elektro</span><span class="info">09</span></h4>
+                <ul class="stg__l"><li style="--j:0">Komplette Elektroinstallation inklusive Sicherungs- und Erdungsanlage</li><li style="--j:1">Anzahl der Auslässe lt. Plan, abgestimmt auf dein Haus</li><li style="--j:2">Schalter und Steckdosen in hochwertigem Markendesign</li><li style="--j:3">Alle bodengeführten Leitungen im Schutzrohr, jederzeit nachziehbar</li><li style="--j:4">Rauchmelder in allen Wohn- und Schlafräumen</li><li style="--j:5">Gegensprechanlage</li><li style="--j:6">Patchkasten für das Hausnetzwerk</li><li style="--j:7">Vorbereitung für Photovoltaik</li><li style="--j:8">Vorbereitung für die Wallbox</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="technik" data-name="Sanitärinstallation">
+                <h4 class="stg__h"><span>Sanitärinstallation</span><span class="info">03</span></h4>
+                <ul class="stg__l"><li style="--j:0">Sanitäre Rohinstallation in korrosionsfreiem Verbundrohr</li><li style="--j:1">Gartenwasseranschluss mit Frostschutzarmatur</li><li style="--j:2">Vorbereitung für Entkalkungsanlage und Zirkulationsleitung</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="parkett" data-name="Estrich und Fußbodenaufbau">
+                <h4 class="stg__h"><span>Estrich und Fußbodenaufbau</span><span class="info">04</span></h4>
+                <ul class="stg__l"><li style="--j:0">Fußbodenaufbau 21,5 cm in fünf Ebenen</li><li style="--j:1">Massiv-Estrich, ummantelt jedes Heizungsrohr vollflächig</li><li style="--j:2">Hohe Schüttungsebene, in der die Haustechnik verschwindet</li><li style="--j:3">Wärme- und Trittschalldämmung unterhalb des Estrichs</li></ul>
+              </section>
+            </article>
+            <article class="stx" id="stufe-3" data-stx="3">
+              <header class="stx__head" data-stx-head>
+                <p class="stx__k info">Ausbaustufe 03 / 03</p>
+                <h3 class="stx__h"><span class="w"><span style="--i:0">Schlüsselfertig.</span></span></h3>
+                <p class="stx__lead">Böden, Fliesen, Bad, Türen, Wände.</p>
+                <p class="stx__p">Dazu Eichenparkett, die Treppe in Eiche, gestrichene Wände und die Innentüren. Du kannst einziehen.</p>
+                <ul class="stx__meta info"><li><b>23</b> Positionen</li><li><b>7</b> Bereiche</li><li>Zusätzlich zu Ausbaustufe 1 und 2</li></ul>
+              </header>
+              <section class="stg" data-stg data-teil="treppe" data-name="Böden, Treppe, Türen">
+                <h4 class="stg__h"><span>Böden, Treppe, Türen</span><span class="info">01</span></h4>
+                <ul class="stg__l"><li style="--j:0">Treppe und Geländer in Eiche, inklusive Setzstufen</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="parkett" data-name="Bodenbelag">
+                <h4 class="stg__h"><span>Bodenbelag</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Eichenparkett als Diele, gebürstet und naturmatt versiegelt</li><li style="--j:1">Erhöhte Sesselleiste aus Massivholz, passend zum Boden</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Fliesen">
+                <h4 class="stg__h"><span>Fliesen</span><span class="info">06</span></h4>
+                <ul class="stg__l"><li style="--j:0">Großformatige italienische Feinsteinzeugfliesen für Boden, Wand und Sockel</li><li style="--j:1">Wandfliesen raumhoch bis 240 cm in der Dusche</li><li style="--j:2">120 cm bei WC und Waschtisch, überall dort wo Wasser hinkommt</li><li style="--j:3">An den übrigen Wänden Sockelfliesen, darüber freie Wandfläche in Wandfarbe</li><li style="--j:4">Vielfältige Farbtöne zur Wahl</li><li style="--j:5">Abschlussschienen in eloxiertem Aluminium</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Innentüren">
+                <h4 class="stg__h"><span>Innentüren</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Markeninnentüren in Weiß matt, gefälzt mit Umfassungszarge, 2,15 m Höhe</li><li style="--j:1">Drücker und Rosette in Edelstahl gebürstet oder Schwarz</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Sanitäreinrichtung">
+                <h4 class="stg__h"><span>Sanitäreinrichtung</span><span class="info">09</span></h4>
+                <ul class="stg__l"><li style="--j:0">Sanitärkeramik und Armaturen namhafter Markenhersteller</li><li style="--j:1">Bodengleiche Dusche 140 x 90 cm mit Edelstahlrinne</li><li style="--j:2">Walk-In-Glasabtrennung 140 x 200 cm</li><li style="--j:3">Showerpipe mit Kopf- und Handbrause und Thermostat</li><li style="--j:4">Doppelwaschtisch 130 cm mit Unterschrank, vier Auszüge</li><li style="--j:5">LED-Lichtspiegel 130 x 60 cm</li><li style="--j:6">Wand-WC spülrandlos mit Absenkautomatik</li><li style="--j:7">Badewanne 180 x 80 cm mit Wannenmischer und Brauseset</li><li style="--j:8">Handwaschbecken im Gäste-WC mit Unterschrank</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="wand" data-name="Oberflächen">
+                <h4 class="stg__h"><span>Oberflächen</span><span class="info">02</span></h4>
+                <ul class="stg__l"><li style="--j:0">Spachtelung in Oberflächengüte Q3</li><li style="--j:1">Zweifacher deckender Anstrich mit Silikatfarbe</li></ul>
+              </section>
+              <section class="stg" data-stg data-teil="" data-name="Übergabe">
+                <h4 class="stg__h"><span>Übergabe</span><span class="info">01</span></h4>
+                <ul class="stg__l"><li style="--j:0">Projektmanagement und Bauleitung</li></ul>
+              </section>
+            </article>
+            <p class="stx__end" data-reveal="0">Schlüsselfertig. Du kannst einziehen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03b RUND UMS HAUS (Runde 48): das Grundstück als Linienplan (js/svc-grundplan.js), zeichnet sich beim Hereinscrollen; Zeigen auf eine Zeile macht den Teil im Plan gelb -->
+    <section id="u-rund" class="rund" data-room="u-rund">
+      <div class="wrap pad-y">
+        <div class="kap info" data-reveal="0"><span>Rund ums Haus</span><span>08</span></div>
+        <div class="g12 khd">
+          <h2 class="h-xl c-1-7" data-reveal="0">Und alles, was dazugehört.</h2>
+          <div class="c-9-4 al-end khd__txt" data-reveal="120">
+          <p class="txt">Schlüsselfertig ist das Haus. Auf Wunsch bauen wir weiter, vom Fundament bis zum Garten, mit demselben Ansprechpartner.</p>
+          </div>
+        </div>
+        <div class="rp" data-rp>
+          <svg class="rp__svg" data-rp-svg role="img" aria-label="Grundstück als Plan: Haus, Carport, Terrassen, Pool, Garten, Sauna, Glashaus und Gartenhütte"></svg>
+          <div class="rp__side">
+            <ol class="rp__list">
+              <li><button type="button" class="rp__it" data-rp-it="1"><span class="info">01</span><span class="rp__t">Fundament</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="2"><span class="info">02</span><span class="rp__t">Das Haus</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="3"><span class="info">03</span><span class="rp__t">Innenausbau und Interior</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="4"><span class="info">04</span><span class="rp__t">Carport</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="5"><span class="info">05</span><span class="rp__t">Terrasse</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="6"><span class="info">06</span><span class="rp__t">Pool</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="7"><span class="info">07</span><span class="rp__t">Garten</span></button></li>
+              <li><button type="button" class="rp__it" data-rp-it="8"><span class="info">08</span><span class="rp__t">Sauna, Glashaus, Gartenhütte</span></button></li>
             </ol>
+            <a class="ak__go rp__go" href="leistungen.html#s-grund">Im 3D Modell ansehen</a>
           </div>
         </div>
       </div>

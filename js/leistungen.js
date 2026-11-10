@@ -1,12 +1,13 @@
 /* Services Übersicht (leistungen.html, Runde 45, Runde 46). Die Geschichte in sechs Schritten:
    Hero „Der Plan“ → das Übliche wird durchgestrichen → drei Versprechen als Bildfolge → 01 Open Space Grundriss (Wände wandern, selbst zeichnen)
    → 02 zehn Monate auf einer Linie (der Connector ist der Punkt) → 03 Concept Bold im Schnitt mit den acht Dingen
+   → 04 alles aus einer Hand: das Grundstück baut sich über das Scrollen (Runde 48)
    → das Feld öffnet sich zum Bild, Weg zum Leistungsumfang → Katalog. */
 import { loop, reveal, $, $$, prog, clamp, seg, E, reduce, vhs } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initPlan } from './svc-plan.js';
 import { initFolge, initMore } from './svc-ui.js';
-import { ACHT, UEBERSICHT as U, WAHL, DETAIL, UI } from '../data/leistungen.js';
+import { ACHT, UEBERSICHT as U, WAHL, DETAIL, UI, GRUND } from '../data/leistungen.js';
 
 /* Kurze Beschriftung der Nummern am Haus (beim Zeigen) */
 const MARK = { openspace: 'Open Space', wand: 'Wand 42,25 cm', dach: 'Flachdach in Massivholz', fenster: 'Holz-Alu, dreifach', decke: 'Massivholzdecke', parkett: 'Eiche, 21,5 cm', raumhoehe: '2,72 m', fassade: 'Lärche oder Putz' };
@@ -24,6 +25,7 @@ run('mehr-text', () => initMore(document));
 run('openspace', initOpenSpace);
 run('zeit', initZeit);
 run('haus', initHaus);
+run('grund', initGrund);
 run('mehr', initMehr);
 
 /* ---------- Mehr: das Feld öffnet sich zum Bild, wie das Intro auf griffner.com ---------- */
@@ -287,3 +289,62 @@ function initHaus() {
   }
 }
 void U; void E; void clamp;
+
+/* ---------- 04 Alles aus einer Hand (Runde 48): gepinnt, zehn Schritte zu je 0,9 Bildschirmhöhen.
+   Der Fortschritt u (0 bis 9) baut das Grundstück im Modell und führt die Kamera; der Text links wechselt, wenn die Kamera halb da ist.
+   Im letzten Schritt sind die Nummern am Modell Wegweiser: Klick fliegt hin und zeigt den Text des Schritts, „Ganzes Grundstück“ zurück. ---------- */
+function initGrund() {
+  const box = $('[data-gs]'); if (!box) return;
+  const stage = $('[data-gs-stage]', box), its = $$('[data-gs-it]', box), dots = $$('[data-gs-go]', box), nr = $('[data-gs-nr]', box);
+  const back = $('[data-gs-back]', box), reset = $('[data-gs-reset]', box), txt = $('.gs__txt', box);
+  const N = its.length, STEP = .9;
+  let api = null, cur = -1, pick = null;
+  const NN = n => String(n).padStart(2, '0');
+  const show = (k, from) => {
+    if (k === cur) return; cur = k;
+    its.forEach((it, i) => { it.classList.toggle('is-on', i === k); it.classList.toggle('is-past', i < k); it.setAttribute('aria-hidden', i === k ? 'false' : 'true'); });
+    if (nr) nr.textContent = NN(k + 1);
+    if (from !== 'pick') dots.forEach((d, i) => { d.classList.toggle('is-on', i <= k); d.classList.toggle('is-cur', i === k); d.setAttribute('aria-current', i === k ? 'step' : 'false'); });
+  };
+  const uNow = () => { const r = box.getBoundingClientRect(); return clamp(-r.top / (vhs() * STEP), 0, N - 1 + .5); };
+  const fitPad = () => {
+    if (!api) return;
+    if (innerWidth < 810) { api.pad(0); return; }
+    const a = stage.getBoundingClientRect(), b = txt.getBoundingClientRect();
+    api.pad(Math.max(0, b.right - a.left + 24));
+  };
+  loop.add({ tick() {
+    const r = box.getBoundingClientRect(), vh = vhs();
+    if (r.bottom < -vh * .2 || r.top > vh * 1.2) return;
+    const u = uNow();
+    if (api) api.setU(u);
+    if (pick == null) show(Math.min(N - 1, Math.floor(u + .38)));
+    box.classList.toggle('is-end', u > N - 1.45);
+  } });
+  /* Sprung zu einem Schritt: Mitte seiner Standzeit */
+  dots.forEach(d => d.addEventListener('click', () => {
+    if (api && pick != null) api.select(null);
+    const i = +d.dataset.gsGo, top = box.getBoundingClientRect().top + scrollY + (i + (i === N - 1 ? .2 : .05)) * STEP * vhs();
+    scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+  }));
+  const onPick = i => { if (!api) return; api.select(pick === i ? null : i); };
+  const onSelect = i => {
+    pick = i;
+    box.classList.toggle('is-pick', i != null);
+    if (back) back.hidden = i == null;
+    if (i != null) show(i, 'pick'); else { cur = -1; show(Math.min(N - 1, Math.floor(uNow() + .38))); }
+  };
+  if (back) back.addEventListener('click', () => api && api.select(null));
+  if (reset) reset.addEventListener('click', () => { if (api) { api.reset(); reset.hidden = true; } });
+  $$('[data-gs-zoom]', box).forEach(b => b.addEventListener('click', () => { if (api) { api.zoom(+b.dataset.gsZoom); if (reset) reset.hidden = !api.moved; } }));
+  addEventListener('resize', fitPad);
+  const io = new IntersectionObserver(es => {
+    if (!es.some(e => e.isIntersecting)) return; io.disconnect();
+    import('./grundstueck3d.js').then(m => m.createGrundstueck(stage, {
+      labels: GRUND.schritte.map(x => x.h), onPick, onSelect,
+      onUser: () => { if (reset && api) reset.hidden = !api.moved; }
+    })).then(a => { api = a; stage.classList.add('is-live'); fitPad(); api.setU(uNow()); loop.poke(); })
+      .catch(e => { console.warn('Grundstück nicht geladen', e); stage.classList.add('is-fallback'); });
+  }, { rootMargin: '900px 0px' });
+  io.observe(box);
+}
