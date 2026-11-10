@@ -390,6 +390,7 @@ section{position:relative}
   .fo--acht .fo__frame{grid-column:1 / span 5}
   .fo__side{grid-column:6 / -1}
   .st__vis{grid-column:1 / span 6}
+  .st__segn{display:none}
   .st__list{grid-column:7 / -1}
   .dz__count{grid-column:1 / span 3}
   .dz__list{grid-column:5 / -1}
