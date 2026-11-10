@@ -84,11 +84,15 @@ const FOOTER = `
       <span class="ft__wm" role="img" aria-label="GRIFFNER"></span>
       <div class="ft__base info"><span>Griffen / AT / 46.70 N / 14.73 E</span><span class="ft__legal"><a href="${G}/imprint">Impressum</a><a href="${G}/privacy">Datenschutz</a><span>Cookie-Einstellungen</span></span></div>
     </div>`;
+/* Runde 45: auf den Entwürfen der Services (leistungen.html, leistungsumfang.html) ist Services ein Link und die aktuelle Seite */
+const SVC = /^leistung/.test((document.body && document.body.dataset.page) || '');
+const svcMenu = m => m.replace(' aria-current="page" data-img="assets/img/wald-garten-ecke.jpg"', ' data-img="assets/img/wald-garten-ecke.jpg"')
+  .replace('<li class="is-soon"><span>Services</span><span class="info">Coming 13.11.</span></li>', '<li><a href="leistungen.html" aria-current="page" data-img="assets/img/svc-bauen.jpg" data-cap="Was drin steckt">Services</a></li>');
 function mount() {
   const hd = $('[data-header]'), mn = $('[data-menu]'), ft = $('[data-footer]');
   if (hd && !hd.children.length) hd.innerHTML = HEADER;
-  if (mn && !mn.children.length) mn.innerHTML = MENU;
-  if (ft && !ft.children.length) ft.innerHTML = FOOTER;
+  if (mn && !mn.children.length) mn.innerHTML = SVC ? svcMenu(MENU) : MENU;
+  if (ft && !ft.children.length) ft.innerHTML = SVC ? FOOTER.replace('<span class="is-dim">Services</span>', '<a href="leistungen.html">Services</a>') : FOOTER;
 }
 
 let bgl, conn, ctop, cbot, hk, sk, rooms, introAt = 0, progEl, gbg = '';
