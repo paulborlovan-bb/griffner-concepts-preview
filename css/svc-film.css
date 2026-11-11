@@ -147,12 +147,26 @@
   .svf-m__dot::before{inset:12px}
   .svf-m--lay .svf-m__t{top:-11px;padding:6px 8px 7px}
   .svf-m--lay .svf-m__t b{font-size:12px}
+  /* Runde 54: Ebenen-Schilder am Telefon kleiner und auf dunklem Grund, damit sie über dem Modell lesbar bleiben */
+  .svf-m--lay3>span:last-child{background:rgba(0,0,0,.72);padding:3px 6px 4px;gap:1px!important}
+  .svf-m--lay3>span:last-child>span:first-child{font-size:12px!important}
+  .svf-m--lay3>span:last-child>span+span{font-size:11px!important}
+  .svf-m--lay3>span:first-child{width:14px!important}
   .svf__nav{column-gap:12px;height:84px}
   .svf-nav__m{display:none}
   .svf-nav__n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:.1em}
   .svf-nav__sub{font-size:12px}
   .svf-cta{padding-right:var(--page-margin)}
   .svf-cta__box{grid-column:1 / -1;padding:56px 24px 44px}
+}
+/* Runde 54: kurze Telefone (SE, Safari mit Leisten): Kapiteltext etwas kompakter, damit über ihm genug Bühne für das 3D bleibt */
+@media (max-width:899px) and (max-height:700px){
+  .svf__ch{row-gap:10px;padding-bottom:108px}
+  .svf__h1{font-size:32px}
+  .svf__h{font-size:29px}
+  .svf__ch[data-ch="5"] .svf__h{font-size:26px}
+  .svf__ch[data-ch="11"] .svf__h,.svf__einmal{font-size:30px}
+  .svf__p,.svf-hp__x{font-size:15px;line-height:1.38}
 }
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf-m{transition:none}}
 .svf__src{display:none!important}

@@ -84,6 +84,13 @@ export function initServicesFilm() {
       el.classList.toggle('is-act', vf > .5);
       el.style.visibility = vf > .002 ? 'visible' : 'hidden';
     });
+    /* Runde 54: am Telefon endet die Bühne des 3D über dem Text des stärksten Kapitels (oder über der Karte eines Punkts) */
+    if (eng && eng.setStage && stage.clientWidth < 900) {
+      let best = null, bv = .01; ch.forEach(el => { const v = +el.style.opacity; if (v > bv) { bv = v; best = el; } });
+      if (focus && hp && hp.offsetHeight) best = hp;
+      const top = best ? best.offsetTop : stage.clientHeight * .5;
+      eng.setStage(72, Math.round(top - 20));
+    }
     /* Punkt nur im eigenen Kapitel */
     if (focus) { const ext = ['dach', 'wand', 'fenster', 'fassade', 'hoehe'].includes(focus); if (ext ? (P < 7.15 || P > 7.99) : (P < 8.22 || P > 8.99)) setFocus(null); }
     strikes.forEach((e, i) => { e.parentNode.style.setProperty('--x', s(1.12 + i * .17, 1.3 + i * .17).toFixed(3)); });

@@ -329,6 +329,19 @@ export async function createFilm(host, cfg = {}) {
     const a = K[i], b = K[i + 1], f = sm((P - a[0]) / (b[0] - a[0]));
     return a.map((v, j) => v + (b[j] - v) * f);
   };
+  /* Runde 54 (Kunde, Telefon: „Animation kleiner, damit alles zu sehen ist“): am Telefon steht das Bild in einer Bühne zwischen
+     Kopfzeile und Kapiteltext. NZ = Abstand der Kamera je Stelle (Faktor auf K) bei einer Bühne von 40 % der Höhe; ist die Bühne
+     kleiner (langer Text, kurzes Telefon), geht die Kamera entsprechend weiter weg. Die Mitte der Bühne liegt in der Bildmitte. */
+  const NZ = [
+    [0, 1.25], [1, 1.5], [1.75, 1.45], [2.3, 1.55], [2.6, 2.15], [3.1, 1.95], [3.3, 2.5], [3.9, 2.5],
+    [4.4, 2.0], [4.9, 2.0], [5.3, 2.05], [5.72, 2.05], [5.95, 1.75], [6.35, 1.9], [6.9, 1.9],
+    [7.2, 1.35], [7.95, 1.35], [8.35, 1.55], [8.9, 1.55], [9.35, 1.5], [9.9, 1.5],
+    [10.3, 1.2], [10.48, 1.2], [10.62, 1.5], [10.95, 1.5], [11.35, 1.0], [12, 1.0]
+  ];
+  const nzAt = P => {
+    let i = 0; while (i < NZ.length - 2 && P >= NZ[i + 1][0]) i++;
+    const a = NZ[i], b = NZ[i + 1]; return a[1] + (b[1] - a[1]) * sm((P - a[0]) / (b[0] - a[0]));
+  };
   const IM = new T.Matrix4(), tmp = new T.Vector3(), dummy = new T.Object3D(), SET = { focus: null, fk: 0, fx: { roof: 0, wall: 0, dims: 0, og: 0 }, flow: 0, lastCam: null, P: cfg.P || 0, tP: cfg.P || 0, hover: -1, mx: 0, my: 0, tmx: 0, tmy: 0, w: 0, h: 0, alive: 1, raf: 0 };
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const setOp = (g, o) => {
@@ -366,8 +379,15 @@ export async function createFilm(host, cfg = {}) {
   /* Runde 53 (Kunde: die Headline liegt auf dem Haus): in den ersten Kapiteln rückt das Haus am Desktop weiter nach rechts, weg vom Text */
   const offset = P => {
     const k = 1 - sm((P - 2.3) / .8), w = SET.w, h = SET.h, ox = SET.narrow ? -w * .07 * k : -w * (.17 + .13 * k);
-    if (SET.offX !== null && Math.abs(ox - SET.offX) < .5) return;
-    SET.offX = ox; cam.setViewOffset(w, h, ox, SET.narrow ? h * .13 : 0, w, h); cam.updateProjectionMatrix();
+    const oy = SET.narrow ? h / 2 - (SET.stT + SET.stB) / 2 : 0;
+    if (SET.offX !== null && Math.abs(ox - SET.offX) < .5 && Math.abs(oy - SET.offY) < .5) return;
+    SET.offX = ox; SET.offY = oy; cam.setViewOffset(w, h, ox, oy, w, h); cam.updateProjectionMatrix();
+  };
+  /* Bühne am Telefon: oben unter der Kopfzeile, unten über dem Text (setStage aus js/svc-film.js), weich nachgeführt */
+  const stageEase = () => {
+    const tT = SET.tT != null ? SET.tT : 72, tB = Math.max(tT + 120, SET.tB != null ? SET.tB : SET.h * .5);
+    if (SET.stB == null || SET.snap || reduce) { SET.stT = tT; SET.stB = tB; SET.snap = 0; }
+    else { SET.stT += (tT - SET.stT) * .08; SET.stB += (tB - SET.stB) * .08; }
   };
   const onMove = e => { SET.tmx = e.clientX / innerWidth * 2 - 1; SET.tmy = e.clientY / innerHeight * 2 - 1; };
   addEventListener('pointermove', onMove, { passive: true });
@@ -389,7 +409,7 @@ export async function createFilm(host, cfg = {}) {
     SET.P += (SET.tP - SET.P) * (reduce ? 1 : .09);
     SET.mx += (SET.tmx - SET.mx) * .04; SET.my += (SET.tmy - SET.my) * .04;
     const P = SET.P, t = (performance.now() - t0) / 1000, s = (a, b) => sm((P - a) / (b - a)), ease = reduce ? 1 : .06;
-    offset(P);
+    stageEase(); offset(P);
 
     /* Kamera */
     const ft = SET.focus ? 1 : 0; SET.fk += (ft - SET.fk) * ease;
@@ -397,8 +417,8 @@ export async function createFilm(host, cfg = {}) {
     SET.flow += ((SET.focus && LOW.includes(SET.focus.id) ? 1 : 0) - SET.flow) * ease;
     if (SET.focus) SET.lastCam = SET.focus.cam;
     const c = camAt(P);
-    /* Runde 53: am Telefon zu Beginn etwas weiter weg, damit das ganze Haus im Bild ist */
-    if (SET.narrow) c[3] *= 1 + .22 * (1 - s(2.3, 3.1));
+    /* Runde 54: am Telefon je Stelle so weit weg, dass das Bild in die Bühne über dem Text passt */
+    if (SET.narrow) { const phi = (SET.stB - SET.stT) / SET.h; c[3] *= nzAt(P) * Math.max(.6, Math.min(1.6, .4 / Math.max(.05, phi))); }
     if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] * (j === 3 && SET.narrow ? 1.5 : 1) - c[j]) * fk; }
     let az = c[1], el = c[2];
     if (!reduce) { az += Math.sin(t * .11) * 1.6 + SET.mx * 2.6; el += Math.sin(t * .08) * .8 - SET.my * 1.4; }
@@ -507,6 +527,7 @@ export async function createFilm(host, cfg = {}) {
     R.render(scene, cam);
 
     /* Marken */
+    const PL = [];
     LABELS.forEach(L => {
       let v = L.fo ? (SET.focus && SET.focus.id === L.fo ? sm((SET.fk - .5) / .5) : 0) : s(L.from, L.from + .12) * (1 - s(L.to - .12, L.to));
       if (L.big && SET.hover !== -1 && SET.hover !== L.e) v *= .4;
@@ -519,12 +540,36 @@ export async function createFilm(host, cfg = {}) {
       a.getWorldPosition(tmp).project(cam);
       if (tmp.z > 1) return off();
       let x = (tmp.x * .5 + .5) * SET.w; const y = (-tmp.y * .5 + .5) * SET.h;
-      if (!L.wd || L.on !== 1) L.wd = L.el.offsetWidth; if (!SET.narrow && !L.free) x = Math.max(x, SET.w * .56); x = Math.min(x, SET.w - L.wd - 20);
-      L.el.style.transform = `translate3d(${x.toFixed(1)}px,${(y - (L.big ? 12 : 7)).toFixed(1)}px,0)`;
+      if (!L.wd || L.on !== 1) { L.wd = L.el.offsetWidth; L.ht = L.el.offsetHeight; } if (!SET.narrow && !L.free) x = Math.max(x, SET.w * .56); x = Math.min(x, SET.w - L.wd - (SET.narrow ? 12 : 20));
+      /* Runde 54: am Telefon nur in der Bühne (nicht unter dem Text, nicht unter der Kopfzeile) */
+      if (SET.narrow && (y < SET.stT - 30 || y > SET.stB + 30)) return off();
+      PL.push({ L, x, y, v, top: y - (L.big ? 12 : 7) });
       const act = (L.big || L.hot) && v > .5;
-      L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = act ? 'auto' : 'none'; L.on = 1;
+      L.el.style.pointerEvents = act ? 'auto' : 'none'; L.on = 1;
       if (L.big || L.hot) { const ti = act ? 0 : -1; if (L.el.tabIndex !== ti) L.el.tabIndex = ti; }
       if (L.hot) { const on = SET.focus && SET.focus.id === L.hot; if (on !== L.act) { L.act = on; L.el.style.color = on ? '#FFB200' : '#fff'; } }
+    });
+    /* Runde 54: am Telefon rücken Schilder, die sich decken, nach unten. Punkte im Haus bleiben an ihrer Stelle; deckt ihr Name ein
+       anderes Schild, bleibt nur der Punkt. Alles blendet nur innerhalb der Bühne ein (nicht unter dem Text, nicht unter der Kopfzeile). */
+    if (SET.narrow) {
+      PL.sort((a, b) => a.top - b.top);
+      const hit = (q, o) => q.x < o.x + o.L.wd + 6 && o.x < q.x + q.L.wd + 6 && q.top < o.top + o.L.ht + 4 && o.top < q.top + q.L.ht + 4;
+      for (let i = 0; i < PL.length; i++) {
+        const q = PL[i]; q.bare = false; q.dy = 0;
+        for (let j = 0; j < i; j++) {
+          const o = PL[j]; if (o.bare || !hit(q, o)) continue;
+          const need = o.top + o.L.ht + 4 - q.top;
+          /* Punkt im Haus: nur sein Name rückt (bis 26 px) neben dem Punkt nach unten, sonst bleibt nur der Punkt */
+          if (q.L.hot) { if (q.dy + need <= 26) { q.dy += need; q.top += need; } else { q.bare = true; break; } }
+          else q.top += need;
+        }
+        q.v *= sm((q.top - SET.stT + 4) / 16) * sm((SET.stB - q.top - q.L.ht + 4) / 16);
+      }
+    }
+    PL.forEach(q => {
+      const L = q.L; L.el.style.transform = `translate3d(${q.x.toFixed(1)}px,${q.top.toFixed(1)}px,0)`; L.el.style.opacity = q.v.toFixed(3);
+      if (q.v < .3) L.el.style.pointerEvents = 'none';
+      if (L.hot) { const t = L.el.lastElementChild, vis = q.bare ? 'hidden' : 'visible', tf = q.dy ? `translateY(${q.dy.toFixed(1)}px)` : ''; if (t && t.style.visibility !== vis) t.style.visibility = vis; if (t && t.style.transform !== tf) t.style.transform = tf; }
     });
   };
   wake();
@@ -532,7 +577,8 @@ export async function createFilm(host, cfg = {}) {
     R, scene, cam, S, HW: HWd, K, FOC,
     setP(P) { SET.tP = P; wake(); },
     setFocus(id) { SET.focus = id && FOC[id] ? { id, ...FOC[id] } : null; wake(); },
-    renderAt(P) { SET.P = SET.tP = P; frameX(); },
+    renderAt(P) { SET.P = SET.tP = P; SET.snap = 1; frameX(); },
+    setStage(top, bottom) { if (SET.tT === top && SET.tB === bottom) return; SET.tT = top; SET.tB = bottom; wake(); },
     get P() { return SET.P; },
     isExt: id => ['dach', 'wand', 'fenster', 'fassade', 'hoehe'].includes(id),
     destroy() { SET.alive = 0; cancelAnimationFrame(SET.raf); io.disconnect(); document.removeEventListener('visibilitychange', onVis); removeEventListener('pointermove', onMove); R.dispose(); lab.innerHTML = ''; }
