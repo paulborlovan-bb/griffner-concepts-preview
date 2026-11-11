@@ -245,7 +245,7 @@ function buildScene(H) {
     vbox(vr, -1.08, .45, -2.95, 1.08, .62, 2.65); vbox(vy, -.9, .7, 2.6, -.6, .85, 2.64); vbox(vy, .6, .7, 2.6, .9, .85, 2.64);
     const wheels = []; [[-1.02, -1.9], [1.02, -1.9], [-1.02, 1.75], [1.02, 1.75]].forEach(([x, z]) => { const w = new T.Mesh(new T.CylinderGeometry(.42, .42, .3, 20), vt); w.rotation.z = Math.PI / 2; w.position.set(x, .42, z); w.castShadow = true; van.add(w); wheels.push(w); });
     life.userData.wheels = wheels;
-    const sideDoor = new T.Mesh(new T.BoxGeometry(.05, 1.9, 1.3), vb); sideDoor.position.set(1.08, 1.5, .6); van.add(sideDoor); life.userData.sideDoor = sideDoor;
+    const sideDoor = new T.Mesh(new T.BoxGeometry(.05, 1.9, 1.3), vb); sideDoor.position.set(-1.08, 1.5, .6); van.add(sideDoor); life.userData.sideDoor = sideDoor;
     const crew = []; const wm2 = new T.MeshStandardMaterial({ color: 0xEAE8E3, roughness: .85 }), wd = new T.MeshStandardMaterial({ color: 0x2b2a29, roughness: .9 });
     [0, 1].forEach(i => { const g = new T.Group(); const legs = new T.Mesh(new T.CylinderGeometry(.17, .15, .85, 10), wd); legs.position.y = .43; const body = new T.Mesh(new T.CylinderGeometry(.23, .2, .75, 12), wd); body.position.y = 1.22; const head = new T.Mesh(new T.SphereGeometry(.17, 16, 12), wm2); head.position.y = 1.78; const cap = new T.Mesh(new T.CylinderGeometry(.18, .18, .07, 14), new T.MeshStandardMaterial({ color: C.gelb, roughness: .6 })); cap.position.y = 1.9; [legs, body, head, cap].forEach(m => { m.castShadow = true; g.add(m); }); if (i === 1) { const tb = new T.Mesh(new T.BoxGeometry(.5, .28, .22), new T.MeshStandardMaterial({ color: 0x55534f, roughness: .7 })); tb.position.set(.34, .75, 0); tb.castShadow = true; g.add(tb); } life.add(g); crew.push(g); });
     life.userData.crew = crew;
@@ -256,7 +256,10 @@ function buildScene(H) {
   const ym = M(pm, C.gelb, { r: .5, em: C.gelb, ei: .35 });
   const spineGeo = new T.CylinderGeometry(.09, .09, 1, 8); spineGeo.translate(0, .5, 0);
   const spine = new T.Mesh(spineGeo, ym); spine.position.set(BX, 0, 1.1); pm.add(spine);
-  const curve = new T.CatmullRomCurve3([[-6.3, .25, 18], [-6.3, .3, 11.5], [-5.5, 1, 8.7], [-1.9, 1.2, 8.9], [.2, 2.4, 6], [.9, 5.2, 1.5], [.9, 5, -6.5], [3, 1.2, -8.6], [9, .5, -8.3], [12.5, .5, -4.5], [12.5, 1.6, 1], [11, 2.8, 5.5], [7.5, 3, 9.8], [4, 7, 9.5], [1.8, 11, 4], [.9, 12.8, 1.1]].map(p => new T.Vector3(...p)), false, 'catmullrom', .4);
+  /* Runde 53: der Faden geht außen ums Haus (Kunde: „die Linie schneidet das Haus“): von der Straße über den Rasen neben dem Weg,
+     an der Ostseite zwischen Haus und Pool, im Norden zwischen Terrasse und Hecke, an der Westseite zurück und über das Dach des
+     Erdgeschoßes hinauf zum Schlüssel. Abstand zu Wänden, Dach, Bäumen, Pool, Wagen und Handwerkern gegen die Szene geprüft. */
+  const curve = new T.CatmullRomCurve3([[1, .25, 18.5], [1, .3, 13.2], [2.2, .7, 10.6], [5.2, 1, 10.2], [7.3, 1.1, 7.6], [7.4, 1.2, 1], [7, 1.3, -4], [5, 1.5, -9.9], [-4, 1.5, -10.05], [-11, 1.4, -10], [-12.4, 1.4, -4], [-12.2, 1.8, 3.5], [-10.6, 4.5, 4.5], [-7.5, 8.5, 3.5], [-3.5, 11.8, 2.2], [.9, 12.8, 1.1]].map(p => new T.Vector3(...p)), false, 'catmullrom', .4);
   const threadGeo = new T.TubeGeometry(curve, 560, .075, 8, false);
   const thread = new T.Mesh(threadGeo, ym); thread.castShadow = true; pm.add(thread);
   const key = new T.Group(); pm.add(key);
@@ -479,10 +482,11 @@ export async function createFilm(host, cfg = {}) {
       S.larchM.forEach(m => m.color.copy(m.userData.c0).lerp(K0.grey, on * u * .85));
       let cc; if (c2 < .25) cc = K0.tmp.copy(K0.w).lerp(K0.sal, sm(c2 / .25)); else if (c2 < .6) cc = K0.tmp.copy(K0.sal); else if (c2 < .85) cc = K0.tmp.copy(K0.sal).lerp(K0.kup, sm((c2 - .6) / .25)); else cc = K0.tmp.copy(K0.kup).lerp(K0.w, sm((c2 - .85) / .15));
       S.crownMat.color.copy(K0.crown).lerp(cc, on);
-      { const vz = 24 - 13.6 * (1 - Math.pow(1 - cl((P - 10.56) / .14), 2)), van = L.van; van.position.set(-5.8, 0, vz); van.rotation.y = Math.PI; van.visible = on > .01;
+      /* Runde 53: der Wagen hält auf der Zufahrt, die Schnauze 1,4 m vor dem Garagentor (vorher fuhr er ins Tor) */
+      { const vz = 24 - 11.8 * (1 - Math.pow(1 - cl((P - 10.56) / .14), 2)), van = L.van; van.position.set(-5.8, 0, vz); van.rotation.y = Math.PI; van.visible = on > .01;
         L.wheels.forEach(wh => wh.rotation.x = -(vz - 24) / .42);
         L.sideDoor.position.z = .6 - 1.15 * s(10.71, 10.75);
-        L.crew.forEach((g, i) => { const k = s(10.74 + i * .03, 10.9 + i * .03), x0 = -4.6, z0 = 11.2 - i * .9, x1 = -1.4 - i * .7, z1 = 9.3 - i * .2; g.visible = on > .01 && P > 10.73 + i * .03; g.position.set(x0 + (x1 - x0) * k, 0, z0 + (z1 - z0) * k); g.rotation.y = Math.atan2(x1 - x0, z1 - z0); g.children[0].scale.y = 1 + (k > 0 && k < 1 ? Math.sin(t * 9 + i) * .06 : 0); g.children[1].position.y = 1.22 + (k > 0 && k < 1 ? Math.abs(Math.sin(t * 9 + i)) * .05 : 0); }); } }
+        L.crew.forEach((g, i) => { const k = s(10.74 + i * .03, 10.9 + i * .03), x0 = -4.3, z0 = 11.6 - i * .8, x1 = -1.4 - i * .7, z1 = 9.3 - i * .2; g.visible = on > .01 && P > 10.73 + i * .03; g.position.set(x0 + (x1 - x0) * k, 0, z0 + (z1 - z0) * k); g.rotation.y = Math.atan2(x1 - x0, z1 - z0); g.children[0].scale.y = 1 + (k > 0 && k < 1 ? Math.sin(t * 9 + i) * .06 : 0); g.children[1].position.y = 1.22 + (k > 0 && k < 1 ? Math.abs(Math.sin(t * 9 + i)) * .05 : 0); }); } }
 
     /* Tausendmal dasselbe Haus */
     const mv = P > 11.0 && P < 12;
