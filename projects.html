@@ -190,36 +190,23 @@
       </div>
     </section>
 
-    <!-- 05b WEITERE HÄUSER (neu, nicht live): Projektband. Breit (ab 1024 px) stehen alle Häuser als schmale Bildstreifen nebeneinander,
-         beim Scrollen öffnet sich eines nach dem anderen, darin Bilder (Pfeile, Striche, Wischen) und die Karte. Klick auf einen Streifen springt hin.
-         Schmal: Liste zum Antippen, das offene Haus zeigt Bilder und Text. Inhalte in data/referenzen.js (REF_HOMES).
+    <!-- 06 REFERENZEN (neu, live noch „Große Projekte“ mit Karten seitwärts): ein Projektband für Häuser und GRIFFNER Building zusammen.
+         Breit (ab 1024 px): alle Projekte als schmale Bildstreifen, das Band ist breiter als der Bildschirm und gleitet mit. Beim Scrollen
+         öffnet sich eines nach dem anderen; im offenen Streifen wechseln die Bilder (Pfeile, Wischen, Pfeiltasten), unten links steht ein
+         kleines Etikett mit Art, Name und Zähler, „+“ klappt Text und Daten auf. Klick auf einen Streifen springt hin.
+         Schmal: Liste zum Antippen. Inhalte und Reihenfolge in data/referenzen.js.
          Neue Bilder: zwei WebP je Bild, Name-1-m.webp (960 px) und Name-1-l.webp (1920 px), in assets/img/projekte/ref/. -->
-    <section id="p-refs" class="pr" data-room="p-refs">
-      <div class="wrap">
-        <div class="p-kopf p-kopf--unter">
-          <div class="p-kopf__t">
-            <p class="info">GRIFFNER Living / Referenzen</p>
-            <h2 class="h-xl">Mehr Häuser. <br>Mehr Geschichten.</h2>
-          </div>
-          <p class="txt p-kopf__txt">Am Hang, im Wienerwald, in Bayern. Acht Familien zeigen, wie verschieden ein GRIFFNER Haus sein kann.</p>
-        </div>
-      </div>
-      <div class="rb" data-rb="homes" aria-label="Weitere Häuser"></div>
-    </section>
-
-    <!-- 06 GRIFFNER BUILDING: gleiches Projektband wie 05b (REF_BUILDING), live noch Karten seitwärts.
-         Live steht die Überschrift breit anders als am Telefon (Stand 11.11.2026), darum zwei Fassungen. -->
     <section id="p-places" class="pb" data-room="p-places">
       <div class="wrap">
         <div class="p-kopf p-kopf--unter">
           <div class="p-kopf__t">
-            <p class="info">GRIFFNER Building / Büros, Wohnbau, Hütten</p>
-            <h2 class="h-xl pb__h"><span class="pb__h-breit">Große Projekte. <br>Gleicher Anspruch.</span><span class="pb__h-schmal">Wo viele zusammen&shy;kommen.</span></h2>
+            <p class="info">GRIFFNER Living und Building / Eine Auswahl</p>
+            <h2 class="h-xl pb__h">Jedes Projekt. <br>Gleicher Anspruch.</h2>
           </div>
-          <p class="txt p-kopf__txt">Auch hier planen, fertigen und bauen wir selbst. Mit demselben Anspruch wie bei einem Zuhause, für Menschen, die dort jeden Tag arbeiten, lernen oder ankommen. Eine Auswahl.</p>
+          <p class="txt p-kopf__txt">Vom Bungalow im Wienerwald bis zur Firmenzentrale für 300 Menschen. Wir planen, fertigen und bauen selbst, immer mit demselben Anspruch.</p>
         </div>
       </div>
-      <div class="rb" data-rb="building" aria-label="Große Projekte"></div>
+      <div class="rb" data-rb="refs" aria-label="Referenzprojekte"></div>
     </section>
 
     <!-- 07 BAUHERREN: der Satz wechselt, dann laufen die Namen wie ein Abspann nach oben -->

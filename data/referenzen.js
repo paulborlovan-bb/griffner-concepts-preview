@@ -1,10 +1,10 @@
-/* Referenzen für projects.html, gerendert von initBand() in js/projects.js (ein Bauteil für beide Listen).
+/* Referenzen für projects.html: ein Projektband für alle Projekte (Häuser und Building gemischt), gerendert von initBand() in js/projects.js.
    Ein Projekt = info (Art / Ort / Land), name, optional text, facts [[Label, Wert]], link {href, label}, img [{s|src, alt, pos}].
    s: Basisname in assets/img/projekte/ref/ (es gibt -m.webp 960 px und -l.webp 1920 px), src: ein einzelnes Bild.
-   Neues Projekt: Bilder exportieren (siehe Notiz in projects.html), Eintrag anlegen, fertig. Reihenfolge = Reihenfolge auf der Seite.
+   Neues Projekt: Bilder exportieren (siehe Notiz in projects.html), Eintrag anlegen, id in ORDER eintragen. ORDER ganz unten = Reihenfolge auf der Seite.
    Keine Familiennamen: die Vorschau ist öffentlich. Texte aus den Homestories gekürzt; ohne Text im Ordner bleibt text leer. */
 
-export const REF_HOMES = [
+const HOMES = [
   {
     id: 'hang-pool', info: 'Haus am Hang / Niederösterreich / AT', name: 'Traumhaus am Hang',
     text: 'Drei Ebenen am Hang, jede mit eigener Freifläche. Oben ein Balkon über die ganze Länge, ganz unten der Infinity-Pool.',
@@ -107,7 +107,7 @@ export const REF_HOMES = [
 ];
 
 /* GRIFFNER Building: Texte wie live (griffner.com/projects, inkl. „effizinete“), je ein Bild. Weitere Bilder einfach ergänzen. */
-export const REF_BUILDING = [
+const BUILDING = [
   { id: 'koralpe', info: 'Hütte / Koralpe / Kärnten / AT', name: 'Schutzhaus Koralpe', text: 'Auf 1966 Metern Seehöhe, in drei Wochen aufgestellt.',
     img: [{ src: 'assets/img/projekte/bld-koralpe.jpg', alt: 'Schutzhaus Koralpe über dem Nebelmeer' }] },
   { id: 'juwi', info: 'Büro / Wörrstadt / DE', name: 'JUWI Firmenzentrale', text: 'Das hoch-energieeffizinete Bürogebäude bietet auf ca. 8.500 m² Platz für rund 300 Mitarbeiter und wurde u.a. mit dem Klimaschutzpreis ausgezeichnet.',
@@ -119,3 +119,8 @@ export const REF_BUILDING = [
   { id: 'wien', info: 'Wohnbau / Wien / AT', name: 'Wohnsiedlung Wien', text: 'Mitten in den Weinbergen von Wien wurden 10 Wohnhäuser errichtet.',
     img: [{ src: 'assets/img/projekte/bld-wien.jpg', alt: 'Häuser mit Holzfassade an einer ansteigenden Straße' }] },
 ];
+
+/* Reihenfolge auf der Seite: Häuser und große Projekte abwechselnd, damit sie als eine Sammlung gelesen werden. */
+const ORDER = ['hang-pool', 'koralpe', 'wienerwald', 'juwi', 'traum-gruen', 'park', 'bungalow-flair', 'griffen-green', 'designhaus', 'wien', 'berge', 'box-pool', 'dunkle-fassade'];
+const ALL = [...HOMES, ...BUILDING];
+export const REFERENZEN = [...ORDER.map(id => ALL.find(p => p.id === id)).filter(Boolean), ...ALL.filter(p => !ORDER.includes(p.id))];

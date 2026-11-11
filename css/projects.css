@@ -1,7 +1,6 @@
 /* Projects (projects.html): Nachbau von griffner.com/projects, Stand 11.11.2026. Maße aus der Live-Seite bei 1440 px und 390 px gemessen.
    Schwarz, Weiß, Sand, Gelb. Keine Rundungen, keine Schatten. Abläufe in js/projects.js. */
 :root{
-  --room-p-refs:var(--griffner-weiss);
   --room-p-hero:var(--griffner-schwarz);
   --room-p-form:var(--griffner-schwarz);
   --room-p-fw:var(--griffner-schwarz);
@@ -117,19 +116,19 @@ a:hover .p-zoom{transform:scale(1.03)}
 .idx__txt .txt{max-width:460px}
 .pl__credit{font-size:.625rem;line-height:1}
 
-/* ---------- 05b Weitere Häuser + 06 GRIFFNER Building: Projektband (js/projects.js initBand, Daten data/referenzen.js) ----------
-   Breit (ab 1024 px): Bildstreifen nebeneinander, gepinnt; der offene Streifen (--pw) zeigt das Bild ganz, die anderen (--cw) einen
-   Ausschnitt aus der Bildmitte. Die Bilder sind so breit wie der offene Streifen und bleiben mittig, beim Öffnen wird also nur mehr
-   sichtbar, nichts skaliert. Schmal: Liste zum Antippen. */
-.pr{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:0 0 var(--p-pad)}
-.pb{background:var(--griffner-sand);color:var(--griffner-schwarz);padding:var(--p-pad) 0}
-.pb__h-schmal{display:none}
+/* ---------- 06 Referenzen: Projektband (js/projects.js initBand, Daten data/referenzen.js) ----------
+   Breit (ab 1024 px): Bildstreifen nebeneinander, gepinnt; das Band (.rb__band) darf breiter sein als der Bildschirm und gleitet mit.
+   Der offene Streifen (--pw) zeigt das Bild ganz, die anderen (--cw) einen Ausschnitt aus der Bildmitte. Die Bilder sind so breit wie der
+   offene Streifen und bleiben mittig, beim Öffnen wird also nur mehr sichtbar, nichts skaliert. Unten links ein kleines Etikett in der
+   Farbe der Sektion (--rb-bg), „+“ klappt Text und Daten nach oben auf. Schmal: Liste zum Antippen. */
+.pb{--rb-bg:var(--griffner-sand);background:var(--rb-bg);color:var(--griffner-schwarz);padding:var(--p-pad) 0}
 .rb{margin-top:40px}
 .rb__pin{position:relative}
-.rb__st{position:sticky;top:0;height:100svh;box-sizing:border-box;display:flex;padding:112px var(--p-track) 72px}
-.rb__band{display:flex;gap:8px;width:100%;height:100%;min-height:0}
+.rb__st{position:sticky;top:0;height:100svh;box-sizing:border-box;overflow:hidden;padding:112px var(--p-track) 72px}
+.rb__vp{height:100%}
+.rb__band{display:flex;gap:var(--gap,6px);width:max-content;height:100%;transition:transform 1000ms var(--ease);will-change:transform}
 .rb__p{position:relative;flex:0 0 var(--cw,64px);min-width:0;overflow:hidden;background:var(--griffner-kalk);
-  transition:flex-basis 1000ms var(--ease),opacity 900ms var(--ease) calc(var(--k) * 70ms),transform 1100ms var(--ease) calc(var(--k) * 70ms)}
+  transition:flex-basis 1000ms var(--ease),opacity 900ms var(--ease) calc(var(--k) * 60ms),transform 1100ms var(--ease) calc(var(--k) * 60ms)}
 .rb__p.is-open{flex-basis:var(--pw,60%)}
 .rb:not(.is-in) .rb__p{opacity:0;transform:translateY(56px)}
 .rb__tab{position:absolute;inset:0;z-index:2;display:block;width:100%;margin:0;padding:0;border:0;background:transparent;color:var(--griffner-weiss);font:inherit;text-align:left;cursor:pointer}
@@ -139,7 +138,7 @@ a:hover .p-zoom{transform:scale(1.03)}
 .rb__p.is-open .rb__tab::before{opacity:0}
 .rb__no{position:absolute;top:18px;left:0;right:0;margin:0;text-align:center;letter-spacing:.08em}
 .rb__tn{position:absolute;left:50%;bottom:22px;max-height:calc(100% - 84px);overflow:hidden;white-space:nowrap;writing-mode:vertical-rl;transform:translateX(-50%) rotate(180deg);
-  font-family:var(--font-display);font-weight:500;font-size:clamp(15px,1.15vw,20px);line-height:1;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0}
+  font-family:var(--font-display);font-weight:500;font-size:clamp(14px,1.05vw,19px);line-height:1;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0}
 .rb__no,.rb__tn{transition:opacity 500ms var(--ease)}
 .rb__p.is-open .rb__no,.rb__p.is-open .rb__tn{opacity:0}
 .rb__th,.rb__plus{display:none}
@@ -149,29 +148,38 @@ a:hover .p-zoom{transform:scale(1.03)}
 .rb__img{position:absolute;top:0;left:50%;width:var(--pw,100%);max-width:none;height:100%;object-fit:cover;transform:translateX(-50%);visibility:hidden;-webkit-user-drag:none}
 .rb__img.is-was{visibility:visible}
 .rb__img.is-on{visibility:visible;z-index:1}
-.rb__card{position:absolute;left:20px;bottom:20px;z-index:3;box-sizing:border-box;width:min(clamp(380px,27vw,540px),calc(100% - 40px));max-height:calc(100% - 40px);overflow:auto;
-  display:flex;flex-direction:column;gap:12px;padding:28px 28px 22px;background:var(--griffner-weiss);color:var(--griffner-schwarz);
-  opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity 280ms var(--ease),transform 280ms var(--ease),visibility 0s linear 280ms}
-.rb__p.is-open .rb__card{opacity:1;visibility:visible;transform:none;transition:opacity 700ms var(--ease) 420ms,transform 900ms var(--ease) 420ms,visibility 0s}
-.rb__card>*{margin:0}
-.rb__name{font-family:var(--font-display);font-weight:500;font-size:clamp(1.5rem,1.9vw,2rem);line-height:1.05;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
-.rb__card .txt{font-size:var(--t-body)}
-.rb__facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;padding-top:14px;border-top:1px solid var(--griffner-kalk)}
+/* Etikett: bündig unten links, wie aus dem Bild geschnitten; geht von unten auf */
+.rb__card{position:absolute;left:0;bottom:0;z-index:3;box-sizing:border-box;width:min(clamp(420px,25vw,520px),100%);max-height:calc(100% - 24px);overflow:auto;
+  display:flex;flex-direction:column;padding:16px 18px 18px 20px;background:var(--rb-bg,var(--griffner-weiss));color:var(--griffner-schwarz);
+  clip-path:inset(100% 0 0 0);visibility:hidden;transition:clip-path 300ms var(--ease),visibility 0s linear 300ms}
+.rb__p.is-open .rb__card{clip-path:inset(0 0 0 0);visibility:visible;transition:clip-path 900ms var(--ease) 380ms,visibility 0s}
+.rb__head{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"art cnt" "name ctl";align-items:end;gap:6px 20px}
+.rb__head>*{margin:0}
+.rb__art{grid-area:art}
+.rb__name{grid-area:name;font-family:var(--font-display);font-weight:500;font-size:clamp(1.125rem,1.3vw,1.5rem);line-height:1.1;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.rb__cnt{grid-area:cnt;justify-self:end;font-variant-numeric:tabular-nums}
+.rb__ctl{grid-area:ctl;display:flex;gap:6px;justify-self:end}
+.rb__btn{display:grid;place-items:center;width:34px;height:34px;margin:0;padding:0;border:1px solid var(--griffner-schwarz);background:transparent;color:inherit;font:inherit;font-size:.875rem;line-height:1;cursor:pointer;transition:background 250ms var(--ease),color 250ms var(--ease)}
+.rb__btn:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:2px}
+.rb__det i{position:relative;display:block;width:12px;height:12px}
+.rb__det i::before,.rb__det i::after{content:'';position:absolute;left:0;top:5.5px;width:12px;height:1px;background:currentColor;transition:transform 450ms var(--ease)}
+.rb__det i::after{transform:rotate(90deg)}
+.rb__card.is-det .rb__det{background:var(--griffner-schwarz);color:var(--rb-bg,var(--griffner-weiss))}
+.rb__card.is-det .rb__det i::after{transform:rotate(0)}
+.rb__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows 600ms var(--ease)}
+.rb__card.is-det .rb__more{grid-template-rows:1fr}
+.rb__more-in{min-height:0;overflow:hidden}
+.rb__more-c{display:flex;flex-direction:column;gap:12px;padding-bottom:16px;margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,.16)}
+.rb__more-c>*{margin:0}
+.rb__more .txt{font-size:var(--t-body)}
+.rb__facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;padding-top:12px;border-top:1px solid rgba(0,0,0,.16)}
 .rb__facts div{display:flex;flex-direction:column;gap:4px;min-width:0}
 .rb__facts dt{opacity:.55}
 .rb__facts dd{margin:0;font-size:var(--t-body);line-height:1.3}
 .rb__go{align-self:flex-start;padding-bottom:4px;border-bottom:1px solid currentColor}
-.rb__nav{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px;margin-top:4px}
-.rb__bars{display:flex;flex:1 0 100%;gap:4px}
-.rb__bars button{position:relative;flex:1;height:14px;margin:0;padding:0;border:0;background:none;cursor:pointer}
-.rb__bars button::after{content:'';position:absolute;left:0;right:0;top:6px;height:2px;background:var(--griffner-kalk);transition:background 400ms var(--ease)}
-.rb__bars button.is-on::after{background:var(--griffner-schwarz)}
-.rb__cnt{flex:1;font-variant-numeric:tabular-nums}
-.rb__arr{display:grid;place-items:center;width:40px;height:40px;margin:0;padding:0;border:1px solid var(--griffner-schwarz);background:transparent;color:inherit;font:inherit;font-size:1rem;cursor:pointer;transition:background 250ms var(--ease),color 250ms var(--ease)}
-.rb__arr:focus-visible,.rb__bars button:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:2px}
 @media (hover:hover){
   .rb__p:not(.is-open) .rb__tab:hover::before{opacity:.2}
-  .rb__arr:hover{background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+  .rb__btn:hover{background:var(--griffner-schwarz);color:var(--rb-bg,var(--griffner-weiss))}
 }
 
 /* ---------- 07 Bauherren ---------- */
@@ -239,15 +247,15 @@ a:hover .p-zoom{transform:scale(1.03)}
   .fh__outro{width:82vw;padding-left:0;gap:24px}
   .fh__frame{height:auto;width:min(86vw,calc(52svh * var(--r)))}
 }
-/* Projektband als Liste (unter 1024 px): Zeile mit Nummer, Name, kleinem Bild und Plus; offen: Bilder (wischen) und Text */
+/* Projektband als Liste (unter 1024 px): Zeile mit Nummer, Name, kleinem Bild und Plus; offen: Bilder (wischen), Zähler, Pfeile, Text */
 @media (max-width:1023px){
   .rb{margin-top:48px;padding:0 var(--p-track)}
   .rb__pin{height:auto !important}
-  .rb__st{position:static;height:auto;padding:0;display:block}
-  .rb__band{display:block;height:auto}
-  .rb__p{overflow:visible;background:none;border-top:1px solid var(--griffner-kalk)}
-  .rb__p:last-child{border-bottom:1px solid var(--griffner-kalk)}
-  .pb .rb__p{border-color:rgba(0,0,0,.18)}
+  .rb__st{position:static;height:auto;padding:0;overflow:visible}
+  .rb__vp{height:auto}
+  .rb__band{display:block;width:auto;height:auto;transform:none !important;transition:none}
+  .rb__p{overflow:visible;background:none;border-top:1px solid rgba(0,0,0,.18)}
+  .rb__p:last-child{border-bottom:1px solid rgba(0,0,0,.18)}
   .rb__tab{position:relative;inset:auto;display:grid;grid-template-columns:2.4em minmax(0,1fr) 56px 16px;align-items:center;gap:16px;padding:14px 0;color:inherit}
   .rb__tab::before{display:none}
   .rb__no{position:static;text-align:left;opacity:1 !important}
@@ -265,16 +273,17 @@ a:hover .p-zoom{transform:scale(1.03)}
   .rb__in{position:static;min-height:0;overflow:hidden}
   .rb__media{position:relative;inset:auto;aspect-ratio:4 / 3;background:var(--griffner-kalk);transform:none}
   .rb__img{left:0;width:100%;transform:none}
-  .rb__card{position:static;width:auto;max-height:none;overflow:visible;padding:16px 0 32px;background:none;opacity:1;visibility:visible;transform:none;transition:none}
+  .rb__card{position:static;width:auto;max-height:none;overflow:visible;padding:14px 0 32px;background:none;clip-path:none;visibility:visible;transition:none}
   .rb__p.is-open .rb__card{transition:none}
-  .rb__name{display:none}
-  .rb__nav{order:-1;margin:0 0 4px}
-  .rb__card .txt{max-width:560px}
-  .rb__facts{max-width:560px}
+  .rb__head{order:1;grid-template-areas:"cnt ctl" "art art";align-items:center;gap:12px 20px}
+  .rb__cnt{justify-self:start}
+  .rb__name,.rb__det{display:none}
+  .rb__btn{width:40px;height:40px}
+  .rb__more{order:2;grid-template-rows:1fr;margin-top:12px}
+  .rb__more-c{padding:0;margin:0;border:0}
+  .rb__more .txt,.rb__facts{max-width:560px}
 }
 @media (max-width:809px){
-  .pb__h-breit{display:none}
-  .pb__h-schmal{display:inline}
   .ph__title,.pn__n{font-size:2.25rem}
   .pn__mehr{font-size:1.375rem}
   .p-kopf,.pz__row{grid-template-columns:minmax(0,1fr);gap:24px}
@@ -286,7 +295,7 @@ a:hover .p-zoom{transform:scale(1.03)}
 }
 @media (prefers-reduced-motion:reduce){
   .p-lux{clip-path:none;transition:none}
-  .rb__p,.rb__card,.rb__media,.rb__body{transition:none !important}
+  .rb__p,.rb__card,.rb__media,.rb__body,.rb__band,.rb__more{transition:none !important}
   .rb:not(.is-in) .rb__p{opacity:1;transform:none}
   .hz__st{overflow-x:auto}
 }

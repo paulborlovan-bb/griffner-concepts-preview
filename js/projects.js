@@ -5,7 +5,7 @@
 import { loop, reveal, $, $$, clamp, E, lerp, reduce, vhs, mix, css } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { CLAIM_PATH } from '../data/claim-path.js';
-import { REF_HOMES, REF_BUILDING } from '../data/referenzen.js';
+import { REFERENZEN } from '../data/referenzen.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 /* Fortschritt einer gepinnten Sektion: 0 Oberkante oben, 1 Unterkante unten (sceneProgress) */
@@ -18,8 +18,8 @@ const bez = (x1, y1, x2, y2) => {
 };
 const sm = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
 const pow = { p2In: x => x * x * x, p3InOut: x => (x < .5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2) };
-/* Projektband (05b, 06): Bildordner, Scrollweg je Projekt in Bildschirmhöhen */
-const RB_DIR = 'assets/img/projekte/ref/', RB_STEP = .5;
+/* Projektband (06 Referenzen): Bildordner, Scrollweg je Projekt in Bildschirmhöhen */
+const RB_DIR = 'assets/img/projekte/ref/', RB_STEP = .42;
 const pad2 = n => String(n).padStart(2, '0');
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
@@ -33,8 +33,7 @@ run('zahl', initZahl);
 run('formen', initFormen);
 run('fh', initFh);
 run('living', initLiving);
-run('refs', () => initBand($('[data-rb="homes"]'), REF_HOMES, 'homes'));
-run('building', () => initBand($('[data-rb="building"]'), REF_BUILDING, 'building'));
+run('refs', () => initBand($('[data-rb="refs"]'), REFERENZEN, 'refs'));
 run('namen', initNamen);
 run('kontakt', initKontakt);
 run('finale', initFinale);
@@ -355,40 +354,47 @@ function initLiving() {
   } });
 }
 
-/* ---------- 05b Weitere Häuser + 06 GRIFFNER Building: Projektband, ein Bauteil für beliebig viele Projekte mit beliebig vielen Bildern.
-   Breit (ab 1024 px): alle Projekte als Bildstreifen nebeneinander, gepinnt. Der Scroll öffnet eines nach dem anderen (RB_STEP Bildschirmhöhen
-   je Projekt), Klick auf einen Streifen springt hin. Im offenen Streifen: Bilder wechseln mit Pfeilen, Strichen, Wischen oder Pfeiltasten
-   (das neue Bild wischt von der Seite herein), die Karte nennt Art, Ort, Text und Daten. Das gelbe Feld sitzt unten am offenen Streifen.
-   Schmal: Liste zum Antippen, immer nur eines offen. Bilder außer dem ersten laden erst, wenn ihr Projekt aufgeht. ---------- */
+/* ---------- 06 Referenzen: Projektband, ein Bauteil für beliebig viele Projekte mit beliebig vielen Bildern (Häuser und Building gemischt).
+   Breit (ab 1024 px): alle Projekte als Bildstreifen, gepinnt. Das Band darf breiter als der Bildschirm sein und gleitet so mit, dass der
+   offene Streifen möglichst mittig steht. Der Scroll öffnet eines nach dem anderen (RB_STEP Bildschirmhöhen je Projekt), Klick auf einen
+   Streifen springt hin. Im offenen Streifen wechseln die Bilder (Pfeile, Wischen, Pfeiltasten; das neue wischt von der Seite herein).
+   Unten links ein kleines Etikett in der Farbe der Sektion (wie aus dem Bild geschnitten): Art, Name, Zähler, Pfeile; „+“ klappt Text und
+   Daten nach oben auf. Das gelbe Feld sitzt unten am offenen Streifen. Schmal: Liste zum Antippen, Text immer offen.
+   Bilder außer dem ersten laden erst, wenn ihr Projekt aufgeht. ---------- */
 function bandHTML(key, list) {
   const img = (m, k) => {
     const pos = m.pos ? ` style="object-position:${m.pos}"` : '', d = k ? 'data-' : '', cls = `rb__img${k ? '' : ' is-on'}`, lz = k ? '' : 'loading="lazy" ';
-    if (m.s) { const a = RB_DIR + m.s; return `<img class="${cls}" ${d}src="${a}-m.webp" ${d}srcset="${a}-m.webp 960w, ${a}-l.webp 1920w" sizes="(min-width:1024px) 72vw, 100vw" alt="${esc(m.alt)}" draggable="false" ${lz}decoding="async"${pos}>`; }
+    if (m.s) { const a = RB_DIR + m.s; return `<img class="${cls}" ${d}src="${a}-m.webp" ${d}srcset="${a}-m.webp 960w, ${a}-l.webp 1920w" sizes="(min-width:1024px) 64vw, 100vw" alt="${esc(m.alt)}" draggable="false" ${lz}decoding="async"${pos}>`; }
     return `<img class="${cls}" ${d}src="${m.src}" alt="${esc(m.alt)}" draggable="false" ${lz}decoding="async"${pos}>`;
   };
-  const card = p => {
+  const card = (p, id) => {
     const n = p.img.length;
     const facts = p.facts ? `<dl class="rb__facts">${p.facts.map(([a, b]) => `<div><dt class="info">${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl>` : '';
     const link = p.link ? `<a class="rb__go" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label)} <span aria-hidden="true">↗</span></a>` : '';
-    const bars = p.img.map((m, k) => `<button type="button" aria-label="Bild ${k + 1} von ${n}"${k ? '' : ' class="is-on"'}></button>`).join('');
-    const nav = n > 1 ? `<div class="rb__nav"><span class="rb__bars">${bars}</span><span class="rb__cnt info" aria-live="polite">01 / ${pad2(n)}</span><button class="rb__arr" type="button" data-d="-1" aria-label="Vorheriges Bild">←</button><button class="rb__arr" type="button" data-d="1" aria-label="Nächstes Bild">→</button></div>` : '';
-    return `<div class="rb__card"><p class="info">${esc(p.info)}</p><h3 class="rb__name">${esc(p.name)}</h3>${p.text ? `<p class="txt">${esc(p.text)}</p>` : ''}${facts}${link}${nav}</div>`;
+    const more = p.text || facts || link;
+    const det = more ? `<button class="rb__btn rb__det" type="button" aria-expanded="false" aria-controls="${id}-more" aria-label="Mehr zum Projekt"><i aria-hidden="true"></i></button>` : '';
+    const arr = n > 1 ? `<button class="rb__btn rb__arr" type="button" data-d="-1" aria-label="Vorheriges Bild">←</button><button class="rb__btn rb__arr" type="button" data-d="1" aria-label="Nächstes Bild">→</button>` : '';
+    return `<div class="rb__card">`
+      + (more ? `<div class="rb__more" id="${id}-more"><div class="rb__more-in"><div class="rb__more-c">${p.text ? `<p class="txt">${esc(p.text)}</p>` : ''}${facts}${link}</div></div></div>` : '')
+      + `<div class="rb__head"><p class="info rb__art">${esc(p.info)}</p><h3 class="rb__name">${esc(p.name)}</h3>`
+      + (n > 1 ? `<span class="rb__cnt info" aria-live="polite">01 / ${pad2(n)}</span>` : '')
+      + (det || arr ? `<div class="rb__ctl">${det}${arr}</div>` : '') + `</div></div>`;
   };
   const item = (p, i) => {
     const id = `rb-${key}-${i}`, f = p.img[0], th = f.s ? `${RB_DIR}${f.s}-m.webp` : f.src;
     return `<article class="rb__p" role="listitem" data-n="${p.img.length}" style="--k:${i}">`
       + `<button class="rb__tab" type="button" aria-expanded="false" aria-controls="${id}"><span class="rb__no info">${pad2(i + 1)}</span><span class="rb__tn">${esc(p.name)}</span>`
       + `<span class="rb__th" aria-hidden="true"><img src="${th}" alt="" loading="lazy" decoding="async"></span><span class="rb__plus" aria-hidden="true"></span></button>`
-      + `<div class="rb__body" id="${id}"><div class="rb__in"><div class="rb__media">${p.img.map(img).join('')}</div>${card(p)}</div></div></article>`;
+      + `<div class="rb__body" id="${id}"><div class="rb__in"><div class="rb__media">${p.img.map(img).join('')}</div>${card(p, id)}</div></div></article>`;
   };
-  return `<div class="rb__pin" id="rb-${key}-pin"><div class="rb__st"><div class="rb__band" role="list">${list.map(item).join('')}</div></div></div>`;
+  return `<div class="rb__pin" id="rb-${key}-pin"><div class="rb__st"><div class="rb__vp"><div class="rb__band" role="list">${list.map(item).join('')}</div></div></div></div>`;
 }
 function initBand(el, list, key) {
   if (!el || !list || !list.length) return;
   el.innerHTML = bandHTML(key, list);
-  const pin = $('.rb__pin', el), band = $('.rb__band', el), N = list.length, EASE = 'cubic-bezier(.22,1,.36,1)';
-  const G = $$('.rb__p', el).map(p => ({ p, tab: $('.rb__tab', p), card: $('.rb__card', p), media: $('.rb__media', p), imgs: $$('.rb__img', p), bars: $$('.rb__bars button', p), cnt: $('.rb__cnt', p), cur: 0, loaded: false }));
-  let act = -1, mode = '', lock = 0;
+  const pin = $('.rb__pin', el), vp = $('.rb__vp', el), band = $('.rb__band', el), N = list.length, EASE = 'cubic-bezier(.22,1,.36,1)';
+  const G = $$('.rb__p', el).map(p => ({ p, tab: $('.rb__tab', p), card: $('.rb__card', p), det: $('.rb__det', p), media: $('.rb__media', p), imgs: $$('.rb__img', p), cnt: $('.rb__cnt', p), cur: 0, loaded: false }));
+  let act = -1, mode = '', lock = 0, geo = null;
   const load = g => { if (g.loaded) return; g.loaded = true; g.imgs.forEach(im => { if (im.dataset.srcset) im.srcset = im.dataset.srcset; if (im.dataset.src) im.src = im.dataset.src; }); };
   const show = (g, k, dir) => {
     const n = g.imgs.length; k = (k + n) % n; if (n < 2 || k === g.cur) return;
@@ -402,30 +408,40 @@ function initBand(el, list, key) {
         .then(() => { if (!a.classList.contains('is-on')) a.classList.remove('is-was'); }, () => {});
     } else a.classList.remove('is-was');
     g.cur = k;
-    g.bars.forEach((x, i) => { x.classList.toggle('is-on', i === k); x.setAttribute('aria-current', i === k ? 'true' : 'false'); });
     if (g.cnt) g.cnt.textContent = `${pad2(k + 1)} / ${pad2(n)}`;
+  };
+  const details = (g, on) => { g.card.classList.toggle('is-det', on); if (g.det) g.det.setAttribute('aria-expanded', String(on)); };
+  /* Band gleitet: der offene Streifen steht möglichst mittig, an den Enden bündig */
+  const slide = () => {
+    if (mode !== 'band' || !geo) { band.style.transform = ''; return; }
+    const { W, cw, pw, gap } = geo, total = (N - 1) * (cw + gap) + pw, i = Math.max(0, act);
+    const off = clamp(i * (cw + gap) - (W - pw) / 2, 0, Math.max(0, total - W));
+    band.style.transform = `translate3d(${(-off).toFixed(1)}px,0,0)`;
   };
   const open = i => {
     if (i === act) return; act = i;
     G.forEach((g, j) => {
       const on = j === i;
       g.p.classList.toggle('is-open', on); g.tab.setAttribute('aria-expanded', String(on)); g.card.inert = !on;
-      if (on) load(g);
+      if (on) load(g); else details(g, false);
       if (on && mode === 'band') Object.assign(g.p.dataset, { dock: 'edge', dockX: '.88', dockW: '.1', dockTrigger: pin.id });
       else { delete g.p.dataset.dock; delete g.p.dataset.dockX; delete g.p.dataset.dockW; delete g.p.dataset.dockTrigger; }
     });
     if (G[i + 1]) G[i + 1].imgs[0].loading = 'eager';
-    loop.poke();
+    slide(); loop.poke();
   };
   const fit = () => {
     const m = innerWidth >= 1024 ? 'band' : 'list';
     if (m !== mode) { mode = m; el.dataset.mode = m; const a = act; act = -1; open(a < 0 ? 0 : a); }
     if (mode === 'band') {
-      const W = band.clientWidth, gap = 8, cw = Math.round(clamp(W * .3 / Math.max(1, N - 1), 44, 120)), pw = Math.max(240, W - (N - 1) * (cw + gap));
-      band.style.setProperty('--cw', cw + 'px'); band.style.setProperty('--pw', pw + 'px');
+      const W = vp.clientWidth, gap = 6, cw = Math.round(clamp(W * .045, 48, 72));
+      let pw = Math.round(clamp(W * .64, 520, 1240));
+      if ((N - 1) * (cw + gap) + pw < W) pw = W - (N - 1) * (cw + gap);
+      geo = { W, cw, pw, gap };
+      band.style.setProperty('--cw', cw + 'px'); band.style.setProperty('--pw', pw + 'px'); band.style.setProperty('--gap', gap + 'px');
       pin.style.height = reduce ? '' : Math.round(vhs() * (1 + RB_STEP * N)) + 'px';
-    } else pin.style.height = '';
-    loop.poke();
+    } else { geo = null; pin.style.height = ''; }
+    slide(); loop.poke();
   };
   G.forEach((g, i) => {
     g.tab.addEventListener('click', () => {
@@ -440,8 +456,8 @@ function initBand(el, list, key) {
       lock = performance.now() + 1600;
       scrollTo({ top: Math.round(scrollY + r.top + span * (i + .5) / N), behavior: 'smooth' });
     });
+    if (g.det) g.det.addEventListener('click', () => details(g, !g.card.classList.contains('is-det')));
     g.p.querySelectorAll('.rb__arr').forEach(b => b.addEventListener('click', () => { const d = +b.dataset.d; show(g, g.cur + d, d); }));
-    g.bars.forEach((b, k) => b.addEventListener('click', () => show(g, k, k > g.cur ? 1 : -1)));
     let x0 = null, y0 = 0;
     g.media.addEventListener('pointerdown', e => { if (act === i && g.imgs.length > 1) { x0 = e.clientX; y0 = e.clientY; } });
     g.media.addEventListener('pointerup', e => {
@@ -451,7 +467,9 @@ function initBand(el, list, key) {
     });
     g.media.addEventListener('pointercancel', () => { x0 = null; });
     g.p.addEventListener('keydown', e => {
-      if (act !== i || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') || !g.p.contains(document.activeElement)) return;
+      if (act !== i || !g.p.contains(document.activeElement)) return;
+      if (e.key === 'Escape') { details(g, false); return; }
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
       e.preventDefault(); const d = e.key === 'ArrowRight' ? 1 : -1; show(g, g.cur + d, d);
     });
   });
