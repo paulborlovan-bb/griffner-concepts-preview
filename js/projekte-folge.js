@@ -22,12 +22,15 @@ export function initFolge(el, list) {
   if (!el || !list || !list.length) return;
   const N = list.length;
   const layer = (p, i) => `<div class="rf__lay"${i ? ' aria-hidden="true"' : ''}>${p.img.map((m, k) => `<div class="rf__sl"><img ${imgAttrs(m, '(min-width:1024px) 72vw, 100vw')} alt="${esc(m.alt)}" loading="${i < 2 && !k ? 'eager' : 'lazy'}" decoding="async" draggable="false"${m.pos ? ` style="object-position:${m.pos}"` : ''}></div>`).join('')}</div>`;
+  /* Lose Karte je Projekt (wie die losen Bilder der Akte): ein weiteres Bild, gleitet beim Scrollen schneller als die Seite am Rahmen hoch */
+  const loose = p => { const k = p.img[2] ? 2 : p.img[1] ? 1 : -1; return k < 0 ? '<i class="rf__lc" hidden></i>' : `<button class="rf__lc" type="button" tabindex="-1" data-k="${k}"><img src="${src(p.img[k])}" alt="" loading="lazy" decoding="async" draggable="false"></button>`; };
   el.innerHTML = `<div class="rf__pin"><div class="rf__stage">`
     + `<nav class="rf__nav" aria-label="Projekte"><ol class="rf__list">${list.map((p, i) => `<li><button class="rf__link" type="button" data-i="${i}"><span class="info">${pad2(i + 1)}</span><span class="rf__ln">${esc(p.name)}</span><i aria-hidden="true"></i></button></li>`).join('')}</ol></nav>`
     + `<div class="rf__main">`
     + `<div class="rf__head"><p class="info rf__art"></p><h3 class="rf__h"></h3></div>`
-    + `<div class="rf__frame" role="group" aria-roledescription="Bildfolge"><div class="rf__lays">${list.map(layer).join('')}</div>`
+    + `<div class="rf__fw"><div class="rf__frame" role="group" aria-roledescription="Bildfolge"><div class="rf__lays">${list.map(layer).join('')}</div>`
     + `<span class="info rf__count"></span><div class="rf__arrows"><button type="button" class="rf__arrow" data-d="-1" aria-label="Vorheriges Bild">←</button><button type="button" class="rf__arrow" data-d="1" aria-label="Nächstes Bild">→</button></div></div>`
+    + `<div class="rf__loose" aria-hidden="true">${list.map(loose).join('')}</div></div>`
     + `<div class="rf__foot"><p class="rf__say"></p><div class="rf__rule"></div><div class="rf__row"><button class="rf__go" type="button" aria-haspopup="dialog">Projekt ansehen</button><ul class="info rf__facts"></ul></div></div>`
     + `</div></div></div>`
     + `<dialog class="rvd" aria-labelledby="rvd-name"><div class="rvd__in" tabindex="-1">`
@@ -41,7 +44,8 @@ export function initFolge(el, list) {
   const pin = $('.rf__pin', el), frame = $('.rf__frame', el), html = document.documentElement;
   const art = $('.rf__art', el), hh = $('.rf__h', el), say = $('.rf__say', el), facts = $('.rf__facts', el), count = $('.rf__count', el);
   const arrows = $('.rf__arrows', el), links = $$('.rf__link', el), bar = $('.rf__list', el), goBtn = $('.rf__go', el);
-  const P = $$('.rf__lay', el).map((l, i) => ({ i, p: list[i], lay: l, sl: $$('.rf__sl', l), n: list[i].img.length, tgt: 0, pos: 0, sv: [], v: null }));
+  const lcs = $$('.rf__lc', el), fw = $('.rf__fw', el);
+  const P = $$('.rf__lay', el).map((l, i) => ({ i, p: list[i], lay: l, sl: $$('.rf__sl', l), imgs: $$('img', l), lc: lcs[i].hidden ? null : lcs[i], n: list[i].img.length, tgt: 0, pos: 0, sv: [], v: null, kb: '', lk: '' }));
 
   /* Länge des Pins: ein Bildschirm plus je Projekt STEP, plus TAIL zum Stehenbleiben am Ende */
   const size = () => { pin.style.height = `${Math.round(vhs() * (1 + (N - 1) * STEP + TAIL))}px`; };
@@ -70,8 +74,18 @@ export function initFolge(el, list) {
     hh.style.fontSize = `${(parseFloat(getComputedStyle(hh).fontSize) * Math.max(.55, w / sw * .98)).toFixed(1)}px`;
     hh.style.paddingTop = `${Math.max(0, h0 - hh.offsetHeight)}px`;  // gleiche Höhe wie ein normaler Name, Text sitzt unten
   };
-  /* Text des aktiven Projekts, läuft Wort für Wort herein */
-  let cur = -1;
+  /* Text des aktiven Projekts. Er hängt am Scrollen: im Wechsel gehen Name und Satz Wort für Wort nach oben weg,
+     die neuen steigen Wort für Wort von unten nach */
+  let cur = -1, tw = { name: [], say: [], thumb: null }, lastT = '';
+  const off = (x, j, n, D) => clamp((x - D * (n > 1 ? j / (n - 1) : 0)) / (1 - D));
+  const scrub = (dir, a) => {  // dir -1: geht nach oben weg, +1: kommt von unten; a: 0 steht, 1 ganz weg
+    const key = `${dir}:${a.toFixed(3)}`; if (key === lastT) return; lastT = key;
+    const set = (arr, D) => { const n = arr.length; arr.forEach((sp, j) => { const g = dir < 0 ? off(a, j, n, D) : 1 - off(1 - a, j, n, D); sp.style.transform = g > .001 ? `translate3d(0,${(dir * g * 112).toFixed(1)}%,0)` : ''; }); };
+    set(tw.name, .45); set(tw.say, .6);
+    const on = a > .001;
+    [art, facts].forEach(x => { x.style.opacity = on ? (1 - a).toFixed(3) : ''; x.style.transform = on ? `translate3d(0,${(dir * a * 14).toFixed(1)}px,0)` : ''; });
+    if (tw.thumb) tw.thumb.style.clipPath = on ? (dir < 0 ? `inset(0 0 0 ${(a * 100).toFixed(1)}%)` : `inset(0 ${(a * 100).toFixed(1)}% 0 0)`) : '';
+  };
   const text = (i, anim) => {
     const p = list[i];
     art.textContent = p.info;
@@ -80,11 +94,7 @@ export function initFolge(el, list) {
     facts.innerHTML = factsHTML(p);
     goBtn.setAttribute('aria-label', `Projekt ${p.name} ansehen`);
     frame.setAttribute('aria-label', `Bilder von ${p.name}`);
-    if (!anim || reduce) return;
-    $$('.rf__w>span', hh).forEach((s, j) => s.animate([{ transform: 'translateY(110%)' }, { transform: 'none' }], { duration: 760, delay: j * 50, easing: EASE, fill: 'backwards' }));
-    $$('.rf__w>span', say).forEach((s, j) => s.animate([{ transform: 'translateY(110%)' }, { transform: 'none' }], { duration: 700, delay: 120 + j * 16, easing: EASE, fill: 'backwards' }));
-    const th = $('.rf__thumb', say); if (th) th.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 700, delay: 80, easing: EASE, fill: 'backwards' });
-    [art, facts].forEach((x, j) => x.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 600, delay: 60 + j * 160, easing: EASE, fill: 'backwards' }));
+    tw = { name: $$('.rf__w>span', hh), say: $$('.rf__w>span', say), thumb: $('.rf__thumb', say) }; lastT = '';
   };
   const setCur = (i, anim) => {
     if (i === cur) return;
@@ -127,6 +137,9 @@ export function initFolge(el, list) {
   }, { passive: true });
   frame.addEventListener('click', e => { if (swiped || e.target.closest('.rf__arrows')) return; const q = P[cur]; open(q, ((Math.round(q.tgt) % q.n) + q.n) % q.n, !e.detail); });
   goBtn.addEventListener('click', e => { const q = P[cur]; open(q, ((Math.round(q.tgt) % q.n) + q.n) % q.n, !e.detail); });
+  P.forEach(q => { if (q.lc) q.lc.addEventListener('click', e => open(q, +q.lc.dataset.k, !e.detail)); });
+  let mx = 0, my = 0;
+  if (!reduce && matchMedia('(pointer:fine)').matches) addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; loop.poke(); }, { passive: true });
   links.forEach(l => l.addEventListener('click', () => scrollTo({ top: yOf(+l.dataset.i), behavior: reduce ? 'auto' : 'smooth' })));
   addEventListener('resize', () => { size(); fit(); measureFoot(); loop.poke(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fit(); measureFoot(); });
@@ -135,12 +148,40 @@ export function initFolge(el, list) {
   loop.add({ tick() {
     const vh = vhs(), r = pin.getBoundingClientRect();
     if (r.bottom < -vh * .2 || r.top > vh * 1.2) return;
-    /* u: Position in Projekten; je Schritt erst Ruhe, dann der Wechsel, weich hinein und heraus */
-    const u = clamp(-r.top / (STEP * vh), 0, N - 1);
+    /* u: Position in Projekten; je Schritt erst Ruhe, dann der Wechsel, weich hinein und heraus. raw läuft auch vor und nach dem Pin weiter */
+    const raw = -r.top / (STEP * vh), u = clamp(raw, 0, N - 1);
     let pos = 0;
     if (N > 1) { const k = Math.min(Math.floor(u), N - 2), f = u - k; pos = k + (reduce ? (f > .7 ? 1 : 0) : io(seg(f, REST, 1))); }
     placeLayers(pos);
     setCur(Math.round(pos), true);
+    const fr = pos - Math.floor(pos);
+    if (reduce || fr < 1e-4) scrub(-1, 0); else if (fr < .5) scrub(-1, fr * 2); else scrub(1, (1 - fr) * 2);
+    if (!reduce) {
+      /* Rahmen holt im Wechsel kurz Luft: die Kanten gehen ein Stück nach innen und wieder auf */
+      const b = Math.sin(Math.PI * fr);
+      frame.style.clipPath = b > .002 ? `inset(${(b * 5).toFixed(2)}% ${(b * 3.5).toFixed(2)}%)` : '';
+      const uo = b > .002 ? clamp(1 - b * 4).toFixed(2) : '';  // Zähler und Pfeile treten im Wechsel kurz zurück
+      count.style.opacity = uo; arrows.style.opacity = uo;
+      /* Bild zoomt über die ganze Zeit, in der das Projekt zu sehen ist, langsam zurück und gleitet etwas */
+      P.forEach(q => {
+        if (q.v === 9 || q.v === null) return;
+        const l = clamp((raw - (q.i - 1 + REST)) / (2 - REST)), kb = `scale(${(1.16 - .16 * l).toFixed(4)}) translate3d(0,${((.5 - l) * 3).toFixed(2)}%,0)`;
+        if (kb !== q.kb) { q.kb = kb; q.imgs.forEach(im => { im.style.transform = kb; }); }
+      });
+      /* Lose Karten: je Projekt eine, steigt schneller als die Seite am rechten Rand des Rahmens hoch und dreht sich dabei */
+      const TR = vh * .8, fwr = fw.getBoundingClientRect(), mid = fwr.top + fwr.height / 2;
+      P.forEach(q => {
+        if (!q.lc) return;
+        const d = q.i + REST / 2 - raw;  // 0 = Mitte der Ruhe dieses Projekts
+        if (d < -1.25 || d > 1.25) { if (q.lk !== 'h') { q.lk = 'h'; q.lc.style.visibility = 'hidden'; } return; }
+        const im = $('img', q.lc); if (im.loading === 'lazy') im.loading = 'eager';
+        const rot = (q.i % 2 ? 4 : -3) + d * 7, x = mx * 14, y = d * TR + my * 10;
+        /* oben unter dem Kopf und unten über dem Text blendet die Karte aus, damit sie nichts verdeckt, was man lesen oder klicken will */
+        const cy = mid + y, op = Math.min(clamp((cy - vh * .2) / (vh * .16)), clamp((vh * .82 - cy) / (vh * .16)));
+        const lk = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) rotate(${rot.toFixed(2)}deg)|${op.toFixed(2)}`;
+        if (lk !== q.lk) { q.lk = lk; q.lc.style.visibility = op > .01 ? 'visible' : 'hidden'; q.lc.style.transform = lk.split('|')[0]; q.lc.style.opacity = op.toFixed(2); q.lc.style.pointerEvents = op > .6 ? '' : 'none'; }
+      });
+    }
     links.forEach((l, j) => l.style.setProperty('--p', clamp(u - j + .5).toFixed(3)));
     /* Blättern im Projekt gleitet nach */
     let moving = false;
