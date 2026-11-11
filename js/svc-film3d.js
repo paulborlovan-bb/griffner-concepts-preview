@@ -136,10 +136,10 @@ export async function createFilm(stage, opt = {}) {
   };
   const box = (g, x0, y0, z0, x1, y1, z1, m, cast = true) => { const o = new T.Mesh(UBOX, m); o.scale.set(x1 - x0, y1 - y0, z1 - z0); o.position.set((x0 + x1) / 2, y0, (z0 + z1) / 2); o.castShadow = cast; o.receiveShadow = true; g.add(o); return o; };
 
-  /* Räume von Free aus dem Plan (pt) in m: Garage und Sauna im Westflügel */
+  /* Räume von Free aus dem Plan (pt) in m: die Sauna im Westflügel */
   const rectW = ([x0, y0, x1, y1]) => { const [a, b] = HW.toWorld(x0, y0), [c, d] = HW.toWorld(x1, y1); return { x0: a, z0: b, x1: c, z1: d }; };
   const room = n => (HW.H.floors[0].rooms.find(r => r.n === n) || { r: [[0, 0, 0, 0]] }).r[0];
-  const GAR = rectW(room('Garage')), SAU = rectW(room('Sauna'));
+  const SAU = rectW(room('Sauna'));
 
   /* Rasenplatte: wächst vom Sockel des Hauses (Rechteck) auf das ganze Grundstück (Grenze aus Runde 48) */
   const lawn = new T.Mesh(new T.BufferGeometry(), [MG.lawn, MG.plinth]); lawn.receiveShadow = true; W3.add(lawn);
@@ -226,13 +226,15 @@ export async function createFilm(stage, opt = {}) {
   const CORE = [-13.6, 6.2];
   const core = new T.Group(); core.position.set(CORE[0], 0, CORE[1]); W3.add(core);
   { let y = 0; [.5, .7, .9, .6, .8].forEach((h, i) => { const m = new T.Mesh(new T.CylinderGeometry(.42, .42, h, 28).translate(0, -y - h / 2, 0), MG.soil[i]); m.castShadow = true; core.add(m); y += h; }); core.userData.h = y; }
-  /* Zonen des Projektplans: sofort Haus und Zufahrt, später die Garage, irgendwann Pool oder Sauna (beide in Free: Garage und Sauna im Haus) */
+  /* Zonen des Projektplans (Runde 50b, Option A): sofort Haus (mit Garage) und Zufahrt, später Terrasse und Garten,
+     irgendwann Pool oder Sauna (die Sauna im Haus). Der Garten ist das ganze Grundstück, leicht aufgehellt, darüber gelb das Haus */
   const zoneMat = c => new T.MeshBasicMaterial({ color: c, transparent: true, opacity: 0, depthWrite: false, side: T.DoubleSide });
-  const zone = (rs, c) => { const g = new T.Group(), mat = zoneMat(c); rs.forEach(([x0, z0, x1, z1]) => { const m = new T.Mesh(new T.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2), mat); m.position.set((x0 + x1) / 2, yL + .02, (z0 + z1) / 2); m.renderOrder = 3; g.add(m); }); W3.add(g); return mat; };
-  const GZ = { x0: -7.7, x1: GAR.x1, z0: GAR.z0 - .1, z1: 6.84 };
-  const Z0 = zone([[-7.7, -6.84, 7.7, GZ.z0], [GZ.x1, GZ.z0, 7.7, 6.84], [-1.3, -8.84, 6.7, -6.84], [-1.3, 6.84, 6.7, 8.34], [DRIVE.x0, DRIVE.z0, DRIVE.x1, DRIVE.z1]], GELB);
-  const Z1 = zone([[GZ.x0, GZ.z0, GZ.x1, GZ.z1]], 0xffffff);
-  const Z2 = zone([[POOL.x0 - .5, POOL.z0 - .5, POOL.x1 + .5, POOL.z1 + 1.9], [SAU.x0, SAU.z0, SAU.x1, SAU.z1]], 0xffffff);
+  const zone = (rs, c, ro = 3) => { const g = new T.Group(), mat = zoneMat(c); rs.forEach(([x0, z0, x1, z1]) => { const m = new T.Mesh(new T.PlaneGeometry(x1 - x0, z1 - z0).rotateX(-Math.PI / 2), mat); m.position.set((x0 + x1) / 2, yL + .02, (z0 + z1) / 2); m.renderOrder = ro; g.add(m); }); W3.add(g); return mat; };
+  const Z1g = zoneMat(0xffffff);
+  { const m = new T.Mesh(new T.ShapeGeometry(new T.Shape(POLY.map(([x, z]) => new T.Vector2(x, -z)))).rotateX(-Math.PI / 2), Z1g); m.position.y = yL + .02; m.renderOrder = 3; W3.add(m); }
+  const Z1 = zone([[-1.3, -8.84, 6.7, -6.84]], 0xffffff, 4);
+  const Z0 = zone([[-7.7, -6.84, 7.7, 6.84], [-1.3, 6.84, 6.7, 8.34], [-1.3, 8.34, 2.4, streetZ(.5)], [DRIVE.x0, DRIVE.z0, DRIVE.x1, DRIVE.z1]], GELB, 4);
+  const Z2 = zone([[POOL.x0 - .5, POOL.z0 - .5, POOL.x1 + .5, POOL.z1 + 1.9], [SAU.x0, SAU.z0, SAU.x1, SAU.z1]], 0xffffff, 5);
 
   /* ---------- Schlüssel (Projektmanager) ---------- */
   const key = new T.Group(); scene.add(key);
@@ -275,7 +277,7 @@ export async function createFilm(stage, opt = {}) {
     'lay-plan': () => [-15.2, yL, 8.6], 'lay-fund': () => [-7.2, X.fo + .02, 6.2], 'lay-huelle': () => [-1.3, X.so + OGY + 2.2, 7.4],
     'lay-innen': () => [5.8, X.io + .6, -4.6], 'lay-aussen': () => [-12.2, 3.6, 4.6], 'lay-key': () => { key.updateMatrixWorld(true); const v = key.localToWorld(new T.Vector3(small() ? 1.0 : -1.05, 0, 0)); return [v.x, v.y, v.z]; },
     flaeche: () => [-10.6, yL, -6.4], dimx: () => dimX.userData.mid, dimz: () => dimZ.userData.mid, bau: () => [BAU.x0, yL, -2], boden: () => [CORE[0], 1.4 * X.core, CORE[1]],
-    z0: () => [3.2, yL, 2], z1: () => [(GZ.x0 + GZ.x1) / 2, yL, (GZ.z0 + GZ.z1) / 2], z2: () => [(POOL.x0 + POOL.x1) / 2, yL, (POOL.z0 + POOL.z1) / 2],
+    z0: () => [3.2, yL, 2], z1: () => [-11.5, yL, 2.5], z2: () => [(POOL.x0 + POOL.x1) / 2, yL, (POOL.z0 + POOL.z1) / 2],
     arch: () => [-7.7, 1.6, -6.84], einreich: () => [7.7, 1.6, -6.84], werk: () => [7.7, 1.6, 6.84], statik: () => [-7.7, 1.6, 6.84],
     slab: () => [3, .02, 6.84], daemm: () => [2.7, 9.4 + X.roofUp, -2], moist: () => [9.2 + .2, 2.4, 2.7], ueblich: () => [8.7, 2.5, -4.2],
     terrasse: () => [4.6, .1, -7.9], carport: () => [-4.3, GROUND_Y + .1, 9.6], pool: () => [(POOL.x0 + POOL.x1) / 2, GROUND_Y + .1, (POOL.z0 + POOL.z1) / 2],
@@ -371,7 +373,7 @@ export async function createFilm(stage, opt = {}) {
     core.visible = X.core > .002; core.position.y = lerp(-.2, core.userData.h + .4, X.core) - .2;
     /* Projektplan: Zonen */
     Z0.opacity = .82 * S_(p, 5.08, 5.16) * (1 - S_(p, 5.5, 5.58));
-    Z1.opacity = .8 * S_(p, 5.2, 5.28) * (1 - S_(p, 5.5, 5.58));
+    Z1.opacity = .8 * S_(p, 5.2, 5.28) * (1 - S_(p, 5.5, 5.58)); Z1g.opacity = .4 * Z1.opacity;
     Z2.opacity = .8 * S_(p, 5.32, 5.4) * (1 - S_(p, 5.5, 5.58));
     /* Schlüssel: im Überblick groß links über dem Garten (frei, nicht mehr oben am Logo), beim Projektmanager vor der Haustür */
     const kOver = S_(p, 3.4, 3.6) * (1 - S_(p, 3.92, 4.04)), kDoor = S_(p, 10.08, 10.3) * (1 - S_(p, 10.46, 10.6));

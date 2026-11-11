@@ -404,7 +404,7 @@ export const FILM = {
     { ch: '3', id: 'ueberblick', h: 'Alles, was dein Projekt braucht.', txt: 'Ein Plan für alles. Ein Projektmanager, der ihn zusammenhält.' },
     { ch: '4', id: 'projektcheck', h: 'Wissen, ob es aufgeht.', b: 'Der Projektcheck.', txt: 'Wir prüfen Grundstück, Baurecht und Baugrund und rechnen dein ganzes Projekt gegen dein Budget. Am Ende hältst du deinen Projektreport in der Hand.', link: ['Alles zum Projektcheck', 'leistungsumfang.html'] },
     { ch: '5', a: 5, b: 5.5, id: 'projektplan', h: 'Alles gedacht. Nicht alles auf einmal.', klein: 1, bt: 'Dein Projektplan.', txt: 'Wir denken dein ganzes Projekt von Anfang an mit und bauen es in Schritten, die zu deinem Budget passen.',
-      plan: [['Sofort.', 'Haus und Zufahrt'], ['Später.', 'Garage oder Carport'], ['Irgendwann.', 'Pool oder Sauna']] },
+      plan: [['Sofort.', 'Haus und Zufahrt'], ['Später.', 'Terrasse und Garten'], ['Irgendwann.', 'Pool oder Sauna']] },
     { ch: '5.5', a: 5.5, b: 6, id: 'hausplanung', h: 'Geplant von echten Profis.', bt: 'Hausplanung.', txt: 'Unser eigenes Architektur- und Designteam plant dein Haus mit dir. Von der ersten Skizze über die Einreichung bis zur Werkplanung im letzten Detail.', link: ['Alles zur Hausplanung', 'leistungsumfang.html#u-dazu'] },
     { ch: '6', id: 'fundament', h: 'Unser Haus beginnt eine Etage tiefer.', bt: 'Fundament.', txt: 'Die Bodenplatte ist bei uns serienmäßig. Weil ein Haus nicht erst über der Erde beginnt.', link: ['Alles zum Fundament', 'leistungsumfang.html#u-stufen'] },
     { ch: '7', id: 'bausystem', h: 'Gesünder wohnen geht nicht.', bt: 'Exterior.', txt: 'Holz, Holzfaser und Zellulose. Keine Folien, trocken gebaut. Wohngesund ab dem ersten Tag.', link: ['Alles zum Exterior', 'leistungsumfang.html#u-acht'], hint: 'Tippe auf einen Punkt im Haus' },
@@ -437,7 +437,8 @@ export const FILM = {
     tuer: { info: 'Besser bauen / Interior / Türen', t: 'Innentüren.', x: 'Du nimmst sie jeden Tag dutzende Male in die Hand. Sie sollten sich auch so anfühlen.', f: [['Massiv', 'Gutes Gewicht in der Hand'], ['Ruhig', 'Flächenbündig geplant']] }
   },
   /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf). Runde 50: Grundstück aus Runde 48 (749 m², Straße 27,70 m,
-     Ostseite 22,90 m); Free hat Garage und Sauna im Haus, darum kein Carport und keine Sauna im Garten */
+     Ostseite 22,90 m); Free hat Garage und Sauna im Haus, darum kein Carport und keine Sauna im Garten.
+     Runde 50b (Wahl des Kunden, Option A): im Projektplan „Später. Terrasse und Garten“ statt „Garage oder Carport“ */
   marken3d: [
     ['lay-plan', 'Projektplanung', 'Budget, Baurecht, Schritte und Architektur.', 3.3, 3.98, { kind: 'layer', jump: 's-projektcheck' }],
     ['lay-fund', 'Fundament', 'Die Bodenplatte ist serienmäßig.', 3.38, 3.98, { kind: 'layer', jump: 's-fundament' }],
@@ -448,7 +449,7 @@ export const FILM = {
     ['flaeche', 'Grundstück', '749 m²', 4.3, 5],
     ['dimx', '27,70 m', '', 4.45, 5], ['dimz', '22,90 m', '', 4.5, 5],
     ['bau', 'Baufenster', 'Baurecht geprüft', 4.6, 5], ['boden', 'Baugrund', 'Vor Ort geprüft', 4.7, 5],
-    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Garage', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
+    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Terrasse und Garten', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
     ['arch', 'Eigenes Architekturteam', 'Architektur und Design', 5.56, 5.7], ['einreich', 'Einreichplanung', 'Samt Energieausweis', 5.66, 5.8], ['werk', 'Werkplanung', 'Bis ins letzte Detail', 5.76, 5.9], ['statik', 'Statik', 'Für deinen Bauplatz', 5.86, 5.99],
     ['slab', 'Bodenplatte', 'Serienmäßig', 6.4, 6.95],
     ['dach', 'Satteldach', '', 7.22, 7.97, { kind: 'hot' }], ['wand', 'Die GRIFFNER Wand', '', 7.25, 7.97, { kind: 'hot' }],
