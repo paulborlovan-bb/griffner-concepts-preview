@@ -1,10 +1,11 @@
 /* Referenzen, Variante B (projects-b.html): Folge, gebaut wie die Akte der Concepts Seite (js/akte.js), nur knapper.
-   Ein gepinntes Bild für alle Projekte. Links die nummerierte Liste (wo du bist, Linie füllt sich, Klick springt).
-   Rechts Art und Ort, der Name groß, die Bildfolge im Rahmen, darunter der Satz mit kleinem Bild am Anfang, Linie, Projekt ansehen, Daten.
+   Ein gepinntes Bild für alle Projekte, mit viel Luft. Links die nummerierte Liste, klein (wo du bist, Linie füllt sich, Klick springt).
+   In der Mitte die Bildfolge im Rahmen, rechts eine ruhige Textspalte: oben Art und Name, unten Satz, Daten, Projekt ansehen.
    Jeder Scrollschritt (STEP Bildschirmhöhe) bringt das nächste Projekt: sein Bild schiebt sich von rechts über das aktuelle, das aktuelle
    weicht etwas nach links (wie die Bildwechsel der Akte), Name und Satz laufen Wort für Wort neu herein. Pfeile und Wischen blättern
    durch die Bilder des Projekts. Klick auf das Bild oder Projekt ansehen öffnet die Projektansicht (Vollbild schwarz, aus dem Rahmen),
-   Esc oder Zurück schließt. Schmal: die Liste wird eine Leiste unter dem Kopf. Daten aus data/referenzen.js (REFERENZEN). */
+   Esc oder Zurück schließt. Unter 1200 px wird die Liste eine Leiste unter dem Kopf, unter 900 px steht der Text unter dem Bild.
+   Daten aus data/referenzen.js (REFERENZEN). */
 import { loop, $, $$, clamp, seg, reduce, vhs } from './core.js';
 
 const DIR = 'assets/img/projekte/ref/', EASE = 'cubic-bezier(.22,1,.36,1)';
@@ -21,17 +22,17 @@ const words = s => s.split(/\s+/).filter(Boolean).map(w => `<span class="rf__w">
 export function initFolge(el, list) {
   if (!el || !list || !list.length) return;
   const N = list.length;
-  const layer = (p, i) => `<div class="rf__lay"${i ? ' aria-hidden="true"' : ''}>${p.img.map((m, k) => `<div class="rf__sl"><img ${imgAttrs(m, '(min-width:1024px) 72vw, 100vw')} alt="${esc(m.alt)}" loading="${i < 2 && !k ? 'eager' : 'lazy'}" decoding="async" draggable="false"${m.pos ? ` style="object-position:${m.pos}"` : ''}></div>`).join('')}</div>`;
+  const layer = (p, i) => `<div class="rf__lay"${i ? ' aria-hidden="true"' : ''}>${p.img.map((m, k) => `<div class="rf__sl"><img ${imgAttrs(m, '(min-width:1200px) 56vw, (min-width:900px) 66vw, 100vw')} alt="${esc(m.alt)}" loading="${i < 2 && !k ? 'eager' : 'lazy'}" decoding="async" draggable="false"${m.pos ? ` style="object-position:${m.pos}"` : ''}></div>`).join('')}</div>`;
   /* Lose Karte je Projekt (wie die losen Bilder der Akte): ein weiteres Bild, gleitet beim Scrollen schneller als die Seite am Rahmen hoch */
   const loose = p => { const k = p.img[2] ? 2 : p.img[1] ? 1 : -1; return k < 0 ? '<i class="rf__lc" hidden></i>' : `<button class="rf__lc" type="button" tabindex="-1" data-k="${k}"><img src="${src(p.img[k])}" alt="" loading="lazy" decoding="async" draggable="false"></button>`; };
   el.innerHTML = `<div class="rf__pin"><div class="rf__stage">`
     + `<nav class="rf__nav" aria-label="Projekte"><ol class="rf__list">${list.map((p, i) => `<li><button class="rf__link" type="button" data-i="${i}"><span class="info">${pad2(i + 1)}</span><span class="rf__ln">${esc(p.name)}</span><i aria-hidden="true"></i></button></li>`).join('')}</ol></nav>`
     + `<div class="rf__main">`
-    + `<div class="rf__head"><p class="info rf__art"></p><h3 class="rf__h"></h3></div>`
     + `<div class="rf__fw"><div class="rf__frame" role="group" aria-roledescription="Bildfolge"><div class="rf__lays">${list.map(layer).join('')}</div>`
     + `<span class="info rf__count"></span><div class="rf__arrows"><button type="button" class="rf__arrow" data-d="-1" aria-label="Vorheriges Bild">←</button><button type="button" class="rf__arrow" data-d="1" aria-label="Nächstes Bild">→</button></div></div>`
     + `<div class="rf__loose" aria-hidden="true">${list.map(loose).join('')}</div></div>`
-    + `<div class="rf__foot"><p class="rf__say"></p><div class="rf__rule"></div><div class="rf__row"><button class="rf__go" type="button" aria-haspopup="dialog">Projekt ansehen</button><ul class="info rf__facts"></ul></div></div>`
+    + `<div class="rf__txt"><div class="rf__head"><p class="info rf__art"></p><h3 class="rf__h"></h3></div>`
+    + `<div class="rf__foot"><p class="rf__say"></p><ul class="info rf__facts"></ul><button class="rf__go" type="button" aria-haspopup="dialog">Projekt ansehen</button></div></div>`
     + `</div></div></div>`
     + `<dialog class="rvd" aria-labelledby="rvd-name"><div class="rvd__in" tabindex="-1">`
     + `<div class="rvd__top"><p class="info rvd__pos"></p><button class="rvd__x" type="button">Schließen <i aria-hidden="true"></i></button></div>`
@@ -52,12 +53,15 @@ export function initFolge(el, list) {
   size();
   const yOf = i => pin.getBoundingClientRect().top + scrollY + i * STEP * vhs() + 1;
 
-  const sayHTML = p => { const im = p.img[1] || p.img[0]; return p.text ? `<span class="rf__thumb"><img src="${src(im)}" alt="" decoding="async"></span>${words(p.text)}` : ''; };
-  const factsHTML = p => (p.facts || []).slice(0, 3).map(([a, b]) => `<li><span>${esc(a)}</span> ${esc(b)}</li>`).join('') + `<li>${p.img.length} ${p.img.length > 1 ? 'Bilder' : 'Bild'}</li>`;
-  /* Unterer Block so hoch wie der höchste aller Projekte: so bleibt der Rahmen beim Wechsel gleich groß */
-  const foot = $('.rf__foot', el);
+  const sayHTML = p => p.text ? words(p.text) : '';
+  const factsHTML = p => (p.facts || []).slice(0, 3).map(([a, b]) => `<li><span>${esc(a)}</span> ${esc(b)}</li>`).join('');
+  /* Schmal (Bild über dem Text): unterer Block so hoch wie der höchste aller Projekte, so bleibt der Rahmen beim Wechsel gleich groß.
+     Breit steht der Text neben dem Bild und braucht das nicht */
+  const foot = $('.rf__foot', el), main = $('.rf__main', el);
+  const stacked = () => getComputedStyle(main).flexDirection === 'column';
   const measureFoot = () => {
     foot.style.minHeight = '';
+    if (!stacked()) return;
     const c = foot.cloneNode(true);
     c.style.cssText = `position:absolute;left:0;top:0;width:${foot.clientWidth}px;visibility:hidden;pointer-events:none`;
     c.setAttribute('aria-hidden', 'true'); foot.parentNode.appendChild(c);
@@ -66,17 +70,23 @@ export function initFolge(el, list) {
     list.forEach(p => { cs.innerHTML = sayHTML(p); cs.hidden = !p.text; cf.innerHTML = factsHTML(p); mx = Math.max(mx, c.offsetHeight); });
     c.remove(); foot.style.minHeight = `${Math.ceil(mx)}px`;
   };
-  /* Name immer einzeilig, lange Namen werden kleiner: so springt der Rahmen beim Wechsel nicht */
+  /* Name: breit steht er in der Textspalte und bricht um (höchstens drei Zeilen, kein Wort ragt hinaus).
+     Schmal bleibt er einzeilig, damit der Rahmen beim Wechsel nicht springt. Was nicht passt, wird kleiner */
   const fit = () => {
     hh.style.fontSize = hh.style.paddingTop = '';
-    const w = hh.clientWidth, sw = hh.scrollWidth, h0 = hh.offsetHeight;
-    if (sw <= w + 1) return;
-    hh.style.fontSize = `${(parseFloat(getComputedStyle(hh).fontSize) * Math.max(.55, w / sw * .98)).toFixed(1)}px`;
-    hh.style.paddingTop = `${Math.max(0, h0 - hh.offsetHeight)}px`;  // gleiche Höhe wie ein normaler Name, Text sitzt unten
+    const cs = getComputedStyle(hh), fs = parseFloat(cs.fontSize), w = hh.clientWidth, h0 = hh.offsetHeight;
+    if (stacked()) {
+      const sw = hh.scrollWidth; if (sw <= w + 1) return;
+      hh.style.fontSize = `${(fs * Math.max(.55, w / sw * .98)).toFixed(1)}px`;
+      hh.style.paddingTop = `${Math.max(0, h0 - hh.offsetHeight)}px`;  // gleiche Höhe wie ein normaler Name, Text sitzt unten
+      return;
+    }
+    const lr = (parseFloat(cs.lineHeight) || fs * 1.04) / fs;
+    for (let f = fs; f > fs * .6 && (hh.scrollWidth > w + 1 || hh.offsetHeight > lr * f * 3 + 2);) { f *= .94; hh.style.fontSize = `${f.toFixed(1)}px`; }
   };
   /* Text des aktiven Projekts. Er hängt am Scrollen: im Wechsel gehen Name und Satz Wort für Wort nach oben weg,
      die neuen steigen Wort für Wort von unten nach */
-  let cur = -1, tw = { name: [], say: [], thumb: null }, lastT = '';
+  let cur = -1, tw = { name: [], say: [] }, lastT = '';
   const off = (x, j, n, D) => clamp((x - D * (n > 1 ? j / (n - 1) : 0)) / (1 - D));
   const scrub = (dir, a) => {  // dir -1: geht nach oben weg, +1: kommt von unten; a: 0 steht, 1 ganz weg
     const key = `${dir}:${a.toFixed(3)}`; if (key === lastT) return; lastT = key;
@@ -84,7 +94,6 @@ export function initFolge(el, list) {
     set(tw.name, .45); set(tw.say, .6);
     const on = a > .001;
     [art, facts].forEach(x => { x.style.opacity = on ? (1 - a).toFixed(3) : ''; x.style.transform = on ? `translate3d(0,${(dir * a * 14).toFixed(1)}px,0)` : ''; });
-    if (tw.thumb) tw.thumb.style.clipPath = on ? (dir < 0 ? `inset(0 0 0 ${(a * 100).toFixed(1)}%)` : `inset(0 ${(a * 100).toFixed(1)}% 0 0)`) : '';
   };
   const text = (i, anim) => {
     const p = list[i];
@@ -94,7 +103,7 @@ export function initFolge(el, list) {
     facts.innerHTML = factsHTML(p);
     goBtn.setAttribute('aria-label', `Projekt ${p.name} ansehen`);
     frame.setAttribute('aria-label', `Bilder von ${p.name}`);
-    tw = { name: $$('.rf__w>span', hh), say: $$('.rf__w>span', say), thumb: $('.rf__thumb', say) }; lastT = '';
+    tw = { name: $$('.rf__w>span', hh), say: $$('.rf__w>span', say) }; lastT = '';
   };
   const setCur = (i, anim) => {
     if (i === cur) return;
