@@ -182,7 +182,7 @@ a:hover .p-zoom{transform:scale(1.03)}
   .rb__btn:hover{background:var(--griffner-schwarz);color:var(--rb-bg,var(--griffner-weiss))}
 }
 
-/* ---------- 06 Referenzen, Variante B (projects-b.html, js/projekte-raster.js): Raster mit Bildvorschau, Filter, Projektansicht ---------- */
+/* ---------- 06 Referenzen, Variante B (projects-b.html, js/projekte-stapel.js): Stapel beim Scrollen, Filter, Projektansicht ---------- */
 .rv{margin-top:56px;padding:0 var(--p-track)}
 .rv__top{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:40px}
 .rv__chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -191,35 +191,46 @@ a:hover .p-zoom{transform:scale(1.03)}
 .rv__chip sup{position:relative;top:-.5em;font-size:.75em;letter-spacing:.08em;opacity:.6;vertical-align:baseline}
 .rv__chip[aria-pressed="true"]{background:var(--griffner-schwarz);color:var(--rb-bg,var(--griffner-weiss))}
 .rv__chip:focus-visible,.rv__open:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:3px}
-.rv__grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:64px 24px;align-items:start}
-.rv__t{min-width:0;cursor:pointer}
-.rv__t[hidden]{display:none}
-.rv__frame{position:relative;aspect-ratio:var(--r,4 / 5);overflow:hidden;background:var(--griffner-kalk);cursor:pointer;
-  clip-path:inset(100% 0 0 0);transition:clip-path 1300ms var(--ease) calc(var(--c,0) * 90ms)}
-.rv__t.is-in .rv__frame{clip-path:inset(0 0 0 0)}
-.rv__strip{position:absolute;left:0;right:0;top:-4%;height:108%;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;will-change:transform}
+/* Stapel: Karten bleiben stehen (sticky), die nächste schiebt sich darüber. --x (Einzug), Zoom, Kante und Abdunkeln setzt js pro Bild */
+.rv__stack{position:relative;--ch:min(76svh,60vw);--gap:12svh}
+.rv__mk{display:block;height:0}
+.rv__mk[hidden],.rv__t[hidden]{display:none}
+.rv__t{--x:10%;position:sticky;top:max(84px,calc((100svh - var(--ch)) / 2 + 16px));height:var(--ch);margin:0 0 var(--gap);cursor:pointer}
+.rv__end{display:block;height:22svh}
+.rv__in{position:relative;height:100%;transform-origin:50% 0;will-change:transform}
+.rv__frame{position:absolute;inset:0;overflow:hidden;background:var(--griffner-kalk);clip-path:inset(0 var(--x) 0 var(--x))}
+.rv__strip{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;will-change:transform}
 .rv__strip::-webkit-scrollbar{display:none}
-.rv__strip img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start;-webkit-user-drag:none;user-select:none;transform:scale(1.1);transition:transform 1600ms var(--ease) calc(var(--c,0) * 90ms)}
-.rv__t.is-in .rv__strip img{transform:none}
-.rv__bars{position:absolute;left:12px;right:12px;top:12px;z-index:2;display:flex;gap:4px;pointer-events:none;opacity:0;transition:opacity 400ms var(--ease)}
+.rv__strip img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start;-webkit-user-drag:none;user-select:none}
+.rv__dim{position:absolute;inset:0;z-index:4;background:#000;opacity:0;pointer-events:none}
+.rv__bars{position:absolute;left:calc(var(--x) + 16px);right:calc(var(--x) + 16px);top:16px;z-index:2;display:flex;gap:4px;pointer-events:none;opacity:0;transition:opacity 400ms var(--ease)}
 .rv__bars i{flex:1;height:2px;background:rgba(255,255,255,.45);transition:background 250ms}
 .rv__bars i.is-on{background:var(--griffner-weiss)}
-.rv__go{position:absolute;right:0;bottom:0;z-index:2;width:56px;height:56px;background:var(--griffner-gelb);pointer-events:none;transform:translateY(100%);transition:transform 550ms var(--ease)}
+.rv__go{position:absolute;right:var(--x);bottom:0;z-index:2;width:56px;height:56px;background:var(--griffner-gelb);pointer-events:none;transform:translateY(100%);transition:transform 550ms var(--ease)}
 .rv__go::before,.rv__go::after{content:'';position:absolute;left:20px;top:27.5px;width:16px;height:1px;background:var(--griffner-schwarz)}
 .rv__go::after{transform:rotate(90deg)}
-.rv__cap{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:10px 16px;padding-top:16px}
-.rv__cap>*{margin:0}
+/* Etikett wie Variante A: bündig unten links in der Farbe der Sektion, geht von unten auf, sobald die Karte steht */
+.rv__card{position:absolute;left:var(--x);bottom:0;z-index:3;box-sizing:border-box;width:min(clamp(420px,30vw,540px),100%);padding:16px 20px 18px 20px;
+  background:var(--rb-bg,var(--griffner-weiss));color:var(--griffner-schwarz);clip-path:inset(100% 0 0 0);transition:clip-path 350ms var(--ease)}
+.rv__t.is-on .rv__card{clip-path:inset(0 0 0 0);transition:clip-path 900ms var(--ease) 80ms}
+.rv__card>*{margin:0}
 .rv__art{display:flex;gap:14px;min-width:0}
-.rv__no{flex:none;min-width:1.9em}
-.rv__n{opacity:.55;white-space:nowrap}
-.rv__name{grid-column:1 / -1;margin:0;font-family:var(--font-display);font-weight:500;font-size:clamp(1.25rem,1.6vw,1.75rem);line-height:1.08;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0}
+.rv__no{flex:none;font-variant-numeric:tabular-nums}
+.rv__inf{min-width:0}
+.rv__name{margin-top:10px !important;font-family:var(--font-display);font-weight:500;font-size:clamp(1.5rem,2.1vw,2.25rem);line-height:1.04;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
 .rv__open{margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left;cursor:pointer;
   background-image:linear-gradient(currentColor,currentColor);background-size:0 1px;background-repeat:no-repeat;background-position:0 100%;transition:background-size 500ms var(--ease)}
+.rv__meta{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:16px !important}
+.rv__n{opacity:.55;white-space:nowrap}
+.rv__cta{display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.rv__cta i{position:relative;display:block;width:11px;height:11px;transition:transform 450ms var(--ease)}
+.rv__cta i::before,.rv__cta i::after{content:'';position:absolute;left:0;top:5px;width:11px;height:1px;background:currentColor;transition:transform 450ms var(--ease)}
+.rv__cta i::after{transform:rotate(90deg)}
 @media (hover:hover) and (pointer:fine){
   .rv__strip{overflow:hidden;scroll-snap-type:none}
   .rv__frame:hover .rv__bars{opacity:1}
-  .rv__frame:hover .rv__go{transform:none}
-  .rv__t:hover .rv__open{background-size:100% 1px}
+  .rv__t:hover .rv__go{transform:none}
+  .rv__t:hover .rv__cta i{transform:rotate(90deg)}
   .rv__chip:hover{background:var(--griffner-schwarz);color:var(--rb-bg,var(--griffner-weiss))}
 }
 @media (hover:none),(pointer:coarse){.rv__bars{opacity:1}.rv__go{transform:none;width:44px;height:44px}.rv__go::before,.rv__go::after{left:14px;top:21.5px}}
@@ -277,15 +288,24 @@ html.rv-lock{overflow:hidden}
 }
 @media (max-width:1023px){
   .rv{margin-top:48px}
-  .rv__grid{gap:48px 16px}
+  .rv__stack{--ch:min(70svh,72vw);--gap:10svh}
   .rvd__txt{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .rvd__t1{grid-column:1 / -1}
+}
+@media (min-width:700px) and (max-width:1023px) and (orientation:portrait){
+  .rv__stack{--ch:min(64svh,92vw)}
+  .rv__t{top:96px}
 }
 @media (max-width:699px){
   .rv__top{margin-bottom:28px}
   .rv__chip{height:36px;padding:0 12px}
-  .rv__grid{gap:40px 0}
-  .rv__name{font-size:1.375rem}
+  .rv__stack{--gap:28px}
+  .rv__t{--x:5%;top:72px;height:auto}
+  .rv__in{height:auto;background:var(--rb-bg,var(--griffner-weiss))}
+  .rv__frame{position:relative;inset:auto;aspect-ratio:1 / 1}
+  .rv__card{position:relative;left:auto;bottom:auto;width:100%;padding:16px 0 6px;clip-path:none}
+  .rv__name{font-size:1.5rem}
+  .rv__end{height:10svh}
   .rvd__top{height:64px}
   .rvd__gal{flex:none;min-height:0}
   .rvd__strip{position:relative;inset:auto}
@@ -410,8 +430,9 @@ html.rv-lock{overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   .p-lux{clip-path:none;transition:none}
   .rb__p,.rb__card,.rb__media,.rb__body,.rb__band,.rb__more{transition:none !important}
-  .rv__frame{clip-path:none;transition:none}
-  .rv__strip img{transform:none;transition:none}
+  .rv__t{--x:0% !important}
+  .rv__frame{clip-path:none}
+  .rv__card{transition:none}
   .rb:not(.is-in) .rb__p{opacity:1;transform:none}
   .hz__st{overflow-x:auto}
 }
