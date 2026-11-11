@@ -136,7 +136,7 @@ export const UEBERSICHT = {
 /* EIGEN (Runde 46): Bedienung, Knöpfe und kurze Hinweise */
 export const UI = {
   weiter: 'Weiterlesen', weniger: 'Weniger', mehrDazu: 'Mehr dazu', mehrErfahren: 'Mehr erfahren',
-  haus: 'Concept Bold im Schnitt', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
+  haus: 'Haus mit Satteldach im Schnitt', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
   zurueck: 'Zur Übersicht Services', vergleich: 'Im Vergleich', schliessen: 'Schließen',
   position: 'Position', positionen: 'Positionen', bereich: 'Bereich', bereiche: 'Bereiche',
   stufeWaehlen: 'Wähle eine Stufe. Das Haus zeigt, was dazukommt.', stufe: 'Stufe', alle: 'Alle', ansehen: 'ansehen'
@@ -392,7 +392,7 @@ export const RUND = {
 };
 
 /* ================= Runde 49: Services Übersicht im Design v2 (Kunde, „GRIFFNER Services v2“, 11.11.2026) =================
-   Ein gepinnter Film über das Haus (Concept Free statt des Hauses im Entwurf), zwölf Kapitel, unten die Leiste in drei Teilen,
+   Ein gepinnter Film über das Haus (Runde 51: das Haus aus dem Gartenplan mit Satteldach, im ganzen Garten), zwölf Kapitel, unten die Leiste in drei Teilen,
    danach das gelbe Feld „Starte mit dem Projektcheck“. Texte wörtlich aus dem Entwurf (S2Services). Kapitel k mit Gewicht
    (Bildschirmhöhen je Einheit 1,5): 5 und 10 haben zwei Hälften (5 / 5.5, 10 / 10.5). */
 export const FILM = {
@@ -437,14 +437,14 @@ export const FILM = {
     tuer: { info: 'Besser bauen / Interior / Türen', t: 'Innentüren.', x: 'Du nimmst sie jeden Tag dutzende Male in die Hand. Sie sollten sich auch so anfühlen.', f: [['Massiv', 'Gutes Gewicht in der Hand'], ['Ruhig', 'Flächenbündig geplant']] }
   },
   /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf). Runde 50: Grundstück aus Runde 48 (749 m², Straße 27,70 m,
-     Ostseite 22,90 m); Free hat Garage und Sauna im Haus, darum kein Carport und keine Sauna im Garten.
-     Runde 50b (Wahl des Kunden, Option A): im Projektplan „Später. Terrasse und Garten“ statt „Garage oder Carport“ */
+     Ostseite 22,90 m). Runde 50b (Wahl des Kunden, Option A): im Projektplan „Später. Terrasse und Garten“.
+     Runde 51: wieder der ganze Garten aus Runde 48 mit Carport und Sauna im Garten, das Haus mit Satteldach */
   marken3d: [
     ['lay-plan', 'Projektplanung', 'Budget, Baurecht, Schritte und Architektur.', 3.3, 3.98, { kind: 'layer', jump: 's-projektcheck' }],
     ['lay-fund', 'Fundament', 'Die Bodenplatte ist serienmäßig.', 3.38, 3.98, { kind: 'layer', jump: 's-fundament' }],
     ['lay-huelle', 'Exterior', 'Gesünder wohnen geht nicht.', 3.42, 3.98, { kind: 'layer', jump: 's-bausystem' }],
     ['lay-innen', 'Interior', 'Parkett, Fliesen, Bad, Türen.', 3.46, 3.98, { kind: 'layer', jump: 's-innen' }],
-    ['lay-aussen', 'Rund ums Haus', 'Zufahrt, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
+    ['lay-aussen', 'Rund ums Haus', 'Carport, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
     ['lay-key', 'Projektmanager', 'Vom Vertrag bis zum Schlüssel.', 3.54, 3.98, { kind: 'layer', jump: 's-pm' }],
     ['flaeche', 'Grundstück', '749 m²', 4.3, 5],
     ['dimx', '27,70 m', '', 4.45, 5], ['dimz', '22,90 m', '', 4.5, 5],
@@ -457,10 +457,10 @@ export const FILM = {
     ['daemm', 'Holzfaser-Zellulose', 'Speichert die Hitze des Tages', 0, 0, { fo: 'dach' }], ['moist', 'Diffusionsoffen', 'Regelt die Feuchte von selbst', 0, 0, { fo: 'wand' }], ['ueblich', '2,50 m', 'Üblich', 0, 0, { fo: 'hoehe' }],
     ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot' }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot' }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot' }],
     ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot' }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot' }],
-    ['carport', 'Garage und Zufahrt', '', 9.05, 9.95], ['sauna', 'Sauna', 'Im Haus, mit Blick in den Garten', 9.22, 9.95], ['terrasse', 'Terrasse', '', 9.36, 9.95], ['pool', 'Pool', '', 9.46, 9.95], ['garten', 'Garten', '', 9.58, 9.95],
+    ['carport', 'Carport und Zufahrt', '', 9.05, 9.95], ['sauna', 'Sauna', 'Im Garten, an der Terrasse', 9.22, 9.95], ['terrasse', 'Terrasse', '', 9.36, 9.95], ['pool', 'Pool', '', 9.46, 9.95], ['garten', 'Garten', '', 9.58, 9.95],
     ['key', 'Dein Projektmanager', 'Ein Mensch für alles', 10.34, 10.5],
     ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96]
   ],
-  modell: 'Concept Free',
+  modell: 'Haus mit Satteldach',
   cta: { h: 'Starte mit dem Projektcheck.', txt: 'Kostenlos, unverbindlich und mit einem Ergebnis, das du in der Hand hältst.', btn: 'Projektcheck anfragen', btnHref: 'https://griffner.com/contact', link: 'Alle Leistungen im Detail', linkHref: 'leistungsumfang.html' }
 };

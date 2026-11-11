@@ -72,7 +72,8 @@ export function initServicesFilm() {
       const vf = (k === 7 || k === 8) && focus ? 0 : v;
       el.style.opacity = vf.toFixed(3);
       el.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`;
-      el.style.pointerEvents = vf > .5 ? 'auto' : 'none';
+      /* Runde 51: der Block selbst bleibt durchlässig (Punkte im Haus darunter), nur Links und Knöpfe darin sind klickbar */
+      el.classList.toggle('is-act', vf > .5);
       el.style.visibility = vf > .002 ? 'visible' : 'hidden';
     });
     /* Punkt nur im eigenen Kapitel */

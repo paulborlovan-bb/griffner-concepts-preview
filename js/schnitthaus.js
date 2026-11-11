@@ -4,19 +4,25 @@
    aufgeschnitten wie ein Hausschnitt: an der Schnittfläche siehst du die GRIFFNER Wand, den Fußboden mit 21,5 cm, die Massivholzdecke und das Dach.
    Modus „erkunden“ (leistungen.html): Nummern 01 bis 08 am Modell, Klick auf Nummer oder Bauteil fliegt hin, der Rest wird hell
    wie ein weißes Architekturmodell. Modus „stufen“ (leistungsumfang.html): Ausbaustufe 1 bis 3 baut sich auf.
+   Runde 51 (Kundenwunsch: das Satteldach ist das Besondere von GRIFFNER): Satteldach statt Flachdach, First entlang des Hauses,
+   Obergeschoß so lang wie das Erdgeschoß und bis zum First offen. Am Schnitt siehst du den Aufbau des Dachs (ROOF: Holz innen,
+   Sparren mit Holzfaser und Zellulose, Holzfaser, Hinterlüftung, Lattung, Betondachstein), an der Stirnseite den Giebel.
+   Vom dunklen Rahmen bleibt das Band zwischen den Geschoßen.
    Maße in m. x entlang des Hauses (0 = Schnitt, LX = Stirnseite), y nach oben, z quer (+ Gartenseite). */
 import * as T from 'three';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js';
-import { prism, cube, MAT, FRAME_COL, WALL, FLOOR } from './svc-geo.js';
+import { prism, cube, MAT, FRAME_COL, WALL, FLOOR, ROOF } from './svc-geo.js';
 import { BUILD, pendant, M as FM } from './grundriss-moebel.js';
 
 /* ---------- Maße ---------- */
-/* LX: Erdgeschoß, LO: Obergeschoß (kürzer, darüber das Flachdach des Erdgeschoßes wie bei Bold über der Garage) */
-const W = .4225, D = 9.0, HD = D / 2, ZI = HD - W, LX = 11.2, LO = 8.0;
+/* LX: Erdgeschoß, LO: Obergeschoß (Runde 51: gleich lang, darüber das Satteldach) */
+const W = .4225, D = 9.0, HD = D / 2, ZI = HD - W, LX = 11.2, LO = LX;
 const F0 = .215, H = 2.72, C0 = F0 + H, C1 = C0 + .2, F1 = C1 + .16, R0 = F1 + H, YW = R0 + .2;
 /* Flachdach: Dämmung, Abdichtung, Attika; der dunkle Rahmen steht PJ vor der Fassade, ein Band zwischen den Geschoßen, eines am Dach */
 const RD = .28, YT = YW + RD + .012, AT = YT + .22, PJ = .28;
 const B0 = C0 - .12, B1 = F1 + .24, RB0 = R0 - .1, YM = (B0 + B1) / 2;
+/* Satteldach: Neigung 35° (tan .7), Unterseite der Sparren durch die Oberkante der Außenwand, Traufe .55 m, Ortgang .45 m vor */
+const TP = .7, OVS = .55, OVG = .45, yIn = z => YW + (HD - Math.abs(z)) * TP, RIDGE = yIn(0);
 /* Treppe entlang der Rückwand, 16 Steigungen */
 const SX = 1.0, SW = 1.0, NR = 16, GO = .27, SX0 = 1.75, SX1 = SX + GO * (NR - 1);
 /* Öffnungen in x und y: Gartenseite (z+) raumhoch, Straßenseite (z−) Haustür, Fenster */
@@ -30,21 +36,21 @@ const POSTS = [[2.0, -.3], [5.27, -.3]];
 
 /* Anker der Nummern und Blickpunkte (Ziel, Azimut, Höhe, Abstand) */
 const ANCH = {
-  openspace: [2.0, 1.75, -.3], wand: [-.02, 1.35, HD - W / 2], dach: [-.02, YW + RD / 2, HD - 1.1],
+  openspace: [2.0, 1.75, -.3], wand: [-.02, 1.35, HD - W / 2], dach: [-.02, yIn(HD - 1.1) + .2, HD - 1.1],
   fenster: [2.0, 1.5, HD + .02], decke: [-.02, (C0 + C1) / 2, -1.2], parkett: [.8, F0 + .02, -1.3],
   raumhoehe: [-.08, (F0 + C0) / 2, -2.7], fassade: [3.75, 4.7, HD + .03]
 };
 const VIEW = {
-  home: { t: [5.4, 2.8, .4], az: -.8, el: .28, d: 33 },
+  home: { t: [5.4, 3.5, .4], az: -.8, el: .28, d: 36 },
   openspace: { t: [3.6, 1.4, -.3], az: -1.22, el: .16, d: 11 },
   wand: { t: [0, 1.45, HD - W / 2], az: -1.12, el: .14, d: 2.9 },
-  dach: { t: [.4, YW - .2, HD - 1.4], az: -1.1, el: .22, d: 7 },
+  dach: { t: [.4, yIn(HD - 1.4) - .2, HD - 1.4], az: -1.1, el: .22, d: 7.5 },
   fenster: { t: [2.6, 1.7, 4.5], az: -.3, el: .1, d: 9 },
   decke: { t: [2.4, 2.7, .4], az: -1.12, el: -.06, d: 10 },
   parkett: { t: [1.6, .3, .2], az: -1.05, el: .42, d: 7.5 },
   raumhoehe: { t: [0, 1.7, -.6], az: -1.5, el: .04, d: 13 },
   fassade: { t: [5.4, 3.0, 4.5], az: .3, el: .1, d: 19 },
-  stufen: { t: [5.4, 2.9, .2], az: -.9, el: .32, d: 35 }
+  stufen: { t: [5.4, 3.7, .2], az: -.9, el: .32, d: 38 }
 };
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const easeIO = t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -126,7 +132,7 @@ export async function createSchnitthaus(host, opt = {}) {
   { let a = 0; WALL.forEach(L => { depth.push([a, a + L.d]); a += L.d; }); }
   const wallMat = L => (L.k === 'fassade' ? pm('fassade', 'slats') : L.k === 'gips' ? pm('wand', 'gipsRaw') : pm('wand', L.m));
   const hole = o => [[o.x0, o.y0], [o.x1, o.y0], [o.x1, o.y1], [o.x0, o.y1]];
-  /* Erdgeschoß bis YM (hinter dem Band), Obergeschoß darüber und kürzer (bis LO) */
+  /* Erdgeschoß bis YM (hinter dem Band), Obergeschoß darüber */
   const wallZ = (s, open) => WALL.forEach((L, i) => {
     const [a, b] = depth[i];
     const z0 = s > 0 ? HD - b : -(HD - a), z1 = s > 0 ? HD - a : -(HD - b);
@@ -138,21 +144,20 @@ export async function createSchnitthaus(host, opt = {}) {
     });
   });
   wallZ(1, OPEN.front); wallZ(-1, OPEN.back);
-  /* Stirnseiten ohne Öffnungen (Erdgeschoß bei LX, Obergeschoß bei LO), liegen hinter dem dunklen Rahmen */
-  [[LX, 0, YM], [LO, YM, YW]].forEach(([xe, y0, y1]) => WALL.forEach((L, i) => {
+  /* Stirnseite ohne Öffnungen: unten bis YM, oben der Giebel bis unter die Sparren */
+  [[LX, 0, YM, false], [LO, YM, YW, true]].forEach(([xe, y0, y1, og]) => WALL.forEach((L, i) => {
     const [a, b] = depth[i], zl = HD - b;
-    const m = add(prism('x', [[-zl, y0], [zl, y0], [zl, y1], [-zl, y1]], xe - b, xe - a), L.k === 'fassade' ? pm('fassade', 'frame') : wallMat(L), L.k === 'fassade' ? 'fassade' : 'wand');
+    const poly = og ? [[-zl, y0], [zl, y0], [zl, yIn(zl)], [0, RIDGE], [-zl, yIn(zl)]] : [[-zl, y0], [zl, y0], [zl, y1], [-zl, y1]];
+    const m = add(prism('x', poly, xe - b, xe - a), wallMat(L), L.k === 'fassade' ? 'fassade' : 'wand');
+    if (L.k === 'fassade') { m.userData.og = og; facade.push(m); }
     if (L.k === 'gips') gipsM.push(m);
   }));
-  /* Der dunkle Rahmen von Concept Bold: Band zwischen den Geschoßen, Band am Dach, Stirnseite bis zum Boden */
+  /* Das dunkle Band zwischen den Geschoßen, rund ums Haus */
   {
     const dk = pm('fassade', 'frame');
-    [[B0, B1, LE], [RB0, AT, LO + PJ]].forEach(([y0, y1, xe]) => {
-      add(cube(0, y0, HD, xe, y1, HE), dk, 'fassade');
-      add(cube(0, y0, -HE, xe, y1, -HD), dk, 'fassade');
-    });
-    add(cube(LX, 0, -HE, LE, B1, HE), dk, 'fassade');
-    add(cube(LO, B0, -HE, LO + PJ, AT, HE), dk, 'fassade');
+    add(cube(0, B0, HD, LE, B1, HE), dk, 'fassade');
+    add(cube(0, B0, -HE, LE, B1, -HD), dk, 'fassade');
+    add(cube(LX, B0, -HE, LE, B1, HE), dk, 'fassade');
   }
   /* Sockelblech an Garten- und Straßenseite */
   add(cube(0, GR, HD, LX, .05, HD + .012), pm('fassade', 'alu'), 'fassade');
@@ -173,20 +178,22 @@ export async function createSchnitthaus(host, opt = {}) {
     });
   }
 
-  /* ---------- Flachdach in Massivholz, Wärmedämmung, Abdichtung, Attika mit Verblechung; dasselbe über dem längeren Erdgeschoß ---------- */
+  /* ---------- Satteldach: Schicht für Schicht (ROOF, von innen nach außen) als Band über beide Dachflächen, am Schnitt offen ---------- */
   {
-    const e = .3, al = pm('dach', 'alu');
-    add(prism('y', [[0, -ZI], [LO - W, -ZI], [LO - W, ZI], [0, ZI]], R0, YW), pm('dach', 'slab'), 'dach');
-    const flat = (x0, x1, y, top) => {
-      const r = [[x0, -(HD - e)], [x1 - e, -(HD - e)], [x1 - e, HD - e], [x0, HD - e]];
-      add(prism('y', r, y, y + RD), pm('dach', 'fibre'), 'dach');
-      add(prism('y', r, y + RD, y + RD + .012), pm('dach', 'membrane'), 'dach');
-      add(cube(x0, y, HD - e, x1, top, HD), al, 'dach');
-      add(cube(x0, y, -HD, x1, top, -(HD - e)), al, 'dach');
-      add(cube(x1 - e, y, -(HD - e), x1, top, HD - e), al, 'dach');
-    };
-    flat(0, LO, YW, AT);
-    flat(LO, LX, C1, B1);
+    const c = Math.cos(Math.atan(TP)), Ze = HD + OVS, xe = LX + OVG;
+    let o = 0;
+    ROOF.forEach(L => {
+      const o0 = o / c, o1 = (o + L.d) / c; o += L.d;
+      [1, -1].forEach(s => add(prism('x', [[0, RIDGE + o0], [s * Ze, yIn(Ze) + o0], [s * Ze, yIn(Ze) + o1], [0, RIDGE + o1]], 0, xe), pm('dach', L.m), 'dach'));
+    });
+    /* Fußpfetten auf den Wänden, unter den Sparren */
+    [1, -1].forEach(s => add(prism('x', [[s * ZI, YW], [s * HD, YW], [s * ZI, yIn(ZI)]], 0, LX), pm('dach', 'spruce'), 'dach'));
+    /* Dachrinne an der Traufe, Blech am Ortgang */
+    const al = pm('dach', 'alu'), top = o / c;
+    [1, -1].forEach(s => {
+      add(cube(0, yIn(Ze) - .12, Math.min(s * Ze, s * (Ze + .14)), xe, yIn(Ze) + .02, Math.max(s * Ze, s * (Ze + .14))), al, 'dach');
+      add(prism('x', [[0, RIDGE + top], [s * Ze, yIn(Ze) + top], [s * Ze, yIn(Ze) + top - .2], [0, RIDGE + top - .2]], xe, xe + .025), al, 'dach');
+    });
   }
 
   /* ---------- Open Space: zwei Ableitungspunkte ---------- */
