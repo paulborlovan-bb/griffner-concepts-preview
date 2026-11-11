@@ -27,8 +27,10 @@ const FOC = {
   hoehe: { cam: [30, 12, 42, 3, 1.6, 8.15], fx: { dims: 1 } },
   open: { cam: [60, 62, 40, .8, .5, -1.2] },
   parkett: { cam: [50, 46, 22, -1.0, .3, -3.0] },
-  fliesen: { cam: [35, 60, 18, -1.4, .3, 3.3] },
-  bad: { cam: [40, 58, 18, -7.6, .4, -2.6] },
+  /* Runde 53: Fliesen im Duschraum neben der Sauna (Erdgeschoß), das Bad ist das echte Bad bei den Eltern im Obergeschoß:
+     beim Öffnen senkt sich das Obergeschoß wieder auf das Haus, das Dach bleibt weg (Ziele rechnet buildScene aus dem Plan) */
+  fliesen: { cam: [35, 60, 14, -6.4, .3, -2.4] },
+  bad: { cam: [28, 58, 13, 2.9, 3.4, -3.3], fx: { og: 1 } },
   tuer: { cam: [30, 42, 14, 1.41, 1.0, 4.81] }
 };
 /* Fokus, bei dem die Wände auf 1 m gehen, damit man in die Räume sieht */
@@ -51,6 +53,8 @@ function buildScene(H) {
   const loop = (g, pts, mat) => { const p = pts.map(v => new T.Vector3(v[0], v[1], v[2])); p.push(p[0].clone()); const l = new T.Line(new T.BufferGeometry().setFromPoints(p), mat); if (mat.isLineDashedMaterial) l.computeLineDistances(); g.add(l); return l; };
   const A = {};
   const anchor = (g, id, x, y, z) => { const o = new T.Object3D(); o.position.set(x, y, z); g.add(o); A[id] = o; return o; };
+  /* Punkt im Plan von Free (pt, Geschoß fi) zur Welt des Films: [x, z] */
+  const TW = (x, y, fi = 0) => { const [a, b] = H.toWorld(x, y, fi); return [HX + a, HZ + b]; };
 
   const pivot = new T.Group(), root = new T.Group();
   pivot.add(root);
@@ -93,8 +97,10 @@ function buildScene(H) {
   { const zm = M(zones[1], C.kalk, { op: .35 }), ze = LM(zones[1], 0xFFFFFF, .9);
     box(zones[1], EX0 - 1.6, .02, EZ0 - 4, EX1, .07, EZ0, zm, ze); box(zones[1], EX0 - 1.6, .02, EZ0, EX0, .07, 1.6, zm, ze);
     box(zones[1], -15.6, .02, -11.7, 15.6, .07, -11, zm, ze); }
-  box(zones[2], 8.1, .02, -7.9, 14.9, .07, 6.9, M(zones[2], C.kalk, { op: .2 }), LM(zones[2], 0xFFFFFF, .9));
-  wire(zones[2], 8.5, -1.3, -7.5, 14.5, .07, -1.5, LM(zones[2], C.kalk, .45, true)); wire(zones[2], 9.6, .07, 3.6, 12.6, 2.6, 6.6, LM(zones[2], C.kalk, .45, true));
+  /* Runde 53: Irgendwann = Pool im Garten oder die Sauna im Haus (Raum im Erdgeschoß, Nordwest) */
+  box(zones[2], 8.1, .02, -7.9, 14.9, .07, -1.1, M(zones[2], C.kalk, { op: .2 }), LM(zones[2], 0xFFFFFF, .9));
+  wire(zones[2], 8.5, -1.3, -7.5, 14.5, .07, -1.5, LM(zones[2], C.kalk, .45, true));
+  { const a = TW(382.4, 264.9), b = TW(552.5, 358.4); box(zones[2], a[0], .1, a[1], b[0], .16, b[1], M(zones[2], C.kalk, { op: .35 }), LM(zones[2], 0xFFFFFF, .9)); wire(zones[2], a[0], .16, a[1], b[0], EH - .1, b[1], LM(zones[2], 0xFFFFFF, .7, true)); }
   anchor(plan, 'z0', -1.1, .2, 12.4); anchor(plan, 'z1', EX0 - 1.6, .3, EZ0 - 4); anchor(plan, 'z2', 14.9, .3, -.5);
   anchor(plan, 'lay-plan', 17, -1.5, 6);
 
@@ -112,7 +118,8 @@ function buildScene(H) {
   const hul = unit('huelle', 3, 7.1, 0);
   const gvol = grp(hul, 'gvol'), deck = grp(hul, 'deck'), up = grp(hul, 'up'), roof = grp(hul, 'roof'), roofIns = grp(hul, 'roofIns');
   const inn = unit('innen', 4, 8.15, .14);
-  const ih = hx(inn);
+  /* Runde 53: Böden 2,5 cm höher, sonst liegt das Bodenbild (Eiche, Fliesen) unter der Oberkante des Fundaments und man sieht nur Beton */
+  const ih = hx(inn, .025);
   [EG.plane, ...EG.furn.map(o => o.m), ...EG.steps.map(s => s.m)].forEach(o => o && ih.add(o));
   EG.base.forEach(m => { m.visible = false; });
   hx(gvol).add(EG.g);
@@ -120,11 +127,20 @@ function buildScene(H) {
   hx(up).add(OG.g);
   { const rb = hx(roof, HT.eg + HT.slab); H.roofs.filter(r => r.g.parent === OG.g).forEach(r => rb.add(r.g)); }
   /* eigene Materialien je Ebene (Ein- und Ausblenden wie im Entwurf), mit der Umgebung der Concepts */
-  const own = (u, roots, env) => { const map = new Map(); const cl = m => { if (!m) return m; let c = map.get(m); if (!c) { c = m.clone(); c.onBeforeCompile = m.onBeforeCompile; c.customProgramCacheKey = m.customProgramCacheKey; if (c.isMeshStandardMaterial && !c.envMap) c.envMap = env; c.userData = { base: m.opacity, orig: m }; map.set(m, c); u.userData.mats.push(c); } return c; };
+  /* Runde 53: Fassaden und Dach legen ihr Bild in Weltkoordinaten (js/grundriss.js, für stehende Häuser). Hier dreht und bewegt sich
+     das Haus, das Bild wanderte über die Wände. Jede Gruppe gibt ihren Materialien uFix mit (Kehrwert ihrer Lage), so bleibt das Bild am Haus. */
+  const own = (u, roots, env, ref) => { const map = new Map(); const cl = m => { if (!m) return m; let c = map.get(m); if (!c) { c = m.clone();
+      if (ref && Object.prototype.hasOwnProperty.call(m, 'onBeforeCompile')) {
+        const ob = m.onBeforeCompile, key = (m.customProgramCacheKey ? m.customProgramCacheKey() : '') + '|fix', uFix = { value: new T.Matrix4() };
+        (ref.userData.fix = ref.userData.fix || []).push(uFix);
+        c.onBeforeCompile = (sh, r) => { ob.call(c, sh, r); sh.uniforms.uFix = uFix; sh.vertexShader = 'uniform mat4 uFix;\n' + sh.vertexShader.replace('vec4 gw = modelMatrix * vec4( transformed, 1.0 );', 'vec4 gw = uFix * modelMatrix * vec4( transformed, 1.0 );'); };
+        c.customProgramCacheKey = () => key;
+      } else { c.onBeforeCompile = m.onBeforeCompile; c.customProgramCacheKey = m.customProgramCacheKey; }
+      if (c.isMeshStandardMaterial && !c.envMap) c.envMap = env; c.userData = { base: m.opacity, orig: m }; map.set(m, c); u.userData.mats.push(c); } return c; };
     roots.forEach(r => r.traverse(o => { if (o.material) o.material = Array.isArray(o.material) ? o.material.map(cl) : cl(o.material); })); return map; };
   const env = H.scene.environment;
-  const mHul = own(hul, [gvol, deck, up, roof], env); own(inn, [ih], env);
-  const glasM = [...mHul.entries()].filter(([o]) => o === HM.glass).map(([, c]) => c);
+  const mHul = [gvol, deck, up, roof].map(g => own(hul, [g], env, g)); own(inn, [ih], env);
+  const glasM = mHul.flatMap(mp => [...mp.entries()].filter(([o]) => o === HM.glass).map(([, c]) => c));
   glasM.forEach(m => { m.emissive = new T.Color(0xFFE3BF); m.emissiveIntensity = 0; });
   const larchM = [...new Set(OG.skins.map(s => s.m.material).flat().concat(OG.base.map(m => m.material).flat()))].filter(m => m && m.map);
   const roofM = []; roof.traverse(o => { if (o.isMesh && Array.isArray(o.material) && o.material[1]) roofM.push(o.material[1]); });
@@ -183,8 +199,12 @@ function buildScene(H) {
 
   /* Innen: Böden, Möbel, Türen und Treppe von Free (oben in ih), Licht am Abend */
   const lamps = [[1.6, 2.4, -2.6], [-6.8, 2.4, -3.6]].map(p => { const l = new T.PointLight(0xFFE2BC, 0, 18, 1.2); l.position.set(...p); inn.add(l); return l; });
-  /* Parkett im Wohnen, Open Space am Essplatz, Fliesen im WC, Bad bei den Duschen neben der Sauna, Innentür zum Büro (Erdgeschoß von Free) */
-  anchor(inn, 'parkett', -1.0, .1, -3.0); anchor(inn, 'open', 3.45, 1.6, -1.55); anchor(inn, 'fliesen', -1.4, .1, 3.3); anchor(inn, 'bad', -7.6, .9, -2.5); anchor(inn, 'tuer', 1.41, 2.1, 4.81);
+  /* Parkett im Wohnen, Open Space am Essplatz, Innentür zum Büro. Runde 53: Fliesen im Duschraum neben der Sauna (großformatig, hell),
+     das Bad liegt oben: der Punkt steht an der Treppe („Im Obergeschoß“), beim Öffnen kommt das Obergeschoß herunter */
+  const fl0 = TW(482, 338), bt = TW(616, 461), bad0 = TW(764, 286, 1);
+  anchor(inn, 'parkett', -1.0, .1, -3.0); anchor(inn, 'open', 3.45, 1.6, -1.55); anchor(inn, 'fliesen', fl0[0], .1, fl0[1]); anchor(inn, 'bad', bt[0], 1.9, bt[1]); anchor(inn, 'tuer', 1.41, 2.1, 4.81);
+  anchor(up, 'bad-og', bad0[0], HT.eg + HT.slab + 1.05, bad0[1]);
+  FOC.fliesen.cam.splice(3, 3, fl0[0], .3, fl0[1]); FOC.bad.cam.splice(3, 3, bad0[0], HT.eg + HT.slab + .25, bad0[1]);
   anchor(inn, 'lay-innen', 17, 3, 6);
 
   /* Rund ums Haus */
@@ -197,13 +217,15 @@ function buildScene(H) {
     [0, 1, 2].forEach(i => box(zuf, -3.1 + i * .02, .06 + i * .14, EZ1 + 1.6 - i * .45, -.8, .2 + i * .14, EZ1 + 2.05 - i * .45, M(zuf, 0x8d8a85))); }
   const pool = unit('pool', 5, 9.24, .22); au.push(pool);
   { const rm = M(pool, C.kalk), re = LM(pool, C.schwarz, .25); box(pool, 8.1, 0, -7.9, 14.9, .16, -7.5, rm, re); box(pool, 8.1, 0, -1.5, 14.9, .16, -1.1, rm, re); box(pool, 8.1, 0, -7.5, 8.5, .16, -1.5, rm, re); box(pool, 14.5, 0, -7.5, 14.9, .16, -1.5, rm, re); box(pool, 8.5, 0, -7.5, 14.5, .1, -1.5, M(pool, C.salbei, { r: .12, m: .2 })); }
+  /* Runde 53: keine Sauna im Garten. Free hat die Sauna im Haus (Erdgeschoß, Nordwest, mit Duschen und Blick in den Garten),
+     die Marke zeigt dorthin */
   const sau = unit('sauna', 5, 9.36, .24); au.push(sau);
-  box(sau, 9.6, 0, 3.6, 12.6, 2.6, 6.6, M(sau, 0xB39878), LM(sau, C.schwarz, .28)); box(sau, 9.59, .3, 4.4, 9.63, 2.2, 5.8, M(sau, 0x56636e, { r: .05, m: .9, glass: 1 })); box(sau, 9.57, .22, 4.32, 9.6, 2.28, 5.88, M(sau, 0x2a2c2e, { r: .45, m: .5 }));
+  const sr = [TW(382.4, 264.9), TW(552.5, 358.4)];
   const gar = unit('garten', 5, 9.5, .26); au.push(gar);
   { const tm = M(gar, C.weiss), crm = M(gar, C.weiss), hm = M(gar, C.salbei); gar.userData.crown = crm; const trunk = new T.CylinderGeometry(.1, .12, 2.4, 8), crown = new T.SphereGeometry(1.45, 24, 16);
     [[-13.6, -10.2], [14, -10.4], [14.4, 10], [-13.8, 10.2], [7.4, 10.8], [-14, -3.6], [14.6, 2], [3.4, -10.8]].forEach(([x, z], i) => { const sc = .8 + (i % 3) * .16; const tr = new T.Mesh(trunk, tm); tr.position.set(x, 1.2 * sc, z); tr.scale.setScalar(sc); tr.castShadow = true; const cr = new T.Mesh(crown, crm); cr.position.set(x, 3.4 * sc, z); cr.scale.setScalar(sc); cr.castShadow = cr.receiveShadow = true; gar.add(tr, cr); });
     box(gar, -15.6, 0, -11.7, 15.6, 1.1, -11, hm); }
-  anchor(ter, 'terrasse', 2, .3, EZ0 - 3.6); anchor(zuf, 'carport', -6.3, .2, 10.6); anchor(pool, 'pool', 11.5, .2, -4.5); anchor(sau, 'sauna', 12.6, 2.6, 6.6); anchor(gar, 'garten', 14, 4.4, -10.4);
+  anchor(ter, 'terrasse', 2, .3, EZ0 - 3.6); anchor(zuf, 'carport', -6.3, .2, 10.6); anchor(pool, 'pool', 11.5, .2, -4.5); anchor(sau, 'sauna', (sr[0][0] + sr[1][0]) / 2, EH + .1, (sr[0][1] + sr[1][1]) / 2); anchor(gar, 'garten', 14, 4.4, -10.4);
   anchor(ter, 'lay-aussen', 17, 3.2, 6);
 
   /* Besser leben: Jahreszeiten, Kundendienst */
@@ -304,7 +326,7 @@ export async function createFilm(host, cfg = {}) {
     const a = K[i], b = K[i + 1], f = sm((P - a[0]) / (b[0] - a[0]));
     return a.map((v, j) => v + (b[j] - v) * f);
   };
-  const tmp = new T.Vector3(), dummy = new T.Object3D(), SET = { focus: null, fk: 0, fx: { roof: 0, wall: 0, dims: 0 }, flow: 0, lastCam: null, P: cfg.P || 0, tP: cfg.P || 0, hover: -1, mx: 0, my: 0, tmx: 0, tmy: 0, w: 0, h: 0, alive: 1, raf: 0 };
+  const IM = new T.Matrix4(), tmp = new T.Vector3(), dummy = new T.Object3D(), SET = { focus: null, fk: 0, fx: { roof: 0, wall: 0, dims: 0, og: 0 }, flow: 0, lastCam: null, P: cfg.P || 0, tP: cfg.P || 0, hover: -1, mx: 0, my: 0, tmx: 0, tmy: 0, w: 0, h: 0, alive: 1, raf: 0 };
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const setOp = (g, o) => {
     g.visible = o > .004;
@@ -336,9 +358,13 @@ export async function createFilm(host, cfg = {}) {
     const r = host.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height);
     if (w === SET.w && h === SET.h) return; SET.w = w; SET.h = h;
     R.setSize(w, h, false); cam.aspect = w / h;
-    const narrow = w < 900; SET.narrow = narrow;
-    cam.setViewOffset(w, h, narrow ? 0 : -w * .17, narrow ? h * .13 : 0, w, h);
-    cam.updateProjectionMatrix();
+    const narrow = w < 900; SET.narrow = narrow; SET.offX = null;
+  };
+  /* Runde 53 (Kunde: die Headline liegt auf dem Haus): in den ersten Kapiteln rückt das Haus am Desktop weiter nach rechts, weg vom Text */
+  const offset = P => {
+    const k = 1 - sm((P - 2.3) / .8), w = SET.w, h = SET.h, ox = SET.narrow ? -w * .07 * k : -w * (.17 + .13 * k);
+    if (SET.offX !== null && Math.abs(ox - SET.offX) < .5) return;
+    SET.offX = ox; cam.setViewOffset(w, h, ox, SET.narrow ? h * .13 : 0, w, h); cam.updateProjectionMatrix();
   };
   const onMove = e => { SET.tmx = e.clientX / innerWidth * 2 - 1; SET.tmy = e.clientY / innerHeight * 2 - 1; };
   addEventListener('pointermove', onMove, { passive: true });
@@ -360,14 +386,17 @@ export async function createFilm(host, cfg = {}) {
     SET.P += (SET.tP - SET.P) * (reduce ? 1 : .09);
     SET.mx += (SET.tmx - SET.mx) * .04; SET.my += (SET.tmy - SET.my) * .04;
     const P = SET.P, t = (performance.now() - t0) / 1000, s = (a, b) => sm((P - a) / (b - a)), ease = reduce ? 1 : .06;
+    offset(P);
 
     /* Kamera */
     const ft = SET.focus ? 1 : 0; SET.fk += (ft - SET.fk) * ease;
-    ['roof', 'wall', 'dims'].forEach(k => { const tg = SET.focus && SET.focus.fx && SET.focus.fx[k] ? 1 : 0; SET.fx[k] += (tg - SET.fx[k]) * (reduce ? 1 : .07); });
+    ['roof', 'wall', 'dims', 'og'].forEach(k => { const tg = SET.focus && SET.focus.fx && SET.focus.fx[k] ? 1 : 0; SET.fx[k] += (tg - SET.fx[k]) * (reduce ? 1 : .07); });
     SET.flow += ((SET.focus && LOW.includes(SET.focus.id) ? 1 : 0) - SET.flow) * ease;
     if (SET.focus) SET.lastCam = SET.focus.cam;
     const c = camAt(P);
-    if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] - c[j]) * fk; }
+    /* Runde 53: am Telefon zu Beginn etwas weiter weg, damit das ganze Haus im Bild ist */
+    if (SET.narrow) c[3] *= 1 + .22 * (1 - s(2.3, 3.1));
+    if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] * (j === 3 && SET.narrow ? 1.5 : 1) - c[j]) * fk; }
     let az = c[1], el = c[2];
     if (!reduce) { az += Math.sin(t * .11) * 1.6 + SET.mx * 2.6; el += Math.sin(t * .08) * .8 - SET.my * 1.4; }
     const A = az * Math.PI / 180, E = el * Math.PI / 180, d = c[3];
@@ -416,7 +445,9 @@ export async function createFilm(host, cfg = {}) {
 
     /* Hülle und Innen */
     const hl = Math.max(s(7.1, 7.28) * (1 - s(7.84, 8.0)) * .6, SET.fx.roof), doll = s(7.95, 8.22) * (1 - s(8.82, 9.05));
-    S.deck.position.set(-16 * doll, .5 * hl + 5 * doll, -18 * doll); S.up.position.set(-16 * doll, 1.1 * hl + 6.5 * doll, -18 * doll); S.roof.position.set(-16 * doll, 3 * hl + 8.5 * doll, -18 * doll); S.roofIns.position.set(0, 1.5 * hl, 0); setOp(S.roofIns, U.huelle.userData.op * Math.max(s(7.12, 7.24) * (1 - s(7.4, 7.48)), SET.fx.roof) * (1 - doll));
+    /* Runde 53: Bad im Fokus, das Obergeschoß kommt zurück auf das Haus (Decke mit), das Dach bleibt weg */
+    const dg = doll * (1 - sm(SET.fx.og));
+    S.deck.position.set(-16 * dg, .5 * hl + 5 * dg, -18 * dg); S.up.position.set(-16 * dg, 1.1 * hl + 6.5 * dg, -18 * dg); S.roof.position.set(-16 * doll, 3 * hl + 8.5 * doll, -18 * doll); S.roofIns.position.set(0, 1.5 * hl, 0); setOp(S.roofIns, U.huelle.userData.op * Math.max(s(7.12, 7.24) * (1 - s(7.4, 7.48)), SET.fx.roof) * (1 - doll));
     setOp(S.dim, U.huelle.userData.op * SET.fx.dims);
     const wx = SET.fx.wall; setOp(S.wallx, U.huelle.userData.op * Math.min(1, wx * 3));
     { let z = S.wallIn + .38; S.wxL.forEach((g, i) => { g.position.z = S.wallIn + (z - S.wallIn + i * .62) * wx; z += g.userData.th; }); }
@@ -467,6 +498,8 @@ export async function createFilm(host, cfg = {}) {
       S.mA.instanceMatrix.needsUpdate = S.mB.instanceMatrix.needsUpdate = S.mC.instanceMatrix.needsUpdate = true;
     }
 
+    /* Bild der Fassaden bleibt am Haus (uFix je Gruppe, siehe own) */
+    [S.gvol, S.deck, S.up, S.roof].forEach(g => { const f = g.userData.fix; if (!f) return; g.updateWorldMatrix(true, false); IM.copy(g.matrixWorld).invert(); f.forEach(u => u.value.copy(IM)); });
     R.render(scene, cam);
 
     /* Marken */
@@ -474,9 +507,11 @@ export async function createFilm(host, cfg = {}) {
       let v = L.fo ? (SET.focus && SET.focus.id === L.fo ? sm((SET.fk - .5) / .5) : 0) : s(L.from, L.from + .12) * (1 - s(L.to - .12, L.to));
       if (L.big && SET.hover !== -1 && SET.hover !== L.e) v *= .4;
       if (L.hot && SET.focus && SET.focus.id !== L.hot) v *= .45;
+      /* Runde 53: liegt das Obergeschoß auf dem Haus (Bad), sind die Punkte des Erdgeschoßes darunter: ausblenden */
+      const og = sm(SET.fx.og); if (L.hot && L.hot !== 'bad' && og > .002) v *= 1 - og;
       const off = () => { if (L.on) { L.el.style.opacity = '0'; L.el.style.pointerEvents = 'none'; if (L.el.tabIndex === 0) L.el.tabIndex = -1; L.on = 0; } };
       if (v < .01) return off();
-      const a = S.A[L.id]; if (!a) return off();
+      const a = L.id === 'bad' && SET.fx.og > .5 ? S.A['bad-og'] : S.A[L.id]; if (!a) return off();
       a.getWorldPosition(tmp).project(cam);
       if (tmp.z > 1) return off();
       let x = (tmp.x * .5 + .5) * SET.w; const y = (-tmp.y * .5 + .5) * SET.h;

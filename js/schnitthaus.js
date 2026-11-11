@@ -381,6 +381,20 @@ export async function createSchnitthaus(host, opt = {}) {
     cam.position.set(C.t.x + Math.sin(C.az) * Math.cos(C.el) * d, C.t.y + Math.sin(C.el) * d, C.t.z + Math.cos(C.az) * Math.cos(C.el) * d);
     cam.lookAt(C.t);
   }
+  /* Runde 53 (Kunde: „zu statisch“): in den Ausbaustufen folgt das Haus dem Scrollen. Es dreht sich langsam von der Schnittseite zum Garten,
+     kommt näher und fährt zu dem Teil, den du gerade liest. Ziehen dreht wie bisher, nach etwas Scrollen folgt es wieder. */
+  let prog = 0, follow = !EXPL && !reduceMotion, seeded = false, dragP = 0, lastF = 0;
+  const GOAL = { t: new T.Vector3(), az: 0, el: 0, d: 0 }, gv = new T.Vector3();
+  function aim() {
+    const b = VIEW.stufen, p = prog;
+    GOAL.t.set(...b.t); GOAL.az = -1.38 + .98 * p; GOAL.el = .4 - .16 * p; GOAL.d = 41 - 8 * p;
+    if (!sel) return;
+    const v = VIEW[sel], at = v ? gv.set(...v.t) : (pinAt(sel) ? gv.copy(pinAt(sel)) : null);
+    if (!at) return;
+    GOAL.t.lerp(at, .6);
+    if (v) { GOAL.az += (v.az - GOAL.az) * .4; GOAL.el += (v.el - GOAL.el) * .4; }
+    GOAL.d += (Math.max(15, v ? v.d : 18) - GOAL.d) * .55;
+  }
   function fly(v, dur = 1100) {
     const from = { t: C.t.clone(), az: C.az, el: C.el, d: C.d };
     tw = { from, to: { t: new T.Vector3(...v.t), az: v.az, el: v.el, d: v.d }, t0: performance.now(), dur };
@@ -448,7 +462,7 @@ export async function createSchnitthaus(host, opt = {}) {
     if (drag && e.pointerId === drag.id) {
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved = Math.max(moved, Math.hypot(dx, dy));
       if (e.pointerType === 'touch' && Math.abs(dy) > Math.abs(dx) && moved < 12) return;
-      if (moved > 4) { tw = null; C.az = Math.max(-1.75, Math.min(.85, drag.az - dx * .006)); C.el = Math.max(-.1, Math.min(.85, drag.el + dy * .004)); poke(); host.classList.add('is-drag'); }
+      if (moved > 4) { tw = null; if (follow) { follow = false; dragP = prog; } C.az = Math.max(-1.75, Math.min(.85, drag.az - dx * .006)); C.el = Math.max(-.1, Math.min(.85, drag.el + dy * .004)); poke(); host.classList.add('is-drag'); }
     } else if (EXPL && e.pointerType === 'mouse' && e.target === el) hover(e);
   });
   addEventListener('pointercancel', () => { drag = null; host.classList.remove('is-drag'); });
@@ -509,6 +523,14 @@ export async function createSchnitthaus(host, opt = {}) {
       C.t.lerpVectors(tw.from.t, tw.to.t, k); C.az = tw.from.az + (tw.to.az - tw.from.az) * k; C.el = tw.from.el + (tw.to.el - tw.from.el) * k; C.d = tw.from.d + (tw.to.d - tw.from.d) * k;
       if (k >= 1) tw = null; busy = true; need = true;
     }
+    if (follow && !tw && !drag) {
+      aim();
+      if (!seeded) { C.t.copy(GOAL.t); C.az = GOAL.az; C.el = GOAL.el; C.d = GOAL.d; seeded = true; need = true; }
+      const f = 1 - Math.exp(-Math.min(64, now - (lastF || now) || 16) / 320);
+      const dd = C.t.distanceTo(GOAL.t) + Math.abs(GOAL.az - C.az) * 6 + Math.abs(GOAL.el - C.el) * 6 + Math.abs(GOAL.d - C.d) * .3;
+      if (dd > .004) { C.t.lerp(GOAL.t, f); C.az += (GOAL.az - C.az) * f; C.el += (GOAL.el - C.el) * f; C.d += (GOAL.d - C.d) * f; busy = true; need = true; }
+    }
+    lastF = now;
     staged.forEach(s => { if (s.g.visible && s.k < 1) { s.k = Math.max(0, (now - s.t0) / 900); apply(s); busy = true; need = true; R.shadowMap.needsUpdate = true; } });
     if (emiBusy) { const dt = Math.min(64, now - (frame.last || now)); if (stepEmi(1 - Math.exp(-(dt || 16) / 140))) busy = true; need = true; }
     frame.last = now;
@@ -535,7 +557,9 @@ export async function createSchnitthaus(host, opt = {}) {
       opt.onSelect && opt.onSelect(sel);
     },
     /* Runde 48: nur hell machen, der Blick bleibt (Ausbaustufen, der Bereich, den du gerade liest) */
-    focus(k, name) { pinName = (k && name) || ''; if ((k || null) === sel) { updatePin(); return; } sel = k || null; applyDim(); host.classList.toggle('has-sel', !!sel); poke(); },
+    focus(k, name) { pinName = (k && name) || ''; if ((k || null) === sel) { updatePin(); return; } sel = k || null; if (!EXPL && !reduceMotion) follow = true; applyDim(); host.classList.toggle('has-sel', !!sel); poke(); },
+    /* Runde 53: wie weit du durch die Ausbaustufen gescrollt hast, 0 bis 1 */
+    progress(p) { prog = Math.max(0, Math.min(1, p)); if (!follow && !EXPL && !reduceMotion && !drag && Math.abs(prog - dragP) > .04) follow = true; if (follow) poke(); },
     get selected() { return sel; },
     set(k, v) { state[k] = v; applyWahl(); },
     get wahl() { return { ...state }; },

@@ -55,9 +55,9 @@ export function initServicesFilm() {
   r.addEventListener('click', e => {
     const t = e.target;
     if (t.closest && t.closest('[data-hp-close]')) { setFocus(null); return; }
-    /* Sprungmarken im Film (Leiste unten); auf griffner.com übernimmt das SmoothScroll vorher */
-    const a = t.closest && t.closest('a[href^="#"]');
-    if (a) { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) { e.preventDefault(); jumpY(el.getBoundingClientRect().top + scrollY); } }
+    /* Runde 53: Sprünge im Film sind Knöpfe (data-jump), keine Anker: kein #… in der Adresse, nichts, was Framer oder der Browser selbst springen lässt */
+    const j = t.closest && t.closest('[data-jump]');
+    if (j) { const el = document.getElementById(j.dataset.jump); if (el) { e.preventDefault(); jumpY(el.getBoundingClientRect().top + scrollY); } }
   });
   addEventListener('keydown', e => { if (e.key === 'Escape' && focus) setFocus(null); });
   /* Runde 52: ein Klick irgendwo außerhalb der Karte schließt sie auch (die Punkte selbst halten ihren Klick an) */
@@ -116,9 +116,11 @@ export function initServicesFilm() {
   addEventListener('resize', () => frame(true));
   frame(true);
 
+  /* Runde 53: Namen im 3D Modell aus dem versteckten Markup (in Framer bearbeitbar), sonst aus data/leistungen.js */
+  const mkTxt = (id, k, d) => { const e = r.querySelector(`[data-mk="${id}"] [data-k="${k}"]`); return e ? e.textContent.trim() : d; };
   /* 3D erst, wenn der Film in die Nähe kommt (hier: sofort, er steht oben) */
   const go = () => import('./svc-film3d.js').then(m => m.createFilm(stage, {
-    P, labels: FILM.marken3d.map(([id, t, s, from, to, o = {}]) => ({ id, t, s, from, to, ...o })),
+    P, labels: FILM.marken3d.map(([id, t, s, from, to, o = {}]) => ({ id, t: mkTxt(id, 't', t), s: mkTxt(id, 's', s), from, to, ...o })),
     onHot: id => setFocus(id),
     onJump: id => { const el = document.getElementById(id); if (el) jumpY(el.getBoundingClientRect().top + scrollY); }
   })).then(e => {

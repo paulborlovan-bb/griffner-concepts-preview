@@ -51,7 +51,9 @@ export function initStufen() {
   const box = $('[data-sts]'); if (!box) return;
   const arts = $$('[data-stx]', box), heads = arts.map(a => $('[data-stx-head]', a)), segs = $$('[data-sts-seg]', box), names = $$('[data-sts-name]', box);
   const groups = arts.map(a => $$('[data-stg]', a)), all = groups.flat(), nr = $('[data-sts-nr]', box), now = $('[data-sts-now]', box), stage = $('[data-st-stage]', box);
-  let api = null, n = 0, teil, label = '', curG = null, pinLb = '';
+  let api = null, n = 0, teil, label = '', curG = null, pinLb = '', lastPg = -1;
+  /* Runde 53: Name des Bereichs aus der Überschrift (in Framer bearbeitbar), sonst aus data-name */
+  const gName = x => { const h = $('.stg__h>span', x); return (h && h.textContent.trim()) || x.dataset.name; };
   if (reduce) $$('[data-stg],[data-stx-head]', box).forEach(g => g.classList.add('is-in'));
   else {
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
@@ -67,6 +69,9 @@ export function initStufen() {
     const r = box.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < -vh * .2 || r.top > vh * 1.2) return;
     const mid = vh * .52;
+    /* Runde 53: das Haus dreht sich mit dem Scrollen (js/schnitthaus.js progress) */
+    const pg = Math.min(1, Math.max(0, (vh * .5 - r.top) / Math.max(1, r.height - vh * .5)));
+    if (api && Math.abs(pg - lastPg) > .0004) { lastPg = pg; api.progress(pg); }
     let k = 1;
     heads.forEach((h, i) => { if (h.getBoundingClientRect().top < mid) k = i + 1; });
     setStage(k);
@@ -80,15 +85,15 @@ export function initStufen() {
     let g = null;
     groups[k - 1].forEach(x => { const q = x.getBoundingClientRect(); if (q.top < mid && q.bottom > mid - 40) g = x; });
     if (g !== curG) { if (curG) curG.classList.remove('is-cur'); if (g) g.classList.add('is-cur'); curG = g; }
-    const t = g ? g.dataset.teil || null : null, lb = g ? g.dataset.name : names[k - 1].textContent;
+    const t = g ? g.dataset.teil || null : null, lb = g ? gName(g) : names[k - 1].textContent;
     if (lb !== label) { label = lb; if (now) now.textContent = lb; }
     /* Runde 52: der gelesene Bereich hebt sich ab, die anderen der Stufe treten zurück; im Haus leuchtet der Teil gelb mit Namen */
     box.classList.toggle('has-cur', !!g);
-    if (t !== teil || lb !== pinLb) { teil = t; pinLb = lb; if (api) api.focus(t, g ? g.dataset.name : ''); }
+    if (t !== teil || lb !== pinLb) { teil = t; pinLb = lb; if (api) api.focus(t, g ? gName(g) : ''); }
   } });
   void all;
   near(stage, () => import('./schnitthaus.js').then(m => m.createSchnitthaus(stage, { mode: 'stufen', items: [], bg: 0xffffff })).then(a => {
-    api = a; stage.classList.add('is-live'); api.stage(n || 1); api.focus(teil || null, curG ? curG.dataset.name : '');
+    api = a; stage.classList.add('is-live'); api.stage(n || 1); api.focus(teil || null, curG ? gName(curG) : '');
   }).catch(e => { console.warn('Haus im Schnitt nicht geladen', e); stage.classList.add('is-fallback'); }));
 }
 

@@ -12,6 +12,9 @@
 /* Kapitel: unten links, über der Leiste */
 .svf__ch,.svf__hp{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 var(--page-margin) clamp(124px,18vh,180px);display:grid;row-gap:20px;justify-items:start;will-change:opacity,transform}
 .svf__ch{opacity:0;visibility:hidden;pointer-events:none}
+/* Runde 53: weicher dunkler Schein unter dem Text, damit er über dem Haus lesbar bleibt (blendet mit dem Kapitel) */
+.svf__ch::before{content:'';position:absolute;left:0;bottom:0;width:min(80vw,1180px);height:calc(100% + 18vh);z-index:-1;pointer-events:none;background:radial-gradient(ellipse 64% 60% at 22% 74%,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 40%,rgba(0,0,0,.3) 62%,rgba(0,0,0,0) 82%)}
+@media (max-width:899px){.svf__ch::before{width:100%;height:calc(100% + 12vh);background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.6) 55%,rgba(0,0,0,0) 100%)}}
 /* Runde 51: der Textblock fängt keine Klicks, damit die Punkte im Haus überall gehen; nur Links und Knöpfe im Text nehmen sie an */
 .svf__ch.is-act a,.svf__ch.is-act button{pointer-events:auto}
 .svf__ch[data-ch="0"]{opacity:1;visibility:visible;row-gap:22px}
@@ -77,17 +80,17 @@
 /* Leiste unten: besser planen, bauen, leben */
 .svf__nav{position:absolute;left:0;right:0;bottom:0;z-index:3;height:92px;box-sizing:border-box;padding:0 var(--page-margin);background:var(--griffner-schwarz);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(16px,3vw,48px);opacity:0;pointer-events:none;transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
 .svf__nav.is-on{opacity:1;pointer-events:auto}
-.svf__nav a{min-width:0;display:grid;row-gap:9px;align-content:center;height:100%;color:var(--griffner-kalk);text-decoration:none;transition:color 400ms}
-.svf__nav a:hover{opacity:1;color:var(--griffner-weiss)}
-.svf__nav a.is-cur{color:var(--griffner-weiss)}
+.svf__nav [data-pl]{margin:0;padding:0;border:0;background:none;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:0;display:grid;row-gap:9px;align-content:center;height:100%;color:var(--griffner-kalk);text-decoration:none;transition:color 400ms}
+.svf__nav [data-pl]:hover{opacity:1;color:var(--griffner-weiss)}
+.svf__nav [data-pl].is-cur{color:var(--griffner-weiss)}
 .svf-nav__top{display:flex;align-items:baseline;gap:10px;min-width:0}
 .svf-nav__m{flex:none;align-self:center;width:10px;height:8px;background:var(--griffner-gelb);opacity:0;transition:opacity 400ms}
-.svf__nav a.is-cur .svf-nav__m{opacity:1}
+.svf__nav [data-pl].is-cur .svf-nav__m{opacity:1}
 .svf-nav__n{flex:none;font-family:var(--font-text);font-weight:500;font-size:11px;letter-spacing:var(--tracking-info-web);text-transform:uppercase;white-space:nowrap}
 .svf-nav__bar{position:relative;display:block;height:2px;background:var(--griffner-anthrazit);overflow:hidden}
 .svf-nav__bar i{position:absolute;inset:0;background:var(--griffner-weiss);transform:scaleX(0);transform-origin:left center}
 .svf-nav__sub{min-width:0;height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-display);font-weight:500;font-size:14px;line-height:17px;letter-spacing:.05em;text-transform:uppercase;color:var(--griffner-weiss);opacity:0;transition:opacity 400ms}
-.svf__nav a.is-cur .svf-nav__sub{opacity:1}
+.svf__nav [data-pl].is-cur .svf-nav__sub{opacity:1}
 
 /* Marken im Modell */
 .svf-m{position:absolute;left:0;top:0;display:block;margin:0;padding:0;border:0;background:none;color:var(--griffner-weiss);font:inherit;text-align:left;opacity:0;visibility:hidden;will-change:transform,opacity;transition:opacity 260ms linear}
@@ -118,7 +121,7 @@
 
 /* Projektcheck starten: das gelbe Feld (Connector) */
 .svf-cta{position:relative;padding:var(--section-pad) 0 var(--section-pad) var(--page-margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap-col);color:var(--griffner-schwarz)}
-.svf-cta__box{grid-column:4 / -1;min-width:min(100%,320px);box-sizing:border-box;padding:clamp(56px,10vh,120px) var(--page-margin) clamp(44px,8vh,96px) clamp(28px,4vw,72px)}
+.svf-cta__box{grid-column:4 / -1;background:var(--griffner-gelb);min-width:min(100%,320px);box-sizing:border-box;padding:clamp(56px,10vh,120px) var(--page-margin) clamp(44px,8vh,96px) clamp(28px,4vw,72px)}
 .svf-cta__in{position:relative;z-index:6;display:grid;row-gap:26px;justify-items:start}
 .svf-cta__h{max-width:10em;font-size:clamp(34px,4.6vw,84px);line-height:.94}
 .svf-cta .svf__p{max-width:24em}
@@ -133,6 +136,9 @@
   .svf__hp{row-gap:12px;bottom:100px;padding:20px 20px 22px}
   .svf__p,.svf-hp__x{font-size:16px}
   .svf-hp__fs{column-gap:14px}
+  /* Runde 53: lange Wörter (Feuchtemonitoring) bleiben in der Karte */
+  .svf-hp__f{min-width:0}
+  .svf-hp__f b{font-size:clamp(17px,5.2vw,22px);overflow-wrap:anywhere;hyphens:auto}
   .svf-m__t{padding:5px 6px 6px}
   .svf-m__t b{font-size:11px}
   .svf-m__t em{display:none}

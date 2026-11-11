@@ -387,7 +387,7 @@ export const RUND = {
   schluss: 'Schlüsselfertig. Du kannst einziehen.',
   info: 'Rund ums Haus', h: 'Und alles, was dazugehört.',
   txt: 'Schlüsselfertig ist das Haus. Auf Wunsch bauen wir weiter, vom Fundament bis zum Garten, mit demselben Ansprechpartner.',
-  liste: ['Fundament', 'Das Haus', 'Innenausbau und Interior', 'Carport', 'Terrasse', 'Pool', 'Garten', 'Sauna, Glashaus, Gartenhütte'],
+  liste: ['Fundament', 'Das Haus', 'Innenausbau und Interior', 'Garage und Zufahrt', 'Terrasse', 'Pool', 'Garten', 'Sauna im Haus'],
   link: 'Im 3D Modell ansehen'
 };
 
@@ -406,11 +406,11 @@ export const FILM = {
     { ch: '4', id: 'projektcheck', h: 'Wissen, ob es aufgeht.', b: 'Der Projektcheck.', txt: 'Wir prüfen Grundstück, Baurecht und Baugrund und rechnen dein ganzes Projekt gegen dein Budget. Am Ende hältst du deinen Projektreport in der Hand.', link: ['Alles zum Projektcheck', 'leistungsumfang.html'] },
     { ch: '5', a: 5, b: 5.5, id: 'projektplan', h: 'Alles gedacht. Nicht alles auf einmal.', klein: 1, bt: 'Dein Projektplan.', txt: 'Wir denken dein ganzes Projekt von Anfang an mit und bauen es in Schritten, die zu deinem Budget passen.',
       plan: [['Sofort.', 'Haus und Zufahrt'], ['Später.', 'Terrasse und Garten'], ['Irgendwann.', 'Pool oder Sauna']] },
-    { ch: '5.5', a: 5.5, b: 6, id: 'hausplanung', h: 'Geplant von echten Profis.', bt: 'Hausplanung.', txt: 'Unser eigenes Architektur- und Designteam plant dein Haus mit dir. Von der ersten Skizze über die Einreichung bis zur Werkplanung im letzten Detail.', link: ['Alles zur Hausplanung', 'leistungsumfang.html#u-dazu'] },
-    { ch: '6', id: 'fundament', h: 'Unser Haus beginnt eine Etage tiefer.', bt: 'Fundament.', txt: 'Die Bodenplatte ist bei uns serienmäßig. Weil ein Haus nicht erst über der Erde beginnt.', link: ['Alles zum Fundament', 'leistungsumfang.html#u-stufen'] },
-    { ch: '7', id: 'bausystem', h: 'Gesünder wohnen geht nicht.', bt: 'Exterior.', txt: 'Holz, Holzfaser und Zellulose. Keine Folien, trocken gebaut. Wohngesund ab dem ersten Tag.', link: ['Alles zum Exterior', 'leistungsumfang.html#u-acht'], hint: 'Tippe auf einen Punkt im Haus' },
-    { ch: '8', id: 'innen', h: 'Hier wird es persönlich.', bt: 'Interior.', txt: 'Das Bausystem sorgt dafür, dass du gesund wohnst. Das Innere dafür, dass du gern nach Hause kommst.', link: ['Alles zum Interior', 'leistungsumfang.html#u-stufen'], hint: 'Tippe auf einen Raum' },
-    { ch: '9', id: 'aussen', h: 'Dein Projekt endet nicht an der Hauswand.', bt: 'Rund ums Haus.', txt: 'Ob wir es bauen oder mit deinen Firmen koordinieren, es gehört von Anfang an zum Plan.', link: ['Alles rund ums Haus', 'leistungsumfang.html#u-rund'] },
+    { ch: '5.5', a: 5.5, b: 6, id: 'hausplanung', h: 'Geplant von echten Profis.', bt: 'Hausplanung.', txt: 'Unser eigenes Architektur- und Designteam plant dein Haus mit dir. Von der ersten Skizze über die Einreichung bis zur Werkplanung im letzten Detail.', link: ['Alles zur Hausplanung', 'leistungsumfang.html'] },
+    { ch: '6', id: 'fundament', h: 'Unser Haus beginnt eine Etage tiefer.', bt: 'Fundament.', txt: 'Die Bodenplatte ist bei uns serienmäßig. Weil ein Haus nicht erst über der Erde beginnt.', link: ['Alles zum Fundament', 'leistungsumfang.html'] },
+    { ch: '7', id: 'bausystem', h: 'Gesünder wohnen geht nicht.', bt: 'Exterior.', txt: 'Holz, Holzfaser und Zellulose. Keine Folien, trocken gebaut. Wohngesund ab dem ersten Tag.', link: ['Alles zum Exterior', 'leistungsumfang.html'], hint: 'Tippe auf einen Punkt im Haus' },
+    { ch: '8', id: 'innen', h: 'Hier wird es persönlich.', bt: 'Interior.', txt: 'Das Bausystem sorgt dafür, dass du gesund wohnst. Das Innere dafür, dass du gern nach Hause kommst.', link: ['Alles zum Interior', 'leistungsumfang.html'], hint: 'Tippe auf einen Raum' },
+    { ch: '9', id: 'aussen', h: 'Dein Projekt endet nicht an der Hauswand.', bt: 'Rund ums Haus.', txt: 'Ob wir es bauen oder mit deinen Firmen koordinieren, es gehört von Anfang an zum Plan.', link: ['Alles rund ums Haus', 'leistungsumfang.html'] },
     { ch: '10', a: 10, b: 10.5, id: 'pm', h: 'Vom Vertrag bis zum Schlüssel an deiner Seite.', bt: 'Dein Projektmanager.', txt: 'Ein Mensch kennt dein Projekt in jedem Detail und koordiniert alle Gewerke. Du musst nicht wissen, wen du anrufen sollst. Er ruft dich an.' },
     { ch: '10.5', a: 10.5, b: 11, id: 'kundendienst', jahr: 'Jahr', h: 'Wir sind auch danach da.', bt: 'Kundendienst.', txt: 'Unser Kundendienst kennt dein Haus und ist da, wenn etwas ist. Auch Jahre nach dem Einzug.' },
     { ch: '11', id: 'haltung', h: 'Wir bauen nicht hundertmal dasselbe Haus.', einmal: ['Wir bauen ', 'deins.', ' Einmal.'] }
@@ -419,9 +419,9 @@ export const FILM = {
   marken: [['s-ueberblick', 525], ['s-projektcheck', 652.5], ['s-projektplan', 780], ['s-hausplanung', 915], ['s-fundament', 1102.5], ['s-bausystem', 1245], ['s-innen', 1552.5], ['s-aussen', 1702.5], ['s-pm', 1815], ['s-kundendienst', 1965]],
   /* Leiste unten: drei Teile mit Bereich in P und Unterzeilen [bis P, Name] */
   leiste: [
-    { name: 'Besser planen.', href: '#s-projektcheck', r: [4, 6], sub: [[5, 'Projektcheck'], [5.5, 'Projektplan'], [6, 'Hausplanung']] },
-    { name: 'Besser bauen.', href: '#s-fundament', r: [6, 10.5], sub: [[7, 'Fundament'], [8, 'Exterior'], [9, 'Interior'], [10, 'Rund ums Haus'], [10.5, 'Projektmanager']] },
-    { name: 'Besser leben.', href: '#s-kundendienst', r: [10.5, 11], sub: [[11, 'Kundendienst']] }
+    { name: 'Besser planen.', href: 's-projektcheck', r: [4, 6], sub: [[5, 'Projektcheck'], [5.5, 'Projektplan'], [6, 'Hausplanung']] },
+    { name: 'Besser bauen.', href: 's-fundament', r: [6, 10.5], sub: [[7, 'Fundament'], [8, 'Exterior'], [9, 'Interior'], [10, 'Rund ums Haus'], [10.5, 'Projektmanager']] },
+    { name: 'Besser leben.', href: 's-kundendienst', r: [10.5, 11], sub: [[11, 'Kundendienst']] }
   ],
   zurueck: '← Zurück zum Haus',
   /* Punkte im Haus: Info, Titel, Text, zwei Fakten. Wörtlich aus dem Entwurf */
@@ -456,8 +456,8 @@ export const FILM = {
     ['fenster', 'Holz-Alu-Fenster', '', 7.28, 7.97, { kind: 'hot', free: 1 }], ['fassade', 'Fassade', '', 7.31, 7.97, { kind: 'hot', free: 1 }], ['hoehe', 'Raumhöhe', '', 7.34, 7.97, { kind: 'hot', free: 1 }],
     ['daemm', 'Holzfaser-Zellulose', 'Speichert die Hitze des Tages', 0, 0, { fo: 'dach' }], ['moist', 'Diffusionsoffen', 'Regelt die Feuchte von selbst', 0, 0, { fo: 'wand' }], ['ueblich', '2,50 m', 'Üblich', 0, 0, { fo: 'hoehe' }],
     ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot', free: 1 }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot', free: 1 }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot', free: 1 }],
-    ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot', free: 1 }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot', free: 1 }],
-    ['terrasse', 'Terrasse', '', 9.05, 9.95, { free: 1 }], ['carport', 'Garage und Zufahrt', '', 9.17, 9.95, { free: 1 }], ['pool', 'Pool', '', 9.29, 9.95, { free: 1 }], ['sauna', 'Sauna', '', 9.41, 9.95, { free: 1 }], ['garten', 'Garten', '', 9.55, 9.95, { free: 1 }],
+    ['bad', 'Bad', 'Im Obergeschoß', 8.39, 8.97, { kind: 'hot', free: 1 }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot', free: 1 }],
+    ['terrasse', 'Terrasse', '', 9.05, 9.95, { free: 1 }], ['carport', 'Garage und Zufahrt', '', 9.17, 9.95, { free: 1 }], ['pool', 'Pool', '', 9.29, 9.95, { free: 1 }], ['sauna', 'Sauna', 'Im Haus', 9.41, 9.95, { free: 1 }], ['garten', 'Garten', '', 9.55, 9.95, { free: 1 }],
     ['key', 'Dein Projektmanager', 'Ein Mensch für alles', 10.34, 10.5],
     ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96, { free: 1 }]
   ],
