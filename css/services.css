@@ -219,6 +219,14 @@ section{position:relative}
 .sh__mk.is-behind{opacity:.3}
 .sh__mk.is-off{opacity:0;pointer-events:none}
 .has-sel .sh__mk:not(.is-sel){opacity:.35}
+/* Runde 52 (Ausbaustufen): gelber Punkt mit Namen am Teil, das du gerade liest; er gleitet von Teil zu Teil */
+.sh__pin{position:absolute;left:0;top:0;opacity:0;pointer-events:none;transition:opacity 400ms var(--ease),transform 650ms var(--ease);will-change:transform}
+.sh__pin.is-on{opacity:1}
+.sh__pin i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;background:var(--griffner-gelb);box-shadow:0 0 0 2px var(--griffner-weiss)}
+.sh__pin i::after{content:"";position:absolute;inset:-2px;border:2px solid var(--griffner-gelb);animation:sh-pin 1.8s var(--ease) infinite}
+.sh__pin span{position:absolute;left:16px;top:-12px;height:24px;display:flex;align-items:center;padding:0 10px;background:var(--griffner-schwarz);color:var(--griffner-weiss);white-space:nowrap;font-size:10px;letter-spacing:.16em}
+.sh__pin.is-left span{left:auto;right:16px}
+@keyframes sh-pin{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.6);opacity:0}}
 .has-sel .sh__mk.is-behind:not(.is-sel){opacity:0;pointer-events:none}
 .sh__hov{position:absolute;left:0;top:0;padding:6px 8px 5px;background:var(--griffner-schwarz);color:var(--griffner-weiss);pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 200ms var(--ease);z-index:2}
 .sh__hov.is-on{opacity:1}
@@ -469,7 +477,9 @@ section{position:relative}
 .stx__head.is-in .stx__lead{opacity:1;transform:none;transition-delay:300ms}
 .stx__head.is-in .stx__p{opacity:1;transform:none;transition-delay:420ms}
 .stx__head.is-in .stx__meta{opacity:1;transform:none;transition-delay:540ms}
-.stg{padding:26px 0 30px;border-top:1px solid var(--griffner-kalk)}
+.stg{padding:26px 0 30px;border-top:1px solid var(--griffner-kalk);transition:opacity 500ms var(--ease)}
+/* Runde 52: der Bereich, den du liest, steht klar vorne, die anderen der Stufe treten zurück */
+.sts.has-cur .stg:not(.is-cur){opacity:.38}
 .stg__h{margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:20px;font-family:var(--font-text);font-weight:500;font-size:var(--t-body-l);line-height:1.3}
 .stg__h>span:first-child{position:relative;transition:padding 500ms var(--ease)}
 .stg__h>span:first-child::before{content:"";position:absolute;left:0;top:.42em;width:10px;height:10px;background:var(--griffner-gelb);transform:scale(0);transition:transform 400ms var(--ease)}
@@ -638,6 +648,7 @@ section{position:relative}
   .sts__name{font-size:clamp(17px,5vw,22px)}
   .sts .sts__stage{height:26svh}
   .sts .sts__now{display:grid;font-size:9px}
+  .sh__pin span{height:20px;top:-10px;padding:0 7px;font-size:8.5px}
   .sts__now>span{display:none}
   .sts__list{grid-column:1;margin-top:24px}
   .stx__head{min-height:auto;padding:40px 0 28px;gap:14px}
@@ -669,6 +680,8 @@ section{position:relative}
   .dz__it::before{transform:none}
   .dz__big span.is-new{animation:none}
   .sts__big span.is-new{animation:none}
+  .sh__pin i::after{animation:none;opacity:0}
+  .sh__pin,.stg{transition:none}
   .gs__p,.gs__fk li,.gs__hint,.stx__lead,.stx__p,.stx__meta,.stg__l li{transition:none !important}
   .stx__lead,.stx__p,.stx__meta,.stg__l li{opacity:1;transform:none}
   .rp__g>*,.rp__pin{transition:none !important}

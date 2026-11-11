@@ -378,7 +378,7 @@ export const GRUND_UI = { drehen: 'Ziehen dreht das Modell', zurueck: 'Ganzes Gr
 export const STUFEN_TEIL = {
   'Beratung und Planung': 'openspace', 'Baustelle': null, 'Die GRIFFNER Wand': 'wand', 'Fassade': 'fassade', 'Dach': 'dach',
   'Geschossdecke': 'decke', 'Fenster': 'fenster', 'Haustür': 'tuer', 'Beschattung und Insektenschutz': 'fenster', 'Feuchtemonitoring': 'dach',
-  'Spengler': 'fassade', 'Terrasse, Carport und Überdachungen': null,
+  'Spengler': 'blech', 'Terrasse, Carport und Überdachungen': 'terrasse',
   'Wärme': 'technik', 'Elektro': 'technik', 'Sanitärinstallation': 'technik', 'Estrich und Fußbodenaufbau': 'parkett',
   'Böden, Treppe, Türen': 'treppe', 'Bodenbelag': 'parkett', 'Fliesen': null, 'Innentüren': null, 'Sanitäreinrichtung': null, 'Oberflächen': 'wand', 'Übergabe': null
 };
@@ -392,13 +392,14 @@ export const RUND = {
 };
 
 /* ================= Runde 49: Services Übersicht im Design v2 (Kunde, „GRIFFNER Services v2“, 11.11.2026) =================
-   Ein gepinnter Film über das Haus (Runde 51: das Haus aus dem Gartenplan mit Satteldach, im ganzen Garten), zwölf Kapitel, unten die Leiste in drei Teilen,
+   Ein gepinnter Film über das Haus (Runde 52: wieder der Film des Entwurfs v2, das Haus ist Concept Free), zwölf Kapitel, unten die Leiste in drei Teilen,
    danach das gelbe Feld „Starte mit dem Projektcheck“. Texte wörtlich aus dem Entwurf (S2Services). Kapitel k mit Gewicht
    (Bildschirmhöhen je Einheit 1,5): 5 und 10 haben zwei Hälften (5 / 5.5, 10 / 10.5). */
 export const FILM = {
   gewichte: [1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1],
   kapitel: [
-    { ch: '0', id: 'produkt', k: 'Services', h1: 'Das größte Projekt deines Lebens verdient mehr als ein Produkt.' },
+    /* Runde 52 (Kunde): zwei Überschriften nacheinander, beim Scrollen löst die zweite die erste ab */
+    { ch: '0', id: 'produkt', k: 'Services', h1: 'Hausbau wird oft wie ein Produkt behandelt.', h1b: ['Wir behandeln ihn wie das, was er ist:', 'dein Leben.'], txt: 'Und dein Leben hört nicht an der Haustür auf. Unsere Services auch nicht.' },
     { ch: '1', id: 'ueblich', strikes: ['Modell wählen.', 'Extras nachzahlen.', 'Den Rest selbst organisieren.'], besser: ['Wir finden, Hausbau geht ', 'besser.'] },
     { ch: '2', id: 'projekt', h: 'Wir denken dein ganzes Projekt.', txt: 'Vom Grundstück bis zum Schlüssel. Auch das, was du selbst beauftragst oder erst später baust.' },
     { ch: '3', id: 'ueberblick', h: 'Alles, was dein Projekt braucht.', txt: 'Ein Plan für alles. Ein Projektmanager, der ihn zusammenhält.' },
@@ -436,31 +437,30 @@ export const FILM = {
     bad: { info: 'Besser bauen / Interior / Bad', t: 'Das Bad.', x: 'Hier beginnt und endet dein Tag. Darum planen wir es nicht nebenbei.', f: [['Geplant', 'Mit unserem Designteam'], ['Feuchtemonitoring', 'Direkt auf der Holzdecke']] },
     tuer: { info: 'Besser bauen / Interior / Türen', t: 'Innentüren.', x: 'Du nimmst sie jeden Tag dutzende Male in die Hand. Sie sollten sich auch so anfühlen.', f: [['Massiv', 'Gutes Gewicht in der Hand'], ['Ruhig', 'Flächenbündig geplant']] }
   },
-  /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf). Runde 50: Grundstück aus Runde 48 (749 m², Straße 27,70 m,
-     Ostseite 22,90 m). Runde 50b (Wahl des Kunden, Option A): im Projektplan „Später. Terrasse und Garten“.
-     Runde 51: wieder der ganze Garten aus Runde 48 mit Carport und Sauna im Garten, das Haus mit Satteldach */
+  /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}], wörtlich aus dem Entwurf v2 (Runde 52: wieder der Film des Entwurfs,
+     Grundstück 32 × 24 m). Nur „Später“ bleibt „Terrasse und Garten“ (Wahl des Kunden in Runde 50b). free: Marke steht an ihrem Punkt */
   marken3d: [
     ['lay-plan', 'Projektplanung', 'Budget, Baurecht, Schritte und Architektur.', 3.3, 3.98, { kind: 'layer', jump: 's-projektcheck' }],
     ['lay-fund', 'Fundament', 'Die Bodenplatte ist serienmäßig.', 3.38, 3.98, { kind: 'layer', jump: 's-fundament' }],
     ['lay-huelle', 'Exterior', 'Gesünder wohnen geht nicht.', 3.42, 3.98, { kind: 'layer', jump: 's-bausystem' }],
     ['lay-innen', 'Interior', 'Parkett, Fliesen, Bad, Türen.', 3.46, 3.98, { kind: 'layer', jump: 's-innen' }],
-    ['lay-aussen', 'Rund ums Haus', 'Carport, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
+    ['lay-aussen', 'Rund ums Haus', 'Zufahrt, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
     ['lay-key', 'Projektmanager', 'Vom Vertrag bis zum Schlüssel.', 3.54, 3.98, { kind: 'layer', jump: 's-pm' }],
-    ['flaeche', 'Grundstück', '749 m²', 4.3, 5],
-    ['dimx', '27,70 m', '', 4.45, 5], ['dimz', '22,90 m', '', 4.5, 5],
+    ['flaeche', 'Grundstück', '768 m²', 4.3, 5],
+    ['dimx', '32,00 m', '', 4.45, 5], ['dimz', '24,00 m', '', 4.5, 5],
     ['bau', 'Baufenster', 'Baurecht geprüft', 4.6, 5], ['boden', 'Baugrund', 'Vor Ort geprüft', 4.7, 5],
-    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Terrasse und Garten', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
+    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Terrasse und Garten', 5.24, 5.5, { free: 1 }], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
     ['arch', 'Eigenes Architekturteam', 'Architektur und Design', 5.56, 5.7], ['einreich', 'Einreichplanung', 'Samt Energieausweis', 5.66, 5.8], ['werk', 'Werkplanung', 'Bis ins letzte Detail', 5.76, 5.9], ['statik', 'Statik', 'Für deinen Bauplatz', 5.86, 5.99],
     ['slab', 'Bodenplatte', 'Serienmäßig', 6.4, 6.95],
-    ['dach', 'Satteldach', '', 7.22, 7.97, { kind: 'hot' }], ['wand', 'Die GRIFFNER Wand', '', 7.25, 7.97, { kind: 'hot' }],
-    ['fenster', 'Holz-Alu-Fenster', '', 7.28, 7.97, { kind: 'hot' }], ['fassade', 'Fassade', '', 7.31, 7.97, { kind: 'hot' }], ['hoehe', 'Raumhöhe', '', 7.34, 7.97, { kind: 'hot' }],
+    ['dach', 'Satteldach', '', 7.22, 7.97, { kind: 'hot', free: 1 }], ['wand', 'Die GRIFFNER Wand', '', 7.25, 7.97, { kind: 'hot', free: 1 }],
+    ['fenster', 'Holz-Alu-Fenster', '', 7.28, 7.97, { kind: 'hot', free: 1 }], ['fassade', 'Fassade', '', 7.31, 7.97, { kind: 'hot', free: 1 }], ['hoehe', 'Raumhöhe', '', 7.34, 7.97, { kind: 'hot', free: 1 }],
     ['daemm', 'Holzfaser-Zellulose', 'Speichert die Hitze des Tages', 0, 0, { fo: 'dach' }], ['moist', 'Diffusionsoffen', 'Regelt die Feuchte von selbst', 0, 0, { fo: 'wand' }], ['ueblich', '2,50 m', 'Üblich', 0, 0, { fo: 'hoehe' }],
-    ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot' }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot' }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot' }],
-    ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot' }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot' }],
-    ['carport', 'Carport und Zufahrt', '', 9.05, 9.95], ['sauna', 'Sauna', 'Im Garten, an der Terrasse', 9.22, 9.95], ['terrasse', 'Terrasse', '', 9.36, 9.95], ['pool', 'Pool', '', 9.46, 9.95], ['garten', 'Garten', '', 9.58, 9.95],
+    ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot', free: 1 }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot', free: 1 }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot', free: 1 }],
+    ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot', free: 1 }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot', free: 1 }],
+    ['terrasse', 'Terrasse', '', 9.05, 9.95, { free: 1 }], ['carport', 'Garage und Zufahrt', '', 9.17, 9.95, { free: 1 }], ['pool', 'Pool', '', 9.29, 9.95, { free: 1 }], ['sauna', 'Sauna', '', 9.41, 9.95, { free: 1 }], ['garten', 'Garten', '', 9.55, 9.95, { free: 1 }],
     ['key', 'Dein Projektmanager', 'Ein Mensch für alles', 10.34, 10.5],
-    ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96]
+    ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96, { free: 1 }]
   ],
-  modell: 'Haus mit Satteldach',
+  modell: 'Concept Free',
   cta: { h: 'Starte mit dem Projektcheck.', txt: 'Kostenlos, unverbindlich und mit einem Ergebnis, das du in der Hand hältst.', btn: 'Projektcheck anfragen', btnHref: 'https://griffner.com/contact', link: 'Alle Leistungen im Detail', linkHref: 'leistungsumfang.html' }
 };

@@ -15,6 +15,12 @@
 /* Runde 51: der Textblock fängt keine Klicks, damit die Punkte im Haus überall gehen; nur Links und Knöpfe im Text nehmen sie an */
 .svf__ch.is-act a,.svf__ch.is-act button{pointer-events:auto}
 .svf__ch[data-ch="0"]{opacity:1;visibility:visible;row-gap:22px}
+/* Runde 52: zwei Überschriften an derselben Stelle, die zweite löst die erste beim Scrollen ab (js/svc-film.js) */
+.svf__zwei{display:grid;align-items:end}
+.svf__zwei>*{grid-area:1 / 1}
+.svf__h1b{display:grid;row-gap:22px;opacity:0;visibility:hidden}
+.svf__h1b .svf__h1{max-width:11em}
+.svf__h1b em{font-style:normal;color:var(--griffner-gelb)}
 .svf__ch[data-ch="1"]{row-gap:14px}
 .svf__ch[data-ch="5"]{row-gap:16px}
 .svf__ch[data-ch="11"]{row-gap:18px}

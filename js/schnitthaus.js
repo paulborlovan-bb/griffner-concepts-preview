@@ -62,11 +62,18 @@ export async function createSchnitthaus(host, opt = {}) {
   const marks = document.createElement('div'); marks.className = 'sh__marks';
   const hov = document.createElement('span'); hov.className = 'sh__hov info'; hov.setAttribute('aria-hidden', 'true');
   host.append(gl, marks, hov);
+  /* Runde 52 (Ausbaustufen): ein gelber Punkt mit Namen am Teil, das du gerade liest */
+  const pin = document.createElement('div'); pin.className = 'sh__pin'; pin.setAttribute('aria-hidden', 'true');
+  pin.innerHTML = '<i></i><span class="info"></span>';
+  if (!EXPL) marks.appendChild(pin);
+  let pinName = '';
 
   const R = new T.WebGLRenderer({ antialias: true });
   R.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   R.outputColorSpace = T.SRGBColorSpace; R.toneMapping = T.ACESFilmicToneMapping; R.toneMappingExposure = 1;
   R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap;
+  /* Runde 52: Schatten nur neu, wenn sich etwas bewegt (Stufe wächst), nicht bei jedem Bild: ruhigeres Scrollen */
+  R.shadowMap.autoUpdate = false; R.shadowMap.needsUpdate = true;
   R.domElement.style.cssText = 'display:block;width:100%;height:100%';
   gl.appendChild(R.domElement);
   const scene = new T.Scene(); scene.background = new T.Color(opt.bg ?? 0xffffff);
@@ -82,6 +89,8 @@ export async function createSchnitthaus(host, opt = {}) {
 
   /* ---------- Teile und Materialien je Teil (jedes Teil wird für sich hell) ---------- */
   const parts = {};
+  /* Runde 52: Punkt am Teil für die Ausbaustufen (sonst ANCH, sonst Mitte des Teils) */
+  const PIN_AT = {};
   const mats = new Map();
   const pm = (key, name) => { const id = key + ':' + name; if (!mats.has(id)) mats.set(id, MAT[name]()); return mats.get(id); };
   const add = (geo, mat, key, parent = root, o = {}) => {
@@ -101,7 +110,7 @@ export async function createSchnitthaus(host, opt = {}) {
   add(prism('y', ushape(LE, HE), -.25, -.2), pm('g', 'earth'), null);
   add(prism('y', ushape(LE + .4, HE + .4), -.2, GR), pm('g', 'grass'), null);
   add(prism('y', [[0, -HE - .4], [LE + .4, -HE - .4], [LE + .4, HE + .4], [0, HE + .4], [0, HE], [LE, HE], [LE, -HE], [0, -HE]], -.2, GR + .015), pm('g', 'gravel'), null);
-  for (let x = 0; x < LE - .1; x += 1.2) add(cube(x + .01, GR + .015, HE + .45, Math.min(LE, x + 1.19), GR + .05, HE + 2.25), pm('g', 'concrete'), null);
+  for (let x = 0; x < LE - .1; x += 1.2) add(cube(x + .01, GR + .015, HE + .45, Math.min(LE, x + 1.19), GR + .05, HE + 2.25), pm('terrasse', 'concrete'), 'terrasse');
   const catcher = new T.Mesh(new T.PlaneGeometry(200, 200), new T.ShadowMaterial({ opacity: .14 }));
   catcher.rotation.x = -Math.PI / 2; catcher.position.y = -1.1; catcher.receiveShadow = true; scene.add(catcher);
 
@@ -160,8 +169,8 @@ export async function createSchnitthaus(host, opt = {}) {
     add(cube(LX, B0, -HE, LE, B1, HE), dk, 'fassade');
   }
   /* Sockelblech an Garten- und Straßenseite */
-  add(cube(0, GR, HD, LX, .05, HD + .012), pm('fassade', 'alu'), 'fassade');
-  add(cube(0, GR, -HD - .012, LX, .05, -HD), pm('fassade', 'alu'), 'fassade');
+  add(cube(0, GR, HD, LX, .05, HD + .012), pm('blech', 'alu'), 'blech');
+  add(cube(0, GR, -HD - .012, LX, .05, -HD), pm('blech', 'alu'), 'blech');
 
   /* ---------- Decke (Massivholz oder Tram) mit Treppenloch, Obergeschoß ---------- */
   const notchAt = xe => [[0, -ZI], [SX0, -ZI], [SX0, -ZI + SW], [SX1, -ZI + SW], [SX1, -ZI], [xe, -ZI], [xe, ZI], [0, ZI]];
@@ -189,10 +198,13 @@ export async function createSchnitthaus(host, opt = {}) {
     /* Fußpfetten auf den Wänden, unter den Sparren */
     [1, -1].forEach(s => add(prism('x', [[s * ZI, YW], [s * HD, YW], [s * ZI, yIn(ZI)]], 0, LX), pm('dach', 'spruce'), 'dach'));
     /* Dachrinne an der Traufe, Blech am Ortgang */
-    const al = pm('dach', 'alu'), top = o / c;
+    /* Runde 52: Rinne, Ortgang und Sockelblech sind ein eigenes Teil „blech“ (Spengler), damit es in den Ausbaustufen leuchtet */
+    const al = pm('blech', 'alu'), top = o / c;
     [1, -1].forEach(s => {
-      add(cube(0, yIn(Ze) - .12, Math.min(s * Ze, s * (Ze + .14)), xe, yIn(Ze) + .02, Math.max(s * Ze, s * (Ze + .14))), al, 'dach');
-      add(prism('x', [[0, RIDGE + top], [s * Ze, yIn(Ze) + top], [s * Ze, yIn(Ze) + top - .2], [0, RIDGE + top - .2]], xe, xe + .025), al, 'dach');
+      const g = add(cube(0, yIn(Ze) - .12, Math.min(s * Ze, s * (Ze + .14)), xe, yIn(Ze) + .02, Math.max(s * Ze, s * (Ze + .14))), al, 'blech');
+      if (s > 0) PIN_AT.blech = [xe * .62, yIn(Ze) - .05, Ze + .07];
+      add(prism('x', [[0, RIDGE + top], [s * Ze, yIn(Ze) + top], [s * Ze, yIn(Ze) + top - .2], [0, RIDGE + top - .2]], xe, xe + .025), al, 'blech');
+      void g;
     });
   }
 
@@ -325,16 +337,39 @@ export async function createSchnitthaus(host, opt = {}) {
 
   /* ---------- Hell machen, was nicht gewählt ist ---------- */
   let sel = null;
-  function applyDim() {
-    const lit = new Set(), dim = new Set();
+  /* Runde 52: der gewählte Teil wird gelb, der Rest hell; beides blendet weich über (Ziel je Material, frame() nähert sich an) */
+  const emi = new Map(), YEL = new T.Color(0xffb200);
+  let emiBusy = false;
+  function applyDim(snap) {
+    const lit = new Set(), dim = new Set(), hot = new Set();
     Object.entries(parts).forEach(([k, ms]) => ms.forEach(m => (sel && k !== sel ? dim : lit).add(m.material)));
+    if (sel && parts[sel]) parts[sel].forEach(m => hot.add(m.material));
     root.traverse(o => { if (o.isMesh && !o.userData.part && o.material) (sel ? dim : lit).add(o.material); });
-    dim.forEach(m => { if (lit.has(m) || !m.emissive) return; m.emissive.setHex(0xffffff); m.emissiveIntensity = .58; });
-    lit.forEach(m => { if (m.emissive && m !== FM.glow) { m.emissive.setHex(0x000000); m.emissiveIntensity = 1; } });
+    new Set([...lit, ...dim]).forEach(m => {
+      if (!m.emissive || m === FM.glow) return;
+      const e = emi.get(m) || { neu: true };
+      e.dT = dim.has(m) && !lit.has(m) ? 1 : 0; e.gT = hot.has(m) && !dim.has(m) ? 1 : 0;
+      /* neues Material (Wahl, Stufe 3 Farbe): gleich am Ziel, kein Aufblitzen */
+      if (e.neu) { e.d = e.dT; e.g = e.gT; delete e.neu; }
+      emi.set(m, e);
+    });
     if (FM.glow) { FM.glow.emissive.setHex(0xffe2b0); FM.glow.emissiveIntensity = .9; }
-    /* Open Space: die zwei Ableitungspunkte leuchten gelb, wie im Grundriss */
-    if (sel === 'openspace') { const m = pm('openspace', 'spruce'); m.emissive.setHex(0xffb200); m.emissiveIntensity = .62; }
     glass.opacity = sel && sel !== 'fenster' ? .12 : .22;
+    emiBusy = true; stepEmi(snap || reduceMotion ? 1 : 0);
+  }
+  /* k = Anteil des Wegs zum Ziel in diesem Bild; 1 = sofort */
+  function stepEmi(k) {
+    if (!emiBusy) return false;
+    let busy = false;
+    emi.forEach((e, m) => {
+      e.d += (e.dT - e.d) * k; e.g += (e.gT - e.g) * k;
+      if (Math.abs(e.dT - e.d) < .004) e.d = e.dT; if (Math.abs(e.gT - e.g) < .004) e.g = e.gT;
+      if (e.d !== e.dT || e.g !== e.gT) busy = true;
+      const w = .58 * e.d, y = (EXPL ? (sel === 'openspace' ? .62 : 0) : .42) * e.g;
+      m.emissive.setRGB(w + YEL.r * y, w + YEL.g * y, w + YEL.b * y); m.emissiveIntensity = 1;
+    });
+    emiBusy = busy;
+    return busy;
   }
 
   /* ---------- Kamera ---------- */
@@ -366,7 +401,28 @@ export async function createSchnitthaus(host, opt = {}) {
   const pickables = () => { const a = []; root.traverse(o => { if (o.isMesh && o.visible && o.userData.part !== undefined) a.push(o); }); return a; };
   let pickList = null;
   function visibleChain(o) { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; }
+  const pinBox = new T.Box3(), pinV = new T.Vector3();
+  function pinAt(k) {
+    if (PIN_AT[k]) return pinV.set(...PIN_AT[k]);
+    if (ANCH[k]) return pinV.set(...ANCH[k]);
+    const ms = (parts[k] || []).filter(visibleChain); if (!ms.length) return null;
+    pinBox.makeEmpty(); ms.forEach(m => pinBox.expandByObject(m));
+    return pinBox.getCenter(pinV);
+  }
+  function updatePin() {
+    if (EXPL) return;
+    const v = sel ? pinAt(sel) : null;
+    if (!v) { pin.classList.remove('is-on'); return; }
+    const w = host.clientWidth, h = host.clientHeight, p = v.clone().project(cam);
+    const on = p.z < 1 && Math.abs(p.x) < 1 && Math.abs(p.y) < 1;
+    const x = (p.x + 1) / 2 * w, y = (1 - p.y) / 2 * h;
+    pin.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+    pin.classList.toggle('is-left', x > w * .62);
+    const t = pin.lastChild; if (t.textContent !== pinName) t.textContent = pinName;
+    pin.classList.toggle('is-on', on && !!pinName);
+  }
   function updateMarks() {
+    updatePin();
     if (!EXPL) return;
     const w = host.clientWidth, h = host.clientHeight;
     pickList = pickList || pickables();
@@ -430,6 +486,7 @@ export async function createSchnitthaus(host, opt = {}) {
       if (!on) { s.g.visible = false; s.k = 0; }
       apply(s);
     });
+    R.shadowMap.needsUpdate = true; pickList = null;
     const paint = n >= 3, gm = paint ? pm('wand', 'paint') : pm('wand', 'gipsRaw');
     gipsM.forEach(m => m.material = gm);
     pickList = null; applyDim(); poke();
@@ -452,7 +509,9 @@ export async function createSchnitthaus(host, opt = {}) {
       C.t.lerpVectors(tw.from.t, tw.to.t, k); C.az = tw.from.az + (tw.to.az - tw.from.az) * k; C.el = tw.from.el + (tw.to.el - tw.from.el) * k; C.d = tw.from.d + (tw.to.d - tw.from.d) * k;
       if (k >= 1) tw = null; busy = true; need = true;
     }
-    staged.forEach(s => { if (s.g.visible && s.k < 1) { s.k = Math.max(0, (now - s.t0) / 900); apply(s); busy = true; need = true; } });
+    staged.forEach(s => { if (s.g.visible && s.k < 1) { s.k = Math.max(0, (now - s.t0) / 900); apply(s); busy = true; need = true; R.shadowMap.needsUpdate = true; } });
+    if (emiBusy) { const dt = Math.min(64, now - (frame.last || now)); if (stepEmi(1 - Math.exp(-(dt || 16) / 140))) busy = true; need = true; }
+    frame.last = now;
     /* Platz für die Karte rechts: das Bild rückt weich nach links */
     if (Math.abs(padT - padC) > .5) { padC += (padT - padC) * .16; if (Math.abs(padT - padC) <= .5) padC = padT; offset(); busy = true; need = true; }
     if (need && visible) { place(); R.render(scene, cam); updateMarks(); need = false; }
@@ -476,7 +535,7 @@ export async function createSchnitthaus(host, opt = {}) {
       opt.onSelect && opt.onSelect(sel);
     },
     /* Runde 48: nur hell machen, der Blick bleibt (Ausbaustufen, der Bereich, den du gerade liest) */
-    focus(k) { if ((k || null) === sel) return; sel = k || null; applyDim(); host.classList.toggle('has-sel', !!sel); poke(); },
+    focus(k, name) { pinName = (k && name) || ''; if ((k || null) === sel) { updatePin(); return; } sel = k || null; applyDim(); host.classList.toggle('has-sel', !!sel); poke(); },
     get selected() { return sel; },
     set(k, v) { state[k] = v; applyWahl(); },
     get wahl() { return { ...state }; },

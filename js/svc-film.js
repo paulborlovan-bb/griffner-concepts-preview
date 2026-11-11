@@ -18,6 +18,7 @@ export function initServicesFilm() {
   const film = $('[data-film]', r), stage = $('[data-stage]', r);
   const ch = $$('[data-ch]', r), strikes = $$('[data-strike]', r), besser = $('[data-besser]', r), mp = $$('[data-mp]', r);
   const einmal = $('[data-einmal]', r), jahr = $('[data-jahr]', r), nav = $('[data-snav]', r), hp = $('[data-hp]', r);
+  const h1a = $('[data-h1a]', r), h1b = $('[data-h1b]', r);
   const W = FILM.gewichte, TW = W.reduce((a, b) => a + b, 0);
   let eng = null, focus = null, P = 0, lastNav = '';
 
@@ -59,6 +60,13 @@ export function initServicesFilm() {
     if (a) { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) { e.preventDefault(); jumpY(el.getBoundingClientRect().top + scrollY); } }
   });
   addEventListener('keydown', e => { if (e.key === 'Escape' && focus) setFocus(null); });
+  /* Runde 52: ein Klick irgendwo außerhalb der Karte schließt sie auch (die Punkte selbst halten ihren Klick an) */
+  document.addEventListener('click', e => {
+    if (!focus) return;
+    const t = e.target;
+    if (t && t.closest && (t.closest('[data-hp]') || t.closest('.svf-m--hot'))) return;
+    setFocus(null);
+  });
 
   function frame(force) {
     const p = P0();
@@ -79,6 +87,13 @@ export function initServicesFilm() {
     /* Punkt nur im eigenen Kapitel */
     if (focus) { const ext = ['dach', 'wand', 'fenster', 'fassade', 'hoehe'].includes(focus); if (ext ? (P < 7.15 || P > 7.99) : (P < 8.22 || P > 8.99)) setFocus(null); }
     strikes.forEach((e, i) => { e.parentNode.style.setProperty('--x', s(1.12 + i * .17, 1.3 + i * .17).toFixed(3)); });
+    /* Runde 52: Kapitel 0, erst „Hausbau wird oft wie ein Produkt behandelt.“, dann „Wir behandeln ihn wie das, was er ist: dein Leben.“ */
+    if (h1a && h1b) {
+      const a = 1 - s(.26, .4), b = s(.36, .52);
+      h1a.style.opacity = a.toFixed(3); h1a.style.transform = `translate3d(0,${(-(1 - a) * 18).toFixed(1)}px,0)`;
+      h1b.style.opacity = b.toFixed(3); h1b.style.transform = `translate3d(0,${((1 - b) * 18).toFixed(1)}px,0)`;
+      h1b.style.visibility = b > .002 ? 'visible' : 'hidden'; h1a.style.visibility = a > .002 ? 'visible' : 'hidden';
+    }
     if (besser) besser.style.opacity = s(1.66, 1.78).toFixed(3);
     mp.forEach(w => { const i = +w.dataset.mp; w.classList.toggle('is-on', P > 5.1 + i * .12); });
     if (einmal) { const v = s(11.5, 11.62); einmal.style.opacity = v.toFixed(3); einmal.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`; }
