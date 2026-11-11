@@ -122,5 +122,5 @@ const BUILDING = [
 
 /* Reihenfolge auf der Seite: Häuser und große Projekte abwechselnd, damit sie als eine Sammlung gelesen werden. */
 const ORDER = ['hang-pool', 'koralpe', 'wienerwald', 'juwi', 'traum-gruen', 'park', 'bungalow-flair', 'griffen-green', 'designhaus', 'wien', 'berge', 'box-pool', 'dunkle-fassade'];
-const ALL = [...HOMES, ...BUILDING];
+const ALL = [...HOMES.map(p => ({ ...p, kat: 'haus' })), ...BUILDING.map(p => ({ ...p, kat: 'building' }))];  // kat: Filter in Variante B
 export const REFERENZEN = [...ORDER.map(id => ALL.find(p => p.id === id)).filter(Boolean), ...ALL.filter(p => !ORDER.includes(p.id))];

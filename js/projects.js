@@ -6,6 +6,7 @@ import { loop, reveal, $, $$, clamp, E, lerp, reduce, vhs, mix, css } from './co
 import { initChrome, frame } from './chrome.js';
 import { CLAIM_PATH } from '../data/claim-path.js';
 import { REFERENZEN } from '../data/referenzen.js';
+import { initRaster } from './projekte-raster.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 /* Fortschritt einer gepinnten Sektion: 0 Oberkante oben, 1 Unterkante unten (sceneProgress) */
@@ -34,6 +35,7 @@ run('formen', initFormen);
 run('fh', initFh);
 run('living', initLiving);
 run('refs', () => initBand($('[data-rb="refs"]'), REFERENZEN, 'refs'));
+run('refs-b', () => initRaster($('[data-raster="refs"]'), REFERENZEN));  // nur projects-b.html
 run('namen', initNamen);
 run('kontakt', initKontakt);
 run('finale', initFinale);
