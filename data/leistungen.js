@@ -436,7 +436,8 @@ export const FILM = {
     bad: { info: 'Besser bauen / Interior / Bad', t: 'Das Bad.', x: 'Hier beginnt und endet dein Tag. Darum planen wir es nicht nebenbei.', f: [['Geplant', 'Mit unserem Designteam'], ['Feuchtemonitoring', 'Direkt auf der Holzdecke']] },
     tuer: { info: 'Besser bauen / Interior / Türen', t: 'Innentüren.', x: 'Du nimmst sie jeden Tag dutzende Male in die Hand. Sie sollten sich auch so anfühlen.', f: [['Massiv', 'Gutes Gewicht in der Hand'], ['Ruhig', 'Flächenbündig geplant']] }
   },
-  /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf; Maße auf das Grundstück im Modell gedreht: 24 × 32 m) */
+  /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf). Runde 50: Grundstück aus Runde 48 (749 m², Straße 27,70 m,
+     Ostseite 22,90 m); Free hat Garage und Sauna im Haus, darum kein Carport und keine Sauna im Garten */
   marken3d: [
     ['lay-plan', 'Projektplanung', 'Budget, Baurecht, Schritte und Architektur.', 3.3, 3.98, { kind: 'layer', jump: 's-projektcheck' }],
     ['lay-fund', 'Fundament', 'Die Bodenplatte ist serienmäßig.', 3.38, 3.98, { kind: 'layer', jump: 's-fundament' }],
@@ -444,10 +445,10 @@ export const FILM = {
     ['lay-innen', 'Interior', 'Parkett, Fliesen, Bad, Türen.', 3.46, 3.98, { kind: 'layer', jump: 's-innen' }],
     ['lay-aussen', 'Rund ums Haus', 'Zufahrt, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
     ['lay-key', 'Projektmanager', 'Vom Vertrag bis zum Schlüssel.', 3.54, 3.98, { kind: 'layer', jump: 's-pm' }],
-    ['flaeche', 'Grundstück', '768 m²', 4.3, 5],
-    ['dimx', '24,00 m', '', 4.45, 5], ['dimz', '32,00 m', '', 4.5, 5],
+    ['flaeche', 'Grundstück', '749 m²', 4.3, 5],
+    ['dimx', '27,70 m', '', 4.45, 5], ['dimz', '22,90 m', '', 4.5, 5],
     ['bau', 'Baufenster', 'Baurecht geprüft', 4.6, 5], ['boden', 'Baugrund', 'Vor Ort geprüft', 4.7, 5],
-    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Carport', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
+    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Garage', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
     ['arch', 'Eigenes Architekturteam', 'Architektur und Design', 5.56, 5.7], ['einreich', 'Einreichplanung', 'Samt Energieausweis', 5.66, 5.8], ['werk', 'Werkplanung', 'Bis ins letzte Detail', 5.76, 5.9], ['statik', 'Statik', 'Für deinen Bauplatz', 5.86, 5.99],
     ['slab', 'Bodenplatte', 'Serienmäßig', 6.4, 6.95],
     ['dach', 'Satteldach', '', 7.22, 7.97, { kind: 'hot' }], ['wand', 'Die GRIFFNER Wand', '', 7.25, 7.97, { kind: 'hot' }],
@@ -455,7 +456,7 @@ export const FILM = {
     ['daemm', 'Holzfaser-Zellulose', 'Speichert die Hitze des Tages', 0, 0, { fo: 'dach' }], ['moist', 'Diffusionsoffen', 'Regelt die Feuchte von selbst', 0, 0, { fo: 'wand' }], ['ueblich', '2,50 m', 'Üblich', 0, 0, { fo: 'hoehe' }],
     ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot' }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot' }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot' }],
     ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot' }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot' }],
-    ['terrasse', 'Terrasse', '', 9.05, 9.95], ['carport', 'Garage und Zufahrt', '', 9.17, 9.95], ['pool', 'Pool', '', 9.29, 9.95], ['sauna', 'Sauna', '', 9.41, 9.95], ['garten', 'Garten', '', 9.55, 9.95],
+    ['carport', 'Garage und Zufahrt', '', 9.05, 9.95], ['sauna', 'Sauna', 'Im Haus, mit Blick in den Garten', 9.22, 9.95], ['terrasse', 'Terrasse', '', 9.36, 9.95], ['pool', 'Pool', '', 9.46, 9.95], ['garten', 'Garten', '', 9.58, 9.95],
     ['key', 'Dein Projektmanager', 'Ein Mensch für alles', 10.34, 10.5],
     ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96]
   ],
