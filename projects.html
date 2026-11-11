@@ -190,7 +190,24 @@
       </div>
     </section>
 
-    <!-- 06 GRIFFNER BUILDING: Karten abwechselnd schmal und breit (breit tiefer), seitwärts im Takt des Scrollens.
+    <!-- 05b WEITERE HÄUSER (neu, nicht live): Projektband. Breit (ab 1024 px) stehen alle Häuser als schmale Bildstreifen nebeneinander,
+         beim Scrollen öffnet sich eines nach dem anderen, darin Bilder (Pfeile, Striche, Wischen) und die Karte. Klick auf einen Streifen springt hin.
+         Schmal: Liste zum Antippen, das offene Haus zeigt Bilder und Text. Inhalte in data/referenzen.js (REF_HOMES).
+         Neue Bilder: zwei WebP je Bild, Name-1-m.webp (960 px) und Name-1-l.webp (1920 px), in assets/img/projekte/ref/. -->
+    <section id="p-refs" class="pr" data-room="p-refs">
+      <div class="wrap">
+        <div class="p-kopf p-kopf--unter">
+          <div class="p-kopf__t">
+            <p class="info">GRIFFNER Living / Referenzen</p>
+            <h2 class="h-xl">Mehr Häuser. <br>Mehr Geschichten.</h2>
+          </div>
+          <p class="txt p-kopf__txt">Am Hang, im Wienerwald, in Bayern. Acht Familien zeigen, wie verschieden ein GRIFFNER Haus sein kann.</p>
+        </div>
+      </div>
+      <div class="rb" data-rb="homes" aria-label="Weitere Häuser"></div>
+    </section>
+
+    <!-- 06 GRIFFNER BUILDING: gleiches Projektband wie 05b (REF_BUILDING), live noch Karten seitwärts.
          Live steht die Überschrift breit anders als am Telefon (Stand 11.11.2026), darum zwei Fassungen. -->
     <section id="p-places" class="pb" data-room="p-places">
       <div class="wrap">
@@ -202,32 +219,7 @@
           <p class="txt p-kopf__txt">Auch hier planen, fertigen und bauen wir selbst. Mit demselben Anspruch wie bei einem Zuhause, für Menschen, die dort jeden Tag arbeiten, lernen oder ankommen. Eine Auswahl.</p>
         </div>
       </div>
-      <div class="hz" data-hz="pb">
-        <div class="hz__st">
-          <div class="hz__track pb__track" data-hz-track>
-            <article class="pb__card">
-              <div class="pb__img"><img src="assets/img/projekte/bld-koralpe.jpg" alt="Schutzhaus Koralpe über dem Nebelmeer" loading="lazy" decoding="async"></div>
-              <div class="pb__txt"><p class="info">Hütte / Koralpe / Kärnten / AT</p><h3 class="pb__name">Schutzhaus Koralpe</h3><p class="txt">Auf 1966 Metern Seehöhe, in drei Wochen aufgestellt.</p></div>
-            </article>
-            <article class="pb__card pb__card--breit">
-              <div class="pb__img"><img src="assets/img/projekte/bld-juwi.jpg" alt="Bürogebäude mit Holzfassade und Terrasse am Teich" loading="lazy" decoding="async"></div>
-              <div class="pb__txt"><p class="info">Büro / Wörrstadt / DE</p><h3 class="pb__name">JUWI Firmenzentrale</h3><p class="txt">Das hoch-energieeffizinete Bürogebäude bietet auf ca. 8.500 m² Platz für rund 300 Mitarbeiter und wurde u.a. mit dem Klimaschutzpreis ausgezeichnet.</p></div>
-            </article>
-            <article class="pb__card">
-              <div class="pb__img"><img src="assets/img/projekte/bld-park.jpg" alt="Atrium in Holzbauweise mit Bar und Besprechungsräumen" loading="lazy" decoding="async"></div>
-              <div class="pb__txt"><p class="info">Wohnbau / Graz / AT</p><h3 class="pb__name">Wohnen im Park</h3><p class="txt">In einzigartiger Lage am Rosenhain in Graz wurden in einem rund 3.500 m² großen Park 3 Villen mit 7 Wohneinheiten errichtet.</p></div>
-            </article>
-            <article class="pb__card pb__card--breit">
-              <div class="pb__img"><img src="assets/img/projekte/bld-griffen-green.jpg" alt="Wohnanlage mit Holzbalkonen vor einem Burgfelsen" loading="lazy" decoding="async"></div>
-              <div class="pb__txt"><p class="info">Wohnbau / Griffen / AT</p><h3 class="pb__name">Griffen Green</h3><p class="txt">Das Wohnprojekt wurde mit dem „Österreichischen Klimaschutzpreis 2011“ und dem „Energy Globe Award“ 2011 ausgezeichnet.</p></div>
-            </article>
-            <article class="pb__card">
-              <div class="pb__img"><img src="assets/img/projekte/bld-wien.jpg" alt="Häuser mit Holzfassade an einer ansteigenden Straße" loading="lazy" decoding="async"></div>
-              <div class="pb__txt"><p class="info">Wohnbau / Wien / AT</p><h3 class="pb__name">Wohnsiedlung Wien</h3><p class="txt">Mitten in den Weinbergen von Wien wurden 10 Wohnhäuser errichtet.</p></div>
-            </article>
-          </div>
-        </div>
-      </div>
+      <div class="rb" data-rb="building" aria-label="Große Projekte"></div>
     </section>
 
     <!-- 07 BAUHERREN: der Satz wechselt, dann laufen die Namen wie ein Abspann nach oben -->

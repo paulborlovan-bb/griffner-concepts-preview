@@ -5,6 +5,7 @@
 import { loop, reveal, $, $$, clamp, E, lerp, reduce, vhs, mix, css } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { CLAIM_PATH } from '../data/claim-path.js';
+import { REF_HOMES, REF_BUILDING } from '../data/referenzen.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 /* Fortschritt einer gepinnten Sektion: 0 Oberkante oben, 1 Unterkante unten (sceneProgress) */
@@ -17,6 +18,10 @@ const bez = (x1, y1, x2, y2) => {
 };
 const sm = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
 const pow = { p2In: x => x * x * x, p3InOut: x => (x < .5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2) };
+/* Projektband (05b, 06): Bildordner, Scrollweg je Projekt in Bildschirmhöhen */
+const RB_DIR = 'assets/img/projekte/ref/', RB_STEP = .5;
+const pad2 = n => String(n).padStart(2, '0');
+const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 run('chrome', initChrome);
 reveal(document);
@@ -28,7 +33,8 @@ run('zahl', initZahl);
 run('formen', initFormen);
 run('fh', initFh);
 run('living', initLiving);
-run('building', initBuilding);
+run('refs', () => initBand($('[data-rb="homes"]'), REF_HOMES, 'homes'));
+run('building', () => initBand($('[data-rb="building"]'), REF_BUILDING, 'building'));
 run('namen', initNamen);
 run('kontakt', initKontakt);
 run('finale', initFinale);
@@ -349,15 +355,115 @@ function initLiving() {
   } });
 }
 
-/* ---------- 06 GRIFFNER Building: Karten seitwärts, jede erscheint beim Hereinfahren ---------- */
-function initBuilding() {
-  const sec = $('#p-places'), pin = $('[data-hz="pb"]', sec); if (!sec || !pin) return;
-  const gal = hzGallery(pin);
-  loop.add({ tick() { if (near(sec)) gal(); } });
-  const cards = $$('.pb__card', pin);
-  if (reduce) { cards.forEach(c => c.classList.add('is-in')); return; }
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -15% 0px' });
-  cards.forEach(c => io.observe(c));
+/* ---------- 05b Weitere Häuser + 06 GRIFFNER Building: Projektband, ein Bauteil für beliebig viele Projekte mit beliebig vielen Bildern.
+   Breit (ab 1024 px): alle Projekte als Bildstreifen nebeneinander, gepinnt. Der Scroll öffnet eines nach dem anderen (RB_STEP Bildschirmhöhen
+   je Projekt), Klick auf einen Streifen springt hin. Im offenen Streifen: Bilder wechseln mit Pfeilen, Strichen, Wischen oder Pfeiltasten
+   (das neue Bild wischt von der Seite herein), die Karte nennt Art, Ort, Text und Daten. Das gelbe Feld sitzt unten am offenen Streifen.
+   Schmal: Liste zum Antippen, immer nur eines offen. Bilder außer dem ersten laden erst, wenn ihr Projekt aufgeht. ---------- */
+function bandHTML(key, list) {
+  const img = (m, k) => {
+    const pos = m.pos ? ` style="object-position:${m.pos}"` : '', d = k ? 'data-' : '', cls = `rb__img${k ? '' : ' is-on'}`, lz = k ? '' : 'loading="lazy" ';
+    if (m.s) { const a = RB_DIR + m.s; return `<img class="${cls}" ${d}src="${a}-m.webp" ${d}srcset="${a}-m.webp 960w, ${a}-l.webp 1920w" sizes="(min-width:1024px) 72vw, 100vw" alt="${esc(m.alt)}" draggable="false" ${lz}decoding="async"${pos}>`; }
+    return `<img class="${cls}" ${d}src="${m.src}" alt="${esc(m.alt)}" draggable="false" ${lz}decoding="async"${pos}>`;
+  };
+  const card = p => {
+    const n = p.img.length;
+    const facts = p.facts ? `<dl class="rb__facts">${p.facts.map(([a, b]) => `<div><dt class="info">${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl>` : '';
+    const link = p.link ? `<a class="rb__go" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label)} <span aria-hidden="true">↗</span></a>` : '';
+    const bars = p.img.map((m, k) => `<button type="button" aria-label="Bild ${k + 1} von ${n}"${k ? '' : ' class="is-on"'}></button>`).join('');
+    const nav = n > 1 ? `<div class="rb__nav"><span class="rb__bars">${bars}</span><span class="rb__cnt info" aria-live="polite">01 / ${pad2(n)}</span><button class="rb__arr" type="button" data-d="-1" aria-label="Vorheriges Bild">←</button><button class="rb__arr" type="button" data-d="1" aria-label="Nächstes Bild">→</button></div>` : '';
+    return `<div class="rb__card"><p class="info">${esc(p.info)}</p><h3 class="rb__name">${esc(p.name)}</h3>${p.text ? `<p class="txt">${esc(p.text)}</p>` : ''}${facts}${link}${nav}</div>`;
+  };
+  const item = (p, i) => {
+    const id = `rb-${key}-${i}`, f = p.img[0], th = f.s ? `${RB_DIR}${f.s}-m.webp` : f.src;
+    return `<article class="rb__p" role="listitem" data-n="${p.img.length}" style="--k:${i}">`
+      + `<button class="rb__tab" type="button" aria-expanded="false" aria-controls="${id}"><span class="rb__no info">${pad2(i + 1)}</span><span class="rb__tn">${esc(p.name)}</span>`
+      + `<span class="rb__th" aria-hidden="true"><img src="${th}" alt="" loading="lazy" decoding="async"></span><span class="rb__plus" aria-hidden="true"></span></button>`
+      + `<div class="rb__body" id="${id}"><div class="rb__in"><div class="rb__media">${p.img.map(img).join('')}</div>${card(p)}</div></div></article>`;
+  };
+  return `<div class="rb__pin" id="rb-${key}-pin"><div class="rb__st"><div class="rb__band" role="list">${list.map(item).join('')}</div></div></div>`;
+}
+function initBand(el, list, key) {
+  if (!el || !list || !list.length) return;
+  el.innerHTML = bandHTML(key, list);
+  const pin = $('.rb__pin', el), band = $('.rb__band', el), N = list.length, EASE = 'cubic-bezier(.22,1,.36,1)';
+  const G = $$('.rb__p', el).map(p => ({ p, tab: $('.rb__tab', p), card: $('.rb__card', p), media: $('.rb__media', p), imgs: $$('.rb__img', p), bars: $$('.rb__bars button', p), cnt: $('.rb__cnt', p), cur: 0, loaded: false }));
+  let act = -1, mode = '', lock = 0;
+  const load = g => { if (g.loaded) return; g.loaded = true; g.imgs.forEach(im => { if (im.dataset.srcset) im.srcset = im.dataset.srcset; if (im.dataset.src) im.src = im.dataset.src; }); };
+  const show = (g, k, dir) => {
+    const n = g.imgs.length; k = (k + n) % n; if (n < 2 || k === g.cur) return;
+    load(g);
+    const a = g.imgs[g.cur], b = g.imgs[k];
+    g.imgs.forEach(im => { if (im !== a) im.classList.remove('is-was'); });
+    a.classList.remove('is-on'); a.classList.add('is-was'); b.classList.add('is-on');
+    if (!reduce) {
+      b.animate([{ clipPath: dir > 0 ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 950, easing: EASE });
+      a.animate([{ translate: '0 0' }, { translate: `${dir > 0 ? -14 : 14}% 0` }], { duration: 950, easing: EASE }).finished
+        .then(() => { if (!a.classList.contains('is-on')) a.classList.remove('is-was'); }, () => {});
+    } else a.classList.remove('is-was');
+    g.cur = k;
+    g.bars.forEach((x, i) => { x.classList.toggle('is-on', i === k); x.setAttribute('aria-current', i === k ? 'true' : 'false'); });
+    if (g.cnt) g.cnt.textContent = `${pad2(k + 1)} / ${pad2(n)}`;
+  };
+  const open = i => {
+    if (i === act) return; act = i;
+    G.forEach((g, j) => {
+      const on = j === i;
+      g.p.classList.toggle('is-open', on); g.tab.setAttribute('aria-expanded', String(on)); g.card.inert = !on;
+      if (on) load(g);
+      if (on && mode === 'band') Object.assign(g.p.dataset, { dock: 'edge', dockX: '.88', dockW: '.1', dockTrigger: pin.id });
+      else { delete g.p.dataset.dock; delete g.p.dataset.dockX; delete g.p.dataset.dockW; delete g.p.dataset.dockTrigger; }
+    });
+    if (G[i + 1]) G[i + 1].imgs[0].loading = 'eager';
+    loop.poke();
+  };
+  const fit = () => {
+    const m = innerWidth >= 1024 ? 'band' : 'list';
+    if (m !== mode) { mode = m; el.dataset.mode = m; const a = act; act = -1; open(a < 0 ? 0 : a); }
+    if (mode === 'band') {
+      const W = band.clientWidth, gap = 8, cw = Math.round(clamp(W * .3 / Math.max(1, N - 1), 44, 120)), pw = Math.max(240, W - (N - 1) * (cw + gap));
+      band.style.setProperty('--cw', cw + 'px'); band.style.setProperty('--pw', pw + 'px');
+      pin.style.height = reduce ? '' : Math.round(vhs() * (1 + RB_STEP * N)) + 'px';
+    } else pin.style.height = '';
+    loop.poke();
+  };
+  G.forEach((g, i) => {
+    g.tab.addEventListener('click', () => {
+      if (mode === 'list') {
+        const was = act === i; open(was ? -1 : i);
+        if (!was && !reduce) setTimeout(() => { const t = g.p.getBoundingClientRect().top; if (t < 72) scrollBy({ top: t - 88, behavior: 'smooth' }); }, 720);
+        return;
+      }
+      open(i);
+      if (reduce) return;
+      const r = pin.getBoundingClientRect(), span = r.height - vhs();
+      lock = performance.now() + 1600;
+      scrollTo({ top: Math.round(scrollY + r.top + span * (i + .5) / N), behavior: 'smooth' });
+    });
+    g.p.querySelectorAll('.rb__arr').forEach(b => b.addEventListener('click', () => { const d = +b.dataset.d; show(g, g.cur + d, d); }));
+    g.bars.forEach((b, k) => b.addEventListener('click', () => show(g, k, k > g.cur ? 1 : -1)));
+    let x0 = null, y0 = 0;
+    g.media.addEventListener('pointerdown', e => { if (act === i && g.imgs.length > 1) { x0 = e.clientX; y0 = e.clientY; } });
+    g.media.addEventListener('pointerup', e => {
+      if (x0 == null) return;
+      const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) show(g, g.cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    });
+    g.media.addEventListener('pointercancel', () => { x0 = null; });
+    g.p.addEventListener('keydown', e => {
+      if (act !== i || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') || !g.p.contains(document.activeElement)) return;
+      e.preventDefault(); const d = e.key === 'ArrowRight' ? 1 : -1; show(g, g.cur + d, d);
+    });
+  });
+  addEventListener('scrollend', () => { lock = 0; });
+  new ResizeObserver(fit).observe(el); addEventListener('resize', fit); fit();
+  loop.add({ tick() {
+    if (mode !== 'band' || reduce || performance.now() < lock || !near(el)) return;
+    const r = pin.getBoundingClientRect(), span = r.height - vhs(); if (span <= 0) return;
+    open(Math.min(N - 1, Math.floor(clamp(-r.top / span) * N)));
+  } });
+  if (reduce) el.classList.add('is-in');
+  else { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { el.classList.add('is-in'); io.disconnect(); } }), { rootMargin: '0px 0px -12% 0px' }); io.observe(el); }
 }
 
 /* ---------- 07 Bauherren: „Sie hätten mit jedem bauen können.“ wechselt zu „Sie haben sich für GRIFFNER entschieden.“,
