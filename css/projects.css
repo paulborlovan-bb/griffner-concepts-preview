@@ -1,0 +1,217 @@
+/* Projects (projects.html): Nachbau von griffner.com/projects, Stand 11.11.2026. Maße aus der Live-Seite bei 1440 px und 390 px gemessen.
+   Schwarz, Weiß, Sand, Gelb. Keine Rundungen, keine Schatten. Abläufe in js/projects.js. */
+:root{
+  --room-p-hero:var(--griffner-schwarz);
+  --room-p-form:var(--griffner-schwarz);
+  --room-p-fw:var(--griffner-schwarz);
+  --room-p-fh:var(--griffner-weiss);
+  --room-p-homes:var(--griffner-weiss);
+  --room-p-places:var(--griffner-sand);
+  --room-p-namen:var(--griffner-schwarz);
+  --room-p-kontakt:var(--griffner-weiss);
+  --room-p-finale:var(--griffner-schwarz);
+  --p-pad:clamp(112px,12.2vw,176px);
+  --p-track:clamp(24px,4.6vw,66px);
+  --p-gap:clamp(72px,8.7vw,125px);
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+main>section{position:relative}
+.p-go{display:inline-flex;gap:10px;padding:0 0 6px;color:inherit}
+.p-zoom{position:relative;width:100%;height:100%;transition:transform 2400ms var(--ease)}
+.p-zoom img{width:100%;height:100%;object-fit:cover}
+a:hover .p-zoom{transform:scale(1.03)}
+.pl__top:hover,.idx__row:hover{opacity:1}
+/* Aufdecken von unten (Bildrahmen), wie withLux */
+.p-lux{clip-path:inset(100% 0 0 0);transition:clip-path 1600ms var(--ease)}
+.p-lux.is-in{clip-path:inset(0 0 0 0)}
+
+/* ---------- 01 Kein Rendering ---------- */
+.ph{height:320svh;background:var(--griffner-schwarz)}
+.ph__st{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--griffner-schwarz)}
+.ph__field{position:absolute;left:50%;top:50%;width:0;height:0;background:var(--griffner-gelb)}
+.ph__win{position:absolute;inset:0;clip-path:inset(50% 50% 50% 50%)}
+.ph__img{position:absolute;left:0;top:0;width:2400px;height:1601px;max-width:none;transform-origin:0 0;opacity:0;will-change:transform,opacity}
+.ph__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,0) 46%);opacity:0;pointer-events:none}
+.ph__title{position:absolute;top:clamp(96px,14vh,140px);left:var(--page-margin);right:var(--page-margin);margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:1.06;text-transform:uppercase;font-feature-settings:'liga' 0;color:var(--griffner-weiss)}
+.ph__l{display:block;opacity:0;will-change:transform,opacity}
+.ph__l--2{text-align:right}
+
+/* ---------- 02 Projekte seit 1950 ---------- */
+.pz{background:var(--griffner-schwarz);padding:var(--p-pad) 0 40px}
+.pz__k{margin:0 0 20px}
+.pz__zahl{display:flex;align-items:flex-start;margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(88px,24vw,480px);line-height:.9;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:.9em}
+.pz__roll{position:relative;display:inline-block}
+.pz__win{display:block;height:.9em;overflow:hidden}
+.pz__wheel{display:grid;transition:transform 1500ms cubic-bezier(.65,0,.2,1)}
+.pz__wheel.is-plus{transform:translateY(-50%)}
+.pz__note{position:absolute;left:.03em;right:.03em;bottom:-.02em;height:4px;background:var(--griffner-gelb);transform:scaleX(0);transform-origin:0 50%;transition:transform 720ms cubic-bezier(.2,.7,.2,1)}
+.pz__note.is-on{transform:none}
+.pz__row{display:grid;grid-template-columns:minmax(0,758px) minmax(0,420px);align-items:end;justify-content:space-between;column-gap:clamp(32px,7.2vw,104px);margin-top:clamp(40px,8.6vw,124px)}
+.pz__say{margin:0;max-width:758px;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:var(--lh-d);text-transform:uppercase;font-feature-settings:'liga' 0}
+.pz__txt{max-width:420px}
+
+/* ---------- 03 Formen ---------- */
+.pf{height:760svh;background:var(--griffner-schwarz)}
+.pf__st{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+.pf__dock{position:absolute;left:50%;top:50%;width:1px;height:1px}
+.pf__cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pf__top{position:absolute;left:var(--page-margin);right:var(--page-margin);top:clamp(104px,15vh,160px);display:grid}
+.pf__vision,.pf__words span{margin:0;font-family:var(--font-display);font-weight:300;letter-spacing:0;text-transform:uppercase;font-feature-settings:'liga' 0}
+.pf__vision{grid-area:1 / 1;font-size:clamp(34px,min(7.4vw,10.5vh),150px);line-height:.92;opacity:0}
+.pf__count{grid-area:1 / 1;justify-self:end;font-size:11px;font-variant-numeric:tabular-nums}
+.pf__words{position:absolute;left:var(--page-margin);right:var(--page-margin);bottom:clamp(28px,6vh,72px);display:grid}
+.pf__words span{grid-area:1 / 1;justify-self:start;display:block;white-space:nowrap;font-size:12vw;line-height:.8;padding-top:.04em;opacity:0;will-change:transform,opacity}
+
+/* ---------- Seitwärts-Galerien (Floating House, Building) ---------- */
+.hz{position:relative}
+.hz__st{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.hz__track{display:flex;width:max-content;padding:0 var(--p-track);will-change:transform}
+.hz__rail{position:absolute;left:var(--p-track);right:var(--p-track);bottom:36px;height:1px;background:var(--griffner-kalk)}
+.hz__rail i{position:absolute;inset:0;background:var(--griffner-schwarz);transform:scaleX(0);transform-origin:0 50%}
+
+/* ---------- 04 Floating House ---------- */
+.fh{padding-top:100svh;background:var(--griffner-schwarz);color:var(--griffner-schwarz)}
+.fh__track{align-items:flex-end;gap:48px}
+.fh__intro,.fh__outro{align-self:center;display:flex;flex-direction:column;align-items:flex-start;box-sizing:border-box}
+.fh__intro{width:min(40vw,600px);padding-right:56px;gap:28px}
+.fh__logo{width:100%;height:auto}
+.fh__intro .txt{max-width:440px}
+.fh__outro{width:min(40vw,560px);padding-left:44px;gap:32px}
+.fh__it{margin:0;display:flex;flex-direction:column;gap:40px;width:min-content}
+.fh__frame{position:relative;height:min(60vh,44vw);aspect-ratio:var(--r);overflow:hidden;background:var(--griffner-kalk)}
+.fh__frame img{position:absolute;top:0;left:-8%;width:116%;height:100%;max-width:none;object-fit:cover;will-change:transform}
+.fh__cap{display:flex;gap:20px;width:min(100%,max(380px,66.7%))}
+.fh__cap .info{flex:none;padding-top:.3em}
+.fh__cap span:last-child{font-size:var(--t-body);line-height:var(--lh-body);text-wrap:pretty}
+
+/* ---------- 05 GRIFFNER Living ---------- */
+.pl{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--p-pad) 0}
+.p-kopf{display:grid;grid-template-columns:minmax(0,758px) minmax(0,420px);align-items:end;justify-content:space-between;gap:32px clamp(32px,7.2vw,104px)}
+.p-kopf__t{display:flex;flex-direction:column;gap:32px;max-width:758px}
+.p-kopf .info,.p-kopf .h-xl{margin:0}
+.p-kopf .h-xl{font-size:var(--t-xl);text-wrap:wrap}
+.p-kopf__txt{max-width:420px}
+.p-kopf--unter{grid-template-columns:minmax(0,1100px);justify-content:start}
+.p-kopf--unter .p-kopf__t{max-width:1100px}
+.pl__top{display:block;margin-top:var(--p-gap);color:inherit}
+.pl__topimg{position:relative;aspect-ratio:1282 / 549;overflow:hidden;background:var(--griffner-kalk)}
+.pl__topimg .p-zoom{position:absolute;left:0;right:0;top:-5%;height:110%}
+.pl__toptxt{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding-top:44px}
+.pl__toptxt .txt{max-width:512px}
+.pl__toptxt .txt,.idx__txt .txt,.pb__txt .txt{font-size:var(--t-body)}
+.pl__kz{display:flex;gap:20px;margin:0}
+.pl__kz span:first-child{flex:none;width:28px}
+.pl__name{margin:0}
+.idx{display:grid;grid-template-columns:minmax(0,647fr) minmax(0,563fr);gap:72px;margin-top:var(--p-gap);align-items:start}
+.idx__box{position:sticky;top:max(112px,calc(50vh - 20vw));aspect-ratio:5 / 4;background:var(--griffner-kalk);overflow:hidden}
+.idx__it{position:absolute;inset:0;opacity:0;transition:opacity 900ms var(--ease)}
+.idx__it img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform 1400ms var(--ease)}
+.idx__it.is-on{opacity:1}
+.idx__it.is-on img{transform:none}
+.idx__rows{display:flex;flex-direction:column}
+.idx__row{display:flex;flex-direction:column;align-items:flex-start;gap:20px;padding:40px 0 44px;border-bottom:1px solid var(--griffner-kalk);color:inherit;transition:opacity 750ms var(--ease)}
+.idx__row.is-dim{opacity:.28}
+.idx__img{display:none;width:100%;aspect-ratio:3 / 2;overflow:hidden;background:var(--griffner-kalk)}
+.idx__txt{display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding-left:48px}
+.idx__txt .txt{max-width:460px}
+.pl__credit{font-size:.625rem;line-height:1}
+
+/* ---------- 06 GRIFFNER Building ---------- */
+.pb{background:var(--griffner-sand);color:var(--griffner-schwarz);padding:var(--p-pad) 0}
+.pb__h-schmal{display:none}
+.pb [data-hz]{margin-top:72px}
+.pb__track{align-items:flex-start;gap:clamp(64px,6.5vw,128px)}
+.pb__card{display:flex;flex-direction:column;gap:12px;width:clamp(260px,26vw,440px);opacity:0;transform:translateY(48px);transition:opacity 1200ms var(--ease),transform 1200ms var(--ease)}
+.pb__card.is-in{opacity:1;transform:none}
+.pb__card--breit{width:clamp(320px,42vw,720px);margin-top:clamp(40px,10vh,120px)}
+.pb__img{aspect-ratio:4 / 5;overflow:hidden;background:var(--griffner-kalk)}
+.pb__card--breit .pb__img{aspect-ratio:3 / 2}
+.pb__img img{width:100%;height:100%;object-fit:cover}
+.pb__txt{display:flex;flex-direction:column;gap:12px;padding-top:20px}
+.pb__txt>*{margin:0}
+.pb__name{font-family:var(--font-display);font-weight:500;font-size:2rem;line-height:1.05;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0}
+.pb__card--breit .txt{max-width:416px}
+
+/* ---------- 07 Bauherren ---------- */
+.pn{background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+.pn__satz{height:240svh}
+.pn__satzst{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;padding:0 var(--page-margin);box-sizing:border-box}
+.pn__saetze{display:grid;width:min(100%,1100px)}
+.pn__s{grid-area:1 / 1;margin:0;text-align:center;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:1.08;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance;will-change:transform,opacity}
+.pn__s[data-pn-b]{opacity:0}
+.pn__pin{position:relative}
+.pn__st{position:sticky;top:0;height:100svh;overflow:hidden}
+.pn__list{position:absolute;left:var(--p-track);right:var(--p-track);top:0;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:center;gap:clamp(72px,8.75vw,126px);will-change:transform}
+.pn__list>li{text-align:center}
+.pn__name{display:flex;flex-direction:column;align-items:center;gap:16px}
+.pn__n{display:block;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:1.06;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.pn__mehr{font-family:var(--font-display);font-weight:500;font-size:2rem;line-height:1.05;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---------- 08 Kontakt ---------- */
+.pk{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--p-pad) 0}
+.pk__in{display:grid;grid-template-columns:minmax(0,517fr) minmax(0,844fr);padding-left:var(--page-margin);align-items:start}
+.pk__say{display:flex;flex-direction:column;gap:28px;padding-right:48px}
+.pk__h{max-width:440px}
+.pk__say .txt{max-width:469px;font-size:var(--t-body)}
+.pk__panel{position:relative;background:var(--griffner-gelb);padding:64px;box-sizing:border-box}
+.pk__form{position:relative;z-index:6}
+.pk__form{display:flex;flex-direction:column;gap:40px;max-width:716px}
+.pk__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 56px}
+.pk__f{display:flex;flex-direction:column;gap:10px;min-width:0}
+.pk__f--wide{grid-column:1 / -1}
+.pk__f input,.pk__f textarea{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1px solid var(--griffner-schwarz);border-radius:0;padding:6px 0 12px;font:inherit;font-family:var(--font-text);font-weight:300;font-size:1.125rem;line-height:1.4;color:inherit;outline:none;resize:vertical}
+.pk__f textarea{height:110px;min-height:0;padding:10px 0}
+.pk__f input::placeholder,.pk__f textarea::placeholder{color:inherit;opacity:.45}
+.pk__f input:focus-visible,.pk__f textarea:focus-visible{border-bottom-width:2px;padding-bottom:11px}
+.pk__f.is-bad input{border-bottom-width:2px}
+.pk__f.is-bad .info,.pk__check.is-bad span{text-decoration:underline;text-underline-offset:4px}
+.pk__ok{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-top:8px}
+.pk__check{display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:start;font-size:.9375rem;line-height:1.4;cursor:pointer}
+.pk__check+.pk__ds{margin:0 0 16px 30px;border-bottom:1px solid currentColor;font-size:.9375rem;line-height:1.3;color:inherit}
+.pk__check input{appearance:none;-webkit-appearance:none;width:14px;height:14px;margin:3px 0 0;border:1px solid var(--griffner-schwarz);border-radius:0;background:transparent;cursor:pointer}
+.pk__check input:checked{background:var(--griffner-schwarz);box-shadow:inset 0 0 0 2px var(--griffner-gelb)}
+.pk__acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;margin-top:-16px}
+.pk__send{display:inline-flex;align-items:center;gap:12px;height:56px;padding:0 28px;border:0;border-radius:0;background:var(--griffner-schwarz);color:var(--griffner-weiss);cursor:pointer}
+.pk__send:hover{opacity:.8}
+.pk__note{opacity:.6}
+.pk__msg{margin:-16px 0 0;font-size:.9375rem;min-height:1.4em}
+
+/* ---------- 09 Finale ---------- */
+.pfi{height:260svh;background:var(--griffner-schwarz)}
+.pfi__st{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--griffner-schwarz)}
+.pfi__field{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
+.pfi__claim{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;visibility:hidden}
+
+/* ---------- Tablet und Telefon ---------- */
+@media (max-width:1199px){
+  .idx{grid-template-columns:minmax(0,1fr);gap:0}
+  .idx__box{display:none}
+  .idx__img{display:block}
+  .idx__row{padding:28px 0 32px;gap:18px}
+  .idx__txt{padding-left:0}
+}
+@media (max-width:819px){
+  .hz__rail{display:none}
+  .fh__track{gap:20px}
+  .fh__intro{width:82vw;padding-right:0;gap:20px}
+  .fh__outro{width:82vw;padding-left:0;gap:24px}
+  .fh__frame{height:auto;width:min(86vw,calc(52svh * var(--r)))}
+  .pb__track{gap:32px}
+}
+@media (max-width:809px){
+  .pb__h-breit{display:none}
+  .pb__h-schmal{display:inline}
+  .ph__title,.pn__n{font-size:2.25rem}
+  .pb__name,.pn__mehr{font-size:1.375rem}
+  .p-kopf,.pz__row{grid-template-columns:minmax(0,1fr);gap:24px}
+  .pl__toptxt{padding-top:28px}
+  .pk__in{grid-template-columns:minmax(0,1fr);padding-left:0}
+  .pk__say{padding:0 var(--page-margin) 48px}
+  .pk__panel{padding:40px var(--page-margin) 48px}
+  .pk__grid{grid-template-columns:minmax(0,1fr);gap:28px}
+}
+@media (prefers-reduced-motion:reduce){
+  .p-lux{clip-path:none;transition:none}
+  .pb__card{opacity:1;transform:none;transition:none}
+  .hz__st{overflow-x:auto}
+}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects / GRIFFNER</title>
+<meta name="description" content="Über 10.000 Projekte seit 1950. Keines gleicht dem anderen, und jedes wurde in Griffen gefertigt.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/projects.css">
+<link rel="preload" as="image" href="assets/img/projekte/hero-floating-house.jpg">
+</head>
+<body data-page="projects">
+<!-- Nachbau von griffner.com/projects (Stand 11.11.2026) als HTML, zum Ändern ohne die Live-Seite. Texte wie live.
+     Abläufe aus framer-code: GriffnerMotion.tsx (Hero, Galerien, Living, Bauherren, Finale), ProjekteZahl.tsx, ProjekteFormen.tsx, ClaimFenster.tsx.
+     Logik in js/projects.js, Gestaltung in css/projects.css, Bilder in assets/img/projekte/. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <!-- Header, Menü und Footer wie griffner.com, gefüllt von js/chrome.js -->
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+    <!-- 01 KEIN RENDERING: das Haus erscheint klein im gelben Feld, beim Scrollen öffnet das Fenster randlos (3,2 Bildschirmhöhen) -->
+    <section id="p-hero" class="ph" data-room="p-hero">
+      <div class="ph__st" data-dock="edge" data-dock-x=".72" data-dock-hide="1" data-ph-dock>
+        <div class="ph__field" aria-hidden="true"></div>
+        <div class="ph__win">
+          <img class="ph__img" src="assets/img/projekte/hero-floating-house.jpg" width="2400" height="1601" alt="Floating House in Griffen, Ansicht aus dem Garten zur Blauen Stunde" decoding="async" fetchpriority="high">
+        </div>
+        <div class="ph__shade" aria-hidden="true"></div>
+        <h1 class="ph__title"><span class="ph__l">Das hier ist</span> <span class="ph__l ph__l--2">kein Rendering.</span></h1>
+      </div>
+    </section>
+
+    <!-- 02 PROJEKTE SEIT 1950: die Zahl zählt hoch, dann rollt die letzte Ziffer um eins weiter (ab 26.10.2026 jede Woche 2 bis 3 dazu) -->
+    <section id="p-form" class="pz" data-room="p-form">
+      <div class="wrap">
+        <p class="info pz__k">Projekte seit 1950</p>
+        <p class="pz__zahl" data-zahl data-base="10247" data-since="2026-10-26T00:00:00.000Z"></p>
+        <div class="pz__row">
+          <h2 class="pz__say" data-reveal="0">Und laufend werden es mehr.</h2>
+          <p class="txt pz__txt" data-reveal="120">Über 10.000 Projekte seit 1950. Am See und am Hang, auf 1.966 Metern und mitten in der Stadt. Einfamilienhäuser, Wohnbauten, Büros und Berghütten. Keines gleicht dem anderen, und jedes wurde in Griffen gefertigt.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 FORMEN: ein Modell auf einem Raster verformt sich mit jedem Wort, am Ende „Deine Vision. Gebaut.“ (7,6 Bildschirmhöhen) -->
+    <section id="p-fw" class="pf" data-room="p-fw">
+      <div class="pf__st" data-pf>
+        <span class="pf__dock" data-dock="rect" data-dock-hide="1" aria-hidden="true"></span>
+        <canvas class="pf__cv" role="img" aria-label="Ein Haus als Modell, das sich mit jedem Wort verformt: klein, groß, weit, hoch, offen, schwebend."></canvas>
+        <div class="pf__top">
+          <p class="pf__vision" aria-hidden="true" data-pf-vision>Deine Vision.</p>
+          <span class="info pf__count" aria-hidden="true" data-pf-count>01 / 06</span>
+        </div>
+        <div class="pf__words" aria-hidden="true" data-pf-words>
+          <span>Klein.</span><span>Groß.</span><span>Weit.</span><span>Hoch.</span><span>Offen.</span><span>Schwebend.</span><span>Gebaut.</span>
+        </div>
+        <h2 class="sr">Klein. Groß. Weit. Hoch. Offen. Schwebend. Deine Vision. Gebaut.</h2>
+      </div>
+    </section>
+
+    <!-- 04 FLOATING HOUSE: eine Bildschirmhöhe Schwarz zu Weiß, dann die Galerie seitwärts im Takt des Scrollens -->
+    <section id="p-fh" class="fh" data-room="p-fh">
+      <div class="hz" id="p-fh-pin" data-hz="fh">
+        <div class="hz__st">
+          <div class="hz__track fh__track" data-hz-track>
+            <div class="fh__intro">
+              <img class="fh__logo" src="assets/img/projekte/fh-logo.png" width="1024" height="320" alt="GRIFFNER Floating House. Design by Studio F. A. Porsche" loading="lazy" decoding="async">
+              <p class="txt">Das erste Wohnhaus, das Studio F. A. Porsche entworfen hat. Gefertigt und gebaut von GRIFFNER in Griffen, in jedem Detail so präzise, wie es gezeichnet war.</p>
+            </div>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:1.5" data-fh-frame><img src="assets/img/projekte/fh-1.jpg" alt="Floating House, Ansicht mit Fassadenbändern und schwarzem Glas im Erdgeschoss" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">01 / 06</span><span>Durchgängige Fassadenbänder und schwarze Glasfliesen um das ganze Erdgeschoss. Darum scheint das Haus zu schweben.</span></figcaption>
+            </figure>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:.8" data-fh-frame><img src="assets/img/projekte/fh-2.jpg" alt="Floating House, Fassade mit raumhohen Fenstern und Loggia" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">02 / 06</span><span>Raumhohe Fenster, schon im Werk in die Wände eingebaut.</span></figcaption>
+            </figure>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:1.5" data-fh-frame><img src="assets/img/projekte/fh-3.jpg" alt="Floating House, Blick von der Galerie in den Essbereich mit 5,85 Meter Raumhöhe" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">03 / 06</span><span>Bis zu 5,85 Meter Raumhöhe.</span></figcaption>
+            </figure>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:.8" data-fh-frame><img src="assets/img/projekte/fh-4.jpg" alt="Floating House, freischwebende Treppe mit Glasabschluss, dahinter Ess- und Wohnbereich" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">04 / 06</span><span>Eine freischwebende Treppe mit durchgängigem Glasabschluss verbindet die beiden Geschosse.</span></figcaption>
+            </figure>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:1.5" data-fh-frame><img src="assets/img/projekte/fh-5.jpg" alt="Floating House, Salon mit Billardtisch" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">05 / 06</span><span>Ein eigener Salon für den 247 Billardtisch.</span></figcaption>
+            </figure>
+            <figure class="fh__it">
+              <div class="fh__frame" style="--r:1.5" data-fh-frame><img src="assets/img/projekte/fh-6.jpg" alt="Floating House bei Tag, Holzfassade und Carport, davor die Einfahrt" loading="lazy" decoding="async"></div>
+              <figcaption class="fh__cap"><span class="info">06 / 06</span><span>Der Rohbau stand in zwei Wochen. Bezugsfertig ist das Haus in fünf bis sieben Monaten.</span></figcaption>
+            </figure>
+            <div class="fh__outro">
+              <h2 class="h-xl fh__say">Es steht in Griffen. Komm vorbei.</h2>
+              <a class="info p-go" href="https://griffner.com/projects/floating-house">Project ansehen <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+          <div class="hz__rail" aria-hidden="true"><i data-hz-bar></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 GRIFFNER LIVING: ein großes Projekt, dann der Index. Breit: links klebt das Bild der aktiven Zeile, schmal: Bild in jeder Zeile -->
+    <section id="p-homes" class="pl" data-room="p-homes">
+      <div class="wrap">
+        <div class="p-kopf">
+          <div class="p-kopf__t">
+            <p class="info">Projects / GRIFFNER Living</p>
+            <h2 class="h-xl">Kein Haus gleicht dem anderen.</h2>
+          </div>
+          <p class="txt p-kopf__txt">Eine Auswahl aus über 10.000 Projekten. Jedes frei geplant, keines zweimal gebaut.</p>
+        </div>
+
+        <a class="pl__top" href="https://griffner.com/projects/weitblick">
+          <div class="pl__topimg p-lux" id="pl-top-img" data-dock="edge" data-dock-x=".72" data-dock-trigger="pl-top-img"><div class="p-zoom"><img src="assets/img/projekte/liv-weitblick.jpg" alt="Weißes Haus mit Holzelementen am Hang über dem Donautal, davor Garten und Pool am Abend" loading="lazy" decoding="async" data-par></div></div>
+          <div class="pl__toptxt">
+            <p class="info pl__kz"><span>01</span><span>Donautal / Niederösterreich / AT</span></p>
+            <h3 class="h-xl pl__name">Haus mit Weitblick</h3>
+            <p class="txt">Drei Geschosse auf einem terrassierten Hang, im Rücken das Waldviertel, vorne der Blick ins Donautal. 300 Quadratmeter, 2,72 Meter hohe Räume und eine freischwebende Treppe mit Glasseiten.</p>
+            <span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+
+        <div class="idx" data-idx>
+          <div class="idx__box" id="idx-box" data-idx-box data-dock="edge" data-dock-x=".72" data-dock-trigger="idx-box" aria-hidden="true">
+            <div class="idx__it"><img src="assets/img/projekte/liv-waldrand.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-grundlsee.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-waldviertel.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-hang.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-pfarrhof.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-eisteich.jpg" alt="" loading="lazy" decoding="async"></div>
+            <div class="idx__it"><img src="assets/img/projekte/liv-wien.jpg" alt="" loading="lazy" decoding="async"></div>
+          </div>
+          <div class="idx__rows" data-idx-rows>
+            <a class="idx__row" href="https://griffner.com/projects/waldrand">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-waldrand.jpg" alt="Haus am Waldrand in Südkärnten" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>02</span><span>Südkärnten / AT</span></p>
+              <h3 class="h-xl pl__name">Haus am Waldrand</h3>
+              <div class="idx__txt"><p class="txt">Ein Holzhaus wie eine zusammengesteckte Spange. Aus einer Bleistiftskizze geplant und in 14 Tagen am Hang aufgestellt.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/grundlsee">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-grundlsee.jpg" alt="Haus am Grundlsee in der Steiermark" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>03</span><span>Grundlsee / Steiermark / AT</span></p>
+              <h3 class="h-xl pl__name">Haus am Grundlsee</h3>
+              <div class="idx__txt"><p class="txt">Ferienhaus, Familienhaus und Alterssitz. 30 Meter über dem See, innen bis zu 4,50 Meter hoch und so gebaut, dass es Lawinen standhält.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/waldviertel">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-waldviertel.jpg" alt="Haus im Waldviertel" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>04</span><span>Waldviertel / AT</span></p>
+              <h3 class="h-xl pl__name">Haus im Waldviertel</h3>
+              <div class="idx__txt"><p class="txt">182,5 Quadratmeter mit so wenig Wänden wie möglich. Tagsüber energieautark.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/hang">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-hang.jpg" alt="Haus am Hang in Kärnten mit Pool" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>05</span><span>Kärnten / AT</span></p>
+              <h3 class="h-xl pl__name">Haus am Hang</h3>
+              <div class="idx__txt"><p class="txt">139 Quadratmeter für eine Familie mit zwei Kindern. Vom Keller bis zum Einzug in sechs Monaten.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/pfarrhof">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-pfarrhof.jpg" alt="Haus am Pfarrhof in Rudelzhausen mit schwarzer Holzfassade am Teich" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>06</span><span>Rudelzhausen / DE</span></p>
+              <h3 class="h-xl pl__name">Haus am Pfarrhof</h3>
+              <div class="idx__txt"><p class="txt">Eine schwarze Holzfassade, zurückhaltend zum alten Pfarrhof und offen zum Teich.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span><span class="info pl__credit">Fotos: Griffnerhaus / keller-fotografie.de</span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/eisteich">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-eisteich.jpg" alt="Haus am Eisteich in Niederösterreich" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>07</span><span>Niederösterreich / AT / Hausbau Design Award 2025 Silber</span></p>
+              <h3 class="h-xl pl__name">Haus am Eisteich</h3>
+              <div class="idx__txt"><p class="txt">450 Quadratmeter auf 8000 Quadratmetern Grund, an einem Teich, der 1800 erstmals erwähnt wurde. Innen Altholz aus einem 300 Jahre alten Stadl.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+            <a class="idx__row" href="https://griffner.com/projects/wien">
+              <div class="idx__img"><div class="p-zoom"><img src="assets/img/projekte/liv-wien.jpg" alt="Bungalow in Wien mit Garten" loading="lazy" decoding="async"></div></div>
+              <p class="info pl__kz"><span>08</span><span>Wien / AT</span></p>
+              <h3 class="h-xl pl__name">Bungalow in Wien</h3>
+              <div class="idx__txt"><p class="txt">150 Quadratmeter auf einer Ebene, geplant nach dem Vorbild einer Spa-Villa aus dem Lieblingsurlaub.</p><span class="info p-go">Project ansehen <span aria-hidden="true">→</span></span></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 GRIFFNER BUILDING: Karten abwechselnd schmal und breit (breit tiefer), seitwärts im Takt des Scrollens.
+         Live steht die Überschrift breit anders als am Telefon (Stand 11.11.2026), darum zwei Fassungen. -->
+    <section id="p-places" class="pb" data-room="p-places">
+      <div class="wrap">
+        <div class="p-kopf p-kopf--unter">
+          <div class="p-kopf__t">
+            <p class="info">GRIFFNER Building / Büros, Wohnbau, Hütten</p>
+            <h2 class="h-xl pb__h"><span class="pb__h-breit">Große Projekte. <br>Gleicher Anspruch.</span><span class="pb__h-schmal">Wo viele zusammen&shy;kommen.</span></h2>
+          </div>
+          <p class="txt p-kopf__txt">Auch hier planen, fertigen und bauen wir selbst. Mit demselben Anspruch wie bei einem Zuhause, für Menschen, die dort jeden Tag arbeiten, lernen oder ankommen. Eine Auswahl.</p>
+        </div>
+      </div>
+      <div class="hz" data-hz="pb">
+        <div class="hz__st">
+          <div class="hz__track pb__track" data-hz-track>
+            <article class="pb__card">
+              <div class="pb__img"><img src="assets/img/projekte/bld-koralpe.jpg" alt="Schutzhaus Koralpe über dem Nebelmeer" loading="lazy" decoding="async"></div>
+              <div class="pb__txt"><p class="info">Hütte / Koralpe / Kärnten / AT</p><h3 class="pb__name">Schutzhaus Koralpe</h3><p class="txt">Auf 1966 Metern Seehöhe, in drei Wochen aufgestellt.</p></div>
+            </article>
+            <article class="pb__card pb__card--breit">
+              <div class="pb__img"><img src="assets/img/projekte/bld-juwi.jpg" alt="Bürogebäude mit Holzfassade und Terrasse am Teich" loading="lazy" decoding="async"></div>
+              <div class="pb__txt"><p class="info">Büro / Wörrstadt / DE</p><h3 class="pb__name">JUWI Firmenzentrale</h3><p class="txt">Das hoch-energieeffizinete Bürogebäude bietet auf ca. 8.500 m² Platz für rund 300 Mitarbeiter und wurde u.a. mit dem Klimaschutzpreis ausgezeichnet.</p></div>
+            </article>
+            <article class="pb__card">
+              <div class="pb__img"><img src="assets/img/projekte/bld-park.jpg" alt="Atrium in Holzbauweise mit Bar und Besprechungsräumen" loading="lazy" decoding="async"></div>
+              <div class="pb__txt"><p class="info">Wohnbau / Graz / AT</p><h3 class="pb__name">Wohnen im Park</h3><p class="txt">In einzigartiger Lage am Rosenhain in Graz wurden in einem rund 3.500 m² großen Park 3 Villen mit 7 Wohneinheiten errichtet.</p></div>
+            </article>
+            <article class="pb__card pb__card--breit">
+              <div class="pb__img"><img src="assets/img/projekte/bld-griffen-green.jpg" alt="Wohnanlage mit Holzbalkonen vor einem Burgfelsen" loading="lazy" decoding="async"></div>
+              <div class="pb__txt"><p class="info">Wohnbau / Griffen / AT</p><h3 class="pb__name">Griffen Green</h3><p class="txt">Das Wohnprojekt wurde mit dem „Österreichischen Klimaschutzpreis 2011“ und dem „Energy Globe Award“ 2011 ausgezeichnet.</p></div>
+            </article>
+            <article class="pb__card">
+              <div class="pb__img"><img src="assets/img/projekte/bld-wien.jpg" alt="Häuser mit Holzfassade an einer ansteigenden Straße" loading="lazy" decoding="async"></div>
+              <div class="pb__txt"><p class="info">Wohnbau / Wien / AT</p><h3 class="pb__name">Wohnsiedlung Wien</h3><p class="txt">Mitten in den Weinbergen von Wien wurden 10 Wohnhäuser errichtet.</p></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 BAUHERREN: der Satz wechselt, dann laufen die Namen wie ein Abspann nach oben -->
+    <section id="p-namen" class="pn" data-room="p-namen">
+      <div class="pn__satz" data-pn-satz>
+        <div class="pn__satzst">
+          <div class="pn__saetze">
+            <h2 class="pn__s" data-pn-a>Sie hätten mit jedem bauen können.</h2>
+            <h2 class="pn__s" data-pn-b>Sie haben sich für GRIFFNER entschieden.</h2>
+          </div>
+        </div>
+      </div>
+      <div class="pn__pin" data-pn-pin>
+        <div class="pn__st">
+          <ul class="pn__list" data-pn-list>
+            <li class="pn__name"><span class="info">Eishockey</span><span class="pn__n">Thomas Vanek</span></li>
+            <li class="pn__name"><span class="info">Musik</span><span class="pn__n">Christina Stürmer</span></li>
+            <li class="pn__mehr">Und hunderte Familien.</li>
+            <li class="pn__name"><span class="info">Fußball</span><span class="pn__n">Michael Konsel</span></li>
+            <li class="pn__name"><span class="info">Tennis</span><span class="pn__n">Jürgen Melzer</span></li>
+            <li class="pn__name"><span class="info">Moderation</span><span class="pn__n">Amira Aly</span></li>
+            <li class="pn__mehr">Und hunderte Familien.</li>
+            <li class="pn__name"><span class="info">Bundeskanzler a. D.</span><span class="pn__n">Wolfgang Schüssel</span></li>
+            <li class="pn__mehr">Und hunderte Familien.</li>
+            <li class="pn__bald" id="pn-bald" data-dock="edge" data-dock-x=".5" data-dock-trigger="pn-bald"><span class="pn__n">Und vielleicht bald du.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 KONTAKT: links die Einladung, rechts das Formular auf der gelben Fläche (der Connector gleitet hinein). Vorschau: es wird nichts gesendet. -->
+    <section id="contact" class="pk" data-room="p-kontakt">
+      <div class="pk__in">
+        <div class="pk__say">
+          <h2 class="h-xl pk__h">Lass uns über dein Haus sprechen.</h2>
+          <p class="txt">Mensch, Grundstück, Lebensweise, Budget. Im Erstgespräch hören wir zu und zeigen dir, was möglich ist.</p>
+        </div>
+        <div class="pk__panel" id="pk-panel" data-dock="rect" data-dock-solid="1" data-dock-trigger="pk-panel">
+          <form class="pk__form" novalidate aria-label="Kontaktformular" data-pk-form>
+            <div class="pk__grid">
+              <label class="pk__f"><span class="info">Vorname</span><input name="vorname" type="text" autocomplete="given-name" placeholder="Vorname" required></label>
+              <label class="pk__f"><span class="info">Nachname</span><input name="nachname" type="text" autocomplete="family-name" placeholder="Nachname" required></label>
+              <label class="pk__f"><span class="info">E-Mail</span><input name="email" type="email" autocomplete="email" placeholder="name@mail.at" required></label>
+              <label class="pk__f"><span class="info">Telefon</span><input name="tel" type="tel" autocomplete="tel" placeholder="+43 664 123 45 67"></label>
+              <label class="pk__f"><span class="info">Postleitzahl</span><input name="plz" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 9112"></label>
+              <label class="pk__f"><span class="info">Wohnort</span><input name="ort" type="text" autocomplete="address-level2" placeholder="z. B. Griffen"></label>
+              <label class="pk__f pk__f--wide"><span class="info">Nachricht</span><textarea name="msg" rows="4" placeholder="Grundstück, Zeitplan, Fragen. Was du schon weißt."></textarea></label>
+            </div>
+            <div class="pk__ok">
+              <label class="pk__check"><input type="checkbox" name="ok" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren.</span></label>
+              <a class="pk__ds" href="https://griffner.com/privacy">Datenschutz</a>
+              <label class="pk__check"><input type="checkbox" name="news"><span>Ich möchte den GRIFFNER Newsletter mit Projekten, Angeboten und Terminen erhalten. Abmeldung jederzeit möglich.</span></label>
+            </div>
+            <div class="pk__acts"><button class="pk__send info" type="submit">Anfrage senden <span aria-hidden="true">→</span></button><span class="info pk__note">Vorschau, es wird nichts gesendet</span></div>
+            <p class="pk__msg" aria-live="polite" data-pk-msg></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 FINALE: das Feld in der Bildmitte wird zur gelben Fläche, „built different“ stanzt sich aus, dann Zoom durchs f (2,6 Bildschirmhöhen) -->
+    <section id="finale" class="pfi" data-room="p-finale">
+      <div class="pfi__st" data-pfi>
+        <div class="pfi__field" data-pfi-field data-dock="rect" data-dock-solid="1" aria-hidden="true"></div>
+        <svg class="pfi__claim" data-pfi-svg role="img" aria-label="built different">
+          <defs><mask id="pfi-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><rect width="100%" height="100%" fill="#fff"/><g data-pfi-g><path data-pfi-path fill="#000" fill-opacity="0"/></g></mask></defs>
+          <rect width="100%" height="100%" fill="#FFB200" mask="url(#pfi-mask)"/>
+        </svg>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+<script type="module" src="js/projects.js"></script>
+</body>
+</html>

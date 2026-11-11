@@ -88,11 +88,15 @@ const FOOTER = `
 const SVC = /^leistung/.test((document.body && document.body.dataset.page) || '');
 const svcMenu = m => m.replace(' aria-current="page" data-img="assets/img/wald-garten-ecke.jpg"', ' data-img="assets/img/wald-garten-ecke.jpg"')
   .replace('<li class="is-soon"><span>Services</span><span class="info">Coming 13.11.</span></li>', '<li><a href="leistungen.html" aria-current="page" data-img="assets/img/svc-bauen.jpg" data-cap="Was drin steckt">Services</a></li>');
+/* Nachbau von griffner.com/projects (projects.html): dort ist Projects die aktuelle Seite */
+const PRJ = ((document.body && document.body.dataset.page) || '') === 'projects';
+const prjMenu = m => m.replace(' aria-current="page" data-img="assets/img/wald-garten-ecke.jpg"', ' data-img="assets/img/wald-garten-ecke.jpg"')
+  .replace(`<li><a href="${G}/projects" data-img`, '<li><a href="projects.html" aria-current="page" data-img');
 function mount() {
   const hd = $('[data-header]'), mn = $('[data-menu]'), ft = $('[data-footer]');
   if (hd && !hd.children.length) hd.innerHTML = HEADER;
-  if (mn && !mn.children.length) mn.innerHTML = SVC ? svcMenu(MENU) : MENU;
-  if (ft && !ft.children.length) ft.innerHTML = SVC ? FOOTER.replace('<span class="is-dim">Services</span>', '<a href="leistungen.html">Services</a>') : FOOTER;
+  if (mn && !mn.children.length) mn.innerHTML = SVC ? svcMenu(MENU) : PRJ ? prjMenu(MENU) : MENU;
+  if (ft && !ft.children.length) ft.innerHTML = SVC ? FOOTER.replace('<span class="is-dim">Services</span>', '<a href="leistungen.html">Services</a>') : PRJ ? FOOTER.replace(`<a href="${G}/projects">`, '<a href="projects.html">') : FOOTER;
 }
 
 let bgl, conn, ctop, cbot, hk, sk, rooms, introAt = 0, progEl, gbg = '';
