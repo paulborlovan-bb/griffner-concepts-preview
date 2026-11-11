@@ -1,0 +1,134 @@
+/* Runde 49: Services Übersicht im Design v2 (Kunde). Der Film #s-film und das gelbe Feld #s-cta. Größen, Schnitte und Abstände wie im
+   Entwurf (S2Services), Tokens aus dem Design System. Keine Rundungen außer den Punkten im Haus (Entwurf), keine Schatten. */
+:root{--room-s-film:var(--griffner-schwarz);--room-s-cta:var(--griffner-schwarz)}
+.svf{position:relative;color:var(--griffner-weiss)}
+.svf__film{position:relative;height:2350vh}
+.svf__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.svf__gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.svf__shade{position:absolute;inset:0;background:var(--bildschutz);pointer-events:none}
+.svf__l3{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.svf__mk{position:absolute;left:0;width:1px;height:1px}
+
+/* Kapitel: unten links, über der Leiste */
+.svf__ch,.svf__hp{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 var(--page-margin) clamp(124px,18vh,180px);display:grid;row-gap:20px;justify-items:start;will-change:opacity,transform}
+.svf__ch{opacity:0;visibility:hidden;pointer-events:none}
+.svf__ch[data-ch="0"]{opacity:1;visibility:visible;row-gap:22px}
+.svf__ch[data-ch="1"]{row-gap:14px}
+.svf__ch[data-ch="5"]{row-gap:16px}
+.svf__ch[data-ch="11"]{row-gap:18px}
+.svf__k{margin:0;color:var(--griffner-kalk)}
+.svf__h1,.svf__h,.svf__st,.svf__w,.svf__einmal,.svf-hp__t,.svf-cta__h{margin:0;font-family:var(--font-display);font-weight:300;letter-spacing:0;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.svf__h1{max-width:10.5em;font-size:clamp(38px,5.4vw,100px);line-height:.93}
+.svf__h{max-width:10em;font-size:clamp(34px,4.2vw,76px);line-height:.94}
+.svf__ch[data-ch="5"] .svf__h{max-width:12em;font-size:clamp(30px,3.4vw,62px)}
+.svf__ch[data-ch="11"] .svf__h,.svf__einmal{max-width:11em;font-size:clamp(34px,4.6vw,84px);line-height:.94}
+.svf__einmal{opacity:0}
+.svf__einmal em{font-style:normal;color:var(--griffner-gelb)}
+.svf__p{margin:0;max-width:27em;font-size:var(--fs-text-web);line-height:var(--leading-body,1.45);text-wrap:pretty;font-weight:400}
+.svf__p strong{font-weight:600;color:var(--griffner-weiss)}
+.svf__ch[data-ch="3"] .svf__p{max-width:24em}
+/* Das Übliche, durchgestrichen */
+.svf__st{position:relative;display:block;font-size:clamp(30px,4vw,72px);line-height:1}
+/* Strich als Hintergrund des Textes: läuft über alle Zeilen, auch wenn der Satz am Telefon umbricht */
+.svf__stt{background:linear-gradient(var(--griffner-weiss),var(--griffner-weiss)) left 56% / calc(var(--x,0) * 100%) 3px no-repeat}
+.svf__x{display:none}
+.svf__besser{margin:22px 0 0;font-family:var(--font-display);font-weight:300;font-size:clamp(24px,2.4vw,42px);line-height:1.05;opacity:0}
+.svf__besser u{text-decoration:underline;text-decoration-color:var(--griffner-gelb);text-decoration-thickness:4px;text-underline-offset:.14em}
+/* Projektplan: drei Wörter */
+.svf__plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:18px;width:min(100%,500px);margin:0;padding:0;list-style:none}
+.svf__plan li{display:grid;row-gap:6px;align-content:start;padding-top:10px;border-top:1px solid var(--griffner-anthrazit)}
+.svf__w{font-size:clamp(18px,1.6vw,28px);line-height:1;color:var(--griffner-anthrazit);transition:color 600ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
+.svf__w.is-on{color:var(--griffner-weiss)}
+.svf__w[data-mp="0"].is-on{color:var(--griffner-gelb)}
+.svf__plan span:last-child{font-size:13px;line-height:1.35;color:var(--griffner-kalk);text-wrap:pretty}
+/* Knopf mit Linie (Design System, Button line mit Pfeil) */
+.svf-line{display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;padding:6px 0;color:inherit;font-family:var(--font-text);font-weight:600;font-size:14px;letter-spacing:.12em;line-height:1;text-transform:uppercase;white-space:nowrap;text-decoration:none}
+.svf-line>span:first-child{display:inline-flex;align-items:center;gap:14px}
+.svf-line>span:first-child::after{content:'→';font-weight:500;letter-spacing:0}
+.svf-line i{display:block;width:100%;height:1px;background:currentColor;transform-origin:left;transition:transform 320ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
+.svf-line:hover{opacity:1}
+.svf-line:hover i{transform:scaleX(.4)}
+.svf__hint{margin:0;display:flex;align-items:center;gap:10px;color:var(--griffner-weiss)}
+.svf__hint>i{flex:none;width:14px;height:14px;box-sizing:border-box;border:1px solid currentColor;border-radius:50%;display:grid;place-items:center}
+.svf__hint>i::after{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
+.svf__jahr{font-variant-numeric:tabular-nums}
+
+/* Karte zu einem Punkt im Haus */
+.svf__hp{left:var(--page-margin);right:auto;bottom:clamp(108px,15vh,160px);width:min(560px,calc(100% - 2 * var(--page-margin)));box-sizing:border-box;padding:28px 32px 30px;background:rgba(0,0,0,.82);row-gap:18px;opacity:0;pointer-events:none;transform:translate3d(0,16px,0);transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1)),transform 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
+.svf.is-focus .svf__hp{opacity:1;pointer-events:auto;transform:none}
+.svf__hp .info{margin:0;color:var(--griffner-kalk)}
+.svf-hp__t{max-width:10em;font-size:clamp(32px,3.8vw,68px);line-height:.94}
+.svf-hp__x{margin:0;max-width:27em;font-size:var(--fs-text-web);line-height:1.45;font-weight:400;text-wrap:pretty}
+.svf-hp__fs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px;width:min(100%,460px)}
+.svf-hp__f{display:grid;row-gap:6px;padding-top:12px;border-top:1px solid var(--griffner-anthrazit)}
+.svf-hp__f b{font-family:var(--font-display);font-weight:300;font-size:clamp(22px,2vw,34px);line-height:1;font-variant-numeric:tabular-nums}
+.svf-hp__f span{font-size:13px;line-height:1.35;color:var(--griffner-kalk)}
+.svf-hp__back{display:flex;align-items:center;gap:10px;margin:0;padding:6px 0;background:none;border:0;border-bottom:1px solid currentColor;color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity 160ms}
+.svf-hp__back:hover{opacity:.64}
+
+/* Leiste unten: besser planen, bauen, leben */
+.svf__nav{position:absolute;left:0;right:0;bottom:0;z-index:3;height:92px;box-sizing:border-box;padding:0 var(--page-margin);background:var(--griffner-schwarz);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(16px,3vw,48px);opacity:0;pointer-events:none;transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
+.svf__nav.is-on{opacity:1;pointer-events:auto}
+.svf__nav a{min-width:0;display:grid;row-gap:9px;align-content:center;height:100%;color:var(--griffner-kalk);text-decoration:none;transition:color 400ms}
+.svf__nav a:hover{opacity:1;color:var(--griffner-weiss)}
+.svf__nav a.is-cur{color:var(--griffner-weiss)}
+.svf-nav__top{display:flex;align-items:baseline;gap:10px;min-width:0}
+.svf-nav__m{flex:none;align-self:center;width:10px;height:8px;background:var(--griffner-gelb);opacity:0;transition:opacity 400ms}
+.svf__nav a.is-cur .svf-nav__m{opacity:1}
+.svf-nav__n{flex:none;font-family:var(--font-text);font-weight:500;font-size:11px;letter-spacing:var(--tracking-info-web);text-transform:uppercase;white-space:nowrap}
+.svf-nav__bar{position:relative;display:block;height:2px;background:var(--griffner-anthrazit);overflow:hidden}
+.svf-nav__bar i{position:absolute;inset:0;background:var(--griffner-weiss);transform:scaleX(0);transform-origin:left center}
+.svf-nav__sub{min-width:0;height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-display);font-weight:500;font-size:14px;line-height:17px;letter-spacing:.05em;text-transform:uppercase;color:var(--griffner-weiss);opacity:0;transition:opacity 400ms}
+.svf__nav a.is-cur .svf-nav__sub{opacity:1}
+
+/* Marken im Modell */
+.svf-m{position:absolute;left:0;top:0;display:block;margin:0;padding:0;border:0;background:none;color:var(--griffner-weiss);font:inherit;text-align:left;opacity:0;visibility:hidden;will-change:transform,opacity;transition:opacity 260ms linear}
+.svf-m__box{position:absolute;left:-5px;top:-4px;width:10px;height:8px;background:var(--griffner-gelb)}
+.svf-m__t{position:absolute;left:14px;top:-10px;display:grid;row-gap:3px;padding:6px 8px 7px;background:rgba(0,0,0,.78);white-space:nowrap}
+.svf-m.is-left .svf-m__t{left:auto;right:14px;text-align:right}
+.svf-m__t b{font-family:var(--font-display);font-weight:500;font-size:13px;line-height:1.1;letter-spacing:.05em;text-transform:uppercase}
+.svf-m__t em{font-style:normal;font-family:var(--font-text);font-weight:400;font-size:12px;line-height:1.3;color:var(--griffner-kalk)}
+.svf-m--lay{cursor:pointer}
+.svf-m--lay .svf-m__t b::after{content:' →';font-weight:400}
+.svf-m--lay:hover .svf-m__t{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+.svf-m--lay:hover .svf-m__t em{color:var(--griffner-anthrazit)}
+.svf-m--hot{cursor:pointer}
+.svf-m__dot{position:absolute;left:-15px;top:-15px;width:30px;height:30px;display:grid;place-items:center}
+.svf-m__dot::before{content:'';position:absolute;inset:7px;border:1.5px solid var(--griffner-weiss);border-radius:50%;background:rgba(0,0,0,.35);transition:transform 260ms var(--ease-out,cubic-bezier(.2,.7,.2,1)),background-color 260ms}
+.svf-m__dot i{position:relative;width:5px;height:5px;border-radius:50%;background:var(--griffner-weiss)}
+.svf-m--hot .svf-m__t{left:20px;top:-13px;padding:5px 8px 6px}
+.svf-m--hot.is-left .svf-m__t{left:auto;right:20px}
+.svf-m--hot .svf-m__t b{font-family:var(--font-text);font-weight:500;font-size:11px;letter-spacing:var(--tracking-info-web,.2em)}
+.svf-m--hot:hover .svf-m__dot::before,.svf-m--hot:focus-visible .svf-m__dot::before{transform:scale(1.25);background:var(--griffner-gelb);border-color:var(--griffner-gelb)}
+.svf-m--hot:hover .svf-m__dot i{background:var(--griffner-schwarz)}
+
+/* Projektcheck starten: das gelbe Feld (Connector) */
+.svf-cta{position:relative;padding:var(--section-pad) 0 var(--section-pad) var(--page-margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap-col);color:var(--griffner-schwarz)}
+.svf-cta__box{grid-column:4 / -1;min-width:min(100%,320px);box-sizing:border-box;padding:clamp(56px,10vh,120px) var(--page-margin) clamp(44px,8vh,96px) clamp(28px,4vw,72px)}
+.svf-cta__in{position:relative;z-index:6;display:grid;row-gap:26px;justify-items:start}
+.svf-cta__h{max-width:10em;font-size:clamp(34px,4.6vw,84px);line-height:.94}
+.svf-cta .svf__p{max-width:24em}
+.svf-cta__acts{display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px;padding-top:6px}
+.svf-btn{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 28px;background:var(--griffner-schwarz);color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;text-decoration:none;transition:background-color 300ms}
+.svf-btn::after{content:'→'}
+.svf-btn:hover{background:#222221;opacity:1}
+.svf-cta .svf-line{color:var(--griffner-schwarz)}
+
+@media (max-width:899px){
+  .svf__ch{row-gap:14px;padding-bottom:124px}
+  .svf__hp{row-gap:12px;bottom:100px;padding:20px 20px 22px}
+  .svf__p,.svf-hp__x{font-size:16px}
+  .svf-hp__fs{column-gap:14px}
+  .svf-m__t{padding:5px 6px 6px}
+  .svf-m__t b{font-size:11px}
+  .svf-m__t em{display:none}
+  .svf-m--hot .svf-m__t{display:none}
+  .svf__nav{column-gap:12px;height:84px}
+  .svf-nav__m{display:none}
+  .svf-nav__n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:.1em}
+  .svf-nav__sub{font-size:12px}
+  .svf-cta{padding-right:var(--page-margin)}
+  .svf-cta__box{grid-column:1 / -1;padding:56px 24px 44px}
+}
+@media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf-m{transition:none}}
+.svf__src{display:none!important}

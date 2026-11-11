@@ -390,3 +390,75 @@ export const RUND = {
   liste: ['Fundament', 'Das Haus', 'Innenausbau und Interior', 'Carport', 'Terrasse', 'Pool', 'Garten', 'Sauna, Glashaus, Gartenhütte'],
   link: 'Im 3D Modell ansehen'
 };
+
+/* ================= Runde 49: Services Übersicht im Design v2 (Kunde, „GRIFFNER Services v2“, 11.11.2026) =================
+   Ein gepinnter Film über das Haus (Concept Free statt des Hauses im Entwurf), zwölf Kapitel, unten die Leiste in drei Teilen,
+   danach das gelbe Feld „Starte mit dem Projektcheck“. Texte wörtlich aus dem Entwurf (S2Services). Kapitel k mit Gewicht
+   (Bildschirmhöhen je Einheit 1,5): 5 und 10 haben zwei Hälften (5 / 5.5, 10 / 10.5). */
+export const FILM = {
+  gewichte: [1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1],
+  kapitel: [
+    { ch: '0', id: 'produkt', k: 'Services', h1: 'Das größte Projekt deines Lebens verdient mehr als ein Produkt.' },
+    { ch: '1', id: 'ueblich', strikes: ['Modell wählen.', 'Extras nachzahlen.', 'Den Rest selbst organisieren.'], besser: ['Wir finden, Hausbau geht ', 'besser.'] },
+    { ch: '2', id: 'projekt', h: 'Wir denken dein ganzes Projekt.', txt: 'Vom Grundstück bis zum Schlüssel. Auch das, was du selbst beauftragst oder erst später baust.' },
+    { ch: '3', id: 'ueberblick', h: 'Alles, was dein Projekt braucht.', txt: 'Ein Plan für alles. Ein Projektmanager, der ihn zusammenhält.' },
+    { ch: '4', id: 'projektcheck', h: 'Wissen, ob es aufgeht.', b: 'Der Projektcheck.', txt: 'Wir prüfen Grundstück, Baurecht und Baugrund und rechnen dein ganzes Projekt gegen dein Budget. Am Ende hältst du deinen Projektreport in der Hand.', link: ['Alles zum Projektcheck', 'leistungsumfang.html'] },
+    { ch: '5', a: 5, b: 5.5, id: 'projektplan', h: 'Alles gedacht. Nicht alles auf einmal.', klein: 1, bt: 'Dein Projektplan.', txt: 'Wir denken dein ganzes Projekt von Anfang an mit und bauen es in Schritten, die zu deinem Budget passen.',
+      plan: [['Sofort.', 'Haus und Zufahrt'], ['Später.', 'Garage oder Carport'], ['Irgendwann.', 'Pool oder Sauna']] },
+    { ch: '5.5', a: 5.5, b: 6, id: 'hausplanung', h: 'Geplant von echten Profis.', bt: 'Hausplanung.', txt: 'Unser eigenes Architektur- und Designteam plant dein Haus mit dir. Von der ersten Skizze über die Einreichung bis zur Werkplanung im letzten Detail.', link: ['Alles zur Hausplanung', 'leistungsumfang.html#u-dazu'] },
+    { ch: '6', id: 'fundament', h: 'Unser Haus beginnt eine Etage tiefer.', bt: 'Fundament.', txt: 'Die Bodenplatte ist bei uns serienmäßig. Weil ein Haus nicht erst über der Erde beginnt.', link: ['Alles zum Fundament', 'leistungsumfang.html#u-stufen'] },
+    { ch: '7', id: 'bausystem', h: 'Gesünder wohnen geht nicht.', bt: 'Exterior.', txt: 'Holz, Holzfaser und Zellulose. Keine Folien, trocken gebaut. Wohngesund ab dem ersten Tag.', link: ['Alles zum Exterior', 'leistungsumfang.html#u-acht'], hint: 'Tippe auf einen Punkt im Haus' },
+    { ch: '8', id: 'innen', h: 'Hier wird es persönlich.', bt: 'Interior.', txt: 'Das Bausystem sorgt dafür, dass du gesund wohnst. Das Innere dafür, dass du gern nach Hause kommst.', link: ['Alles zum Interior', 'leistungsumfang.html#u-stufen'], hint: 'Tippe auf einen Raum' },
+    { ch: '9', id: 'aussen', h: 'Dein Projekt endet nicht an der Hauswand.', bt: 'Rund ums Haus.', txt: 'Ob wir es bauen oder mit deinen Firmen koordinieren, es gehört von Anfang an zum Plan.', link: ['Alles rund ums Haus', 'leistungsumfang.html#u-rund'] },
+    { ch: '10', a: 10, b: 10.5, id: 'pm', h: 'Vom Vertrag bis zum Schlüssel an deiner Seite.', bt: 'Dein Projektmanager.', txt: 'Ein Mensch kennt dein Projekt in jedem Detail und koordiniert alle Gewerke. Du musst nicht wissen, wen du anrufen sollst. Er ruft dich an.' },
+    { ch: '10.5', a: 10.5, b: 11, id: 'kundendienst', jahr: 'Jahr', h: 'Wir sind auch danach da.', bt: 'Kundendienst.', txt: 'Unser Kundendienst kennt dein Haus und ist da, wenn etwas ist. Auch Jahre nach dem Einzug.' },
+    { ch: '11', id: 'haltung', h: 'Wir bauen nicht hundertmal dasselbe Haus.', einmal: ['Wir bauen ', 'deins.', ' Einmal.'] }
+  ],
+  /* Sprungmarken im Film (Anteil der Filmhöhe in vh wie im Entwurf) */
+  marken: [['s-ueberblick', 525], ['s-projektcheck', 652.5], ['s-projektplan', 780], ['s-hausplanung', 915], ['s-fundament', 1102.5], ['s-bausystem', 1245], ['s-innen', 1552.5], ['s-aussen', 1702.5], ['s-pm', 1815], ['s-kundendienst', 1965]],
+  /* Leiste unten: drei Teile mit Bereich in P und Unterzeilen [bis P, Name] */
+  leiste: [
+    { name: 'Besser planen.', href: '#s-projektcheck', r: [4, 6], sub: [[5, 'Projektcheck'], [5.5, 'Projektplan'], [6, 'Hausplanung']] },
+    { name: 'Besser bauen.', href: '#s-fundament', r: [6, 10.5], sub: [[7, 'Fundament'], [8, 'Exterior'], [9, 'Interior'], [10, 'Rund ums Haus'], [10.5, 'Projektmanager']] },
+    { name: 'Besser leben.', href: '#s-kundendienst', r: [10.5, 11], sub: [[11, 'Kundendienst']] }
+  ],
+  zurueck: '← Zurück zum Haus',
+  /* Punkte im Haus: Info, Titel, Text, zwei Fakten. Wörtlich aus dem Entwurf */
+  punkte: {
+    dach: { info: 'Besser bauen / Exterior / Dach', t: 'Satteldach.', x: 'Bis zum First offen, mit Raumhöhen bis zu 5 m im Obergeschoß. Die Holzfaser-Zellulosedämmung speichert die Hitze des Tages und gibt sie erst nachts ab.', f: [['U-Wert 0,13', 'W/m²K Zwischensparrendämmung'], ['PV-bereit', 'Lastabtragung berücksichtigt']] },
+    wand: { info: 'Besser bauen / Exterior / Wand', t: 'Die GRIFFNER Wand.', x: '42,25 cm aus Holz, Holzfaser und Zellulose. Diffusionsoffen und ohne PVC-Folien, sie regelt die Feuchte von selbst.', f: [['U-Wert 0,147', 'W/m²K, dreischalig'], ['Installationsebene', 'Leitungen bleiben zugänglich']] },
+    fenster: { info: 'Besser bauen / Exterior / Fenster', t: 'Holz-Alu-Fenster.', x: 'Innen Holz, außen Aluminium, das ohne Anstrich auskommt. Dreifach verglast, mit verdeckt liegenden Beschlägen.', f: [['Ug 0,6', 'W/m²K, 3-fach-Verglasung'], ['Raffstore', 'Elektrisch, Z-Lamelle 60 mm']] },
+    fassade: { info: 'Besser bauen / Exterior / Fassade', t: 'Lärche oder Putz.', x: 'Lärche unbehandelt, Putz oder beides. Immer hinterlüftet, das verbessert den Hitzeschutz im Sommer.', f: [['Hinterlüftet', 'Zweite wasserführende Ebene'], ['Aufwertbar', 'Platte, Stein, Glas oder PV']] },
+    hoehe: { info: 'Besser bauen / Exterior / Raumhöhe', t: '2,72 Meter Raumhöhe.', x: '22 cm mehr als üblich, in jedem Raum. Auf Wunsch 2,92 Meter.', f: [['2,72 m', 'Serienmäßig'], ['2,50 m', 'Üblich, im OG oft weniger']] },
+    open: { info: 'Besser bauen / Interior / Grundriss', t: 'Open Space.', x: 'Wenige Lastenpunkte ermöglichen ein flexibles Raumkonzept. Der Grundriss folgt deinem Leben.', f: [['Patentiert', 'GRIFFNER Open Space'], ['Flexibel', 'Kaum tragende Innenwände']] },
+    parkett: { info: 'Besser bauen / Interior / Boden', t: 'Naturparkett.', x: 'Echtes Eichenparkett, kein Dekor auf Folie. Abschleifbar, und mit den Jahren schöner.', f: [['Eiche', 'Echtholz, abschleifbar'], ['Üblich', 'Laminat oder Vinyl']] },
+    fliesen: { info: 'Besser bauen / Interior / Fliesen', t: 'Großformatig.', x: 'Ruhige, großformatige Fliesen, gemacht für Jahrzehnte.', f: [['Großformat', 'Wenige Fugen'], ['Langlebig', 'Für Jahrzehnte']] },
+    bad: { info: 'Besser bauen / Interior / Bad', t: 'Das Bad.', x: 'Hier beginnt und endet dein Tag. Darum planen wir es nicht nebenbei.', f: [['Geplant', 'Mit unserem Designteam'], ['Feuchtemonitoring', 'Direkt auf der Holzdecke']] },
+    tuer: { info: 'Besser bauen / Interior / Türen', t: 'Innentüren.', x: 'Du nimmst sie jeden Tag dutzende Male in die Hand. Sie sollten sich auch so anfühlen.', f: [['Massiv', 'Gutes Gewicht in der Hand'], ['Ruhig', 'Flächenbündig geplant']] }
+  },
+  /* Beschriftungen im Modell [id, Titel, Zeile, von P, bis P, {Art}] (Entwurf; Maße auf das Grundstück im Modell gedreht: 24 × 32 m) */
+  marken3d: [
+    ['lay-plan', 'Projektplanung', 'Budget, Baurecht, Schritte und Architektur.', 3.3, 3.98, { kind: 'layer', jump: 's-projektcheck' }],
+    ['lay-fund', 'Fundament', 'Die Bodenplatte ist serienmäßig.', 3.38, 3.98, { kind: 'layer', jump: 's-fundament' }],
+    ['lay-huelle', 'Exterior', 'Gesünder wohnen geht nicht.', 3.42, 3.98, { kind: 'layer', jump: 's-bausystem' }],
+    ['lay-innen', 'Interior', 'Parkett, Fliesen, Bad, Türen.', 3.46, 3.98, { kind: 'layer', jump: 's-innen' }],
+    ['lay-aussen', 'Rund ums Haus', 'Zufahrt, Pool, Sauna, Garten.', 3.5, 3.98, { kind: 'layer', jump: 's-aussen' }],
+    ['lay-key', 'Projektmanager', 'Vom Vertrag bis zum Schlüssel.', 3.54, 3.98, { kind: 'layer', jump: 's-pm' }],
+    ['flaeche', 'Grundstück', '768 m²', 4.3, 5],
+    ['dimx', '24,00 m', '', 4.45, 5], ['dimz', '32,00 m', '', 4.5, 5],
+    ['bau', 'Baufenster', 'Baurecht geprüft', 4.6, 5], ['boden', 'Baugrund', 'Vor Ort geprüft', 4.7, 5],
+    ['z0', 'Sofort', 'Haus und Zufahrt', 5.12, 5.5], ['z1', 'Später', 'Carport', 5.24, 5.5], ['z2', 'Irgendwann', 'Pool oder Sauna', 5.36, 5.5],
+    ['arch', 'Eigenes Architekturteam', 'Architektur und Design', 5.56, 5.7], ['einreich', 'Einreichplanung', 'Samt Energieausweis', 5.66, 5.8], ['werk', 'Werkplanung', 'Bis ins letzte Detail', 5.76, 5.9], ['statik', 'Statik', 'Für deinen Bauplatz', 5.86, 5.99],
+    ['slab', 'Bodenplatte', 'Serienmäßig', 6.4, 6.95],
+    ['dach', 'Satteldach', '', 7.22, 7.97, { kind: 'hot' }], ['wand', 'Die GRIFFNER Wand', '', 7.25, 7.97, { kind: 'hot' }],
+    ['fenster', 'Holz-Alu-Fenster', '', 7.28, 7.97, { kind: 'hot' }], ['fassade', 'Fassade', '', 7.31, 7.97, { kind: 'hot' }], ['hoehe', 'Raumhöhe', '', 7.34, 7.97, { kind: 'hot' }],
+    ['daemm', 'Holzfaser-Zellulose', 'Speichert die Hitze des Tages', 0, 0, { fo: 'dach' }], ['moist', 'Diffusionsoffen', 'Regelt die Feuchte von selbst', 0, 0, { fo: 'wand' }], ['ueblich', '2,50 m', 'Üblich', 0, 0, { fo: 'hoehe' }],
+    ['open', 'Open Space', '', 8.3, 8.97, { kind: 'hot' }], ['parkett', 'Naturparkett', '', 8.33, 8.97, { kind: 'hot' }], ['fliesen', 'Fliesen', '', 8.36, 8.97, { kind: 'hot' }],
+    ['bad', 'Bad', '', 8.39, 8.97, { kind: 'hot' }], ['tuer', 'Innentüren', '', 8.42, 8.97, { kind: 'hot' }],
+    ['terrasse', 'Terrasse', '', 9.05, 9.95], ['carport', 'Garage und Zufahrt', '', 9.17, 9.95], ['pool', 'Pool', '', 9.29, 9.95], ['sauna', 'Sauna', '', 9.41, 9.95], ['garten', 'Garten', '', 9.55, 9.95],
+    ['key', 'Dein Projektmanager', 'Ein Mensch für alles', 10.34, 10.5],
+    ['van', 'GRIFFNER Kundendienst', 'Vor Ort, wenn du uns brauchst', 10.7, 10.96]
+  ],
+  modell: 'Concept Free',
+  cta: { h: 'Starte mit dem Projektcheck.', txt: 'Kostenlos, unverbindlich und mit einem Ergebnis, das du in der Hand hältst.', btn: 'Projektcheck anfragen', btnHref: 'https://griffner.com/contact', link: 'Alle Leistungen im Detail', linkHref: 'leistungsumfang.html' }
+};

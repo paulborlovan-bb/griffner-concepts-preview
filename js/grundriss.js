@@ -1035,6 +1035,22 @@ function tabs(list, h) {
 
 const idle = fn => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 200));
 
+/* Runde 49: dasselbe Haus für den Services Film (js/svc-film3d.js), mit dessen Renderer, Kamera und Licht. Die Welt entsteht wie hier
+   (Wände, Fassaden, Fenster, Möbel, Decke, Dach aus data/grundriss-<haus>.js), ihr Zustand S (eg, og, ext, slab, roof, lift) kommt
+   von außen, apply() setzt ihn. Auf einer Seite ohne Karten [data-gr] ist das die einzige Welt, die hier gebaut wird. */
+export async function houseWorld(key, renderer) {
+  if (!ENV) { const pm = new T.PMREMGenerator(renderer); ENV = pm.fromScene(new RoomEnvironment(renderer), .04).texture; pm.dispose(); }
+  const H = await loadHouse(key);
+  const w = buildWorld(key, H);
+  w.S = { eg: 1, og: 1, ext: 1, slab: 1, roof: 1, lift: 1 };
+  geo(w);
+  return {
+    H, scene: w.scene, S: w.S, FL: w.FL, roofs: w.roofs, slabs: w.slabs, HT: H.h, K: H.K, ORX: w.ORX, ORY: w.ORY, top: w.TOP,
+    toWorld: (x, y, fi = 0) => { const off = (H.floors[fi] && H.floors[fi].off) || [0, 0]; return [(x + off[0] - w.ORX) / H.K, (y + off[1] - w.ORY) / H.K]; },
+    apply() { geo(w); apply(); }
+  };
+}
+
 export async function initGrundriss() {
   const roots = [...document.querySelectorAll('[data-gr]')]; if (!roots.length) return;
   const dlg = document.querySelector('[data-grv]'); dlgEl = dlg;
