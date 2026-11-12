@@ -3,6 +3,7 @@
 import { loop, reveal } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initServicesFilm } from './svc-film.js';
+import { initWeiter } from './svc-weiter.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 run('chrome', initChrome);
@@ -11,3 +12,4 @@ loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());
 addEventListener('load', () => loop.poke());
 run('film', initServicesFilm);
+run('weiter', initWeiter);

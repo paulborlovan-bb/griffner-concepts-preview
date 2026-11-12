@@ -45,7 +45,7 @@ export const M = {
   carGlass: std(0x1b1f22, { roughness: .08, metalness: .5 })
 };
 /* Stoffe etwas dunkler als die Markenfarben, sonst verschwinden Sofa und Betten im hellen Licht */
-const FAB = { kalk: std(0xA8A39A, { roughness: 1 }), sand: std(0xBBA98F, { roughness: 1 }), salbei: std(0x7F8670, { roughness: 1 }), dark: M.dark, kupfer: M.kupfer };
+export const FAB = { kalk: std(0xA8A39A, { roughness: 1 }), sand: std(0xBBA98F, { roughness: 1 }), salbei: std(0x7F8670, { roughness: 1 }), dark: M.dark, kupfer: M.kupfer };
 
 export const UBOX = new T.BoxGeometry(1, 1, 1).translate(0, .5, 0);
 const UCYL = new T.CylinderGeometry(.5, .5, 1, 28).translate(0, .5, 0);

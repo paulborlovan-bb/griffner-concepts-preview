@@ -460,8 +460,9 @@ function windowPart(grp, w, F, X, Z, skin, d) {
   }
   const part = (m, a, b) => { if (!m) return; const h = b - a; m.visible = h > .004; if (m.visible) { m.position.y = a; m.scale.y = h; } };
   /* Wt: Höhe der Wandkrone gerade jetzt */
+  /* Runde 55: P und w offen, damit die Services Übersicht die Haustür von Free aufschwingen lassen kann */
   return {
-    d, update(Wt) {
+    d, w, P, kind, update(Wt) {
       const s = Math.min(sill, Wt), hd = Math.min(head, Wt);
       part(P.sill, 0, s); part(P.sk1, 0, sill > 0 ? s : 0);
       part(P.lin, head, Wt); part(P.sk2, head, Wt);
