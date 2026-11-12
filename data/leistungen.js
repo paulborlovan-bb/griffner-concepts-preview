@@ -455,12 +455,13 @@ export const FILM = {
   },
   /* Beschriftungen im Modell [Schlüssel, Titel, Zeile, von P, bis P, {Art}], wörtlich aus dem Entwurf (svcLabels, Kopf „komplex“).
      a: Anker im Modell (sonst der Schlüssel), free: Marke steht an ihrem Punkt, stack: Spalte neben dieser Überschrift (Desktop),
-     pr: Zeit in Seiten-P, kst: Kostenstapel, left: links vom Punkt, noline: ohne Strich, avoid: weicht anderen aus */
+     pr: Zeit in Seiten-P, kst: Kostenstapel, left: links vom Punkt, noline: ohne Strich, avoid: weicht anderen aus,
+     ph: 0 = am Telefon aus (Runde 59, Kunde: die Marken bei „Nicht nur für dein Haus“ wandern dort und zeigen daneben) */
   marken3d: [
-    ['v-zufahrt', 'Zufahrt.', '', 1.57, 2.5, { a: 'carport', free: 1, pr: 1, fd: .04, avoid: 1 }], ['v-zaun', 'Zaun.', '', 1.68, 2.5, { a: 'zaun', free: 1, pr: 1, fd: .04, avoid: 1 }],
-    ['v-garage', 'Garage.', '', 1.78, 2.5, { a: 'garage', free: 1, pr: 1, fd: .04, avoid: 1 }], ['v-terrasse', 'Terrasse.', '', 1.88, 2.5, { a: 'terrasse', free: 1, pr: 1, fd: .04, avoid: 1 }],
-    ['v-pool', 'Pool.', '', 1.98, 2.5, { a: 'pool', free: 1, pr: 1, fd: .04, avoid: 1 }], ['v-garten', 'Garten.', '', 2.08, 2.5, { a: 'garten', free: 1, pr: 1, fd: .04, avoid: 1 }],
-    ['v-sauna', 'Sauna.', '', 2.18, 2.5, { a: 'sauna', free: 1, pr: 1, fd: .04, avoid: 1 }],
+    ['v-zufahrt', 'Zufahrt.', '', 1.57, 2.5, { a: 'carport', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }], ['v-zaun', 'Zaun.', '', 1.68, 2.5, { a: 'zaun', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
+    ['v-garage', 'Garage.', '', 1.78, 2.5, { a: 'garage', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }], ['v-terrasse', 'Terrasse.', '', 1.88, 2.5, { a: 'terrasse', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
+    ['v-pool', 'Pool.', '', 1.98, 2.5, { a: 'pool', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }], ['v-garten', 'Garten.', '', 2.08, 2.5, { a: 'garten', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
+    ['v-sauna', 'Sauna.', '', 2.18, 2.5, { a: 'sauna', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
     ['lay-plan', 'Planung', 'Machbarkeit, Budget, Entwurf.', 3.3, 3.98, { kind: 'layer', e: [0, 1], jump: 's-projektcheck' }],
     ['lay-fund', 'Bauleitung', 'Kosten, Qualität, Termine.', 3.38, 3.98, { kind: 'layer', e: 2, jump: 's-fundament' }],
     ['lay-huelle', 'Holzbau', 'Wand, Dach, Decke.', 3.42, 3.98, { kind: 'layer', e: 3, jump: 's-bausystem' }],

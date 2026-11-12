@@ -167,6 +167,9 @@ export function initServicesFilm() {
       });
       if (kdim) { const o = (.45 * s(.16, .6) * (1 - s(.72, .98))).toFixed(3); if (kdim.style.opacity !== o) kdim.style.opacity = o; }
       herok.style.visibility = P < 4.05 ? 'visible' : 'hidden';
+      /* Runde 59 (Kunde, iPhone: am Anfang kein Text): „Hausbau ist komplex.“ steigt nach der Zeit auf, der Takt läuft aber nur beim
+         Scrollen. Ohne Scrollen blieb die Zeile versteckt, darum hier weiter takten, bis sie ganz oben ist */
+      if (!reduce && P < .2 && now < 2.6) loop.poke();
     }
     /* Runde 55 (Kunde): schwarzer Zwischentitel mit großem Titel, dann geht der Film weiter */
     if (ts) {

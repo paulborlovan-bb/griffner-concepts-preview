@@ -738,7 +738,7 @@ export async function createFilm(host, cfg = {}) {
         g.om = (g.tier === 0 ? .1 : .12 + rnd() * .22) * (rnd() < .22 ? -1 : 1); g.bob = .3 + rnd() * .9; g.bp = rnd() * 6; g.m = 1;
         const el = document.createElement('span');
         el.style.cssText = 'position:absolute;left:0;top:0;white-space:nowrap;font-family:var(--font-display);font-weight:300;letter-spacing:0;text-transform:uppercase;font-feature-settings:\'liga\' 0;line-height:1;opacity:0;will-change:transform,opacity;font-size:' + (g.tier === 0 ? 40 : g.tier === 1 ? 26 : 20) + 'px;color:' + (g.tier === 2 ? '#CACACA' : '#FFFFFF');
-        el.textContent = g.w; tl.appendChild(el); g.el = el; });
+        el.textContent = g.w; tl.appendChild(el); g.el = el; g.mob = g.tier < 2 || i % 5 === 0; });
       TAGS = { list, clear: cfg.tags.clear, tw: 0, lt: performance.now(), hc: new T.Vector3(HC.x, 4, HC.z), v: new T.Vector3() };
     }
 
@@ -747,7 +747,7 @@ export async function createFilm(host, cfg = {}) {
       const r = host.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height);
       if (w === SET.w && h === SET.h) return; SET.w = w; SET.h = h;
       R.setSize(w, h, false); cam.aspect = w / h;
-      const narrow = w < 900; SET.narrow = narrow; SET.lens = null;
+      const narrow = w < 900; SET.narrow = narrow; SET.phone = Math.min(w, h) < 600; SET.lens = null;
     };
     const lens = () => {
       const w = SET.w, h = SET.h, tv = Math.tan(Math.PI / 12), hoch = SET.narrow && w < h;
@@ -1079,12 +1079,13 @@ export async function createFilm(host, cfg = {}) {
         const cr = TAGS.clear && PR > .66 && document.querySelector(TAGS.clear), hb = host.getBoundingClientRect(), rc = cr ? cr.getBoundingClientRect() : null;
         const dH = cam.position.distanceTo(TAGS.hc), dimK = 1 - .45 * sm((PR - .64) / .04), v = TAGS.v;
         TAGS.list.forEach(g => {
+          if (SET.phone && !g.mob) { if (g.on) { g.el.style.opacity = '0'; g.on = 0; } return; }
           const vin = sm((PR - g.ta) / .02), out = sm((PR - g.tv) / .03);
           if (vin < .001 || out > .999) { if (g.on) { g.el.style.opacity = '0'; g.on = 0; } return; }
           const an = g.ph + g.om * TAGS.tw, R = g.R * (1 + 1.6 * out);
           v.set(HC.x + Math.cos(an) * R, g.y + Math.sin(TAGS.tw * .6 + g.bp) * g.bob + 22 * out * out, HC.z + Math.sin(an) * R);
           const d = cam.position.distanceTo(v); v.project(cam); if (v.z > 1) { if (g.on) { g.el.style.opacity = '0'; g.on = 0; } return; }
-          const x = (v.x * .5 + .5) * SET.w, y = (-v.y * .5 + .5) * SET.h, k = Math.max(.35, Math.min(1.9, 62 / d)) * (.7 + .3 * vin);
+          const x = (v.x * .5 + .5) * SET.w, y = (-v.y * .5 + .5) * SET.h, k = Math.max(.35, Math.min(1.9, 62 / d)) * (.7 + .3 * vin) * (SET.phone ? .8 : 1);
           let o = vin * (1 - out) * dimK * (1 - .6 * sm((d - dH) / 8)) * sm((y - (SET.narrow ? 80 : 108)) / 30);
           const inR = rc && x + hb.left > rc.left - 40 && x + hb.left < rc.right + 60 && y + hb.top > rc.top - 50 && y + hb.top < rc.bottom + 30;
           g.m += ((inR ? 0 : 1) - g.m) * .2; o *= g.m;
@@ -1092,10 +1093,11 @@ export async function createFilm(host, cfg = {}) {
           g.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) translate(-50%,-50%) scale(' + k.toFixed(3) + ')';
         }); }
       /* Labels */
-      const stk = [], col = [], warmL = [], lay = []; let avR = null;
+      const stk = [], col = [], warmL = [], lay = [], pl = [], kl = []; let avR = null;
       LABELS.forEach(L => {
         let v = L.fo ? (SET.focus && SET.focus.id === L.fo ? sm((SET.fk - .5) / .5) : 0) : (L.pr ? sP : sN)(L.from, L.from + (L.fd || .12)) * (1 - (L.pr ? sP : sN)(L.to - (L.fd || .12), L.to));
         if (L.t0 != null) v *= sm((t - L.t0) / .9);
+        if (SET.phone && L.ph === 0) v = 0;
         if (L.ls) L.ls.style.transform = 'scaleX(' + sN(L.strike[0], L.strike[1]).toFixed(3) + ')';
         if (L.big && SET.hover !== -1 && SET.hover !== L.e) v *= .4;
         if (L.kind === 'hot' && SET.focus && SET.focus.id !== L.hot) v = 0;
@@ -1111,14 +1113,24 @@ export async function createFilm(host, cfg = {}) {
         if (L.left) x -= (L.el.offsetWidth || 140);
         if (!L.kst && L.kind !== 'hot') { const ow = L.el.offsetWidth || 160; x = Math.min(x, SET.w - ow - 16); }
         if (L.above) { const ae = document.querySelector(L.above); if (ae) { if (!L.hh) L.hh = L.el.offsetHeight || 40; y = Math.min(y, ae.getBoundingClientRect().top - host.getBoundingClientRect().top - L.hh - 20 + 7); } }
+        if (L.kst && !L.center && L.el.children[1] && L.phB !== !!SET.phone) { L.phB = !!SET.phone; L.el.children[1].style.padding = SET.phone ? '3px 8px 4px' : '6px 9px 7px'; if (L.el.children[1].firstElementChild) L.el.children[1].firstElementChild.style.letterSpacing = SET.phone ? '.1em' : '.2em'; L.wd = 0; }
+        if (L.kst && SET.phone && !L.center) { kl.push({ L, x, y, v }); return; }
         if (L.kst) { const h2 = L.el.offsetHeight || 30; if (L.center) x -= (L.el.offsetWidth || 80) / 2; L.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - h2 / 2).toFixed(1) + 'px,0)'; L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; return; }
         if (L.big) { const sh = SET.h >= 560; if (L.sub && L.shw !== sh) { L.shw = sh; L.sub.style.display = sh ? '' : 'none'; } L.hh = L.el.offsetHeight || 60; lay.push({ L, x, y: y - L.hh / 2, ax: x, ay: y, v }); return; }
         if (L.kind === 'warm' || L.avoid) { if (L.kind === 'warm') y += (1 - v) * 16; if (!L.hh) L.hh = L.el.offsetHeight || 40; L.wd = L.el.offsetWidth || L.wd || 160; warmL.push({ L, x, y: y - 7, v }); return; }
         if (L.free) { if (!L.hh) L.hh = L.el.offsetHeight || 40; y = Math.min(y, SET.h - (SET.narrow ? 150 : 112) - L.hh + 7); }
+        if (SET.phone && !L.big && L.kind !== 'hot') { L.hh = L.el.offsetHeight || L.hh || 40; L.wd = L.el.offsetWidth || L.wd || 160; pl.push({ L, x, y: y - 7 + (L.dy || 0), v }); return; }
         L.el.style.transform = `translate3d(${x.toFixed(1)}px,${(y - (L.big ? 12 : 7) + (L.dy || 0)).toFixed(1)}px,0)`;
         L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = (L.big || L.kind === 'hot') && v > .5 ? 'auto' : 'none'; L.on = 1;
         if (L.kind === 'hot') { const act = SET.focus ? SET.focus.id === L.hot : SET.cur === L.hot; if (act !== L.act) { L.act = act; L.el.style.color = act ? '#FFB200' : '#fff'; } }
       });
+      if (pl.length) { const placed = []; pl.sort((a, b) => b.L.from - a.L.from || b.v - a.v);
+        pl.forEach(o => { const L = o.L, r = { x0: o.x - 4, x1: o.x + L.wd + 4, y0: o.y - 4, y1: o.y + L.hh + 4 }, hit = placed.some(p => r.x0 < p.x1 && r.x1 > p.x0 && r.y0 < p.y1 && r.y1 > p.y0);
+          L.pk = L.pk == null ? 1 : L.pk; L.pk += ((hit ? 0 : 1) - L.pk) * (reduce ? 1 : .2); if (L.pk > .5 && o.v > .05) placed.push(r);
+          L.el.style.transform = `translate3d(${o.x.toFixed(1)}px,${o.y.toFixed(1)}px,0)`; L.el.style.opacity = (o.v * L.pk).toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; }); }
+      if (kl.length) { kl.sort((a, b) => a.y - b.y); const y0 = kl.reduce((m, o) => m + o.y, 0) / kl.length; let prev = -1e9;
+        kl.forEach(o => { o.y = Math.max(o.y, prev + 19); prev = o.y; }); const dy = y0 - kl.reduce((m, o) => m + o.y, 0) / kl.length;
+        kl.forEach(o => { const L = o.L, h2 = L.el.offsetHeight || 22; L.el.style.transform = `translate3d(${o.x.toFixed(1)}px,${(o.y + dy - h2 / 2).toFixed(1)}px,0)`; L.el.style.opacity = o.v.toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; }); }
       if (lay.length) { const top = SET.narrow ? 100 : 68, bot = SET.h - (SET.narrow ? 120 : 96); lay.sort((a, b) => a.y - b.y);
         const y0 = lay.reduce((m, o) => m + o.y, 0) / lay.length; let prev = null; lay.forEach(o => { if (prev) o.y = Math.max(o.y, prev.y + prev.L.hh + 8); prev = o; });
         let dy = y0 - lay.reduce((m, o) => m + o.y, 0) / lay.length; const last = lay[lay.length - 1];
