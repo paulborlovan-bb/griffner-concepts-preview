@@ -769,7 +769,7 @@ export async function createFilm(host, cfg = {}) {
     const motiv = PR => { if (SET.fk > .5) return null; const e = (a, b, c, d) => sm((PR - a) / (b - a)) * (1 - sm((PR - c) / (d - c))), mix = (A, B, f) => A.map((v, i) => v + (B[i] - v) * f);
       let k = 0, b = MH;
       if (PR > 4.95 && PR < 5.05) k = e(4.955, 4.975, 5.025, 5.045);
-      else if (PR > 5.97 && PR < 7.52) { k = e(5.97, 6.03, 7.42, 7.5); b = mix(MH, MA, sm((PR - 6.95) / .07)); }
+      else if (PR > 5.93 && PR < 7.52) { k = e(5.94, 5.99, 7.42, 7.5); b = mix(MH, MA, sm((PR - 6.95) / .07)); }
       else if (PR > 9.98 && PR < 11.08) { k = e(9.98, 10.04, 11.0, 11.07); b = mix(MH, MK, sm((PR - 10.45) / .1)); }
       k *= 1 - SET.fk * 2; return k > .001 ? { k, b } : null; };
     const onMove = e => { SET.tmx = e.clientX / innerWidth * 2 - 1; SET.tmy = e.clientY / innerHeight * 2 - 1; };
