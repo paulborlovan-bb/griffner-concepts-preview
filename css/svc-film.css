@@ -2,7 +2,7 @@
    (#s-weiter) und das gelbe Feld #s-cta. Größen, Schnitte und Abstände wie im Entwurf, Tokens aus dem Design System. Dazu (Kunde):
    schwarze Zwischentitel und eine größere Leiste unten. Keine Rundungen außer den Punkten im Haus (Entwurf), keine Schatten. */
 :root{--room-s-film:var(--griffner-schwarz);--room-s-weiter:var(--griffner-schwarz);--room-s-cta:var(--griffner-schwarz)}
-.svf{position:relative;color:var(--griffner-weiss);--svf-nav:112px;--svf-pb:clamp(148px,20vh,204px)}
+.svf{position:relative;color:var(--griffner-weiss);--svf-nav:112px;--svf-pb:clamp(148px,20vh,204px);overflow-anchor:none} /* Runde 57: der Film ist nur vom Scrollen gesteuert, kein Scroll Anchoring darin (Firefox schob sonst nach) */
 .svf__film{position:relative;height:3589vh}
 .svf__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--griffner-schwarz)}
 .svf__gl{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -198,8 +198,22 @@
 }
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf__scrim,.svw__line{transition:none}.svw__g *{stroke-dashoffset:0}}
 .svf__src{display:none!important}
-/* Runde 57: kurze Telefone (Entwurf: schmal und unter 760 px hoch): kein Bauzeitplan, die Tabelle rückt nach oben */
+/* Runde 57: kurze Telefone (schmal und unter 760 px hoch): Tabelle und Bauzeitplan rücken nach oben, der Plan wird enger.
+   Der Entwurf blendet den Plan hier ganz aus; das sind aber fast alle iPhones in Safari, darum zeigt ihn svc-film.js, solange er über den Text passt */
 @media (max-width:899px) and (max-height:759px){
-  .svf__ledger{top:clamp(76px,10vh,96px)}
-  .svf__bplan{display:none}
+  .svf__ledger,.svf__bplan{top:clamp(76px,10vh,96px)}
+  .svf__brow{padding:3px 0 4px}
+  .svf__bk{margin-bottom:8px}
+  .svf__bok{padding-top:10px}
+  .svf__lrow{padding:3px 0 4px}
+  .svf__ltot{row-gap:8px;padding-top:10px}
+  .svf__lseg{height:14px}
+}
+/* Runde 57: sehr kurze Telefone (iPhone SE in Safari mit beiden Leisten, 375 x 553): Tabelle und Plan kleiner, damit sie über dem Text bleiben */
+@media (max-width:899px) and (max-height:600px){
+  .svf__lrow,.svf__brow{padding:2px 0 3px}
+  .svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:13px}
+  .svf__lbar{height:10px}
+  .svf__bk{margin-bottom:6px}
+  .svf__bok{padding-top:8px}
 }

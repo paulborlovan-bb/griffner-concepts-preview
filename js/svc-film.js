@@ -30,6 +30,13 @@ export function initServicesFilm() {
   const lg = $('[data-ledger]', r), lrow = lg ? $$('[data-lrow]', lg).map(el => ({ el, bar: $('[data-lbar]', el), mk: $('[data-lmark]', el) })) : [], lseg = lg ? $$('[data-lseg]', lg) : [];
   const bp = $('[data-bplan]', r), bgrow = bp ? $$('[data-grow]', bp).map(el => ({ a: +el.dataset.a, l: +el.dataset.l, f: $('[data-gfill]', el) })) : [], btoday = bp && $('[data-today]', bp), bok = bp ? $$('[data-bok]', bp) : [];
   const LZ = FILM.summe.zeilen.map(z => z[3]);
+  /* Telefon: der Bauzeitplan nur, wenn er über den Text der Bauleitung passt (gemessen je Größe der Bühne, nach den Schriften neu) */
+  let bpF = { w: -1, h: -1, ok: true };
+  const bpFit = () => {
+    const w = stage.clientWidth, h = stage.clientHeight; if (bpF.w === w && bpF.h === h) return bpF.ok;
+    const c = ch.find(el => el.dataset.ch === '6'); bpF = { w, h, ok: !c || bp.offsetTop + bp.offsetHeight <= h - c.offsetHeight - 12 }; return bpF.ok;
+  };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { bpF.w = -1; });
   const ts = $('[data-ts]', r), tsb = $$('[data-tsb]', r).map(el => ({ el, w: $$('.w>span', el), y: [] }));
   const W = FILM.gewichte, PA = FILM.pausen;
   /* Ablauf: Kapitel k mit Gewicht W[k], vor P 4, 6 und 8 je ein Zwischentitel */
@@ -135,7 +142,7 @@ export function initServicesFilm() {
     }
     /* Bauzeitplan (Runde 57): der gelbe Strich „heute“ läuft durch die Bauzeit, die Zeilen füllen sich, am Ende die drei Häkchen */
     if (bp) {
-      const v = s(6.03, 6.06) * (1 - s(6.95, 6.99)), o = v.toFixed(3); if (bp.style.opacity !== o) bp.style.opacity = o;
+      const v = s(6.03, 6.06) * (1 - s(6.95, 6.99)) * (narrow && !bpFit() ? 0 : 1), o = v.toFixed(3); if (bp.style.opacity !== o) bp.style.opacity = o;
       bp.style.visibility = v > .001 ? 'visible' : 'hidden';
       if (v > .001) {
         const tt = cl((P - 6.05) / .87); btoday.style.left = (tt * 100).toFixed(2) + '%';
@@ -211,6 +218,9 @@ export function initServicesFilm() {
   let fly = document.querySelector('img[data-flylogo]');
   const go = () => import('./svc-film3d.js').then(m => {
     if (!fly) { fly = document.createElement('img'); fly.dataset.flylogo = '1'; fly.alt = ''; fly.setAttribute('aria-hidden', 'true'); fly.className = 'svf-fly'; document.body.appendChild(fly); }
+    /* Runde 57: Stil direkt am Bild. Im body greift das CSS der Komponente auf griffner.com nicht (dort unter .gk), sonst stand das Logo
+       1000 px breit unter der Fußzeile und das Telefon ließ sich seitlich schieben */
+    fly.style.cssText = 'position:fixed;left:0;top:0;width:100px;max-width:none;height:auto;margin:0;transform-origin:0 0;z-index:61;pointer-events:none;opacity:0;will-change:transform';
     if (!fly.getAttribute('src')) fly.src = m.LOGO_INV;
     return m.createFilm(stage, {
       P, variant: 'komplex', flyLogo: 'img[data-flylogo]', dock,

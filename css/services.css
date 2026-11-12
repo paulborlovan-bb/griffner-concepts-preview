@@ -62,6 +62,11 @@ section{position:relative}
 .svh__h{margin:0;max-width:9.5em;font-family:var(--font-display);font-weight:300;font-size:var(--t-hero);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
 .svh__sub{max-width:20em;color:var(--griffner-kalk)}
 .svh__foot{grid-row:4;align-self:end;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:28px 48px;padding-top:clamp(32px,6vh,72px)}
+/* Runde 57: der Kopf ist mit dem ersten Bild da (CSS Animation statt Einblenden per Skript), er wartet nicht auf die Skripte */
+.svh__in>[data-reveal],.svh__foot>[data-reveal]{opacity:1;transform:none;transition:none;animation:svh-rise 1.05s var(--ease) both}
+.svh__h[data-reveal]{animation-delay:80ms}
+.svh__foot>[data-reveal]{animation-delay:240ms}
+@keyframes svh-rise{from{opacity:0;transform:translateY(var(--rise-web))}to{opacity:1;transform:none}}
 .svh__foot .txt{max-width:26em;color:var(--griffner-kalk)}
 .svh__back{justify-self:start;border-bottom:1px solid currentColor;padding:6px 0 5px}
 .svh__scroll{position:absolute;left:50%;bottom:20px;z-index:2;transform:translateX(-50%);margin:0}
@@ -670,6 +675,7 @@ section{position:relative}
   .tip{display:none}
 }
 @media (prefers-reduced-motion:reduce){
+  .svh__in>[data-reveal],.svh__foot>[data-reveal]{animation:none}
   .gw{height:auto}.gw__st{position:relative;height:auto}
   .gw__h span,.gw__list li{opacity:1}.gw__end{opacity:1;transform:none}
   .strk{background-size:100% 2px !important}
