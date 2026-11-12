@@ -1124,7 +1124,7 @@ export async function createFilm(host, cfg = {}) {
         L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = (L.big || L.kind === 'hot') && v > .5 ? 'auto' : 'none'; L.on = 1;
         if (L.kind === 'hot') { const act = SET.focus ? SET.focus.id === L.hot : SET.cur === L.hot; if (act !== L.act) { L.act = act; L.el.style.color = act ? '#FFB200' : '#fff'; } }
       });
-      if (pl.length) { const placed = []; pl.sort((a, b) => b.L.from - a.L.from || b.v - a.v);
+      if (pl.length) { const placed = []; pl.forEach(o => o.k = o.v + ((o.L.pk == null ? 1 : o.L.pk) > .5 ? .1 : 0)); pl.sort((a, b) => b.k - a.k || b.L.from - a.L.from);
         pl.forEach(o => { const L = o.L, r = { x0: o.x - 4, x1: o.x + L.wd + 4, y0: o.y - 4, y1: o.y + L.hh + 4 }, hit = placed.some(p => r.x0 < p.x1 && r.x1 > p.x0 && r.y0 < p.y1 && r.y1 > p.y0);
           L.pk = L.pk == null ? 1 : L.pk; L.pk += ((hit ? 0 : 1) - L.pk) * (reduce ? 1 : .2); if (L.pk > .5 && o.v > .05) placed.push(r);
           L.el.style.transform = `translate3d(${o.x.toFixed(1)}px,${o.y.toFixed(1)}px,0)`; L.el.style.opacity = (o.v * L.pk).toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; }); }
