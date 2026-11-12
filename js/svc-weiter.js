@@ -15,6 +15,6 @@ export function initWeiter() {
   if (reduce || !window.IntersectionObserver) show();
   else { const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { show(); io.disconnect(); } }, { threshold: .25 }); io.observe(sec); }
   if (!matchMedia('(hover: hover)').matches) return;
-  rows.forEach(a => { const g = $('[data-wglyph]', a);
+  rows.filter(a => a.tagName === 'A').forEach(a => { const g = $('[data-wglyph]', a);
     a.addEventListener('pointerenter', () => { draw(g, false, 0); requestAnimationFrame(() => requestAnimationFrame(() => draw(g, true, 80))); }); });
 }

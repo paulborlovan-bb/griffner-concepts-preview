@@ -1,8 +1,10 @@
-/* Runde 55: Services Übersicht im neuen Entwurf (GRIFFNER Services v2, Kunde 2026-11-12). Ein gepinnter Film (#s-film) über einem
-   3D Modell von Concept Free (js/svc-film3d.js). Hier: Fortschritt P aus dem Scrollen (Gewichte des Entwurfs), dazu drei schwarze
-   Zwischentitel vor Besser planen, Besser bauen und Besser leben (Wunsch des Kunden), der Einstieg Wort für Wort, die Texte der
-   Kapitel ein und aus, die Knöpfe der Ausstattung, die Balken der Energie, das Jahr des Kundendiensts, „Deins. Einmal.“, die größere
-   Leiste unten und die Karte zu einem Punkt im Haus. Texte und Marken aus data/leistungen.js (FILM), in Framer aus dem Markup. */
+/* Runde 56: Services Übersicht eins zu eins im Entwurf „GRIFFNER Services v2“ (Kunde, Stand 12.11.2026, Kopf „komplex“). Ein gepinnter
+   Film (#s-film) über dem 3D Modell des Entwurfs (js/svc-film3d.js, aus dem Entwurf gebaut). Hier, wie die Seite im Entwurf (S2Services):
+   Fortschritt P aus dem Scrollen (Gewichte des Entwurfs), der Einstieg „Hausbau ist komplex“ Wort für Wort, die Wörter um die Baustelle,
+   das Logo, das aus der Kopfzeile auf den Baucontainer fliegt, die Texte der Kapitel ein und aus, die Summe der Gesamtinvestition, die
+   Knöpfe der Ausstattung, die Balken der Energie, das Jahr des Kundendiensts, „Deins. Einmal.“, die Karte zu einem Punkt im Haus.
+   Anders als im Entwurf (Wunsch des Kunden, Runde 55): drei schwarze Zwischentitel vor Besser planen, Besser bauen und Besser leben,
+   und die größere Leiste unten. Texte aus data/leistungen.js (FILM), in Framer aus dem Markup. */
 import { loop, $, $$, reduce, vhs } from './core.js';
 import { FILM } from '../data/leistungen.js';
 
@@ -15,12 +17,15 @@ function jumpY(y) {
   else scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
 }
 const HOTS = ['fenster', 'parkett', 'fliesen', 'bad'];
+/* Logo der Kopfzeile, in das das fliegende Logo zurückkehrt: im Entwurf [data-dock="home"], auf griffner.com die Wortmarke „Marke“ */
+const dock = () => document.querySelector('[data-dock="home"]') || document.querySelector('a[data-framer-name="Marke"]') || document.querySelector('[data-header] .hd__logo, [data-header] a[href]');
 
 export function initServicesFilm() {
   const r = $('[data-svf]'); if (!r) return;
   const film = $('[data-film]', r), stage = $('[data-stage]', r);
-  const ch = $$('[data-ch]', r), hero = $('[data-hero]', r), nav = $('[data-snav]', r), hp = $('[data-hp]', r), scrim = $('[data-scrim]', r);
-  const einmal = $('[data-einmal]', r), jahr = $('[data-jahr]', r), bal = $('[data-bal]', r), sw = $$('[data-sw]', r);
+  const ch = $$('[data-ch]', r), herok = $('[data-hero-k]', r), nav = $('[data-snav]', r), hp = $('[data-hp]', r), scrim = $('[data-scrim]', r);
+  const einmal = $('[data-einmal]', r), jahr = $('[data-jahr]', r), bal = $('[data-bal]', r), sw = $$('[data-sw]', r), kdim = $('[data-kdim]', r);
+  const lg = $('[data-ledger]', r), lsum = lg && $('[data-lsum]', lg), lnotiz = lg && $('[data-lnotiz]', lg);
   const ts = $('[data-ts]', r), tsb = $$('[data-tsb]', r).map(el => ({ el, w: $$('.w>span', el), y: [] }));
   const W = FILM.gewichte, PA = FILM.pausen;
   /* Ablauf: Kapitel k mit Gewicht W[k], vor P 4, 6 und 8 je ein Zwischentitel */
@@ -42,14 +47,13 @@ export function initServicesFilm() {
     return { P: 12, i: -1, u: 0 };
   };
 
-  /* Einstieg (Entwurf hb0 bis hb3): Wörter in Masken. „Produkt“ bekommt den Strich, „Leben“ die gelbe Linie (Wörter aus dem Markup, in Framer bearbeitbar) */
-  const src = k => { const e = hero && hero.querySelector(`[data-f="${FILM.hero.id}-${k}"]`); return (e ? e.textContent : FILM.hero[k === 'x' ? 'strike' : 'unter']).trim().toLowerCase(); };
-  const hb = hero ? $$('[data-hb]', hero).map(el => ({ el, w: $$('.w>span', el), y: [] })) : [];
-  const mark = (b, word, cls) => { if (!b || !word) return null; const w = b.w.find(x => x.textContent.toLowerCase().replace(/[^a-zäöüß]/g, '').startsWith(word.replace(/[^a-zäöüß]/g, ''))); if (!w) return null; const s = document.createElement('span'); s.className = cls; s.setAttribute('aria-hidden', 'true'); w.appendChild(s); return s; };
-  const pst = mark(hb[0], src('x'), 'svf__pst'), ul = mark(hb[1], src('u'), 'svf__ul');
-  /* Open Space®: das Zeichen klein und hochgestellt wie im Entwurf */
-  ch.forEach(el => { const h = $('.svf__h', el); if (h && h.textContent.includes('®') && !h.querySelector('sup')) h.innerHTML = escH(h.textContent).replace(/®/g, '<sup class="svf__r">®</sup>'); });
+  /* Einstieg „komplex“ (Entwurf hk0 bis hk5): Zeilen in Masken, Wort für Wort. hk0 kommt nach dem Laden, die übrigen mit dem Scrollen */
+  const hk = herok ? $$('[data-hk]', herok).map(el => ({ el, i: +el.dataset.hk, w: $$('.w>span', el), y: [] })) : [];
+  const SPK = { 0: [null, [.12, .2]], 1: [[.72, .8], [1.0, 1.07]], 3: [[1.1, 1.2], [2.42, 2.5]], 4: [[1.46, 1.56], [2.42, 2.5]], 5: [[2.56, 2.66], [3.9, 3.98]] };
   const t0 = performance.now();
+  /* Preise der Gesamtinvestition: aus den Marken p-… (Zeile „€ 498.000“, in Framer bearbeitbar) */
+  const mkEl = (id, k) => r.querySelector(`[data-mk="${id}"] [data-k="${k}"]`);
+  const PREISE = FILM.marken3d.filter(m => /^p-/.test(m[0])).map(([id, , s, from]) => { const e = mkEl(id, 's'); return [+(String(e ? e.textContent : s).replace(/[^\d]/g, '')) || 0, from]; });
 
   /* Karte zu einem Punkt im Haus: Texte aus dem versteckten Markup (in Framer bearbeitbar), sonst aus data/leistungen.js */
   const D = { ...FILM.punkte };
@@ -85,13 +89,13 @@ export function initServicesFilm() {
   document.addEventListener('click', e => {
     if (!focus) return;
     const t = e.target;
-    if (t && t.closest && (t.closest('[data-hp]') || t.closest('.svf-m--hot') || t.closest('[data-hotbtn]'))) return;
+    if (t && t.closest && (t.closest('[data-hp]') || t.closest('[data-svf] [data-l3] button') || t.closest('[data-hotbtn]'))) return;
     setFocus(null);
   });
 
   function frame(force) {
     const q = P0();
-    if (!force && Math.abs(q.P - P) < 1e-6 && q.i === T.i && Math.abs(q.u - T.u) < 1e-6 && eng && q.i < 0 && !(hb.length && P < .6)) return;
+    if (!force && Math.abs(q.P - P) < 1e-6 && q.i === T.i && Math.abs(q.u - T.u) < 1e-6 && eng && q.i < 0 && !(hk.length && P < .3)) return;
     P = q.P; T = q;
     /* Unter dem Schwarz bei P 6 und 8 springt das Modell ohne Übergang zur nächsten Szene */
     if (eng) { const snap = ePrev != null && PA.some(p => p.at > 4 && (ePrev - p.at) * (P - p.at) < 0); eng.setP(P, snap); }
@@ -111,24 +115,33 @@ export function initServicesFilm() {
     if (focus && (P < 9 || P > 10)) setFocus(null);
     /* Knöpfe der Ausstattung: der gerade gezeigte (Rundgang) oder offene gelb unterstrichen */
     if (sw.length) { const cur = P > 9.02 && P < 9.95 ? (P < 9.22 ? 0 : P < 9.42 ? 1 : P < 9.62 ? 2 : 3) : -1, act = focus ? HOTS.indexOf(focus) : cur; sw.forEach(b => b.classList.toggle('is-on', +b.dataset.sw === act)); }
-    if (scrim) { const on = (P > 9 && P < 10) || (P > 5.67 && P < 5.9) || (P > 6.02 && P < 6.48) || !!focus; scrim.classList.toggle('is-on', on); }
+    if (scrim) { const on = (P > 9 && P < 10) || (P > 5.5 && P < 5.78) || (P > 6.02 && P < 6.48) || !!focus; scrim.classList.toggle('is-on', on); }
     if (bal) { $('[data-bal-e]', bal).style.transform = 'scaleX(' + s(10.3, 10.38).toFixed(3) + ')'; $('[data-bal-v]', bal).style.transform = 'scaleX(' + s(10.33, 10.41).toFixed(3) + ')'; }
-    /* Einstieg Wort für Wort (Entwurf): hb0 kommt nach dem Laden, die übrigen mit dem Scrollen */
-    if (hb.length) {
+    /* Gesamtinvestition: die Summe zählt mit den Preisen im Modell hoch, dann der gelbe Strich */
+    if (lg) {
+      const lv = s(5.83, 5.845) * (1 - s(5.99, 6)), o = lv.toFixed(3); if (lg.style.opacity !== o) lg.style.opacity = o;
+      lg.style.visibility = lv > .001 ? 'visible' : 'hidden';
+      if (lv > .001) {
+        let sum = 0; PREISE.forEach(([v, a]) => sum += v * s(a, a + .012));
+        const t = '€ ' + (Math.round(sum / 1000) * 1000).toLocaleString('de-DE'); if (lsum.textContent !== t) lsum.textContent = t;
+        lnotiz.style.transform = 'scaleX(' + s(5.945, 5.96).toFixed(3) + ')';
+      }
+    }
+    /* Einstieg „komplex“ Wort für Wort (Entwurf) */
+    if (hk.length) {
       const now = (performance.now() - t0) / 1000;
-      const SP = [[null, [.34, .5]], [[.52, .68], [.9, 1]], [[1.02, 1.18], [1.86, 1.98]], [[1.46, 1.62], [1.86, 1.98]]];
-      hb.forEach((b, i) => { const [en, ex] = SP[i] || SP[3], n = Math.max(1, b.w.length - 1);
+      hk.forEach(b => { const sp = SPK[b.i]; if (!sp) return; const [en, ex] = sp, n = Math.max(1, b.w.length - 1);
         b.w.forEach((w, j) => {
-          const ve = reduce ? 1 : en ? sm((P - en[0] - j * (en[1] - en[0]) * .5 / n) / ((en[1] - en[0]) * .5)) : eo((now - .5 - j * .075) / .9);
+          const ve = reduce && !en ? 1 : en ? sm((P - en[0] - j * (en[1] - en[0]) * .5 / n) / ((en[1] - en[0]) * .5)) : eo((now - .5 - j * .075) / .9);
           const vx = sm((P - ex[0] - j * (ex[1] - ex[0]) * .5 / n) / ((ex[1] - ex[0]) * .5));
-          const ve2 = en || !reduce ? ve : 1, y = ((1 - ve2) * 160 * (1 - vx) - vx * 160).toFixed(2);
-          if (b.y[j] !== y) { b.y[j] = y; w.style.transform = 'translate3d(0,' + y + '%,0)'; w.style.visibility = ve2 < .002 || vx > .998 ? 'hidden' : 'visible'; }
+          const y = ((1 - ve) * 160 * (1 - vx) - vx * 160).toFixed(2);
+          if (b.y[j] !== y) { b.y[j] = y; w.style.transform = 'translate3d(0,' + y + '%,0)'; w.style.visibility = ve < .002 || vx > .998 ? 'hidden' : 'visible'; }
         });
+        if (b.i === 5) { const sc = (1 - .4 * s(2.86, 3.06)).toFixed(3); if (b.sc !== sc) { b.sc = sc; b.el.style.transform = 'scale(' + sc + ')'; } }
+        if (b.i === 3) b.el.classList.toggle('is-dim', P > 1.5);
       });
-      if (hb[2]) hb[2].el.classList.toggle('is-dim', P > 1.5);
-      if (pst) { pst.style.transform = 'scaleX(' + s(.26, .36).toFixed(3) + ')'; pst.style.opacity = (1 - s(.4, .46)).toFixed(3); }
-      if (ul) { ul.style.transform = 'scaleX(' + s(.7, .82).toFixed(3) + ')'; ul.style.opacity = (1 - s(.9, .95)).toFixed(3); }
-      hero.style.visibility = P < 2.05 ? 'visible' : 'hidden';
+      if (kdim) { const o = (.45 * s(.16, .6) * (1 - s(.72, .98))).toFixed(3); if (kdim.style.opacity !== o) kdim.style.opacity = o; }
+      herok.style.visibility = P < 4.05 ? 'visible' : 'hidden';
     }
     /* Runde 55 (Kunde): schwarzer Zwischentitel mit großem Titel, dann geht der Film weiter */
     if (ts) {
@@ -147,9 +160,8 @@ export function initServicesFilm() {
     /* Runde 54: am Telefon endet die Bühne des 3D über dem Text des stärksten Kapitels (oder über der Karte eines Punkts) */
     if (eng && eng.setStage && narrow && T.i < 0) {
       let best = null, bv = .01; ch.forEach(el => { const v = +el.style.opacity; if (v > bv) { bv = v; best = el; } });
-      if (!best && hero && P < 2.05) best = hero;
       if (focus && hp && hp.offsetHeight) best = $('[data-hp-title]', hp) || hp;
-      const top = best ? (best === hero ? hero.offsetTop : best.offsetTop + (best.parentNode === hp ? hp.offsetTop : 0)) : stage.clientHeight * .5;
+      const top = best ? best.offsetTop + (best.parentNode === hp ? hp.offsetTop : 0) : stage.clientHeight * .62;
       eng.setStage(72, Math.round(top - 20));
     }
     if (einmal) { const v = s(11.5, 11.62); einmal.style.opacity = v.toFixed(3); einmal.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`; }
@@ -177,13 +189,22 @@ export function initServicesFilm() {
   frame(true);
 
   /* Runde 53: Namen im 3D Modell aus dem versteckten Markup (in Framer bearbeitbar), sonst aus data/leistungen.js */
-  const mkTxt = (id, k, d) => { const e = r.querySelector(`[data-mk="${id}"] [data-k="${k}"]`); return escH(e ? e.textContent.trim() : d); };
-  /* 3D erst, wenn der Film in die Nähe kommt (hier: sofort, er steht oben) */
-  const go = () => import('./svc-film3d.js').then(m => m.createFilm(stage, {
-    P, labels: FILM.marken3d.map(([id, t, s, from, to, o = {}]) => ({ id, t: mkTxt(id, 't', t), s: s ? mkTxt(id, 's', s) : '', from, to, ...o })),
-    onHot: id => setFocus(id),
-    onJump: id => { const el = document.getElementById(id); if (el) jumpY(el.getBoundingClientRect().top + scrollY); }
-  })).then(e => {
+  const mkTxt = (id, k, d) => { const e = mkEl(id, k); return escH(e ? e.textContent.trim() : d); };
+  /* Wörter um die Baustelle (ein Feld, Wörter mit Punkt) */
+  const wsrc = $('[data-wsrc]', r), words = String(wsrc ? wsrc.textContent : FILM.komplex.woerter).trim().split(/(?<=\.)\s+/).filter(Boolean);
+  /* Das Logo, das aus der Kopfzeile auf den Baucontainer fliegt (Entwurf data-flylogo): fest am Bildschirm, darum direkt im body */
+  let fly = document.querySelector('img[data-flylogo]');
+  const go = () => import('./svc-film3d.js').then(m => {
+    if (!fly) { fly = document.createElement('img'); fly.dataset.flylogo = '1'; fly.alt = ''; fly.setAttribute('aria-hidden', 'true'); fly.className = 'svf-fly'; document.body.appendChild(fly); }
+    if (!fly.getAttribute('src')) fly.src = m.LOGO_INV;
+    return m.createFilm(stage, {
+      P, variant: 'komplex', flyLogo: 'img[data-flylogo]', dock,
+      tags: { words, clear: '[data-svf] [data-hk="1"]' },
+      labels: FILM.marken3d.map(([id, t, s, from, to, o = {}]) => ({ id, t: mkTxt(id, 't', t), s: s ? mkTxt(id, 's', s) : '', from, to, ...o })),
+      onHot: id => setFocus(id),
+      onJump: id => { const el = document.getElementById(id); if (el) jumpY(el.getBoundingClientRect().top + scrollY); }
+    });
+  }).then(e => {
     eng = e; r.classList.add('is-live'); ePrev = null; eng.setP(P0().P, true);
     globalThis.__svcEng = e;
     globalThis.__svcShow = p => { globalThis.__svcTS = null; globalThis.__svcP = p; frame(true); e.renderAt(p); };
