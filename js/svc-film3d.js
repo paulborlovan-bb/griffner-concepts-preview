@@ -753,13 +753,25 @@ export async function createFilm(host, cfg = {}) {
       const w = SET.w, h = SET.h, tv = Math.tan(Math.PI / 12), hoch = SET.narrow && w < h;
       if (hoch) { const tT = SET.tT == null ? 72 : SET.tT, tB = SET.tB == null ? h * .62 - 20 : SET.tB, k = SET.sT == null || reduce ? 1 : .08;
         SET.sT = SET.sT == null ? tT : SET.sT + (tT - SET.sT) * k; SET.sB = SET.sB == null ? tB : SET.sB + (tB - SET.sB) * k; }
-      const top = SET.sT, bot = hoch ? Math.max(top + 140, SET.sB) : 0;
-      const fit = hoch ? Math.min(2.6, Math.max(1, .3 / (w / h * tv), .8 * h / (bot - top))) : SET.narrow ? 1 : Math.max(1, 1.5 * h / w), oy = hoch ? h / 2 - (top + bot) / 2 : SET.narrow ? h * .13 : 0;
-      const key = fit.toFixed(3) + ' ' + oy.toFixed(1); if (SET.lens === key) return; SET.lens = key;
+      const q = hoch ? motiv(SET.P) : null, top = SET.sT, bot = hoch ? Math.max(top + 140 - (q ? 84 * q.k : 0), SET.sB) : 0;
+      let fit = hoch ? Math.min(2.6, Math.max(1, .3 / (w / h * tv), .8 * h / (bot - top))) : SET.narrow ? 1 : Math.max(1, 1.5 * h / w), oy = hoch ? h / 2 - (top + bot) / 2 : SET.narrow ? h * .13 : 0, ox = SET.narrow ? 0 : -w * .17;
+      if (q) { cam.updateMatrixWorld(); const b = q.b, tx = w / h * tv * fit, ty = tv * fit; let x0 = 9, x1 = -9, y0 = 9, y1 = -9, n = 0;
+        for (let i = 0; i < 8; i++) { MV.set(i & 1 ? b[3] : b[0], i & 2 ? b[4] : b[1], i & 4 ? b[5] : b[2]).applyMatrix4(cam.matrixWorldInverse); if (MV.z > -1) break; n++;
+          const nx = MV.x / -MV.z / tx, ny = MV.y / -MV.z / ty; x0 = Math.min(x0, nx); x1 = Math.max(x1, nx); y0 = Math.min(y0, ny); y1 = Math.max(y1, ny); }
+        if (n === 8) { const z = Math.min(2.2, Math.max(1, (x1 - x0) / 1.76, (y1 - y0) / (1.8 * (bot - top) / h))), f2 = fit * (1 + (z - 1) * q.k), r = fit / f2;
+          ox = q.k * (x0 + x1) / 2 * r * w / 2; oy -= q.k * (y0 + y1) / 2 * r * h / 2; fit = f2; } }
+      const key = fit.toFixed(3) + ' ' + oy.toFixed(1) + ' ' + ox.toFixed(1); if (SET.lens === key) return; SET.lens = key;
       cam.fov = Math.atan(tv * fit) * 360 / Math.PI;
-      cam.setViewOffset(w, h, SET.narrow ? 0 : -w * .17, oy, w, h);
+      cam.setViewOffset(w, h, ox, oy, w, h);
       cam.updateProjectionMatrix();
     };
+    const MV = new T.Vector3(), MH = [-9.8, 0, -7.7, 6.2, 10, 9.9], MA = [-11.1, 0, -9.5, 15.2, 9.6, 12.2], MK = [-9.8, 0, -7.7, 6.2, 9.6, 16];
+    const motiv = PR => { if (SET.fk > .5) return null; const e = (a, b, c, d) => sm((PR - a) / (b - a)) * (1 - sm((PR - c) / (d - c))), mix = (A, B, f) => A.map((v, i) => v + (B[i] - v) * f);
+      let k = 0, b = MH;
+      if (PR > 4.95 && PR < 5.05) k = e(4.955, 4.975, 5.025, 5.045);
+      else if (PR > 5.97 && PR < 7.52) { k = e(5.97, 6.03, 7.42, 7.5); b = mix(MH, MA, sm((PR - 6.95) / .07)); }
+      else if (PR > 9.98 && PR < 11.08) { k = e(9.98, 10.04, 11.0, 11.07); b = mix(MH, MK, sm((PR - 10.45) / .1)); }
+      k *= 1 - SET.fk * 2; return k > .001 ? { k, b } : null; };
     const onMove = e => { SET.tmx = e.clientX / innerWidth * 2 - 1; SET.tmy = e.clientY / innerHeight * 2 - 1; };
     addEventListener('pointermove', onMove, { passive: true });
     const t0 = performance.now();
@@ -773,7 +785,7 @@ export async function createFilm(host, cfg = {}) {
     document.addEventListener('visibilitychange', onVis);
     const frameX = () => {
       if (!SET.alive) return;
-      resize(); lens();
+      resize();
       SET.P += (SET.tP - SET.P) * (reduce ? 1 : .09);
       SET.mx += (SET.tmx - SET.mx) * .04; SET.my += (SET.tmy - SET.my) * .04;
       const PR = SET.P, PN = remapP(PR), P = warp(PN), t = (performance.now() - t0) / 1000, s = (a, b) => sm((P - a) / (b - a)), sN = (a, b) => sm((PN - a) / (b - a));
@@ -812,7 +824,7 @@ export async function createFilm(host, cfg = {}) {
       if (!reduce) { az += Math.sin(t * .11) * 1.6 + SET.mx * 2.6; el += Math.sin(t * .08) * .8 - SET.my * 1.4; }
       const A = az * Math.PI / 180, E = el * Math.PI / 180, d = c[3];
       cam.position.set(c[4] + d * Math.cos(E) * Math.sin(A), c[5] + d * Math.sin(E), c[6] + d * Math.cos(E) * Math.cos(A));
-      cam.lookAt(c[4], c[5], c[6]);
+      cam.lookAt(c[4], c[5], c[6]); lens();
       scene.fog.near = d * .7; scene.fog.far = d * 2.6;
 
       /* Drehteller: das Haus als Produkt */

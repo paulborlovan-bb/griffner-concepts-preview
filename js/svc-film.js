@@ -125,7 +125,9 @@ export function initServicesFilm() {
     /* Knöpfe der Ausstattung: der gerade gezeigte (Rundgang) oder offene gelb unterstrichen */
     if (sw.length) { const cur = P > 9.02 && P < 9.95 ? (P < 9.35 ? 1 : P < 9.65 ? 2 : 3) : -1, act = focus ? HOTS.indexOf(focus) : cur; sw.forEach(b => b.classList.toggle('is-on', +b.dataset.sw === act)); }
     /* Schatten hinter dem Text; während des Bauzeitplans (Desktop) rechts */
-    if (scrim) { const bl = P > 6.03 && P < 6.97 && !narrow, on = (P > 9 && P < 10) || (P > 5.5 && P < 5.78) || bl || !!focus; scrim.classList.toggle('is-on', on); scrim.classList.toggle('is-r', bl); }
+    /* Runde 59: am Telefon steht der Kran jetzt unter dem Bauzeitplan im Bild, dahinter oben ein dunkler Verlauf bis unter den Plan */
+    if (scrim) { const bl = P > 6.03 && P < 6.97 && !narrow, bt = narrow && !focus && P > 6.03 && P < 6.97 && bp && bpFit(), on = (P > 9 && P < 10) || (P > 5.5 && P < 5.78) || bl || bt || !!focus; scrim.classList.toggle('is-on', on); scrim.classList.toggle('is-r', bl); scrim.classList.toggle('is-t', !!bt);
+      if (bt) { const y = Math.round(bp.getBoundingClientRect().bottom - scrim.getBoundingClientRect().top) + 'px'; if (scrim.style.getPropertyValue('--bpb') !== y) scrim.style.setProperty('--bpb', y); } }
     /* Gesamtinvestition (Runde 57): Zeile für Zeile mit Balken und gelber Marke, dann der Balken aus allen Posten; das 3D blendet so lange aus */
     if (lg) {
       const lv = s(5.81, 5.825) * (1 - s(5.99, 6)), o = lv.toFixed(3); if (lg.style.opacity !== o) lg.style.opacity = o;
@@ -185,7 +187,9 @@ export function initServicesFilm() {
       let best = null, bv = .01; ch.forEach(el => { const v = +el.style.opacity; if (v > bv) { bv = v; best = el; } });
       if (focus && hp && hp.offsetHeight) best = $('[data-hp-title]', hp) || hp;
       const top = best ? best.offsetTop + (best.parentNode === hp ? hp.offsetTop : 0) : stage.clientHeight * .62;
-      eng.setStage(72, Math.round(top - 20));
+      /* Runde 59: solange der Bauzeitplan oben steht, beginnt die Bühne unter ihm (das Haus dazwischen, nicht hinter dem Plan) */
+      const pv = bp ? +bp.style.opacity || 0 : 0, bb = pv > .001 ? bp.getBoundingClientRect().bottom - stage.getBoundingClientRect().top + 10 : 72;
+      eng.setStage(Math.round(72 + (Math.max(72, bb) - 72) * pv), Math.round(top - 20));
     }
     if (einmal) { const v = s(11.5, 11.62); einmal.style.opacity = v.toFixed(3); einmal.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`; }
     /* Leiste unten (Runde 55: größer, die drei Teile klar unterscheidbar; am Telefon bekommt der aktuelle Teil mehr Platz) */

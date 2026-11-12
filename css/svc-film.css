@@ -11,6 +11,8 @@
 .svf__scrim.is-on{opacity:1}
 /* Runde 57: während des Bauzeitplans (Desktop) liegt der Schatten rechts */
 .svf__scrim.is-r{background:linear-gradient(270deg,rgba(0,0,0,.84) 0%,rgba(0,0,0,.6) 34%,rgba(0,0,0,0) 56%)}
+/* Runde 59: Telefon, Bauleitung: oben dunkel bis unter den Bauzeitplan (--bpb aus svc-film.js), darunter das Haus */
+.svf__scrim.is-t{background:linear-gradient(180deg,rgba(0,0,0,.9) 0,rgba(0,0,0,.84) calc(var(--bpb,300px) - 28px),rgba(0,0,0,0) calc(var(--bpb,300px) + 8px))}
 .svf__l3{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
 .svf__mk{position:absolute;left:0;width:1px;height:1px}
 
