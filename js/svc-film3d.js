@@ -737,8 +737,17 @@ export async function createFilm(host, cfg = {}) {
       const r = host.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height);
       if (w === SET.w && h === SET.h) return; SET.w = w; SET.h = h;
       R.setSize(w, h, false); cam.aspect = w / h;
-      const narrow = w < 900; SET.narrow = narrow;
-      cam.setViewOffset(w, h, narrow ? 0 : -w * .17, narrow ? h * .13 : 0, w, h);
+      const narrow = w < 900; SET.narrow = narrow; SET.lens = null;
+    };
+    const lens = () => {
+      const w = SET.w, h = SET.h, tv = Math.tan(Math.PI / 12), hoch = SET.narrow && w < h;
+      if (hoch) { const tT = SET.tT == null ? 72 : SET.tT, tB = SET.tB == null ? h * .62 - 20 : SET.tB, k = SET.sT == null || reduce ? 1 : .08;
+        SET.sT = SET.sT == null ? tT : SET.sT + (tT - SET.sT) * k; SET.sB = SET.sB == null ? tB : SET.sB + (tB - SET.sB) * k; }
+      const top = SET.sT, bot = hoch ? Math.max(top + 140, SET.sB) : 0;
+      const fit = hoch ? Math.min(2.6, Math.max(1, .3 / (w / h * tv), .8 * h / (bot - top))) : SET.narrow ? 1 : Math.max(1, 1.5 * h / w), oy = hoch ? h / 2 - (top + bot) / 2 : SET.narrow ? h * .13 : 0;
+      const key = fit.toFixed(3) + ' ' + oy.toFixed(1); if (SET.lens === key) return; SET.lens = key;
+      cam.fov = Math.atan(tv * fit) * 360 / Math.PI;
+      cam.setViewOffset(w, h, SET.narrow ? 0 : -w * .17, oy, w, h);
       cam.updateProjectionMatrix();
     };
     const onMove = e => { SET.tmx = e.clientX / innerWidth * 2 - 1; SET.tmy = e.clientY / innerHeight * 2 - 1; };
@@ -754,7 +763,7 @@ export async function createFilm(host, cfg = {}) {
     document.addEventListener('visibilitychange', onVis);
     const frameX = () => {
       if (!SET.alive) return;
-      resize();
+      resize(); lens();
       SET.P += (SET.tP - SET.P) * (reduce ? 1 : .09);
       SET.mx += (SET.tmx - SET.mx) * .04; SET.my += (SET.tmy - SET.my) * .04;
       const PR = SET.P, PN = remapP(PR), P = warp(PN), t = (performance.now() - t0) / 1000, s = (a, b) => sm((P - a) / (b - a)), sN = (a, b) => sm((PN - a) / (b - a));
