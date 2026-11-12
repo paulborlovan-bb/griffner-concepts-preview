@@ -114,9 +114,17 @@ function buildScene(T) {
   const winX = (g, z0, z1, y0, y1, x, o, div = []) => { const xp = x + o * .006; bx(g, xp, y0, z0, xp + o * .02, y1, z1, glas); const xf = x, xf2 = x + o * FD;
     bx(g, xf, y0 - FW, z0 - FW, xf2, y0, z1 + FW, alu); bx(g, xf, y1, z0 - FW, xf2, y1 + FW, z1 + FW, alu); bx(g, xf, y0, z0 - FW, xf2, y1, z0, alu); bx(g, xf, y0, z1, xf2, y1, z1 + FW, alu);
     div.forEach(f => { const z = z0 + (z1 - z0) * f; bx(g, xf, y0, z - FW / 2, xf2 - o * .015, y1, z + FW / 2, alu); }); };
-  box(gvol, EX0, 0, EZ1 - .3, -2.6, EH, EZ1, stoneFL, we); box(gvol, -1.4, 0, EZ1 - .3, EX1, EH, EZ1, stoneFR, we); box(gvol, -2.6, 2.4, EZ1 - .3, -1.4, EH, EZ1, stoneFT, we); box(gvol, EX0, 0, EZ0, EX1, EH, EZ0 + .3, stoneL, we);
-  box(gvol, EX0, 0, EZ0 + .3, EX0 + .3, EH, EZ1 - .3, stoneS, we); box(gvol, EX1 - .3, 0, EZ0 + .3, EX1, EH, EZ1 - .3, stoneS, we);
-  box(gvol, -3.25, 0, EZ0 + .3, -2.95, EH, EZ1 - .3, stoneS); box(gvol, EX0 + .3, 0, 1.5, -3.25, EH, 1.8, stoneS);
+  { const SW = 3.08, SH = 3, stW = M(hul, 0xffffff, { map: stoneTex([1, 1]), r: .95 }), pl = M(hul, 0xF3F1EC, { r: .92 });
+    const wbox = (x0, y0, z0, x1, y1, z1, mats) => { const g = new T.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), uv = g.attributes.uv, D = [[z1 - z0, y1 - y0, z0], [z1 - z0, y1 - y0, z0], [x1 - x0, z1 - z0, x0], [x1 - x0, z1 - z0, x0], [x1 - x0, y1 - y0, x0], [x1 - x0, y1 - y0, x0]];
+      for (let f = 0; f < 6; f++) for (let k = 0; k < 4; k++) { const i = f * 4 + k, [w, h, o] = D[f]; uv.setXY(i, uv.getX(i) * w / SW + o / SW, uv.getY(i) * h / SH + y0 / SH); }
+      const m = new T.Mesh(g, mats); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; m.add(new T.LineSegments(new T.EdgesGeometry(g), we)); gvol.add(m); };
+    const wall = (axis, u0, u1, c0, c1, holes, mats) => { let u = u0; const seg = (a, b, y0, y1) => { if (b - a < .01 || y1 - y0 < .01) return; if (axis === 'x') wbox(a, y0, c0, b, y1, c1, mats); else wbox(c0, y0, a, c1, y1, b, mats); };
+      holes.slice().sort((p, q) => p[0] - q[0]).forEach(([a, b, y0, y1]) => { seg(u, a, 0, EH); seg(a, b, 0, y0); seg(a, b, y1, EH); u = b; }); seg(u, u1, 0, EH); };
+    wall('x', EX0, EX1, EZ1 - .3, EZ1, [[-2.6, -1.4, 0, 2.4], [-.95, -.35, .15, 2.4], [3.4, 5.4, .15, 2.8]], [stW, stW, cap, cap, stW, pl]);
+    wall('x', EX0, EX1, EZ0, EZ0 + .3, [[-8.6, -6.2, .9, 2.3], [-1.6, 4.6, .15, 2.8]], [stW, stW, cap, cap, pl, stW]);
+    wall('z', EZ0 + .3, EZ1 - .3, EX0, EX0 + .3, [[-4.8, -3.6, .9, 2.2]], [pl, stW, cap, cap, stW, stW]);
+    wall('z', EZ0 + .3, EZ1 - .3, EX1 - .3, EX1, [[-4.6, -1.8, .15, 2.8], [4.6, 7.3, .15, 2.8]], [stW, pl, cap, cap, stW, stW]);
+    const P6 = [pl, pl, cap, cap, pl, pl]; wbox(-3.25, 0, EZ0 + .3, -2.95, EH, EZ1 - .3, P6); wbox(EX0 + .3, 0, 1.5, -3.25, EH, 1.8, P6); }
   winZ(gvol, -1.6, 4.6, .15, 2.8, EZ0, -1, [.25, .5, .75]); winZ(gvol, -8.6, -6.2, .9, 2.3, EZ0, -1, [.5]); winZ(gvol, 3.4, 5.4, .15, 2.8, EZ1, 1, [.5]); winZ(gvol, -.95, -.35, .15, 2.4, EZ1, 1);
   winX(gvol, -4.6, -1.8, .15, 2.8, EX1, 1, [.5]); winX(gvol, 4.6, 7.3, .15, 2.8, EX1, 1, [.5]); winX(gvol, -4.8, -3.6, .9, 2.2, EX0, -1);
   const hdoor = new T.Group(); hdoor.position.set(-2.6, 0, EZ1 + .02); gvol.add(hdoor); box(hdoor, 0, .02, -.03, 1.2, 2.4, .03, alu);
@@ -217,37 +225,47 @@ function buildScene(T) {
   box(inn, -.6, .05, -4.65, .2, .45, -1.7, soft, ie); box(inn, .2, .05, -4.65, 1, .45, -3.9, soft, ie);
   box(inn, 2.6, .72, -4, 4.05, .78, -2.1, im, ie);
   box(inn, 2.1, .05, -.6, 5.45, .95, .4, im, ie); box(inn, 1.1, .05, 1.75, EX1 - .3, .95, 2.35, im, ie);
-  for (let i = 0; i < 8; i++) box(inn, -2.75, .05, -.4 + i * .32, -1.55, .05 + (i + 1) * .36, -.4 + (i + 1) * .32, im, ie);
+  { const tr = M(inn, 0xB08A62, { r: .55 }), sb = M(inn, 0x1b1b1a, { r: .5, m: .3 }); for (let i = 0; i < 11; i++) { const y = .05 + (i + 1) * .268; box(inn, -2.95, y - .06, -.4 + i * .245, -1.95, y, -.4 + (i + 1) * .245 + .03, tr, ie); } }
   box(inn, 1.6, .72, 6.4, 3.6, .78, 7.2, im, ie); box(inn, 2.6, .05, 4.2, 4.8, .45, 5, soft, ie);
   [[-8.4, -6.85], [-5.8, -4.25]].forEach(([a, b]) => box(inn, a, .05, 2.6, b, 1.45, 7.2, car, ie));
   const lamps = [[1.6, 2.5, -2.6], [-6.8, 2.5, -3.6]].map(p => { const l = new T.PointLight(0xFFE2BC, 0, 18, 1.2); l.position.set(...p); inn.add(l); return l; });
-  { const oak = M(inn, 0xB08A62, { r: .6 }), oakD = M(inn, 0x8C6A48, { r: .6 }), blk = M(inn, 0x1d1d1c, { r: .45, m: .5 }), lin = M(inn, 0xE7E1D6, { r: .95 }), sal = M(inn, 0x8B907C, { r: .9 }), cog = M(inn, 0x8A5A3B, { r: .55 }), terr = M(inn, 0xA0714F, { r: .8 }), wht = M(inn, 0xF3F1EC, { r: .4 }), rugM = M(inn, 0xD9D0C1, { r: 1 }), rug2 = M(inn, 0xB9B2A4, { r: 1 }), lampM = M(inn, 0xFFF1DC, { r: .4, em: 0xFFE2BC, ei: .9 }), stone = M(inn, 0x2a2a29, { r: .35 }), mir = M(inn, 0xC9CED2, { r: .05, m: .9 }), gls = M(inn, 0x9fb3bd, { r: .05, m: .2, op: .35 });
-    const add = (geo, m, x, y, z, par = inn) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; par.add(o); return o; };
-    const cyl = (x, y, z, r, h, m, r2, seg = 28) => add(new T.CylinderGeometry(r2 ?? r, r, h, seg), m, x, y + h / 2, z);
-    const sph = (x, y, z, r, m) => add(new T.SphereGeometry(r, 18, 12), m, x, y, z);
-    const pend = (x, z, y = 1.55, big = 1) => { cyl(x, y + .2, z, .006, 2.9 - y - .2, blk, .006, 6); cyl(x, y, z, .22 * big, .22, lampM, .07 * big); };
-    const chair = (x, z, ry) => { const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry; inn.add(g); add(new T.BoxGeometry(.44, .05, .44), oak, 0, .46, 0, g); add(new T.BoxGeometry(.44, .34, .04), oak, 0, .7, -.2, g); [[-.19, -.19], [.19, -.19], [-.19, .19], [.19, .19]].forEach(([a, b]) => add(new T.BoxGeometry(.03, .46, .03), blk, a, .23, b, g)); };
-    box(inn, -.4, .05, -4.5, 2.3, .065, -1.95, rugM);
-    box(inn, -.55, .45, -4.6, -.28, .85, -1.75, lin); box(inn, -.28, .45, -4.6, .2, .55, -1.75, lin); box(inn, .2, .45, -4.6, 1, .55, -3.95, lin); box(inn, .2, .45, -4.62, 1, .85, -4.4, lin);
-    [[-.25, -2.2], [-.25, -3.0]].forEach(([x, z]) => box(inn, x, .55, z - .25, x + .14, .9, z + .25, sal));
-    cyl(1.3, .065, -3.05, .55, .34, oakD, .55, 40);
-    box(inn, -.1, .05, -1.55, .7, .38, -.85, cog); box(inn, -.1, .38, -1.55, .08, .9, -.85, cog); [[-.06, -1.5], [.66, -1.5], [-.06, -.9], [.66, -.9]].forEach(([x, z]) => cyl(x, 0, z, .02, .05, blk));
-    cyl(-.35, .05, -1.95, .2, .03, blk); cyl(-.35, .08, -1.95, .015, 1.85, blk); box(inn, -.35, 1.9, -1.97, .75, 1.93, -1.93, blk); cyl(.75, 1.62, -1.95, .2, .26, lampM, .05);
-    cyl(-.35, .05, -5.0, .26, .5, terr, .22); sph(-.35, 1.0, -5.0, .45, sal); sph(-.18, 1.42, -4.9, .3, sal); sph(-.5, 1.3, -5.1, .26, sal);
-    box(inn, 2.55, .78, -4.05, 4.1, .81, -2.05, oak); [[2.65, -3.95], [4.0, -3.95], [2.65, -2.15], [4.0, -2.15]].forEach(([x, z]) => box(inn, x - .03, .05, z - .03, x + .03, .78, z + .03, blk));
-    [[2.25, -3.5, Math.PI / 2], [2.25, -2.6, Math.PI / 2], [4.4, -3.5, -Math.PI / 2], [4.4, -2.6, -Math.PI / 2], [3.3, -4.35, 0], [3.3, -1.75, Math.PI]].forEach(([x, z, r]) => chair(x, z, r));
-    pend(3.0, -3.05); pend(3.65, -3.05);
-    box(inn, 2.05, .95, -.65, 5.5, 1.0, .45, stone); [2.9, 3.7, 4.5].forEach(x => { cyl(x, .05, -1.0, .02, .66, blk); cyl(x, .7, -1.0, .19, .05, oak); pend(x, -.1, 1.7, .55); });
-    box(inn, 1.1, .95, 1.75, EX1 - .3, 1.0, 2.35, stone);
-    box(inn, 5.22, .05, 3.0, 5.55, 2.2, 3.04, oak); box(inn, 5.22, .05, 7.36, 5.55, 2.2, 7.4, oak); [.05, .6, 1.15, 1.7, 2.17].forEach(y => box(inn, 5.22, y, 3.0, 5.55, y + .03, 7.4, oak));
-    { let sd = 9; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647, cols = [lin, sal, cog, blk, rugM, terr]; [.08, .63, 1.18].forEach(y => { let z = 3.1; while (z < 7.2) { const w = .05 + rn() * .07, h = .3 + rn() * .2; box(inn, 5.26, y, z, 5.5, y + h, z + w, cols[Math.floor(rn() * cols.length)]); z += w + (rn() < .2 ? .35 : .01); } }); }
-    box(inn, 1.55, .78, 6.35, 3.65, .81, 7.25, oak); cyl(2.6, .05, 5.9, .26, .04, blk); cyl(2.6, .09, 5.9, .03, .38, blk); box(inn, 2.38, .47, 5.68, 2.82, .53, 6.12, blk); box(inn, 2.38, .53, 6.06, 2.82, .95, 6.12, blk);
-    box(inn, 1.6, .05, 3.2, 4.9, .062, 5.7, rug2); box(inn, 2.65, .45, 4.25, 4.75, .58, 4.95, lin); box(inn, 4.2, .58, 4.3, 4.7, .74, 4.9, sal);
-    box(inn, 2.0, 1.15, 2.5, 3.4, 2.1, 2.53, blk); box(inn, 2.08, 1.23, 2.53, 3.32, 2.02, 2.54, M(inn, 0xCFC3B3, { r: .9 }));
-    box(inn, -2.9, 1.1, -5.17, -1.4, 2.1, -5.14, blk); box(inn, -2.82, 1.18, -5.14, -1.48, 2.02, -5.13, M(inn, 0x887254, { r: .9 }));
-    cyl(-5.6, .95, -4.88, .2, .12, wht, .16); { const m = add(new T.CylinderGeometry(.42, .42, .02, 40), mir, -5.6, 1.65, -5.17); m.rotation.x = Math.PI / 2; } box(inn, -6.4, .3, -5.15, -4.8, .8, -4.6, oak);
-    box(inn, -4.22, .07, -5.2, -4.2, 2.1, -3.8, gls); box(inn, -7.25, .62, -4.9, -7.15, 1.05, -4.2, lin);
-    cyl(-8.9, .07, -2.3, .18, .38, terr, .15); sph(-8.9, .65, -2.3, .26, sal);
+  inn.userData.old = inn.children.filter(c => { if (!c.isMesh || !c.geometry) return false; c.geometry.computeBoundingBox(); const b = c.geometry.boundingBox, h = (b.max.y - b.min.y) * c.scale.y; return h > .12 && h < 1.6; }).concat(inn.children.filter(c => c.isGroup));
+  const IA = { floor: new T.Group(), ein: new T.Group(), moe: new T.Group(), dek: new T.Group() }; Object.values(IA).forEach(g => inn.add(g)); inn.userData.IA = IA;
+  { const oak = M(inn, 0xB08A62, { r: .55 }), oakD = M(inn, 0x8C6A48, { r: .6 }), blk = M(inn, 0x1b1b1a, { r: .55, m: .2 }), brass = M(inn, 0xB59A6A, { r: .3, m: .8 }), lin = M(inn, 0xE7E1D6, { r: .95 }), boucle = M(inn, 0xF0ECE4, { r: 1 }), sal = M(inn, 0x8B907C, { r: .9 }), cog = M(inn, 0x8A5A3B, { r: .5 }), terr = M(inn, 0xA0714F, { r: .8 }), trav = M(inn, 0xD9CFBF, { r: .45 }), rugM = M(inn, 0xD9D0C1, { r: 1 }), rug2 = M(inn, 0xB9B2A4, { r: 1 }), lampM = M(inn, 0xFFF1DC, { r: .4, em: 0xFFE2BC, ei: .9 }), mir = M(inn, 0xC9CED2, { r: .05, m: .9 }), gls = M(inn, 0x9fb3bd, { r: .05, m: .2, op: .35 }), wht = M(inn, 0xF3F1EC, { r: .4 });
+    const herr = M(inn, 0xffffff, { r: .6, map: tex((x, w, h) => { x.fillStyle = '#A9845C'; x.fillRect(0, 0, w, h); let sd = 4; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647; const L = 64, W = 16;
+      for (let j = -2; j < h / W + 4; j++) for (let i = -2; i < w / L + 4; i++) [0, 1].forEach(k => { x.save(); x.translate(i * L + (k ? L / 2 : 0), j * W * 2 + (k ? W : 0)); x.rotate(k ? -Math.PI / 4 : Math.PI / 4); const t = 150 + Math.floor(rn() * 40); x.fillStyle = 'rgb(' + t + ',' + Math.floor(t * .78) + ',' + Math.floor(t * .55) + ')'; x.fillRect(0, 0, L * .7, W * .92); x.restore(); }); }, 512, 512, [1.7, 1.7]) });
+    const tile = M(inn, 0xffffff, { r: .3, map: tex((x, w, h) => { x.fillStyle = '#CFCAC1'; x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(0,0,0,.16)'; x.fillRect(0, 0, w, 2); x.fillRect(0, 0, 2, h); x.fillRect(0, h / 2, w, 1); }, 256, 256, [2, 2]) });
+    const F = IA.floor, E = IA.ein, Mo = IA.moe, D = IA.dek;
+    const add = (geo, m, x, y, z, par) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; par.add(o); return o; };
+    const cyl = (par, x, y, z, r, h, m, r2, seg = 28) => add(new T.CylinderGeometry(r2 ?? r, r, h, seg), m, x, y + h / 2, z, par);
+    const sph = (par, x, y, z, r, m) => add(new T.SphereGeometry(r, 18, 12), m, x, y, z, par);
+    const chair = (x, z, ry) => { const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry; Mo.add(g); add(new T.BoxGeometry(.46, .05, .46), oak, 0, .46, 0, g); add(new T.BoxGeometry(.46, .36, .04), oak, 0, .7, -.21, g); [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]].forEach(([a, b]) => add(new T.BoxGeometry(.025, .46, .025), blk, a, .23, b, g)); };
+    const pend = (par, x, z, y = 1.55, big = 1) => { cyl(par, x, y + .2, z, .006, 2.9 - y - .2, blk, .006, 6); cyl(par, x, y, z, .24 * big, .2, lampM, .06 * big); };
+    box(F, -2.95, .052, EZ0 + .3, EX1 - .3, .064, 2.35, herr); box(F, -2.95, .052, 2.5, EX1 - .3, .064, EZ1 - .3, herr);
+    box(F, EX0 + .3, .072, EZ0 + .3, -3.25, .084, -1.7, tile); box(F, EX0 + .3, .084, EZ0 + .3, -3.3, 2.4, EZ0 + .34, tile);
+    box(E, 4.1, .05, 1.78, EX1 - .32, 2.45, 2.33, oak); box(E, 4.5, 1.0, 1.76, 5.2, 1.6, 1.78, blk);
+    box(E, 1.12, .05, 1.78, 4.08, .92, 2.33, blk); box(E, 1.1, .92, 1.74, 4.1, .98, 2.35, trav); box(E, 1.12, 1.4, 2.25, 4.08, 2.2, 2.33, oak);
+    box(E, 2.08, .05, -.62, 5.47, .9, .42, blk); box(E, 2.0, .9, -.7, 5.56, .97, .5, trav); box(E, 5.49, .05, -.7, 5.56, .9, .5, trav);
+    box(E, 5.2, .05, 3.0, 5.56, 2.3, 3.05, oak); box(E, 5.2, .05, 7.35, 5.56, 2.3, 7.4, oak); [.05, .62, 1.19, 1.76, 2.26].forEach(y => box(E, 5.2, y, 3.0, 5.56, y + .04, 7.4, oak));
+    box(E, -3.72, .05, 4.3, -3.15, 2.5, 7.7, oak); [5.15, 6.0, 6.85].forEach(z => box(E, -3.16, .1, z - .008, -3.14, 2.45, z + .008, blk)); [4.7, 5.55, 6.4, 7.25].forEach(z => box(E, -3.15, 1.0, z - .02, -3.12, 1.5, z + .02, brass));
+    box(E, -6.4, .35, -5.15, -4.8, .8, -4.62, oak); box(E, -6.42, .8, -5.17, -4.78, .84, -4.6, trav); box(E, -4.22, .08, -5.2, -4.2, 2.1, -3.8, gls); box(E, -2.9, .05, -5.16, -1.3, .48, -4.78, oakD);
+    box(Mo, -2.88, .05, -4.6, -1.98, .42, -1.8, boucle); box(Mo, -2.88, .42, -4.6, -2.62, .84, -1.8, boucle); box(Mo, -1.98, .05, -4.6, -1.13, .42, -3.82, boucle); box(Mo, -2.88, .42, -4.6, -1.13, .84, -4.36, boucle);
+    box(Mo, -2.61, .42, -2.62, -2.44, .74, -2.08, sal); box(Mo, -2.61, .42, -3.5, -2.44, .74, -2.96, lin); box(Mo, -1.9, .42, -4.35, -1.36, .74, -4.18, sal);
+    cyl(Mo, -1.1, .05, -2.75, .52, .34, trav, .52, 48); cyl(Mo, -.45, .05, -2.1, .3, .26, oakD, .3, 36);
+    box(Mo, .1, .05, -3.2, .85, .4, -2.4, cog); box(Mo, .67, .4, -3.2, .85, .9, -2.4, cog);
+    box(Mo, 2.5, .76, -4.1, 4.15, .8, -2.0, oak); [[2.6, -4.0], [4.05, -4.0], [2.6, -2.1], [4.05, -2.1]].forEach(([x, z]) => box(Mo, x - .025, .05, z - .025, x + .025, .76, z + .025, blk));
+    [[2.2, -3.5, Math.PI / 2], [2.2, -2.6, Math.PI / 2], [4.45, -3.5, -Math.PI / 2], [4.45, -2.6, -Math.PI / 2], [3.33, -4.4, 0], [3.33, -1.7, Math.PI]].forEach(([x, z, r]) => chair(x, z, r));
+    [2.9, 3.7, 4.5].forEach(x => { cyl(Mo, x, .05, -1.05, .018, .66, blk); cyl(Mo, x, .7, -1.05, .2, .05, oak); });
+    box(Mo, 1.55, .76, 6.35, 3.65, .8, 7.25, oak); box(Mo, 1.6, .05, 7.15, 1.64, .76, 7.2, blk); box(Mo, 3.56, .05, 7.15, 3.6, .76, 7.2, blk); cyl(Mo, 2.6, .05, 5.9, .26, .04, blk); cyl(Mo, 2.6, .09, 5.9, .03, .38, blk); box(Mo, 2.36, .47, 5.66, 2.84, .53, 6.14, blk); box(Mo, 2.36, .53, 6.08, 2.84, .95, 6.14, blk);
+    box(Mo, 2.65, .05, 4.2, 4.8, .44, 5.0, lin); box(Mo, 2.65, .44, 4.82, 4.8, .78, 5.0, lin); box(Mo, 4.15, .05, 4.25, 4.75, .4, 4.85, sal);
+    box(D, -2.75, .064, -4.5, .95, .072, -1.65, rugM); box(D, 1.6, .064, 3.2, 4.95, .072, 5.7, rug2);
+    cyl(D, -2.55, .05, -4.95, .24, .52, terr, .2); sph(D, -2.55, 1.02, -4.95, .42, sal); sph(D, -2.4, 1.42, -4.88, .28, sal); cyl(D, -8.9, .07, -2.3, .18, .38, terr, .15); sph(D, -8.9, .66, -2.3, .27, sal);
+    cyl(D, -2.6, .05, -1.5, .2, .03, blk); cyl(D, -2.6, .08, -1.5, .015, 1.85, brass); box(D, -2.6, 1.9, -1.52, -1.6, 1.93, -1.48, brass); cyl(D, -1.6, 1.64, -1.5, .2, .26, lampM, .05);
+    pend(D, 3.0, -3.05); pend(D, 3.65, -3.05); [2.9, 3.7, 4.5].forEach(x => pend(D, x, -.1, 1.75, .5));
+    box(D, -2.95, 1.25, -4.1, -2.92, 2.15, -2.3, blk); box(D, -2.92, 1.32, -4.03, -2.91, 2.08, -2.37, M(inn, 0x887254, { r: .9 })); box(D, 2.0, 1.15, 2.5, 3.4, 2.1, 2.53, blk); box(D, 2.08, 1.23, 2.53, 3.32, 2.02, 2.54, M(inn, 0xCFC3B3, { r: .9 }));
+    { const m = add(new T.CylinderGeometry(.42, .42, .02, 40), mir, -5.6, 1.7, -5.17, D); m.rotation.x = Math.PI / 2; } cyl(D, -5.6, .84, -4.88, .2, .12, wht, .16);
+    cyl(D, 3.33, .8, -3.05, .12, .2, wht, .09); { let sd = 9; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647, cols = [lin, sal, cog, blk, rugM, terr]; [.09, .66, 1.23].forEach(y => { let z = 3.1; while (z < 7.2) { const w = .05 + rn() * .07, h = .3 + rn() * .2; box(D, 5.25, y, z, 5.5, y + h, z + w, cols[Math.floor(rn() * cols.length)]); z += w + (rn() < .2 ? .35 : .01); } }); }
+    anchor(F, 'iaBoden', 5.4, .1, -4.6); anchor(E, 'iaEinbau', 5.5, 2.45, 2.3); anchor(Mo, 'iaMoebel', 4.2, .8, -2.1); anchor(D, 'iaDeko', -1.6, 1.9, -1.5);
   }
   anchor(inn, 'parkett', 1.4, .1, -1.2); anchor(inn, 'open', 2.4, 1.8, 4.6); anchor(inn, 'fliesen', -3.6, .1, -4.4); anchor(inn, 'bad', -9.1, .7, -5.1); anchor(inn, 'tuer', -2.95, 2.9, 1.6);
   anchor(inn, 'lay-innen', 17, 3, 6);
@@ -284,11 +302,16 @@ function buildScene(T) {
     vbox(vb, -1.05, .45, -2.9, 1.05, 2.65, 1.4); vbox(vb, -1.05, .45, 1.4, 1.05, 1.55, 2.6);
     { const hood = new T.Mesh(new T.BoxGeometry(2.1, .16, 1.6), vb); hood.position.set(0, 2.1, 1.85); hood.rotation.x = .62; hood.castShadow = true; van.add(hood); const ws = new T.Mesh(new T.BoxGeometry(1.9, .05, 1.45), vg); ws.position.set(0, 2.12, 1.93); ws.rotation.x = .62; van.add(ws); }
     vbox(vg, -1.07, 1.65, .5, -1.04, 2.3, 1.45); vbox(vg, 1.04, 1.65, .5, 1.07, 2.3, 1.45);
-    vbox(vy, 1.06, 1.15, -2.3, 1.08, 2.15, -1.05); vbox(vy, -1.08, 1.15, -2.3, -1.06, 2.15, -1.05);
     vbox(vr, -1.08, .45, -2.95, 1.08, .62, 2.65); vbox(vy, -.9, .7, 2.6, -.6, .85, 2.64); vbox(vy, .6, .7, 2.6, .9, .85, 2.64);
     const wheels = []; [[-1.02, -1.9], [1.02, -1.9], [-1.02, 1.75], [1.02, 1.75]].forEach(([x, z]) => { const w = new T.Mesh(new T.CylinderGeometry(.42, .42, .3, 20), vt); w.rotation.z = Math.PI / 2; w.position.set(x, .42, z); w.castShadow = true; van.add(w); wheels.push(w); });
     life.userData.wheels = wheels;
     const sideDoor = new T.Mesh(new T.BoxGeometry(.05, 1.9, 1.3), vb); sideDoor.position.set(1.08, 1.5, .6); van.add(sideDoor); life.userData.sideDoor = sideDoor;
+    { const vdec = (url, cw, ch, w, h, par, x, y, z, ry) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+        const img = new Image(); img.onload = () => { const g = c.getContext('2d'); g.clearRect(0, 0, cw, ch); g.drawImage(img, 0, 0, cw, ch); t.needsUpdate = true; }; img.src = url;
+        const m = new T.MeshBasicMaterial({ map: t, transparent: true, alphaTest: .08 }); m.userData.base = 1; life.userData.mats.push(m); const p = new T.Mesh(new T.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; par.add(p); };
+      [1, -1].forEach(sd => vdec(LOGO_INV, 1024, 1030, 1.2, 1.207, van, sd * 1.085, 1.72, -1.8, sd * Math.PI / 2));
+      vdec(CLAIM_W, 2048, 330, 1.5, .242, van, -1.085, .95, .45, -Math.PI / 2);
+      vdec(CLAIM_W, 2048, 330, 1.2, .194, sideDoor, .03, -.55, -.05, Math.PI / 2); }
     const crew = []; const wm2 = new T.MeshStandardMaterial({ color: 0xEAE8E3, roughness: .85 }), wd = new T.MeshStandardMaterial({ color: 0x2b2a29, roughness: .9 });
     [0, 1].forEach(i => { const g = new T.Group(); const legs = new T.Mesh(new T.CylinderGeometry(.17, .15, .85, 10), wd); legs.position.y = .43; const body = new T.Mesh(new T.CylinderGeometry(.23, .2, .75, 12), wd); body.position.y = 1.22; const head = new T.Mesh(new T.SphereGeometry(.17, 16, 12), wm2); head.position.y = 1.78; const cap = new T.Mesh(new T.CylinderGeometry(.18, .18, .07, 14), new T.MeshStandardMaterial({ color: C.gelb, roughness: .6 })); cap.position.y = 1.9; [legs, body, head, cap].forEach(m => { m.castShadow = true; g.add(m); }); if (i === 1) { const tb = new T.Mesh(new T.BoxGeometry(.5, .28, .22), new T.MeshStandardMaterial({ color: 0x55534f, roughness: .7 })); tb.position.set(.34, .75, 0); tb.castShadow = true; g.add(tb); } life.add(g); crew.push(g); });
     life.userData.crew = crew;
@@ -624,12 +647,12 @@ export async function createFilm(host, cfg = {}) {
       [1.36, 14, 6, 28, -3.6, 1.9, 9.4], [1.54, 32, 22, 54, -1, 1.5, 3], [1.95, 54, 40, 82, 1.5, 0, -.5],
       [2.6, 36, 30, 84, 0, 0, 1], [3.3, 40, 12, 196, 0, 34, 0], [3.9, 47, 14, 190, 0, 34, 0],
       [4.4, 18, 50, 92, 0, 0, 1], [4.68, 12, 44, 92, 0, 1, 1], [4.98, 30, 32, 84, 0, 1.5, 1],
-      [5.2, 0, 68, 104, -6, 0, 1], [5.27, 10, 30, 80, 19, 8, -2.5], [5.36, 12, 10, 64, 19.5, 10, -2.5], [5.5, 16, 8, 64, 19.5, 10, -2.5], [5.62, 30, 32, 72, -1.5, 3, 1.3], [5.73, 38, 30, 70, -1.5, 3, 1.3], [5.8, 16, 72, 64, 0, 0, 1.3], [5.87, 24, 70, 62, 0, 0, 1.3], [5.93, 20, 44, 100, 1, 0, 1], [5.99, 34, 40, 100, 1, 0, 1],
+      [5.2, 0, 68, 104, -6, 0, 1], [5.27, 10, 30, 80, 19, 8, -2.5], [5.36, 12, 10, 64, 19.5, 10, -2.5], [5.5, 16, 8, 64, 19.5, 10, -2.5], [5.62, 30, 32, 72, -1.5, 3, 1.3], [5.73, 38, 30, 70, -1.5, 3, 1.3], [5.8, 16, 72, 64, 0, 0, 1.3], [5.87, 24, 70, 62, 0, 0, 1.3], [5.93, 20, 50, 128, 17, -4, -11], [5.99, 28, 47, 128, 17, -4, -11],
       [6.35, 22, 12, 60, -1.8, -.6, 1.3], [6.9, 34, 15, 56, -1.8, -.6, 1.3],
       [7.2, 34, 20, 78, 0, 4.4, 1.3], [7.95, 52, 19, 76, 0, 4.4, 1.3],
       [8.35, 50, 58, 54, 0, .5, 1.3], [8.9, 68, 54, 50, 0, .5, 1.3],
-      [9.35, 30, 34, 90, 1, 0, 0], [9.9, 12, 30, 86, 1, 0, 0],
-      [10.3, 22, 24, 104, 0, 5, 0], [10.48, 40, 25, 100, 0, 5, 0], [10.62, 18, 14, 50, -3.5, 1.4, 8.5], [10.76, 30, 11, 34, -3.6, 1.2, 10], [10.95, 46, 12, 32, -3.4, 1.2, 9.6],
+      [9.35, 30, 34, 90, 1, 0, 0], [9.9, 12, 22, 66, 0, 3, 1.3],
+      [10.3, 24, 12, 56, 0, 3, 1.3], [10.48, 40, 12, 54, -2, 2.5, 5], [10.62, 18, 14, 50, -3.5, 1.4, 8.5], [10.76, 30, 11, 34, -3.6, 1.2, 10], [10.95, 46, 12, 32, -3.4, 1.2, 9.6],
       [11.35, 45, 42, 330, 0, 0, 0], [11.85, 54, 50, 270, 0, 0, 0], [12, 56, 34, 112, 0, 3, 0]
     ];
     const camAt = P => {
@@ -641,7 +664,7 @@ export async function createFilm(host, cfg = {}) {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const PL = [[5, 5.2, 5.25, 5.5], [5.2, 5.3, 5.5, 5.5], [5.3, 5.37, 5.77, 5.87], [5.37, 5.45, 5.56, 5.74], [5.45, 5.5, 5.74, 5.74], [5.5, 5.78, 9.5, 10], [5.78, 6, 5.875, 6]];
     const remapP = p => { if (VK && p < 2) return p < 1.5 ? 1.45 : 1.45 + (p - 1.5) / .5 * .53; if (VK && p >= 2 && p < 4) return p < 2.56 ? 2 + (p - 2) / .56 * .85 : 2.85 + (p - 2.56) / 1.44 * 1.15; if (p >= 5 && p < 6) { const g = PL.find(q => p < q[1]) || PL[PL.length - 1]; return g[2] + (p - g[0]) / (g[1] - g[0]) * (g[3] - g[2]); }
-      return p >= 6 && p < 6.5 ? p + 1 : p >= 6.5 && p < 7.5 ? p - .5 : p >= 7.5 && p < 8 ? p + 2.5 : p >= 8 && p < 9 ? 7.5 : p >= 9 && p < 10 ? p - .5 : p >= 10 && p < 10.5 ? 10.5 : p; };
+      return p >= 6 && p < 7.5 ? 10.07 : p >= 7.5 && p < 8 ? 10.07 + (p - 7.5) / .5 * .43 : p >= 8 && p < 9 ? 7.5 : p >= 9 && p < 10 ? p - .5 : p >= 10 && p < 10.5 ? 10.5 : p; };
     const warp = p => p < 6 ? p : p < 7 ? 6 : p < 7.5 ? 6 + (p - 7) * 2 : p < 9.5 ? p - .5 : p < 10 ? 8.92 : p < 10.1 ? 8.92 + (p - 10) * 9.8 : p < 10.5 ? 9.9 + (p - 10.1) * 1.5 : p;
     const NK = [[6.0, 24, 50, 50, 1, 0, 2], [6.45, 38, 54, 44, 1, 0, 2], [7.0, 50, 50, 46, 1, 0, 2]];
     const camNK = P => { let i = 0; while (i < NK.length - 2 && P >= NK[i + 1][0]) i++; const a = NK[i], b = NK[i + 1], f = sm((P - a[0]) / (b[0] - a[0])); return a.map((v, j) => v + (b[j] - v) * f); };
@@ -745,7 +768,9 @@ export async function createFilm(host, cfg = {}) {
       ['roof', 'wall', 'dims'].forEach(k => { const tg = Math.max(SET.focus && SET.focus.fx && SET.focus.fx[k] ? 1 : 0, k === 'wall' ? autoWall : k === 'dims' ? autoDims : autoRoof); SET.fx[k] += (tg - SET.fx[k]) * (reduce ? 1 : .07); });
       if (SET.focus) SET.lastCam = SET.focus.cam;
       const c = camAt(P);
-      { const w = PR > 5.18 && PR < 5.36 ? sm((PR - 5.19) / .02) * (1 - sm((PR - 5.3) / .045)) : 0; if (w > 0 && !SET.focus) { const a = cl((PR - 5.2) / .1), tg = [0, 4 + 10 * a, 80 - 6 * a, 54, -1.8, 0, 1.3]; for (let j = 1; j < 7; j++) c[j] += (tg[j] - c[j]) * w; } }
+      { const w = PR > 5.18 && PR < 5.36 ? sm((PR - 5.19) / .02) * (1 - sm((PR - 5.3) / .045)) : 0; if (w > 0 && !SET.focus) { const a = cl((PR - 5.2) / .1), tg = [0, 4 + 10 * a, 80 - 6 * a, 56, -7, 0, 1.3]; for (let j = 1; j < 7; j++) c[j] += (tg[j] - c[j]) * w; } }
+      if (PR >= 5.99 && PR < 7.5 && !SET.focus) { const KB = [[6.0, 14, 34, 112, 25, -5, -10], [6.95, 30, 30, 106, 25, -5, -10], [7.02, 26, 32, 112, 19, -7, -12], [7.42, 40, 30, 110, 19, -7, -12], [7.5, 15.9, 27.7, 93, .61, 1.95, 0]];
+        let i = 0; while (i < KB.length - 2 && PR >= KB[i + 1][0]) i++; const a = KB[i], b = KB[i + 1], f = sm(cl((PR - a[0]) / (b[0] - a[0]))); for (let j = 1; j < 7; j++) c[j] = a[j] + (b[j] - a[j]) * f; }
       if (VK && PR < 1.62) { const KV = [[0, 18, 30, 98, -1, 2, 1], [.3, 30, 34, 104, -1, 2, 1], [.62, 44, 38, 108, -1, 2, 1], [.98, 50, 26, 88, -1, 2.5, 1.3], [1.25, 36, 14, 60, -1.5, 3, 2], [1.5, 24, 12, 44, -2.4, 2.2, 6]];
         let i = 0; while (i < KV.length - 2 && PR >= KV[i + 1][0]) i++; const a = KV[i], b = KV[i + 1], f2 = sm(cl((PR - a[0]) / (b[0] - a[0]))), w = 1 - sm((PR - 1.45) / .17);
         for (let j = 1; j < 7; j++) c[j] += (a[j] + (b[j] - a[j]) * f2 - c[j]) * w;
@@ -755,11 +780,11 @@ export async function createFilm(host, cfg = {}) {
       { const tour = (w, st) => { if (w <= 0 || SET.focus) return null; const p = Math.max(st[0][0], Math.min(st[st.length - 1][0], PN)); let i = 0; while (i < st.length - 2 && p >= st[i + 1][0]) i++; const a = st[i], b = st[i + 1], f = sm((p - a[0]) / (b[0] - a[0]));
           for (let j = 1; j < 7; j++) { const v = a[1][j - 1] + (b[1][j - 1] - a[1][j - 1]) * f; c[j] += (v - c[j]) * w; } return a[2] ? a[2].map((v, j) => v + (b[2][j] - v) * f) : null; };
         tour(sm(sN(8.0, 8.08) * (1 - sN(8.46, 8.56))), [[8.1, [30, 12, 40, 3, 1.6, 8.15]], [8.24, [40, 14, 46, 0, 3.6, 3]], [8.4, [62, 24, 52, -1, 6.5, 4.5]]]);
-        tour(sm(sN(9.5, 9.56) * (1 - sN(9.98, 10.06))), [[9.52, [58, 60, 50, 0, .5, 1.3]], [10.0, [84, 52, 46, 0, .5, 1.3]]]);
+        tour(sm(sN(9.5, 9.56) * (1 - sN(9.98, 10.06))), [[9.52, [36, 60, 27, 2.2, .4, -1.4]], [10.0, [58, 52, 25, 2.2, .4, -1.4]]]);
         SET.lampP = tour(sm(wI), [[8.62, [10, 30, 17, 1.5, 1.2, -5.0], [1.5, 2.2, -3.8]], [8.82, [50, 44, 22, 1.4, .3, -1.2], [1.4, 2.4, -1.2]], [9.02, [40, 56, 20, -5.8, .3, -3.6], [-4.5, 2.4, -3.8]], [9.22, [30, 55, 22, -6.6, .5, -4], [-7.8, 2.4, -4.2]]]); }
       { const key = (w, kk, x) => { if (w <= 0 || SET.focus) return; let i = 0; while (i < kk.length - 2 && x >= kk[i + 1][0]) i++; const a = kk[i], b = kk[i + 1], f = sm(cl((x - a[0]) / (b[0] - a[0]))); for (let j = 1; j < 7; j++) { const v = a[j] + (b[j] - a[j]) * f; c[j] += (v - c[j]) * w; } };
-        key(bk < 0 ? 0 : sm(cl(bk / .05)) * (1 - sm(cl((bk - .95) / .05))), [[0, 34, 16, 66, 0, 3.5, 1.3], [.36, 46, 20, 72, 0, 7, 1.3], [.5, 40, 16, 56, 1, 5, 4], [.66, 28, 13, 34, 1.6, 1.6, 8.5], [.84, 30, 12, 40, 3, 1.6, 8.15], [1, 36, 16, 62, 0, 3.5, 1.3]], Math.max(0, bk));
-        key(ek < 0 ? 0 : sm(cl(ek / .08)) * (1 - sm(cl((ek - .92) / .08))), [[0, 62, 24, 64, 1, 4, 2], [.5, 78, 30, 56, 2, 5, 3], [1, 70, 18, 70, 5, 3, 6]], Math.max(0, ek)); }
+        key(bk < 0 ? 0 : sm(cl(bk / .05)) * (1 - sm(cl((bk - .95) / .05))), [[0, 34, 16, 66, 0, 3.5, 1.3], [.36, 46, 20, 72, 0, 7, 1.3], [.5, 40, 18, 68, 1, 5.5, 4], [.66, 28, 13, 34, 1.6, 1.6, 8.5], [.84, 30, 12, 40, 3, 1.6, 8.15], [1, 36, 16, 62, 0, 3.5, 1.3]], Math.max(0, bk));
+        key(ek < 0 ? 0 : sm(cl(ek / .08)) * (1 - sm(cl((ek - .92) / .08))), [[0, 14, 14, 64, 0, 3, 1.3], [.45, 24, 9, 52, 0, 3, 1.3], [1, 36, 9, 48, 0, 3, 1.3]], Math.max(0, ek)); }
       if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] - c[j]) * fk; }
       if (SET.cPrev && Math.abs(PN - SET.pnPrev) > .12 && !reduce) { SET.cFrom = SET.cPrev.slice(); SET.cb = 1; }
       if (SET.cb > .002) { const k = sm(SET.cb); for (let j = 1; j < 7; j++) c[j] += (SET.cFrom[j] - c[j]) * k; SET.cb *= .93; }
@@ -792,7 +817,7 @@ export async function createFilm(host, cfg = {}) {
         let appear = u.name === 'huelle' ? 1 : u.name === 'plan' ? s(2.95, 3.25) : u.name === 'grund' ? s(.5, .62) : ai >= 0 ? s(1.48 + ai * .06, 1.62 + ai * .06) : s(2 + delay * 2, 2.35 + delay * 2);
         if (VK && PR > .86 && PR < 1.5 && (u.name === 'huelle' || u.name === 'fund' || u.name === 'innen')) appear *= PR < 1.1 ? 1 - sm((PR - .9) / .1) : sm((PR - 1.3) / .14);
         if (VK && ai >= 0 && PR < 2.85) { const VT = [1.86, 1.55, 1.96, 2.16, 2.06][ai]; appear = sm((PR - VT) / .08); }
-        if (ai >= 0 && PR >= 5.78 && PR < 6.02) appear = sm((PR - 5.79 - ai * .012) / .025);
+        if (ai >= 0 && PR >= 5.78 && PR < 6.02) appear = sm((PR - [5.864, 5.852, 5.876, 5.888, 5.9][ai] + .004) / .012);
         if (PR >= 4.9 && PR < 5.5 && (u.name === 'huelle' || u.name === 'fund' || u.name === 'innen' || ai >= 0)) appear = 0;
         if (PR >= 5.5 && PR < 5.56 && (u.name === 'huelle' || u.name === 'fund' || u.name === 'innen')) appear *= sm((PR - 5.5) / .04);
         if (u.name === 'grund') { const g = Math.max(.001, s(.48, .86)); u.scale.set(g, 1, g); }
@@ -802,7 +827,14 @@ export async function createFilm(host, cfg = {}) {
         let o = appear * (1 - ghost);
         if ((u.name === 'huelle' || u.name === 'fund') && ((PN > 4.92 && PN < 5.32) || (PN > 5.86 && PN < 6.05 && PR < 6))) { const k = PN < 5.5 ? sN(4.94, 5.02) * (1 - sN(5.24, 5.3)) : sN(5.88, 5.93) * (1 - sN(5.99, 6.04)); u.position.y = 5 * ghost * (1 - k); o = Math.max(o, k); }
         if (PR >= 4.9 && PR < 5.5 && (u.name === 'huelle' || u.name === 'fund' || u.name === 'innen' || ai >= 0)) o = 0;
-        if (u.name === 'grund' && PR > 5 && PR < 5.21) o *= 1 - sm((PR - 5.0) / .03) * (1 - sm((PR - 5.175) / .03));
+        if (ai >= 0 && PR >= 5.78 && PR < 6.02) { u.position.y = -1.8 * (1 - appear); o = appear; }
+        if (u.name === 'grund' && PR > 5 && PR < 5.34) o *= 1 - sm((PR - 5.0) / .03) * (1 - sm((PR - 5.292) / .03));
+        if (u.name === 'plan' && PR > 5 && PR < 5.34) o *= sm((PR - 5.3) / .03);
+        if (PR >= 6 && PR < 7.5) { const BT = x => 6.05 + .87 * x, b7 = PR < 7;
+          if (u.name === 'fund') { const k = b7 ? sm((PR - BT(.16)) / .08) : 1; u.position.y = -.8 * (1 - k); o = k; }
+          else if (u.name === 'huelle') { const k = b7 ? sm((PR - BT(.28)) / (BT(.5) - BT(.28))) : 1; u.position.y = 9 * (1 - k) * (1 - k); o = b7 ? sm((PR - BT(.28)) / .02) : 1; }
+          else if (u.name === 'innen') { u.position.y = 0; o = b7 ? sm((PR - BT(.62)) / .1) : 1; }
+          else if (ai >= 0) { const k = b7 ? 0 : sm((PR - [7.11, 7.04, 7.18, 7.25, 7.32][ai]) / .03); u.position.y = -1.8 * (1 - k); o = k; } }
         if (u.name === 'carport') { const inW = PN > 7.1 && PN < 7.56 && PR < 6.5, k = inW ? sN(7.18, 7.24) * (1 - sN(7.46, 7.52)) : 0; if (inW) { u.position.y = -1.8 * (1 - k); o = k; }
           if (u.userData.hl === undefined) u.userData.hl = u.userData.mats.find(m => m.color && m.color.getHex() === 0x55534f) || null;
           const hm = u.userData.hl; if (hm) { if (!hm.userData.c0) { hm.userData.c0 = hm.color.clone(); hm.userData.c1 = new T.Color(0xCACACA); } hm.color.copy(hm.userData.c0).lerp(hm.userData.c1, k); } }
@@ -826,14 +858,14 @@ export async function createFilm(host, cfg = {}) {
       if (VK && PR > .9 && PR < 1.7) { const zk = sm((PR - 1.0) / .06) * (1 - sm((PR - 1.4) / .12)); setOp(S.zeich, zk); S.zUp.scale.y = Math.max(.001, sm((PR - 1.08) / .16)); S.zUp.visible = S.zUp.scale.y > .02 && zk > .01; S.zInt.visible = S.zArc.visible = zk > .01; }
 
       /* Gesamtkosten und Open Space */
-      { const bu = PR >= 4.99 && PR < 5.24 ? cl((PR - 5) / .2) : -1, co = bu < 0 ? 0 : sm(bu / .03) * (1 - sm((PR - 5.2) / .03)), BC = S.bcol, bd = BC.userData, KS = S.kst, ku = KS.userData; setOp(S.cost, 0); setOp(KS, co); setOp(BC, co); bd.lvl.visible = false;
+      { const bu = PR >= 4.99 && PR < 5.24 ? cl((PR - 5) / .2) : -1, co = bu < 0 ? 0 : sm(bu / .03) * (1 - sm((PR - 5.172) / .02)), BC = S.bcol, bd = BC.userData, KS = S.kst, ku = KS.userData; setOp(S.cost, 0); setOp(KS, co); setOp(BC, co); bd.lvl.visible = false;
         if (co > .004) { const KU = [0, .4, .5, .6, .7, .8, 1], KF = [[1, 1, 1, 1, 1, .93, .93], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, .7, .7, .7, .7], [1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, .75, .75]];
           const kv = arr => { let i = 0; while (i < KU.length - 2 && bu >= KU[i + 1]) i++; const f = sm(cl((bu - KU[i]) / (KU[i + 1] - KU[i]))); return arr[i] + (arr[i + 1] - arr[i]) * f; };
           let ycum = 0, HBf = 0; ku.KB.forEach((b, i) => { const fl = KF[i][KF[i].length - 1]; HBf += b.h * fl + (i ? .06 * Math.min(1, fl * 5) : 0); });
           ku.KB.forEach((b, i) => { const ff = kv(KF[i]), gp = i ? .06 * Math.min(1, ff * 5) : 0, k = sm((bu - .04 - i * .045) / .06), hh = Math.max(.001, b.h * ff);
             ycum += gp; b.g.position.y = ycum + (1 - k) * (1 - k) * 9; b.g.scale.set(1, hh, 1); b.g.visible = k > .01 && ff > .01; b.g.position.x = 23.2; b.an.position.set(23.2 + 2.35, ycum + hh / 2, ku.cz + 2.1); ycum += b.h * ff; });
-          ku.top.position.set(23.2 - 2.1, ycum + 1.4, ku.cz + 2.1); bd.col.position.x = 14; bd.cap.position.x = 14; bd.an.position.x = 11.75;
-          const HB = HBf * sm((bu - .06) / .2) + .001; bd.col.scale.y = HB; bd.cap.position.y = HB + .07; bd.cap.visible = HB > .05; bd.an.position.y = HB + 1.4; bd.al.position.set(18.6, HB + 1.1, .12);
+          ku.top.position.set(23.2, 18.6, ku.cz); bd.col.position.x = 14; bd.cap.position.x = 14; bd.an.position.x = 11.75;
+          const HB = HBf * sm((bu - .06) / .2) + .001; bd.col.scale.y = HB; bd.cap.position.y = HB + .07; bd.cap.visible = HB > .05; bd.an.position.set(14, 18.6, ku.cz); bd.al.position.set(18.6, HB + 1.6, ku.cz);
           const cv = sm((bu - .8) / .05); bd.lvl.visible = bu > .3; bd.lvl.position.set(18.6, HB, .12); bd.lvl.material.opacity = co * (.45 + .55 * cv); bd.lvl.material.color.setHex(cv > .5 ? 0xFFB200 : 0xFFFFFF); bd.lvl.scale.set(13.4 / 10.7, 1 + 2 * cv, 1 + 2 * cv); } }
       { const oo = sN(5.76, 5.8) * (1 - sN(5.87, 5.9)); setOp(S.osp, oo);
         if (oo > .004) { const Lw = S.osp.userData.L, ab = s(5.8, 5.83), bc = s(5.84, 5.87), up = Math.max(.001, s(5.76, 5.79));
@@ -856,10 +888,10 @@ export async function createFilm(host, cfg = {}) {
       const mo = sm((SET.fx.wall - .6) / .4); S.moist.visible = mo > .01; S.moist.material.opacity = .85 * mo;
       if (mo > .01) { const a = S.moist.geometry.attributes.position.array, span = 4.6; S.mph.forEach(([x, y, ph, sp], i) => { const k = Math.sin(t * sp + ph) * .5 + .5; a[i * 3] = x; a[i * 3 + 1] = y + Math.sin(t * .7 + ph) * .08; a[i * 3 + 2] = S.wallIn - .5 + k * span * wx; }); S.moist.geometry.attributes.position.needsUpdate = true; }
       const gh = SET.fx.dims; setOp(S.ghostH, U.huelle.userData.op * gh); S.ghostH.position.y = 3 - .24 * sm((gh - .3) / .7);
-      let warm = Math.max(s(8.2, 8.5) * (1 - .55 * s(11.0, 11.3)), s(.56, .86) * (1 - s(2.2, 2.6)) * .9, wI, sN(9.5, 9.52) * (1 - sN(9.98, 10.04)));
+      let warm = Math.max(PR >= 10 && PR < 10.5 ? sm((PR - 10.06) / .1) * (1 - sm((PR - 10.44) / .05)) : 0, s(8.2, 8.5) * (1 - .55 * s(11.0, 11.3)), s(.56, .86) * (1 - s(2.2, 2.6)) * .9, wI, sN(9.5, 9.52) * (1 - sN(9.98, 10.04)));
       if (VK && PR < 2) warm = .9 * sm((PR - 1.05) / .25);
       if (SET.lampP && wI > .01) S.lamps[0].position.set(...SET.lampP); else S.lamps[0].position.set(1.6, 2.5, -2.6);
-      { const on = PN > 9.48 && PN < 10.06, ud = S.ia.userData; S.ia.visible = on;
+      { const on = false, ud = S.ia.userData; S.ia.visible = false;
         if (!S.softMat.userData.c0) { S.softMat.userData.c0 = S.softMat.color.clone(); S.softMat.userData.c1 = new T.Color(0x8B907C); }
         S.softMat.color.copy(S.softMat.userData.c0).lerp(S.softMat.userData.c1, sN(9.7, 9.76) * (1 - sN(10.0, 10.06)));
         if (on) { ud.chips.forEach((m, i) => { const ap = sN(9.53 + i * .025, 9.58 + i * .025), dr = sN(9.62 + i * .03, 9.68 + i * .03), f = m.userData.from, to = m.userData.to;
@@ -877,7 +909,7 @@ export async function createFilm(host, cfg = {}) {
       if (P < 6) { kv = ovK; S.key.position.set(.9, (S.GAP * 6 + 3.4) * expK, 1.1); }
       else { kv = PR >= 8 ? 0 : s(10.22, 10.38); S.key.position.set(.9, 13.2 + 3 * (1 - s(10.22, 10.45)), 1.1); }
       S.key.visible = kv > .01; S.key.scale.setScalar(Math.max(.001, kv)); S.key.rotation.y = t * .7;
-      const tk = PR >= 8 && PR < 11 ? 0 : s(10.03, 10.32); S.thread.visible = tk > .001;
+      const tk = PR >= 8 ? 0 : s(10.03, 10.32); S.thread.visible = tk > .001;
       S.threadGeo.setDrawRange(0, Math.floor(S.threadGeo.index.count * tk / 3) * 3);
 
       /* Besser leben: zehn Jahre im Zeitraffer */
@@ -891,7 +923,7 @@ export async function createFilm(host, cfg = {}) {
         S.larch.color.copy(K.larch).lerp(K.grey, on * u * .85);
         let cc; if (c < .25) cc = K.tmp.copy(K.w).lerp(K.sal, sm(c / .25)); else if (c < .6) cc = K.tmp.copy(K.sal); else if (c < .85) cc = K.tmp.copy(K.sal).lerp(K.kup, sm((c - .6) / .25)); else cc = K.tmp.copy(K.kup).lerp(K.w, sm((c - .85) / .15));
         S.crownMat.color.copy(K.crown).lerp(cc, on);
-        { const dr = s(10.56, 10.7), vz = 24 - 13.6 * (1 - Math.pow(1 - cl((P - 10.56) / .14), 2)), van = L.van; van.position.set(-5.8, 0, vz); van.rotation.y = Math.PI; van.visible = on > .01;
+        { const dr = s(10.56, 10.7), vz = 24 - 10.6 * (1 - Math.pow(1 - cl((P - 10.56) / .14), 2)), van = L.van; van.position.set(-5.8, 0, vz); van.rotation.y = Math.PI; van.visible = on > .01;
           L.wheels.forEach(w => w.rotation.x = -(vz - 24) / .42);
           L.sideDoor.position.z = .6 - 1.15 * s(10.71, 10.75);
           L.crew.forEach((g, i) => { const k = s(10.74 + i * .03, 10.9 + i * .03), x0 = -4.6, z0 = 11.2 - i * .9, x1 = -1.4 - i * .7, z1 = 9.3 - i * .2; g.visible = on > .01 && P > 10.73 + i * .03; g.position.set(x0 + (x1 - x0) * k, 0, z0 + (z1 - z0) * k + (P > 10.73 ? 0 : 0)); g.rotation.y = Math.atan2(x1 - x0, z1 - z0); g.children[0].scale.y = 1 + (k > 0 && k < 1 ? Math.sin(t * 9 + i) * .06 : 0); g.children[1].position.y = 1.22 + (k > 0 && k < 1 ? Math.abs(Math.sin(t * 9 + i)) * .05 : 0); }); } }
@@ -910,10 +942,10 @@ export async function createFilm(host, cfg = {}) {
         S.mA.instanceMatrix.needsUpdate = S.mB.instanceMatrix.needsUpdate = S.mC.instanceMatrix.needsUpdate = true;
       }
 
-      { const zV = false, zW = VK && PR >= 1.2 && PR < 2.6, zo = VK && PR < 1.2 ? 0 : zW ? sm((PR - 1.67) / .02) * (1 - sm((PR - 2.46) / .06)) : PR < 6.5 ? sN(7.26, 7.28) * (1 - sN(7.46, 7.52)) : 0, zu = S.zaun.userData; setOp(S.zaun, zo);
-        if (zo > .004) { const n = zu.posts.length; zu.posts.forEach((m, i) => { const k = zV ? Math.max(.001, 1 - sm((PR - .8 - i / n * .09) / .02)) : zW ? Math.max(.001, sm((PR - 1.68 - i / n * .07) / .02)) : Math.max(.001, sN(7.27 + i / n * .1, 7.29 + i / n * .1)); m.scale.y = k; });
-          const rk = zV ? 1 - sm((PR - .79) / .02) : zW ? sm((PR - 1.75) / .02) * .6 : sN(7.34, 7.38); zu.rails.visible = rk > .01; zu.rails.material.opacity = .9 * rk; } }
-      { const pv = S.pvA, nz = S.netz, on = ek >= 0; pv.visible = on; nz.visible = on;
+      { const zV = false, zA = PR >= 7 && PR < 8, zW = VK && PR >= 1.2 && PR < 2.6, zo = zA ? sm((PR - 7.39) / .015) : VK && PR < 1.2 ? 0 : zW ? sm((PR - 1.67) / .02) * (1 - sm((PR - 2.46) / .06)) : PR < 6.5 ? sN(7.26, 7.28) * (1 - sN(7.46, 7.52)) : 0, zu = S.zaun.userData; setOp(S.zaun, zo);
+        if (zo > .004) { const n = zu.posts.length; zu.posts.forEach((m, i) => { const k = zV ? Math.max(.001, 1 - sm((PR - .8 - i / n * .09) / .02)) : zA ? Math.max(.001, sm((PR - 7.39 - i / n * .06) / .012)) : zW ? Math.max(.001, sm((PR - 1.68 - i / n * .07) / .02)) : Math.max(.001, sN(7.27 + i / n * .1, 7.29 + i / n * .1)); m.scale.y = k; });
+          const rk = zA ? sm((PR - 7.44) / .02) : zV ? 1 - sm((PR - .79) / .02) : zW ? sm((PR - 1.75) / .02) * .6 : sN(7.34, 7.38); zu.rails.visible = rk > .01; zu.rails.material.opacity = .9 * rk; } }
+      { const pv = S.pvA, nz = S.netz, on = false && ek >= 0; pv.visible = on; nz.visible = on;
         if (on) { const pn = pv.userData.panels, n = pn.length, glow = eq(.42, .1);
           pn.forEach((m, i) => { const k = eq(.06 + i / n * .32, .06); m.visible = k > .01; m.position.y = m.userData.y0 + (1 - k) * 1.2; m.material.opacity = k; m.material.emissiveIntensity = .55 * glow; });
           const fk = eq(.5, .08) * (1 - eq(.94, .05)); nz.userData.line.material.opacity = .5 * fk;
@@ -925,8 +957,11 @@ export async function createFilm(host, cfg = {}) {
       else { const dv = sN(6.04, 6.1) * (1 - sN(6.9, 6.98)); setOp(S.docs, dv);
         if (dv > .004) S.sheets.forEach((m, i) => { const k = sN(6.06 + i * .07, 6.18 + i * .07), q = 1 - k; m.scale.setScalar(1);
           m.position.set(1 + i * .35 + q * 6, .04 + i * .06 + q * q * 14, 2 - i * .25 - q * 4); m.rotation.set(q * -.9, (i - 1) * .07 + q * .8, q * .4); }); }
-      { const so = VK && PR < 1.02 ? 1 : 0, u = S.site.userData; setOp(S.site, so);
-        if (so > .004 && VK) { const ms = Math.max(.001, 1 - sm((PR - .9) / .08)), jr = Math.max(.001, 1 - sm((PR - .86) / .05)); u.mast.scale.y = ms; u.jib.position.y = 24 * ms; u.jib.scale.set(jr, 1, 1); u.jib.visible = jr > .02 && ms > .05;
+      { const bl = PR >= 6 && PR < 7, so = VK && PR < 1.02 ? 1 : bl ? sm((PR - 6.1) / .03) * (1 - sm((PR - 6.9) / .04)) : 0, u = S.site.userData; setOp(S.site, so);
+        if (bl && so > .004) { const ms = Math.max(.001, sm((PR - 6.11) / .06) * (1 - sm((PR - 6.84) / .05))), jv = Math.max(.001, sm((PR - 6.16) / .03) * (1 - sm((PR - 6.8) / .03))); u.mast.scale.y = ms; u.jib.position.y = 24 * ms; u.jib.scale.set(jv, 1, 1); u.jib.visible = jv > .02 && ms > .05;
+          u.jib.rotation.y = .5 + Math.sin(t * .21) * .7; u.tro.position.set(13 + Math.sin(t * .33) * 5, 0, 0); const hy = -5 - (Math.sin(t * .27) * .5 + .5) * 9; u.hook.position.y = hy; u.rope.scale.y = Math.max(.001, -hy); u.hook.rotation.y = Math.sin(t * .5) * .08;
+          const sc = Math.max(.001, sm((PR - 6.27) / .05) * (1 - sm((PR - 6.8) / .04))); u.scaf.scale.y = sc; u.scaf.visible = sc > .01; u.mulde.position.set(11.6, 0, 9.5 + 17 * (1 - sm((PR - 6.12) / .05)) + 17 * sm((PR - 6.86) / .05)); }
+        else if (so > .004 && VK) { const ms = Math.max(.001, 1 - sm((PR - .9) / .08)), jr = Math.max(.001, 1 - sm((PR - .86) / .05)); u.mast.scale.y = ms; u.jib.position.y = 24 * ms; u.jib.scale.set(jr, 1, 1); u.jib.visible = jr > .02 && ms > .05;
           u.jib.rotation.y = .5 + Math.sin(t * .21) * .75; u.tro.position.set(13 + Math.sin(t * .33) * 5, 0, 0); const hy = -5 - (Math.sin(t * .27) * .5 + .5) * 9; u.hook.position.y = hy; u.rope.scale.y = Math.max(.001, -hy); u.hook.rotation.y = Math.sin(t * .5) * .08;
           const sc = Math.max(.001, 1 - sm((PR - .84) / .08)); u.scaf.scale.y = sc; u.scaf.visible = sc > .01; u.mulde.position.set(11.6, 0, 9.5 + 17 * sm((PR - .76) / .08)); }
         else if (so > .004) { u.mast.scale.y = Math.max(.001, sN(6.52, 6.7)); const jv = sN(6.66, 6.76); u.jib.visible = jv > .01; u.jib.position.y = 24 * u.mast.scale.y; u.jib.scale.set(Math.max(.001, jv), 1, 1);
@@ -945,11 +980,39 @@ export async function createFilm(host, cfg = {}) {
         setOp(S.gfill, gv * sN(4.9, 4.93));
         const bv = PN > 4.86 && PN < 5.02 && PR < 5 ? sN(4.89, 4.93) * (1 - sN(4.97, 5)) : 0; setOp(S.blick, bv); if (bv > .004) { const k = Math.max(.001, sN(4.89, 4.95)); S.blick.scale.set(k, 1, k); }
         const so = PN > 4.74 && PN < 5.02 && PR < 5 ? sN(4.77, 4.81) * (1 - sN(4.97, 5)) : 0; setOp(S.sonne, so); if (so > .004) { const u = S.sonne.userData; u.sun.position.copy(u.at(.08 + .84 * sN(4.78, 4.98))); } }
-      { const sv = PR > 5.19 && PR < 5.36 ? sm((PR - 5.2) / .01) * (1 - sm((PR - 5.31) / .03)) : 0; setOp(S.skizze, sv);
-        if (sv > .004) { const u = S.skizze.userData, k = 1 - Math.pow(1 - cl((PR - 5.205) / .095), 1.6), n = Math.max(1, Math.floor(u.n * k)); u.l.geometry.setDrawRange(0, n * 2); const j = (n * 2 - 1) * 3; u.pen.position.set(u.pos[j], u.pos[j + 1] + .1, u.pos[j + 2]); u.pen.visible = k < .995; } }
+      { const sv = PR > 5.19 && PR < 5.36 ? sm((PR - 5.222) / .012) * (1 - sm((PR - 5.31) / .03)) : 0; setOp(S.skizze, sv);
+        if (sv > .004) { const u = S.skizze.userData, k = 1 - Math.pow(1 - cl((PR - 5.226) / .08), 1.6), n = Math.max(1, Math.floor(u.n * k)); u.l.geometry.setDrawRange(0, n * 2); const j = (n * 2 - 1) * 3; u.pen.position.set(u.pos[j], u.pos[j + 1] + .1, u.pos[j + 2]); u.pen.visible = k < .995; } }
       if (PR >= 5.44 && PR < 5.5) setOp(S.zeich, 1 - sm((PR - 5.46) / .035));
-      if (PR > 5.7 && PR < 6.1) { const pk = a => sm((PR - a) / .006) * (1 - sm((PR - a - .016) / .01)), AT = [5.88, 5.85, 5.895, 5.91, 5.925]; glowU(U.huelle, Math.max(pk(5.83), pk(5.865))); glowU(U.fund, 0); AU.forEach((n, i) => glowU(U[n], pk(AT[i]))); SET.glowOn = 1; }
+      if (PR > 5.7 && PR < 6.1) { const pk = a => sm((PR - a) / .006) * (1 - sm((PR - a - .016) / .01)), AT = [5.876, 5.864, 5.888, 5.9, 5.912]; glowU(U.huelle, 0); glowU(U.fund, 0); AU.forEach((n, i) => glowU(U[n], 0 * pk(AT[i]))); SET.glowOn = 1; }
       else if (SET.glowOn) { SET.glowOn = 0; glowU(U.huelle, 0); glowU(U.fund, 0); AU.forEach(n => glowU(U[n], 0)); }
+      { const IA = U.innen.userData.IA; if (IA) { const on = PR >= 5.48 && PR < 5.8, f = a => on ? sm((PR - a) / .03) : 1, fk = Math.max(.001, f(5.515));
+          U.innen.userData.old.forEach(c => c.visible = !on); IA.floor.scale.set(fk, 1, 1); IA.floor.position.x = -9.5 * (1 - fk); IA.ein.scale.y = Math.max(.001, f(5.55));
+          IA.moe.children.forEach((c, i) => { if (c.userData.y0 == null) c.userData.y0 = c.position.y; const k = on ? sm((PR - 5.595 - (i % 14) * .0035) / .02) : 1; c.position.y = c.userData.y0 + (1 - k) * (1 - k) * 4; c.visible = k > .01; });
+          IA.dek.children.forEach((c, i) => { const k = on ? sm((PR - 5.655 - (i % 16) * .003) / .018) : 1; c.scale.setScalar(Math.max(.001, k)); c.visible = k > .01; }); } }
+      if (PR >= 6 && PR < 7.5) { if (!S.bx) { const root = U.huelle.parent, ym = op => new T.MeshBasicMaterial({ color: 0xFFB200, transparent: true, opacity: op, depthWrite: false, side: T.DoubleSide });
+          const plate = (op, edge) => { const g = new T.Group(), pg = new T.PlaneGeometry(1, 1), m = new T.Mesh(pg, ym(op)); g.add(m); if (edge) g.add(new T.LineSegments(new T.EdgesGeometry(pg), new T.LineBasicMaterial({ color: 0xFFB200, transparent: true, opacity: 1 }))); g.rotation.x = -Math.PI / 2; g.visible = false; g.renderOrder = 5; root.add(g); return g; };
+          const bb = new T.Box3().setFromObject(U.fund), hb = new T.Box3().setFromObject(U.huelle), H = hb.max.y - U.huelle.position.y;
+          const scan = plate(.16, 1); scan.scale.set(bb.max.x - bb.min.x + .8, bb.max.z - bb.min.z + .8, 1); scan.position.set((bb.min.x + bb.max.x) / 2, 0, (bb.min.z + bb.max.z) / 2);
+          const fp = AU.map(n => { const b = new T.Box3().setFromObject(U[n]), p = plate(.85, 0); p.userData.sz = [b.max.x - b.min.x + .5, b.max.z - b.min.z + .5]; p.position.set((b.min.x + b.max.x) / 2, .09, (b.min.z + b.max.z) / 2); return p; });
+          S.bx = { scan, fp, H }; }
+        const B = S.bx, SC = [[6.25, 6.31], [6.5, 6.57], [6.79, 6.87]].find(([a, b]) => PR > a && PR < b);
+        B.scan.visible = false && !!SC; if (SC) { const k = (PR - SC[0]) / (SC[1] - SC[0]); B.scan.position.y = .1 + k * (B.H + .4); const op = Math.sin(Math.PI * k); B.scan.children[0].material.opacity = .2 * op; B.scan.children[1].material.opacity = op; }
+        B.fp.forEach((p, i) => { const t = [7.11, 7.04, 7.18, 7.25, 7.32][i], k1 = cl((PR - (t - .022)) / .016), fd = 1 - cl((PR - (t + .02)) / .03), v = k1 * fd; p.visible = PR >= 7 && v > .01 && AU[i] !== 'garten'; if (p.visible) { const g = .55 + .45 * sm(k1); p.scale.set(p.userData.sz[0] * g, p.userData.sz[1] * g, 1); p.children[0].material.opacity = .8 * v; } }); }
+      else if (S.bx) { S.bx.scan.visible = false; S.bx.fp.forEach(p => p.visible = false); }
+      if (PR >= 10 && PR < 10.5) { if (!S.bk) { const root = U.huelle.parent; root.updateMatrixWorld(true); const inv = new T.Matrix4().copy(root.matrixWorld).invert(), hb = new T.Box3().setFromObject(U.huelle), c = hb.getCenter(new T.Vector3()); c.y = 0;
+          const shM = new T.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0, depthWrite: false, side: T.FrontSide }), outer = new T.Group(), inner = new T.Group(); outer.position.copy(c); inner.position.copy(c).multiplyScalar(-1); outer.add(inner); root.add(outer); outer.visible = false;
+          const glass = []; U.huelle.traverse(o => { if (!o.isMesh || !o.geometry) return; const m = new T.Mesh(o.geometry, shM); m.matrixAutoUpdate = false; m.matrix.copy(inv).multiply(o.matrixWorld); inner.add(m);
+            const mt = o.material; if (mt && !Array.isArray(mt) && mt.color && mt.color.getHex() === 0x56636e) { o.geometry.computeBoundingBox(); const b = o.geometry.boundingBox, sz = b.getSize(new T.Vector3()), ax = sz.x < sz.y && sz.x < sz.z ? 'x' : sz.y < sz.z ? 'y' : 'z', area = ax === 'x' ? sz.y * sz.z : ax === 'y' ? sz.x * sz.z : sz.x * sz.y; const nw = new T.Vector3(ax === 'x' ? 1 : 0, 0, ax === 'z' ? 1 : 0).transformDirection(o.matrixWorld); if (ax !== 'y' && area > .3 && Math.abs(nw.y) < .2) glass.push({ o, b, ax, area }); } });
+          const lm = new T.LineBasicMaterial({ color: 0xFFB200, transparent: true, opacity: 0, depthWrite: false }), panes = [];
+          glass.forEach(({ o, ax }) => { const nrm = new T.Vector3(ax === 'x' ? 1 : 0, 0, ax === 'z' ? 1 : 0).transformDirection(o.matrixWorld), wc = new T.Box3().setFromObject(o).getCenter(new T.Vector3()); if (wc.clone().sub(c).setY(0).dot(nrm) < 0) nrm.multiplyScalar(-1); if (nrm.z < .5 && nrm.x < .5) return;
+            const eg = new T.EdgesGeometry(o.geometry), M0 = new T.Matrix4().copy(inv).multiply(o.matrixWorld); for (let i = 0; i < 3; i++) { const l = new T.LineSegments(eg, lm); l.matrixAutoUpdate = false; l.visible = false; l.userData = { M0, nrm, i }; root.add(l); panes.push(l); } });
+          S.bk = { outer, shM, panes, lm }; }
+        const B = S.bk, w1 = sm((PR - 10.04) / .1), w0 = 1 - sm((PR - 10.2) / .06);
+        B.outer.visible = w1 > .01 && w0 > .01; B.outer.scale.setScalar(1.22 - .2 * w1); B.shM.opacity = .22 * w1 * w0 + .04 * w1;
+        if (PR > 10.44) B.shM.opacity *= 1 - sm((PR - 10.44) / .04);
+        const lv = sm((PR - 10.22) / .02) * (1 - sm((PR - 10.45) / .03)); B.lm.opacity = .95 * lv;
+        B.panes.forEach(g => { const { M0, nrm, i } = g.userData, k = sm((PR - 10.24 - i * .04) / .06); g.visible = lv > .01 && k > .01; if (!g.visible) return; const d = .06 + i * .12 + (1 - k) * 2.5; g.matrix.makeTranslation(nrm.x * d, 0, nrm.z * d).multiply(M0); }); }
+      else if (S.bk) { S.bk.outer.visible = false; S.bk.panes.forEach(g => g.visible = false); }
       /* Hero: Produkt, Leben, Haustür, Services */
       { setOp(H.vitr, prodK); H.vitr.position.y = 28 * s(.44, .74);
         const tm = s(.5, .74); setOp(H.tt, 1 - tm); H.tt.position.y = -.6 * tm;
@@ -1015,8 +1078,9 @@ export async function createFilm(host, cfg = {}) {
         if (L.stack) { if (avR === null) { const ae = document.querySelector(L.stack); avR = ae && !SET.narrow ? ae.getBoundingClientRect().right + 28 : 0; } x = Math.min(Math.max(x, avR), SET.w - L.wd - 20); L.hh = L.el.offsetHeight || 40; stk.push({ L, x, y: y - 7, v }); return; }
         if (L.kind === 'hot') { L.hh = L.el.offsetHeight || 30; x = Math.max(20, x); const act = SET.focus ? SET.focus.id === L.hot : SET.cur === L.hot; if (!act && !SET.narrow && x < SET.w * .55) { if (L.on) { L.el.style.opacity = '0'; L.el.style.pointerEvents = 'none'; L.on = 0; } return; } col.push({ L, x, y: y - 7, v, pri: (SET.focus ? SET.focus.id === L.hot : SET.cur === L.hot) ? 0 : 1 }); return; }
         if (L.left) x -= (L.el.offsetWidth || 140);
+        if (!L.kst && L.kind !== 'hot') { const ow = L.el.offsetWidth || 160; x = Math.min(x, SET.w - ow - 16); }
         if (L.above) { const ae = document.querySelector(L.above); if (ae) { if (!L.hh) L.hh = L.el.offsetHeight || 40; y = Math.min(y, ae.getBoundingClientRect().top - host.getBoundingClientRect().top - L.hh - 20 + 7); } }
-        if (L.kst) { const h2 = L.el.offsetHeight || 30; L.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - h2 / 2).toFixed(1) + 'px,0)'; L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; return; }
+        if (L.kst) { const h2 = L.el.offsetHeight || 30; if (L.center) x -= (L.el.offsetWidth || 80) / 2; L.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - h2 / 2).toFixed(1) + 'px,0)'; L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; return; }
         if (L.big) { const sh = SET.h >= 560; if (L.sub && L.shw !== sh) { L.shw = sh; L.sub.style.display = sh ? '' : 'none'; } L.hh = L.el.offsetHeight || 60; lay.push({ L, x, y: y - L.hh / 2, ax: x, ay: y, v }); return; }
         if (L.kind === 'warm' || L.avoid) { if (L.kind === 'warm') y += (1 - v) * 16; if (!L.hh) L.hh = L.el.offsetHeight || 40; L.wd = L.el.offsetWidth || L.wd || 160; warmL.push({ L, x, y: y - 7, v }); return; }
         if (L.free) { if (!L.hh) L.hh = L.el.offsetHeight || 40; y = Math.min(y, SET.h - (SET.narrow ? 150 : 112) - L.hh + 7); }

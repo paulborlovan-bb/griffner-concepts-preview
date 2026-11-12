@@ -9,6 +9,8 @@
 .svf__shade{position:absolute;inset:0;background:var(--bildschutz);pointer-events:none}
 .svf__scrim{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 600ms var(--ease-out,cubic-bezier(.2,.7,.2,1));background:linear-gradient(90deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.66) 36%,rgba(0,0,0,0) 62%)}
 .svf__scrim.is-on{opacity:1}
+/* Runde 57: während des Bauzeitplans (Desktop) liegt der Schatten rechts */
+.svf__scrim.is-r{background:linear-gradient(270deg,rgba(0,0,0,.84) 0%,rgba(0,0,0,.6) 34%,rgba(0,0,0,0) 56%)}
 .svf__l3{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
 .svf__mk{position:absolute;left:0;width:1px;height:1px}
 
@@ -27,10 +29,31 @@
 /* Das Logo fliegt aus der Kopfzeile auf den Baucontainer (js/svc-film3d.js), fest am Bildschirm */
 .svf-fly{position:fixed;left:0;top:0;width:100px;height:auto;transform-origin:0 0;z-index:61;pointer-events:none;opacity:0;will-change:transform}
 /* Runde 56: Gesamtinvestition oben links, die Summe zählt hoch, dann der gelbe Strich */
-.svf__ledger{position:absolute;left:var(--page-margin);top:clamp(108px,16vh,150px);z-index:2;display:grid;row-gap:10px;justify-items:start;opacity:0;visibility:hidden;pointer-events:none;color:var(--griffner-weiss)}
-.svf__lk{margin:0;color:var(--griffner-kalk)}
-.svf__lsum{font-family:var(--font-display);font-weight:300;font-size:clamp(34px,4vw,68px);line-height:1;font-variant-numeric:tabular-nums}
-.svf__lnotiz{display:block;justify-self:stretch;height:4px;background:var(--griffner-gelb);transform:scaleX(0);transform-origin:left center}
+/* Runde 57: Gesamtinvestition als Tabelle rechts und Bauzeitplan (Entwurf data-ledger, data-bplan) */
+.svf__ledger,.svf__bplan{position:absolute;right:var(--page-margin);top:clamp(124px,20vh,200px);z-index:2;display:grid;opacity:0;visibility:hidden;pointer-events:none;color:var(--griffner-weiss);font-weight:500}
+.svf__ledger{left:max(52%,calc(100% - var(--page-margin) - 620px))}
+.svf__bplan{width:min(420px,40vw)}
+.svf__lrow,.svf__brow{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;column-gap:18px;padding:clamp(5px,.9vh,10px) 0 clamp(6px,1vh,11px);border-top:1px solid var(--griffner-anthrazit)}
+.svf__lrow{position:relative;opacity:0}
+.svf__brow{grid-template-columns:110px minmax(0,1fr);padding:clamp(5px,.9vh,9px) 0 clamp(6px,1vh,10px)}
+.svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:15px;line-height:1.25}
+.svf__lbar{display:block;height:12px}
+.svf__lbar>i,.svf__lseg>i,.svf__bbar i{display:block;height:100%;transform:scaleX(0);transform-origin:left center}
+.svf__lmark{position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--griffner-gelb);transform:scaleX(0);transform-origin:left center}
+.svf__ltot{display:grid;row-gap:12px;padding-top:14px;border-top:1px solid var(--griffner-weiss)}
+.svf__ltk,.svf__bokt{font-family:var(--font-display);font-weight:500;font-size:18px;letter-spacing:.04em;line-height:1.05;text-transform:uppercase}
+.svf__lseg{display:flex;gap:1px;height:20px}
+.svf__bk{margin:0 0 12px;color:var(--griffner-kalk)}
+.svf__brows{position:relative;display:grid}
+.svf__bbar{position:relative;display:block;height:10px}
+.svf__bbar>span{position:absolute;top:0;bottom:0;outline:1px solid var(--griffner-anthrazit);outline-offset:-1px}
+.svf__bbar i{background:var(--griffner-weiss)}
+.svf__btoday{position:absolute;top:0;bottom:0;left:128px;right:0;pointer-events:none}
+.svf__btoday>i{position:absolute;top:-6px;bottom:0;left:0;width:2px;margin-left:-1px;background:var(--griffner-gelb)}
+.svf__bok{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:18px;padding-top:16px;border-top:1px solid var(--griffner-weiss)}
+.svf__bok>div{display:grid;row-gap:6px}
+.svf__bokt{font-size:15px}
+.svf__bok .info{color:var(--griffner-kalk);opacity:0}
 
 /* Kapitel: unten links, über der Leiste */
 .svf__ch,.svf__hp{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 var(--page-margin) var(--svf-pb);display:grid;row-gap:20px;justify-items:start;will-change:opacity,transform}
@@ -62,13 +85,6 @@
 .svf__hint>i{flex:none;width:14px;height:14px;box-sizing:border-box;border:1px solid currentColor;border-radius:50%;display:grid;place-items:center}
 .svf__hint>i::after{content:'';width:4px;height:4px;border-radius:50%;background:currentColor}
 /* Betriebskosten: Erzeugung größer als Verbrauch */
-.svf__bal{display:grid;row-gap:12px;width:min(100%,380px)}
-.svf__bal>div{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;column-gap:14px}
-.svf__bal .info{margin:0;color:var(--griffner-kalk)}
-.svf__bal>div>span:last-child{display:block;width:100%}
-.svf__bal i{display:block;height:10px;background:var(--griffner-weiss);transform:scaleX(0);transform-origin:left center}
-.svf__bal [data-bal-v]{background:var(--griffner-kalk)}
-.svf__jahr{font-variant-numeric:tabular-nums}
 
 /* Karte zu einem Punkt im Haus (Entwurf: an der Stelle des Kapitels, der dunkle Schein dahinter) */
 .svf__hp{row-gap:18px;opacity:0;pointer-events:none;transform:translate3d(0,16px,0);transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1)),transform 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
@@ -140,6 +156,10 @@
 @media (max-width:899px){
   .svf{--svf-nav:80px;--svf-pb:clamp(124px,18vh,180px)} /* Runde 56: Abstand wie im Entwurf */
   .svf__scrim{background:linear-gradient(0deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 42%,rgba(0,0,0,0) 72%)}
+  .svf__ledger,.svf__bplan{left:var(--page-margin);right:var(--page-margin);width:auto;top:clamp(86px,12vh,110px)}
+  .svf__lrow,.svf__brow{grid-template-columns:84px minmax(0,1fr)}
+  .svf__btoday{left:102px}
+  .svf__bok{grid-template-columns:repeat(3,minmax(0,auto))}
   .svf__ch::before{width:100%;height:calc(100% + 12vh);background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.6) 55%,rgba(0,0,0,0) 100%)}
   .svf__ch{row-gap:14px}
   .svf__h--s,.svf__h--m,.svf-hp__t{font-size:clamp(24px,7.4vw,30px)}
@@ -178,3 +198,8 @@
 }
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf__scrim,.svw__line{transition:none}.svw__g *{stroke-dashoffset:0}}
 .svf__src{display:none!important}
+/* Runde 57: kurze Telefone (Entwurf: schmal und unter 760 px hoch): kein Bauzeitplan, die Tabelle rückt nach oben */
+@media (max-width:899px) and (max-height:759px){
+  .svf__ledger{top:clamp(76px,10vh,96px)}
+  .svf__bplan{display:none}
+}

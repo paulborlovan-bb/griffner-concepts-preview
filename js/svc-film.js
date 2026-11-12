@@ -1,8 +1,9 @@
 /* Runde 56: Services Übersicht eins zu eins im Entwurf „GRIFFNER Services v2“ (Kunde, Stand 12.11.2026, Kopf „komplex“). Ein gepinnter
    Film (#s-film) über dem 3D Modell des Entwurfs (js/svc-film3d.js, aus dem Entwurf gebaut). Hier, wie die Seite im Entwurf (S2Services):
    Fortschritt P aus dem Scrollen (Gewichte des Entwurfs), der Einstieg „Hausbau ist komplex“ Wort für Wort, die Wörter um die Baustelle,
-   das Logo, das aus der Kopfzeile auf den Baucontainer fliegt, die Texte der Kapitel ein und aus, die Summe der Gesamtinvestition, die
-   Knöpfe der Ausstattung, die Balken der Energie, das Jahr des Kundendiensts, „Deins. Einmal.“, die Karte zu einem Punkt im Haus.
+   das Logo, das aus der Kopfzeile auf den Baucontainer fliegt, die Texte der Kapitel ein und aus, die Tabelle der Gesamtinvestition
+   (Runde 57, das 3D blendet dafür aus), der Bauzeitplan der Bauleitung, die Knöpfe der Innenausstattung, „Deins. Einmal.“,
+   die Karte zu einem Punkt im Haus.
    Anders als im Entwurf (Wunsch des Kunden, Runde 55): drei schwarze Zwischentitel vor Besser planen, Besser bauen und Besser leben,
    und die größere Leiste unten. Texte aus data/leistungen.js (FILM), in Framer aus dem Markup. */
 import { loop, $, $$, reduce, vhs } from './core.js';
@@ -24,8 +25,11 @@ export function initServicesFilm() {
   const r = $('[data-svf]'); if (!r) return;
   const film = $('[data-film]', r), stage = $('[data-stage]', r);
   const ch = $$('[data-ch]', r), herok = $('[data-hero-k]', r), nav = $('[data-snav]', r), hp = $('[data-hp]', r), scrim = $('[data-scrim]', r);
-  const einmal = $('[data-einmal]', r), jahr = $('[data-jahr]', r), bal = $('[data-bal]', r), sw = $$('[data-sw]', r), kdim = $('[data-kdim]', r);
-  const lg = $('[data-ledger]', r), lsum = lg && $('[data-lsum]', lg), lnotiz = lg && $('[data-lnotiz]', lg);
+  const einmal = $('[data-einmal]', r), sw = $$('[data-sw]', r), kdim = $('[data-kdim]', r);
+  /* Runde 57: Tabelle der Gesamtinvestition und Bauzeitplan (Entwurf data-ledger, data-bplan) */
+  const lg = $('[data-ledger]', r), lrow = lg ? $$('[data-lrow]', lg).map(el => ({ el, bar: $('[data-lbar]', el), mk: $('[data-lmark]', el) })) : [], lseg = lg ? $$('[data-lseg]', lg) : [];
+  const bp = $('[data-bplan]', r), bgrow = bp ? $$('[data-grow]', bp).map(el => ({ a: +el.dataset.a, l: +el.dataset.l, f: $('[data-gfill]', el) })) : [], btoday = bp && $('[data-today]', bp), bok = bp ? $$('[data-bok]', bp) : [];
+  const LZ = FILM.summe.zeilen.map(z => z[3]);
   const ts = $('[data-ts]', r), tsb = $$('[data-tsb]', r).map(el => ({ el, w: $$('.w>span', el), y: [] }));
   const W = FILM.gewichte, PA = FILM.pausen;
   /* Ablauf: Kapitel k mit Gewicht W[k], vor P 4, 6 und 8 je ein Zwischentitel */
@@ -51,9 +55,7 @@ export function initServicesFilm() {
   const hk = herok ? $$('[data-hk]', herok).map(el => ({ el, i: +el.dataset.hk, w: $$('.w>span', el), y: [] })) : [];
   const SPK = { 0: [null, [.12, .2]], 1: [[.72, .8], [1.0, 1.07]], 3: [[1.1, 1.2], [2.42, 2.5]], 4: [[1.46, 1.56], [2.42, 2.5]], 5: [[2.56, 2.66], [3.9, 3.98]] };
   const t0 = performance.now();
-  /* Preise der Gesamtinvestition: aus den Marken p-… (Zeile „€ 498.000“, in Framer bearbeitbar) */
   const mkEl = (id, k) => r.querySelector(`[data-mk="${id}"] [data-k="${k}"]`);
-  const PREISE = FILM.marken3d.filter(m => /^p-/.test(m[0])).map(([id, , s, from]) => { const e = mkEl(id, 's'); return [+(String(e ? e.textContent : s).replace(/[^\d]/g, '')) || 0, from]; });
 
   /* Karte zu einem Punkt im Haus: Texte aus dem versteckten Markup (in Framer bearbeitbar), sonst aus data/leistungen.js */
   const D = { ...FILM.punkte };
@@ -114,17 +116,31 @@ export function initServicesFilm() {
     /* Punkt nur in der Ausstattung */
     if (focus && (P < 9 || P > 10)) setFocus(null);
     /* Knöpfe der Ausstattung: der gerade gezeigte (Rundgang) oder offene gelb unterstrichen */
-    if (sw.length) { const cur = P > 9.02 && P < 9.95 ? (P < 9.22 ? 0 : P < 9.42 ? 1 : P < 9.62 ? 2 : 3) : -1, act = focus ? HOTS.indexOf(focus) : cur; sw.forEach(b => b.classList.toggle('is-on', +b.dataset.sw === act)); }
-    if (scrim) { const on = (P > 9 && P < 10) || (P > 5.5 && P < 5.78) || (P > 6.02 && P < 6.48) || !!focus; scrim.classList.toggle('is-on', on); }
-    if (bal) { $('[data-bal-e]', bal).style.transform = 'scaleX(' + s(10.3, 10.38).toFixed(3) + ')'; $('[data-bal-v]', bal).style.transform = 'scaleX(' + s(10.33, 10.41).toFixed(3) + ')'; }
-    /* Gesamtinvestition: die Summe zählt mit den Preisen im Modell hoch, dann der gelbe Strich */
+    if (sw.length) { const cur = P > 9.02 && P < 9.95 ? (P < 9.35 ? 1 : P < 9.65 ? 2 : 3) : -1, act = focus ? HOTS.indexOf(focus) : cur; sw.forEach(b => b.classList.toggle('is-on', +b.dataset.sw === act)); }
+    /* Schatten hinter dem Text; während des Bauzeitplans (Desktop) rechts */
+    if (scrim) { const bl = P > 6.03 && P < 6.97 && !narrow, on = (P > 9 && P < 10) || (P > 5.5 && P < 5.78) || bl || !!focus; scrim.classList.toggle('is-on', on); scrim.classList.toggle('is-r', bl); }
+    /* Gesamtinvestition (Runde 57): Zeile für Zeile mit Balken und gelber Marke, dann der Balken aus allen Posten; das 3D blendet so lange aus */
     if (lg) {
-      const lv = s(5.83, 5.845) * (1 - s(5.99, 6)), o = lv.toFixed(3); if (lg.style.opacity !== o) lg.style.opacity = o;
+      const lv = s(5.81, 5.825) * (1 - s(5.99, 6)), o = lv.toFixed(3); if (lg.style.opacity !== o) lg.style.opacity = o;
       lg.style.visibility = lv > .001 ? 'visible' : 'hidden';
-      if (lv > .001) {
-        let sum = 0; PREISE.forEach(([v, a]) => sum += v * s(a, a + .012));
-        const t = '€ ' + (Math.round(sum / 1000) * 1000).toLocaleString('de-DE'); if (lsum.textContent !== t) lsum.textContent = t;
-        lnotiz.style.transform = 'scaleX(' + s(5.945, 5.96).toFixed(3) + ')';
+      if (lv > .001) lrow.forEach((w, i) => {
+        const a = LZ[i], k = s(a - .004, a + .006), nx = i < LZ.length - 1 ? LZ[i + 1] : 5.94;
+        w.el.style.opacity = k.toFixed(3); w.el.style.transform = 'translate3d(0,' + ((1 - k) * 10).toFixed(1) + 'px,0)';
+        w.bar.style.transform = 'scaleX(' + s(a, a + .01).toFixed(3) + ')';
+        w.mk.style.transform = 'scaleX(' + (s(a - .002, a + .008) * (1 - s(nx - .002, nx + .004))).toFixed(3) + ')';
+        if (lseg[i]) lseg[i].style.transform = 'scaleX(' + s(5.945 + i * .004, 5.952 + i * .004).toFixed(3) + ')';
+      });
+      const cv = eng && stage.querySelector('canvas');
+      if (cv) { const co = (1 - s(5.772, 5.79) * (1 - s(5.995, 6.01))).toFixed(3); if (cv.style.opacity !== co) cv.style.opacity = co; }
+    }
+    /* Bauzeitplan (Runde 57): der gelbe Strich „heute“ läuft durch die Bauzeit, die Zeilen füllen sich, am Ende die drei Häkchen */
+    if (bp) {
+      const v = s(6.03, 6.06) * (1 - s(6.95, 6.99)), o = v.toFixed(3); if (bp.style.opacity !== o) bp.style.opacity = o;
+      bp.style.visibility = v > .001 ? 'visible' : 'hidden';
+      if (v > .001) {
+        const tt = cl((P - 6.05) / .87); btoday.style.left = (tt * 100).toFixed(2) + '%';
+        bgrow.forEach(g => g.f.style.transform = 'scaleX(' + cl((tt - g.a) / g.l).toFixed(3) + ')');
+        bok.forEach((b, i) => b.style.opacity = s(6.9 + i * .008, 6.915 + i * .008).toFixed(3));
       }
     }
     /* Einstieg „komplex“ Wort für Wort (Entwurf) */
@@ -165,7 +181,6 @@ export function initServicesFilm() {
       eng.setStage(72, Math.round(top - 20));
     }
     if (einmal) { const v = s(11.5, 11.62); einmal.style.opacity = v.toFixed(3); einmal.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`; }
-    if (jahr) { const y = FILM.kapitel.find(k => k.jahr).jahr + ' ' + Math.max(1, Math.min(10, Math.round(1 + 9 * s(10.55, 10.95)))); if (jahr.textContent !== y) jahr.textContent = y; }
     /* Leiste unten (Runde 55: größer, die drei Teile klar unterscheidbar; am Telefon bekommt der aktuelle Teil mehr Platz) */
     if (nav) {
       const on = (P > 3.95 && P < 10.98) || (T.i >= 0 && (T.i > 0 || T.u > .5));
