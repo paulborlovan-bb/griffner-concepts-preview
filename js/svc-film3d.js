@@ -19,6 +19,22 @@ const FOC = {
   bad: { cam: [30, 55, 22, -6.6, .5, -4] },
   tuer: { cam: [70, 34, 16, -5.6, 1.2, -1.6] }
 };
+/* Runde 58: weiche Verläufe und Masken als Pixeldaten statt 2D Canvas. Safari 26 (iOS, iPadOS, macOS) verrauscht 2D Canvas beim Auslesen
+   (Advanced Fingerprinting Protection, seit Safari 26 in jedem Fenster an). Auf den großen additiven Lichtkreisen am Boden wurde das als bunte Punkte
+   sichtbar. f bekommt Canvas Koordinaten (y von oben), die Zeilen werden wie bei CanvasTexture (flipY) gelegt. */
+const datTex = (w, h, f, mip = true) => { const d = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const p = f(x + .5, h - y - .5), i = (y * w + x) * 4; d[i] = p[0]; d[i + 1] = p[1]; d[i + 2] = p[2]; d[i + 3] = Math.round(p[3]); }
+  const t = new T.DataTexture(d, w, h, T.RGBAFormat); t.magFilter = T.LinearFilter; t.minFilter = mip ? T.LinearMipmapLinearFilter : T.LinearFilter; t.generateMipmaps = mip; t.needsUpdate = true; return t; };
+const lerpS = (s, v) => { if (v <= s[0][0]) return s[0][1]; for (let i = 1; i < s.length; i++) if (v <= s[i][0]) { const a = s[i - 1], b = s[i]; return a[1] + (b[1] - a[1]) * (v - a[0]) / (b[0] - a[0]); } return s[s.length - 1][1]; };
+const radTex = (n, s) => { const t = datTex(n, n, (x, y) => [255, 255, 255, 255 * lerpS(s, Math.hypot(x - n / 2, y - n / 2) / (n / 2))]); t.colorSpace = T.SRGBColorSpace; return t; };
+/* Lichtkegel vor der Haustür: Trapez mit weichem Rand (wie blur 7px) und Verlauf nach unten */
+const spillTex = () => { const P = [[42, 4], [86, 4], [122, 252], [6, 252]], E = P.map((a, i) => { const b = P[(i + 1) % 4], l = Math.hypot(b[0] - a[0], b[1] - a[1]); let nx = (a[1] - b[1]) / l, ny = (b[0] - a[0]) / l; if ((64 - a[0]) * nx + (128 - a[1]) * ny < 0) { nx = -nx; ny = -ny; } return [a[0], a[1], nx, ny]; });
+  const cdf = z => .5 * (1 + Math.tanh(.7978845608 * (z + .044715 * z * z * z)));
+  const t = datTex(128, 256, (x, y) => { let d = 1e9; for (const e of E) d = Math.min(d, (x - e[0]) * e[2] + (y - e[1]) * e[3]); return [255, 214, 166, 255 * cdf(d / 7) * lerpS([[0, 1], [.35, .55], [1, 0]], y / 256)]; }); t.colorSpace = T.SRGBColorSpace; return t; };
+/* Logos auf Baucontainer und Bus: das SVG direkt als Bild in Pixelgröße w x h, ohne 2D Canvas (sonst bunte Ränder um die Schrift) */
+const svgTex = (url, w, h) => { const t = new T.Texture(); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+  const s = atob(url.split(',')[1]).replace(/<svg\b([^>]*)>/, (m, a) => '<svg' + a.replace(/\s(width|height|preserveAspectRatio)="[^"]*"/g, '') + ' width="' + w + '" height="' + h + '" preserveAspectRatio="none">');
+  const img = new Image(); img.onload = () => { t.image = img; t.needsUpdate = true; }; img.src = 'data:image/svg+xml;base64,' + btoa(s); return t; };
 
 /* GRIFFNER Services v2: Szene als Architekturmodell. Einheiten in Metern, y oben.
    Jede "Einheit" (unit) ist eine Ebene der Explosionszeichnung und landet in ihrem Kapitel. */
@@ -306,8 +322,8 @@ function buildScene(T) {
     const wheels = []; [[-1.02, -1.9], [1.02, -1.9], [-1.02, 1.75], [1.02, 1.75]].forEach(([x, z]) => { const w = new T.Mesh(new T.CylinderGeometry(.42, .42, .3, 20), vt); w.rotation.z = Math.PI / 2; w.position.set(x, .42, z); w.castShadow = true; van.add(w); wheels.push(w); });
     life.userData.wheels = wheels;
     const sideDoor = new T.Mesh(new T.BoxGeometry(.05, 1.9, 1.3), vb); sideDoor.position.set(1.08, 1.5, .6); van.add(sideDoor); life.userData.sideDoor = sideDoor;
-    { const vdec = (url, cw, ch, w, h, par, x, y, z, ry) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
-        const img = new Image(); img.onload = () => { const g = c.getContext('2d'); g.clearRect(0, 0, cw, ch); g.drawImage(img, 0, 0, cw, ch); t.needsUpdate = true; }; img.src = url;
+    { const vdec = (url, cw, ch, w, h, par, x, y, z, ry) => { const t = svgTex(url, cw, ch);
+        
         const m = new T.MeshBasicMaterial({ map: t, transparent: true, alphaTest: .08 }); m.userData.base = 1; life.userData.mats.push(m); const p = new T.Mesh(new T.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; par.add(p); };
       [1, -1].forEach(sd => vdec(LOGO_INV, 1024, 1030, 1.2, 1.207, van, sd * 1.085, 1.72, -1.8, sd * Math.PI / 2));
       vdec(CLAIM_W, 2048, 330, 1.5, .242, van, -1.085, .95, .45, -Math.PI / 2);
@@ -420,8 +436,7 @@ function buildScene(T) {
   const ia = new T.Group(); ia.name = 'ia'; root.add(ia);
   { const chips = [[0xC9B79E, [2.2, .12, -.2]], [0xD9CFBF, [-.2, .5, -4.2]], [0x8B907C, [3.7, .5, 4.6]], [0xCACACA, [-3.1, 2.2, 3.0]]].map(([col, to], i) => {
       const m = new T.Mesh(new T.BoxGeometry(1.5, .14, 1.5), new T.MeshStandardMaterial({ color: col, roughness: .8, transparent: true, opacity: 0 })); m.castShadow = true; m.userData = { from: [-4.6 + i * 2.6, 7.2, 1.3], to }; ia.add(m); return m; });
-    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.45, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-    const gt = new T.CanvasTexture(c); gt.colorSpace = T.SRGBColorSpace;
+    const gt = radTex(128, [[0, 1], [.45, .45], [1, 0]]);
     const pools = [[3.3, -3.05], [2.6, 6.8], [3.8, -.1], [.2, -4.2], [-6.6, -4.4], [-2, 6.2]].map(([px, pz]) => {
       const gl = new T.Mesh(new T.PlaneGeometry(3.6, 3.6), new T.MeshBasicMaterial({ map: gt, color: 0xFFD7A8, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false })); gl.rotation.x = -Math.PI / 2; gl.position.set(px, .1, pz);
       const pd = new T.Mesh(new T.CylinderGeometry(.22, .22, .06, 20), new T.MeshBasicMaterial({ color: 0xFFE7C4, transparent: true, opacity: 0 })); pd.position.set(px, 2.7, pz); ia.add(gl, pd); return { gl, pd }; });
@@ -458,10 +473,7 @@ function buildScene(T) {
     hero.fam = fam; }
   { const fx = new T.Group(); fx.name = 'heroFx'; root.add(fx);
     const glow = new T.Mesh(new T.PlaneGeometry(2.2, 2.6), new T.MeshBasicMaterial({ color: 0xFFD9AC, transparent: true, opacity: 0, fog: false })); glow.position.set(-2, 1.3, EZ1 - .9); fx.add(glow);
-    const sc = document.createElement('canvas'); sc.width = 128; sc.height = 256; const x = sc.getContext('2d'); x.filter = 'blur(7px)';
-    const gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(255,214,166,1)'); gr.addColorStop(.35, 'rgba(255,214,166,.55)'); gr.addColorStop(1, 'rgba(255,214,166,0)'); x.fillStyle = gr;
-    x.beginPath(); x.moveTo(42, 4); x.lineTo(86, 4); x.lineTo(122, 252); x.lineTo(6, 252); x.closePath(); x.fill();
-    const st = new T.CanvasTexture(sc); st.colorSpace = T.SRGBColorSpace;
+    const st = spillTex();
     const spill = new T.Mesh(new T.PlaneGeometry(2.8, 4), new T.MeshBasicMaterial({ map: st, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }));
     spill.rotation.x = -Math.PI / 2; spill.position.set(-2, .025, EZ1 + 2); fx.add(spill);
     const lamp = new T.PointLight(0xFFD2A0, 0, 14, 1.4); lamp.position.set(-2, 1.6, EZ1 + 1.2); fx.add(lamp); anchor(fx, 'heroLicht', -2, 2.5, EZ1 + .8);
@@ -471,8 +483,7 @@ function buildScene(T) {
   const zaun = grp(root, 'zaun');
   { const X0 = -16.5, X1 = 16.5, Z0 = -12.5, Z1 = 12.5, H = 1.3, posts = [], rails = [];
     const pm = M(zaun, 0x1d1d1c, { r: .45, m: .7 }), cm = M(zaun, 0x2a2a29, { r: .4, m: .7 }), lm = LM(zaun, C.kalk, .35);
-    const sc = document.createElement('canvas'); sc.width = 64; sc.height = 4; const sx = sc.getContext('2d'); sx.fillStyle = '#fff'; sx.fillRect(0, 0, 40, 4);
-    const am = new T.CanvasTexture(sc); am.wrapS = T.RepeatWrapping; am.magFilter = T.NearestFilter; am.minFilter = T.LinearFilter;
+    const am = datTex(64, 4, x => x < 40 ? [255, 255, 255, 255] : [0, 0, 0, 0], false); am.wrapS = T.RepeatWrapping; am.magFilter = T.NearestFilter; am.minFilter = T.LinearFilter;
     const wc = document.createElement('canvas'); wc.width = 256; wc.height = 64; const wx = wc.getContext('2d'); wx.fillStyle = '#B49E7F'; wx.fillRect(0, 0, 256, 64);
     for (let i = 0; i < 90; i++) { wx.fillStyle = 'rgba(70,52,34,' + (.05 + (i % 7) * .015) + ')'; wx.fillRect(0, (i * 37) % 64, 256, 1); }
     const wt = new T.CanvasTexture(wc); wt.colorSpace = T.SRGBColorSpace; wt.wrapS = T.RepeatWrapping;
@@ -530,8 +541,8 @@ function buildScene(T) {
     [-4.8, -.6, 3.6, 7.6].forEach(z => strut(BX - HW + 2.4, 3.3, z, BX - HW + .25, YB + KW - .2, z));
     [-3.8, .2].forEach(z => strut(EX1 - 2.2, .02, z, EX1 - .3, 2.7, z));
     const tz = 15.6, cabM = M(RB, 0x0b0b0b, { r: .35, m: .2 }); B(-3.5, .9, tz - 1.25, 8.6, 1.2, tz + 1.25, st, ed); B(-3.5, .5, tz - 1.2, 8.6, .9, tz + 1.2, cabM); B(8.8, .5, tz - 1.25, 11.6, 3.3, tz + 1.25, cabM, ed); B(11.59, 1.8, tz - 1.05, 11.63, 2.9, tz + 1.05, gl); B(8.8, 3.3, tz - 1.15, 11.2, 3.75, tz + 1.15, cabM, ed);
-    const decal = (url, cw, ch, w, h, x, y) => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
-      const img = new Image(); img.onload = () => { const g = c.getContext('2d'); g.clearRect(0, 0, cw, ch); g.drawImage(img, 0, 0, cw, ch); t.needsUpdate = true; }; img.src = url;
+    const decal = (url, cw, ch, w, h, x, y) => { const t = svgTex(url, cw, ch);
+      
       const m = new T.MeshBasicMaterial({ map: t, transparent: true, alphaTest: .08 }); m.userData.base = 1; RB.userData.mats.push(m); return [1, -1].map(sd => { const p = new T.Mesh(new T.PlaneGeometry(w, h), m); p.position.set(x, y, tz + sd * 1.262); if (sd < 0) p.rotation.y = Math.PI; RB.add(p); return p; }); };
     B(-3.5, 1.2, tz - 1.25, 8.4, 4.3, tz + 1.25, M(RB, 0x121212, { r: .92 }), ed); B(-3.55, 1.2, tz - 1.27, -3.45, 4.3, tz + 1.27, cabM); B(8.35, 1.2, tz - 1.27, 8.45, 4.3, tz + 1.27, cabM);
     RB.userData.logo = decal(LOGO_INV, 1024, 1030, 2.3, 2.31, 5.7, 2.78);
@@ -637,8 +648,7 @@ export async function createFilm(host, cfg = {}) {
     const H = S.hero; H.vitr.position.copy(HC); scene.add(H.vitr);
     const spot = new T.SpotLight(0xffffff, 0, 0, .42, .8, 0); spot.position.set(HC.x + 6, 38, HC.z + 12); spot.target = S.pivot; scene.add(spot);
     if (VK) { spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -.0004; }
-    const spotPool = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'), g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.55, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
-      const tx = new T.CanvasTexture(c); tx.colorSpace = T.SRGBColorSpace; const m = new T.Mesh(new T.PlaneGeometry(2, 2), new T.MeshBasicMaterial({ map: tx, color: 0xFFF1DE, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, fog: false }));
+    const spotPool = (() => { const tx = radTex(256, [[0, 1], [.55, .5], [1, 0]]); const m = new T.Mesh(new T.PlaneGeometry(2, 2), new T.MeshBasicMaterial({ map: tx, color: 0xFFF1DE, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, fog: false }));
       m.rotation.x = -Math.PI / 2; m.position.set(HC.x + .6, .04, HC.z); m.visible = false; scene.add(m); return m; })();
 
     const cl = t => Math.max(0, Math.min(1, t)), sm = t => (t = cl(t), t * t * (3 - 2 * t));

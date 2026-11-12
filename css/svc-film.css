@@ -196,6 +196,12 @@
   .svf__h--l,.svf__einmal{font-size:30px}
   .svf__p,.svf-hp__x{font-size:15px;line-height:1.38}
 }
+/* Runde 58: schmale Telefone (320 px): ein Kapiteltitel ist oft ein einziges langes Wort (Machbarkeitsanalyse.), das nicht umbrechen kann. Darum mit der Breite kleiner. */
+@media (max-width:359px){
+  .svf__h,.svf__h--m{font-size:8.4vw}
+  .svf__h--s{font-size:7vw}
+  .svf__h--l,.svf__einmal{font-size:8.8vw}
+}
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf__scrim,.svw__line{transition:none}.svw__g *{stroke-dashoffset:0}}
 .svf__src{display:none!important}
 /* Runde 57: kurze Telefone (schmal und unter 760 px hoch): Tabelle und Bauzeitplan rücken nach oben, der Plan wird enger.
