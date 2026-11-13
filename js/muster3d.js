@@ -51,7 +51,6 @@ const BUILD = {
       z = z0;
     });
     s.labs.push([[.0, 1.0, 0], '42,25 cm', true]);
-    s.nolab = true; // Runde 75 (Kunde): ohne Linien und Texte, das Muster in der Mitte
     s.view = { az: -.78, el: .3, rot: .1 };
     return s;
   },
@@ -169,7 +168,6 @@ const BUILD = {
     [[0, .5], [.5, 1]].forEach(([y0, y1]) => add(cube(.304, y0 + .003, .014, .6, y1 - .003, .03), fp, [0, 0, .31]));
     s.labs.push([[-.45, .92, .036], 'Holz'], [[-.15, .92, .042], 'Putz'], [[.15, .92, .04], 'Steinoptik'], [[.45, .92, .03], 'Fassadenplatten'],
       [[-.6, .5, 0], 'Hinterlüftung', true], [[-.6, .3, -.018], 'Fassadenbahn'], [[-.6, .12, -.05], 'Holzfaser']);
-    s.nolab = true; // Runde 75 (Kunde): ohne Linien und Texte, das Muster in der Mitte
     s.view = { az: -.58, el: .2, rot: .15 };
     return s;
   }
@@ -204,6 +202,9 @@ export async function createMuster(host, labsEl) {
   const get = k => {
     if (S[k]) return S[k];
     const s = BUILD[k](); s.k = k; s.g.visible = false; scene.add(s.g);
+    /* Runde 75b (Kunde 2026-11-13: Einheitlichkeit): alle acht Muster ohne Linien und Texte, jedes in der Mitte der Bühne.
+       Die Beschriftungen bleiben in BUILD (s.labs); s.nolab = false bei einem Muster holt sie zurück */
+    if (s.nolab === undefined) s.nolab = true;
     s.box = new T.Box3();
     s.ex.forEach(([m, dx, dy, dz]) => m.position.set(dx, dy, dz)); s.g.updateMatrixWorld(true); s.box.setFromObject(s.g);
     s.ex.forEach(([m]) => m.position.set(0, 0, 0));
@@ -219,7 +220,7 @@ export async function createMuster(host, labsEl) {
   /* Kamera: Blick von vorne links, Abstand so, dass das auseinandergezogene Muster neben die Beschriftungen passt */
   /* Runde 61 (Kunde): am Telefon ohne Beschriftung, das Muster groß in der Mitte */
   const PH = () => innerWidth < 810;
-  /* Runde 75: Muster ohne Beschriftung (s.nolab, Wand und Fassade) brauchen keine Spalte und stehen in der Mitte;
+  /* Runde 75: Muster ohne Beschriftung (s.nolab, seit 75b alle) brauchen keine Spalte und stehen in der Mitte;
      die Verschiebung des Bildes (sh) fliegt beim Wechsel mit der Kamera */
   const LABW = s => (PH() || (s && s.nolab) ? 0 : W < 520 ? W * .46 : Math.min(170, W * .34));
   function frameCam(s, k = 1, from = null) {
