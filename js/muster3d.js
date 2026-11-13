@@ -5,6 +5,8 @@
 import * as T from 'three';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js';
 import { cube, MAT, WALL, ROOF, FLOOR } from './svc-geo.js';
+/* Runde 64: Linienfarbe; auf schwarzem Grund (Acht Dinge schwarz) hell */
+let INK = 0x000000;
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cl = x => Math.max(0, Math.min(1, x));
@@ -129,10 +131,10 @@ const BUILD = {
     const ceil = add(cube(-.62, 0, -.45, .62, .04, .45), MAT.slab(), null);
     /* übliche Höhe als gestrichelte Linie an Rück und Seitenwand */
     const pts = [[.62, -.418], [-.588, -.418], [-.588, .45], [.62, .45], [.62, -.418]].map(([x, z]) => new T.Vector3(x, h0, z));
-    const dl = new T.Line(new T.BufferGeometry().setFromPoints(pts), new T.LineDashedMaterial({ color: 0x000000, dashSize: .035, gapSize: .025 }));
+    const dl = new T.Line(new T.BufferGeometry().setFromPoints(pts), new T.LineDashedMaterial({ color: INK, dashSize: .035, gapSize: .025 }));
     dl.computeLineDistances(); s.g.add(dl);
     /* Maßlinie vorne links */
-    const ml = new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(-.66, .03, .45), new T.Vector3(-.66, 1, .45)]), new T.LineBasicMaterial({ color: 0x000000 }));
+    const ml = new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(-.66, .03, .45), new T.Vector3(-.66, 1, .45)]), new T.LineBasicMaterial({ color: INK }));
     s.g.add(ml);
     s.upd = (t, e) => {
       const h = h0 + (h1 - h0) * e;
@@ -167,7 +169,11 @@ export async function createMuster(host, labsEl) {
   R.outputColorSpace = T.SRGBColorSpace; R.toneMapping = T.ACESFilmicToneMapping; R.toneMappingExposure = 1;
   R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap;
   host.insertBefore(R.domElement, host.firstChild);
-  const scene = new T.Scene(); scene.background = new T.Color(0xffffff);
+  /* Runde 64: Hintergrund aus dem CSS der Bühne (Acht Dinge schwarz), sonst Weiß */
+  const bgc = getComputedStyle(host).backgroundColor, bgm = bgc && bgc.match(/\d+(\.\d+)?/g), bgOk = bgm && (bgm.length < 4 || +bgm[3] > 0);
+  const BG = bgOk ? new T.Color().setRGB(bgm[0] / 255, bgm[1] / 255, bgm[2] / 255, T.SRGBColorSpace) : new T.Color(0xffffff);
+  const dark = bgOk && (+bgm[0] + +bgm[1] + +bgm[2]) / 3 < 96; INK = dark ? 0xd9d5cd : 0x000000;
+  const scene = new T.Scene(); scene.background = BG;
   const pmrem = new T.PMREMGenerator(R); scene.environment = pmrem.fromScene(new RoomEnvironment(R), .04).texture; pmrem.dispose();
   scene.add(new T.HemisphereLight(0xffffff, 0xcfc8bd, .4));
   const sun = new T.DirectionalLight(0xfff1e0, 2.1); sun.position.set(-2.4, 4.2, 3); sun.castShadow = true;
