@@ -171,11 +171,17 @@
 @media (max-width:899px){
   .svf{--svf-nav:80px;--svf-pb:clamp(124px,18vh,180px)} /* Runde 56: Abstand wie im Entwurf */
   .svf__scrim{background:linear-gradient(0deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 42%,rgba(0,0,0,0) 72%)}
-  .svf__ledger{left:var(--page-margin);right:var(--page-margin);width:auto;top:clamp(86px,12vh,110px)}
-  .svf__lrow{grid-template-columns:84px minmax(0,1fr)}
+  /* Runde 72 (Kunde: Tabelle zu weit oben): kleiner (engere Zeilen, schmalere Balken) und tiefer, etwa mittig zwischen Kopf und Kapiteltext */
+  .svf__ledger{left:var(--page-margin);right:var(--page-margin);width:auto;top:clamp(96px,22svh,230px)}
+  .svf__lrow{grid-template-columns:84px minmax(0,1fr);padding:4px 0 5px}
+  .svf__lbar{height:10px}
+  .svf__ltot{row-gap:10px;padding-top:12px}
+  .svf__lseg{height:16px}
   .svf__p{max-width:27em}
   /* Runde 66: Tafel und Verlauf oben über dem Text (Höhe misst js/svc-film.js) */
   .svf__board,.svf__psteu{left:var(--page-margin);right:var(--page-margin);top:100px;bottom:auto;height:30vh}
+  /* Runde 72 (Kunde: Verlauf zu weit oben): etwas kleiner und tiefer. Lage und Höhe setzt js/svc-film.js inline, deshalb über transform */
+  .svf__psteu{transform:translate3d(0,4.5svh,0) scale(.9);transform-origin:50% 0}
   .svw__box{grid-template-columns:minmax(0,1fr);align-items:start}
   .svw__g{width:52px;height:52px}
   .svf__ch::before{width:100%;height:calc(100% + 12vh);background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.6) 55%,rgba(0,0,0,0) 100%)}

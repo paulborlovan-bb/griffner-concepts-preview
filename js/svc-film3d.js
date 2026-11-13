@@ -837,7 +837,7 @@ export async function createFilm(host, cfg = {}) {
       const PR = SET.P, PN = remapP(PR), P = warp(PN), PB = PR >= 6.6 && PR < 7.5 ? 6 + Math.min(1, (PR - 6.6) / .75) * .999 : PR >= 6 && PR < 6.6 ? 6 : PR, PA = PR >= 6 && PR < 7.5 ? (PR < 6.95 ? 7 : 7 + (PR - 6.95) / .55 * .499) : PR, t = (performance.now() - t0) / 1000, s = (a, b) => sm((P - a) / (b - a)), sN = (a, b) => sm((PN - a) / (b - a));
       const bk = PR >= 8 && PR < 9 ? PR - 8 : -1, bq = (a, w) => bk < 0 ? 0 : sm((bk - a) / w), bRoof = bq(.1, .14) * (1 - bq(.88, .08)), bDeck = bq(.28, .14) * (1 - bq(.88, .08)), bWall = bq(.5, .08) * (1 - bq(.8, .06)), bDims = bq(.79, .05) * (1 - bq(.93, .05));
       const ek = PR >= 10 && PR < 10.5 ? (PR - 10) * 2 : -1, eq = (a, w) => ek < 0 ? 0 : sm((ek - a) / w), sP = (a, b) => sm((PR - a) / (b - a));
-      const autoWall = Math.max(bWall, sN(7.56, 7.64) * (1 - sN(7.92, 8.0))), autoDims = Math.max(bDims, sN(8.03, 8.09) * (1 - sN(8.19, 8.25))), autoDeck = Math.max(bDeck, sm(sN(8.18, 8.24) * (1 - sN(8.31, 8.37)))), autoRoof = Math.max(bRoof, sN(8.31, 8.37) * (1 - sN(8.46, 8.53)));
+      const autoWall = Math.max(bWall, sN(7.56, 7.64) * (1 - sN(7.92, 8.0))), autoDims = Math.max(bDims, sN(8.03, 8.09) * (1 - sN(8.19, 8.25))), autoDeck = Math.max(bDeck, sm(sN(8.18, 8.24) * (1 - sN(8.31, 8.37)))), autoRoof = Math.max(bRoof, sN(8.31, 8.37) * (1 - sN(8.46, 8.53)) * (PR >= 9 && PR < 9.1 ? 0 : 1));
       const wI = sN(8.5, 8.6) * (1 - sN(9.38, 9.5)); SET.cur = wI > .5 ? ['fenster', 'parkett', 'fliesen', 'bad'][PN < 8.72 ? 0 : PN < 8.92 ? 1 : PN < 9.12 ? 2 : 3] : null;
 
       /* Kamera */
@@ -865,7 +865,8 @@ export async function createFilm(host, cfg = {}) {
       if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] - c[j]) * fk; }
       if (SET.camOv && SET.camW > .001) { const w = sm(SET.camW); for (let j = 1; j < 7; j++) c[j] += (SET.camOv[j - 1] - c[j]) * w; }
       { const ow = SET.camOv ? sm(SET.camW || 0) : 0, fv = 30 + ((SET.fovOv || 30) - 30) * ow; SET.ow = ow; if (Math.abs((SET.fv || 30) - fv) > .01) { SET.fv = fv; cam.near = fv > 31 ? .12 : .5; cam.far = fv > 31 ? 240 : 5000; SET.lens = null; } }
-      if (SET.cPrev && Math.abs(PN - SET.pnPrev) > .12 && !reduce) SET.dip = 1;
+      if (SET.cPrev && Math.abs(PN - SET.pnPrev) > .12 && !reduce && !(Math.abs(PR - SET.prPrev) < .25 && [9, 10].some(b => (SET.prPrev - b) * (PR - b) <= 0))) SET.dip = 1;
+      SET.prPrev = PR;
       if (SET.dip > .002) SET.dip *= .86; else SET.dip = 0;
       SET.cPrev = c.slice(); SET.pnPrev = PN;
       let az = c[1], el = c[2];
@@ -928,7 +929,8 @@ export async function createFilm(host, cfg = {}) {
           const hm = u.userData.hl; if (hm) { if (!hm.userData.c0) { hm.userData.c0 = hm.color.clone(); hm.userData.c1 = new T.Color(0xCACACA); } hm.color.copy(hm.userData.c0).lerp(hm.userData.c1, k); } }
         if (ai >= 0 && PN > 4.96 && PN < 5.3) { const ord = [1, 0, 2, 3, 4][ai], k = sN(5.02 + ord * .03, 5.07 + ord * .03), out = 1 - sN(5.2, 5.25); u.position.y = -1.8 * (1 - k); o = k * out; }
         if (SET.hover !== -1 && !(Array.isArray(SET.hover) ? SET.hover.includes(e) : e === SET.hover)) o *= 1 - .78 * ov;
-        if (u.name === 'innen' && PN > 7.9 && PN < 8.6) o *= sN(8.46, 8.53);
+        if (u.name === 'innen' && PN > 7.9 && PN < 8.6 && PR < 9) o *= sN(8.46, 8.53);
+        if (u.name === 'innen' && PR >= 8.94 && PR < 9.06) { u.position.y = 0; o *= sm((PR - 8.96) / .05); }
         u.userData.op = o; setOp(u, o);
       });
       const U = S.U;

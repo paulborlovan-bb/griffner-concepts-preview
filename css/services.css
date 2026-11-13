@@ -683,9 +683,12 @@ section{position:relative}
   .fo--drei .fo__txt{grid-column:1;gap:14px}
   .fo--drei .fo__it{gap:14px}
   .fo__h{font-size:clamp(28px,8.6vw,38px)}
-  .fo--acht .fo__st{grid-template-rows:26svh minmax(0,1fr);row-gap:14px;padding-top:68px}
-  .fo--acht .fo__frame{grid-column:1;grid-row:1}
-  .fo__side{grid-column:1;grid-row:2;gap:12px}
+  /* Runde 72 (Kunde: Bilder zu weit oben, Muster unten zu groß): Bild, Text und ein kleineres Muster stehen als Block
+     in der Mitte des Bildschirms, das Bild beginnt mit Luft unter dem Kopf */
+  .fo--acht .fo__st{grid-template-rows:auto auto;align-content:center;row-gap:22px;padding-top:88px;padding-bottom:28px}
+  .fo--acht .fo__frame{grid-column:1;grid-row:1;height:min(30svh,64vw)}
+  .fo__side{grid-column:1;grid-row:2;gap:18px;grid-template-rows:auto auto}
+  .fo--acht .fo__3d{height:min(22svh,46vw)}
   .fo--acht .fo__p{font-size:clamp(16px,4.4vw,19px)}
   .fo--acht .fo__txt{gap:10px}
   .fo--acht .fo__it{gap:10px}

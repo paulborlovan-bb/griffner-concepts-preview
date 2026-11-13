@@ -212,7 +212,18 @@ export function initServicesFilm() {
      danach führt die Kamera durch die Innenausstattung (KI, bis P 10.04). Ein offener Punkt im Haus hat Vorrang (fw) */
   let rOv = 0, rDbl = false, fw = 0;
   const RK = [[0, -48, 6, 7.2, 5.6, 1.3, -3.4], [.3, -40, 6, 7.2, 5.6, 1.3, -3.4], [.4, -14, 4, 7.6, 3.6, 1.45, -5.3], [.6, -20, 4, 7.6, 3.6, 1.45, -5.3], [.72, -30, -28, 3.4, .9, 6.1, -5.0], [1, -22, -25, 3.4, .9, 6.0, -5.0]];
-  const RKI = [[9.3, -22, -25, 3.4, .9, 6.0, -5.0, 70], [9.33, -22, -25, 3.4, .9, 6.0, -5.0, 70], [9.42, 58, 19, 3.6, -1.9, 3.55, -3.4, 62], [9.5, 50, 17, 3.5, -1.9, 3.55, -3.3, 62], [9.6, 27, 23.5, 2.64, 2.8, 3.4, -3.9, 62], [9.7, 36, 22, 2.6, 2.8, 3.4, -3.9, 62], [9.8, -119, 16, 2.6, 4.4, 4.2, -2.4, 62], [9.94, -110, 16, 2.6, 4.4, 4.2, -2.4, 62], [10.04, -110, 16, 2.6, 4.4, 4.2, -2.4, 62]];
+  /* Runde 72 (Kunde: zu plötzlich, gebrochen): nach dem Bad fährt die Kamera in einem Zug in Augenhöhe rückwärts aus dem Obergeschoß
+     (durch die Längswand) und dreht im Bogen zur Ansicht der Betriebskosten (ausCam) */
+  const RKI = [[9.3, -22, -25, 3.4, .9, 6.0, -5.0, 70], [9.33, -22, -25, 3.4, .9, 6.0, -5.0, 70], [9.42, 58, 19, 3.6, -1.9, 3.55, -3.4, 62], [9.5, 50, 17, 3.5, -1.9, 3.55, -3.3, 62], [9.6, 27, 23.5, 2.64, 2.8, 3.4, -3.9, 62], [9.7, 36, 22, 2.6, 2.8, 3.4, -3.9, 62], [9.8, -119, 16, 2.6, 4.4, 4.2, -2.4, 62], [9.94, -110, 16, 2.6, 4.4, 4.2, -2.4, 62]];
+  /* Ausfahrt (P 9.94 bis 10.14) als eine Kurve: Lage auf einer Bézierkurve vom Bad nach Westen durch die Längswand (unter der Traufe,
+     y um 5 m) und im Bogen nach vorn, Blick gleitet vom Bad zur Hausmitte; Ende = Kamera des Films bei P 10.14 (Betriebskosten) */
+  const orb = c => { const A = c[0] * Math.PI / 180, E = c[1] * Math.PI / 180, d = c[2]; return [c[3] + d * Math.cos(E) * Math.sin(A), c[4] + d * Math.sin(E), c[5] + d * Math.cos(E) * Math.cos(A)]; };
+  const AUS = { p0: orb([-110, 16, 2.6, 4.4, 4.2, -2.4]), t0: [4.4, 4.2, -2.4], c: [-22, 4.8, -6], p2: orb([20.8, 10.6, 55.8, 0, 3, 1.3]), t2: [0, 3, 1.3] };
+  const ausCam = p => { const u = sm((p - 9.94) / .2), v = 1 - u, k = sm(u), q = [0, 1, 2].map(i => v * v * AUS.p0[i] + 2 * u * v * AUS.c[i] + u * u * AUS.p2[i]), t = [0, 1, 2].map(i => AUS.t0[i] + (AUS.t2[i] - AUS.t0[i]) * k);
+    const dx = q[0] - t[0], dy = q[1] - t[1], dz = q[2] - t[2], d = Math.hypot(dx, dy, dz); return [Math.atan2(dx, dz) * 180 / Math.PI, Math.asin(dy / d) * 180 / Math.PI, d, t[0], t[1], t[2], 62 - 32 * sm(u * 1.4)]; };
+  /* Runde 72: vom fertigen Haus (Ende Bausystem) in einem Zug über das Haus, das Obergeschoß hebt ab, dann hinunter zum Fenster im
+     Erdgeschoß (Kamera des Films bei P 9.12), statt Sprung bei P 9 */
+  const RKB = [[8.93, 36, 16, 62, 0, 3.5, 1.3], [9.04, 24, 38, 50, 0, 1.2, 0], [9.15, 10, 30, 17, 1.5, 1.2, -5.0]];
   const keyAt = (K, x) => { let i = 0; while (i < K.length - 2 && x >= K[i + 1][0]) i++; const a = K[i], b = K[i + 1], kk = sm(cl((x - a[0]) / (b[0] - a[0]))), cv = []; for (let j = 1; j < a.length; j++) cv.push(a[j] + (b[j] - a[j]) * kk); return cv; };
   function raumFrame(ra, raA) {
     const E = eng; if (!rm || !E || !E.camOv) return;
@@ -222,9 +233,14 @@ export function initServicesFilm() {
     if (raA) {
       const cv = keyAt(RK, ra); E.camOv(cv, sm(ra / .08), lp(64, 70, sm((ra - .6) / .12))); E.ogLight && E.ogLight(sm((ra - .64) / .08));
       const rd = ra > .64; if (rDbl !== rd) { rDbl = rd; E.roofDouble && E.roofDouble(rd); } E.dollOv(0, sm((ra - .6) / .1)); rOv = 1;
-    } else if (ra === 2 && P >= 9.3 && P < 10.04) {
-      const cv = keyAt(RKI, P), fv = cv.pop(), w = (1 - s(9.94, 10.04)) * (1 - fw);
-      E.camOv(cv, w, fv); E.dollOv(0, w); E.ogLight && E.ogLight(w); if (!rDbl) { rDbl = true; E.roofDouble && E.roofDouble(true); } rOv = 1;
+    } else if (ra === -1 && P >= 8.93 && P < 9.16) {
+      const w = sm((P - 8.93) / .04) * (1 - s(9.12, 9.16)) * (1 - fw);
+      E.camOv(keyAt(RKB, P), w, 30); E.dollOv(sm((P - 8.95) / .09), 1); rOv = 1;
+    } else if (ra === 2 && P >= 9.3 && P < 10.16) {
+      const cv = P > 9.94 ? ausCam(P) : keyAt(RKI, P), fv = cv.pop(), w = (1 - s(10.12, 10.16)) * (1 - fw);
+      /* das Dach nur von innen doppelseitig, solange die Kamera drin ist (beim Hinausfahren sonst ein graues Bild unter dem Dach) */
+      const rd = P < 9.96; if (rDbl !== rd) { rDbl = rd; E.roofDouble && E.roofDouble(rd); }
+      E.camOv(cv, w, fv); E.dollOv(0, w); E.ogLight && E.ogLight(w * (1 - s(9.94, 10.04))); rOv = 1;
     } else if (rOv) { rOv = 0; E.camOv(null, 0); E.dollOv(0, 0); if (rDbl) { rDbl = false; E.roofDouble && E.roofDouble(false); } E.ogLight && E.ogLight(0); }
     if (bg <= .001) { if (raumTx.style.visibility !== 'hidden') showTx(raumTx, 0, 0); return; }
     showTx(raumTx, 1, 0);
@@ -286,10 +302,10 @@ export function initServicesFilm() {
     if (cov) {
       /* Runde 71 (Kunde): beim Zwischentitel Besser planen verschwindet der Ebenenstapel mit dem Schwarz (sonst stand er beim Ausblenden
          des Titels noch da); vor Besser bauen ist das Schwarz schon zu, also kein Grundstück vor der Projektsteuerung; von der
-         Innenausstattung zu den Betriebskosten fährt die Kamera unter einer kurzen Blende aus dem Bad zum Haus (nicht durch die Wände) */
+         Innenausstattung zu den Betriebskosten fährt die Kamera seit Runde 72 in einem Zug aus dem Haus (raumFrame), ohne Blende */
       const pcv = P >= 5.98 && P < 6.66 ? s(5.986, 5.998) * (1 - s(6.56, 6.62)) : 0, rcv = eng && eng.dip ? Math.min(1, eng.dip * 1.6) : 0;
-      const tcv = T.i === 0 ? sm(T.u / .2) : 0, icv = P > 9.9 && P < 10.12 ? s(9.95, 9.975) * (1 - s(10.06, 10.09)) : 0;
-      const co = (stA ? 0 : st === 2 && P < 4.47 ? s(4.37, 4.46) : 1) * (1 - pcv) * (1 - rcv) * (1 - tcv) * (1 - icv), c2 = (1 - co).toFixed(3), s2 = co.toFixed(3);
+      const tcv = T.i === 0 ? sm(T.u / .2) : 0;
+      const co = (stA ? 0 : st === 2 && P < 4.47 ? s(4.37, 4.46) : 1) * (1 - pcv) * (1 - rcv) * (1 - tcv), c2 = (1 - co).toFixed(3), s2 = co.toFixed(3);
       if (cov.style.opacity !== c2) cov.style.opacity = c2;
       if (l3 && l3.style.opacity !== s2) l3.style.opacity = s2;
       if (rcv > .002) anim = true;
