@@ -64,7 +64,6 @@ section{position:relative}
 .ua__h{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-l);line-height:var(--lh-d);text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
 .ua__k{margin:0;color:var(--griffner-kalk)}
 .ua__p{max-width:27em;color:var(--griffner-kalk)}
-.ua__back{margin-top:clamp(4px,1vh,12px)}
 .ua__panel{position:absolute;left:var(--page-margin);top:0;bottom:0;width:min(38vw,520px);box-sizing:border-box;padding:clamp(96px,14vh,140px) 0 clamp(40px,7vh,72px);display:grid;align-content:center;row-gap:clamp(24px,4vh,44px);opacity:0;visibility:hidden;pointer-events:none;will-change:opacity,transform}
 .ua__h2{margin:0;max-width:9em;font-family:var(--font-display);font-weight:300;font-size:var(--t-m);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
 .ua__steps{display:grid}
