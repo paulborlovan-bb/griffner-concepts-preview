@@ -75,7 +75,8 @@ export async function createBau(host) {
     m.position.set(PL.x, GY - .6, PL.z); m.receiveShadow = true; m.add(new T.LineSegments(new T.EdgesGeometry(g), new T.LineBasicMaterial({ color: 0xBDB8AE }))); house.add(m); }
 
   /* ---- Teile einsammeln und einordnen ---- */
-  const SKIP = new Set(['dim', 'wallx', 'ghostH', 'roofIns', 'pvA', 'moe']);
+  /* Runde 66: 'og' = eingerichtetes Obergeschoss des Entwurfs (Raumgefühl im Film), gehört zu keiner Ausbaustufe */
+  const SKIP = new Set(['dim', 'wallx', 'ghostH', 'roofIns', 'pvA', 'moe', 'og']);
   const units = [];
   const ctxOf = { gvol: 'gvol', up: 'up', deck: 'deck', roof: 'roof', zUp: 'zUp', zeich: 'zeich', fund: 'fund', terrasse: 'terr', carport: 'carp', innen: 'inn' };
   const IA = S.U.innen.userData.IA || {};

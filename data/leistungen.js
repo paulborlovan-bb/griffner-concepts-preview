@@ -411,6 +411,9 @@ export const FILM = {
   /* Gewichte des Entwurfs (Kopf „komplex“). Dazu (Wunsch des Kunden, Runde 55) drei schwarze Zwischentitel vor Besser planen,
      Besser bauen und Besser leben (pausen: bei P, Gewicht). Sonst eins zu eins wie im Entwurf. */
   gewichte: [2.4, 2.6, 1.4, 1, 1, 4.6, 2, 2, 2, 2.2, 2, 1],
+  /* Runde 66 (Entwurf 13.11.): zwei eingeschobene Szenen, in denen P stehen bleibt (Entwurf INS): bei P 4 das Architekturkonzept
+     (Tafel mit Wünschen, Alltag, Designideen), bei P 9.3 das Raumgefühl (Kamera geht ins Haus, Maße). w = Gewicht wie ein Kapitel */
+  einschub: [{ p: 4, w: 1.7, key: 'stil' }, { p: 9.3, w: 1.8, key: 'raum' }],
   pausen: [
     { at: 4, w: 1, n: '01 / 03', t: 'Besser planen.' },
     { at: 6, w: 1, n: '02 / 03', t: 'Besser bauen.' },
@@ -425,39 +428,49 @@ export const FILM = {
   kapitel: [
     { ch: '4', id: 'machbarkeit', h: 'Machbarkeitsanalyse.', txt: 'Vor Ort prüfen wir Baurecht und Grundstück und zeigen dir, wie dein Haus dort am besten zur Geltung kommt.', gr: 's' },
     { ch: '5', a: 5, b: 5.2, id: 'budget', h: 'Budgetanalyse.', txt: 'Wir zeigen dir, was dein Budget ermöglicht, und bringen deine Wünsche und die Kosten in Einklang.', gr: 's' },
-    { ch: '5.25', a: 5.2, b: 5.5, id: 'entwurf', h: 'Entwurfsplanung.', txt: 'Gemeinsam mit unserem Architekturteam entsteht dein Entwurf, frei geplant nach dem Open-Space-Prinzip.', gr: 's' },
+    { ch: '5.25', a: 5.2, b: 5.5, id: 'entwurf', h: 'Entwurfsplanung.', txt: 'Aus Stil, Grundstück und Budget entwickelt unser Architekturteam deinen Entwurf. Für dein Haus, frei geplant nach dem Open-Space-Prinzip, und für die Außenanlagen gleich mit.', gr: 's' },
     { ch: '5.5', a: 5.5, b: 5.78, id: 'innenarchitektur', h: 'Innenarchitektur.', txt: 'Von der Raumgestaltung bis zur Einrichtung entwickeln unsere Innenarchitekten ein Interieur, das zu dir und deinem Leben passt.', gr: 's' },
     { ch: '5.75', a: 5.78, b: 6, id: 'gesamt', h: 'Gesamtinvestition.', txt: 'Haus, Außenanlagen und alle Gewerke in einer klaren Übersicht. Eine verlässliche Grundlage für deine Entscheidung.', gr: 's' },
-    /* Runde 57 (Entwurf 12.11. Nachmittag): Besser bauen = Bauleitung (mit Bauzeitplan), Außenanlagen, Projektmanager */
-    { ch: '6', a: 6, b: 7, id: 'bauleitung', h: 'Bauleitung.', txt: 'Wir begleiten jeden Schritt auf der Baustelle, achten auf Kosten, Qualität und Termine und übernehmen die Abstimmung mit den Behörden.', gr: 's' },
-    { ch: '6.5', a: 7, b: 7.5, id: 'aussen', h: 'Außenanlagen.', txt: 'Von der Zufahrt bis zum Garten koordinieren wir auf Wunsch auch alles rund um dein Haus, gemeinsam mit ausgewählten Partnern.', gr: 's' },
-    { ch: '7.5', a: 7.5, b: 8, id: 'pm', h: 'Projektmanager.', txt: 'Ein persönlicher Ansprechpartner, der dein Projekt kennt und dich durch jede Phase begleitet.', gr: 's' },
-    { ch: '8', a: 8, b: 9, id: 'huelle', h: 'Gebäudehülle.', txt: 'Wand, Dach und Decke aus natürlichen Materialien sorgen für ein ausgeglichenes Raumklima, Sommer wie Winter.', gr: 'm' },
+    /* Runde 66 (Entwurf 13.11.): Besser bauen = Projektsteuerung (mit Verlauf Kosten, Qualität, Termine), Baumanagement (Baustelle bis Außenanlagen), Projektmanager.
+       Besser leben beginnt mit dem Bausystem (vorher Gebäudehülle) */
+    { ch: '6', a: 6, b: 6.6, id: 'steuerung', h: 'Projektsteuerung.', txt: 'Von den Behördenwegen bis zu den Planungsbesprechungen behalten wir Kosten, Qualität und Termine in jeder Phase fest im Blick.', gr: 's' },
+    { ch: '6.5', a: 6.6, b: 7.5, id: 'baumanagement', h: 'Baumanagement.', txt: 'Auf der Baustelle sorgen wir dafür, dass alles ineinandergreift, vom Unterbau über die Montage deines Hauses bis zu den Außenanlagen.', gr: 's' },
+    { ch: '7.5', a: 7.5, b: 8, id: 'pm', h: 'Projektmanager.', txt: 'Ein persönlicher Ansprechpartner, der dein Vorhaben kennt und dich durch jede Phase begleitet.', gr: 's' },
+    { ch: '8', a: 8, b: 9, id: 'bausystem', h: 'Bausystem.', txt: 'Wand, Dach und Decke aus natürlichen Materialien, die Feuchtigkeit aufnehmen und wieder abgeben. Für ein gesundes Raumklima zu jeder Jahreszeit.', gr: 'm' },
     { ch: '9', a: 9, b: 10, id: 'ausstattung', h: 'Innenausstattung.', gr: 'm',
-      hot: [['parkett', 'Eichenparkett'], ['fliesen', 'großformatige italienische Fliesen'], ['bad', 'Bäder namhafter Hersteller']], nach: 'Hochwertige Materialien, die man jeden Tag spürt.' },
-    { ch: '10.2', a: 10, b: 10.5, id: 'betrieb', h: 'Betriebskosten.', txt: 'Eine sorgfältig gedämmte Gebäudehülle und dreifach verglaste Fenster halten den Energiebedarf dauerhaft niedrig.', gr: 'm' },
-    { ch: '10.5', a: 10.5, b: 11, id: 'kundendienst', h: 'Kundenservice.', txt: 'Auch nach dem Einzug bleibt unser eigener Kundenservice an deiner Seite.', mw: 10 },
+      hot: [['parkett', 'Eichenparkett'], ['fliesen', 'großformatige italienische Fliesen'], ['bad', 'Bäder namhafter Hersteller']], nach: 'Materialien, deren Qualität man jeden Tag spürt.' },
+    { ch: '10.2', a: 10, b: 10.5, id: 'betrieb', h: 'Betriebskosten.', txt: 'Eine sorgfältig gedämmte Gebäudehülle und dreifach verglaste Fenster halten den Energiebedarf dauerhaft niedrig, Jahr für Jahr.', gr: 'm' },
+    { ch: '10.5', a: 10.5, b: 11, id: 'kundendienst', h: 'Kundenservice.', txt: 'Auch nach dem Einzug bleibt unser eigener Kundenservice an deiner Seite, wann immer du uns brauchst.', mw: 10 },
     { ch: '11', id: 'haltung', h: 'Wir bauen nicht hundertmal dasselbe Haus.', einmal: ['Wir bauen ', 'deins.', ' Einmal.'], gr: 'l' }
   ],
   /* Runde 57: Gesamtinvestition als Tabelle rechts (Entwurf data-ledger): je Zeile Name, Betrag (nur für die Länge der Balken:
      Wurzel des Anteils am größten Posten), Farbe, ab P, Umriss. Darunter „Gesamtinvestition“ mit einem Balken aus allen Posten.
      Solange die Tabelle steht, blendet das 3D aus (wie im Entwurf). */
-  summe: { k: 'Gesamtinvestition', zeilen: [
+  /* Runde 66 (Entwurf 13.11.): im Balken aus allen Posten steht das Haus gekürzt (segMax), damit die kleinen Posten lesbar bleiben */
+  summe: { k: 'Gesamtinvestition', segMax: 300000, zeilen: [
     ['Bodenplatte', 64000, '#CACACA', 5.83], ['Haus', 598000, '#FFFFFF', 5.84], ['Garage', 46000, '#CACACA', 5.852], ['Zufahrt', 18000, '#444442', 5.864, 1],
     ['Terrasse', 24000, '#CFC3B3', 5.876], ['Pool', 62000, '#CACACA', 5.888], ['Sauna', 21000, '#887254', 5.9], ['Garten', 48000, '#8B907C', 5.912]
   ] },
-  /* Runde 57: Bauzeitplan rechts während der Bauleitung (Entwurf data-bplan): Zeilen [Name, Beginn, Länge] als Anteil der Bauzeit,
-     der gelbe Strich „heute“ läuft mit dem Scrollen, darunter drei Häkchen */
-  bauzeit: { k: 'Bauzeitplan', zeilen: [['Behörden', 0, .16], ['Bodenplatte', .16, .12], ['Holzbau', .28, .22], ['Haustechnik', .5, .2], ['Innenausbau', .62, .28], ['Übergabe', .9, .1]],
-    ok: [['Kosten', 'Im Rahmen'], ['Qualität', 'Geprüft'], ['Termine', 'Eingehalten']] },
+  /* Runde 66 (Entwurf 13.11.): Architekturkonzept (eingeschoben bei P 4). Tafel mit drei Spalten (Wünsche, Alltag, Designideen) und neun
+     gezeichneten Dingen; ein gelbes Feld wählt Viel Licht, Satteldach und Holz, die fliegen in die Hauszeichnung */
+  konzept: { h: 'Architekturkonzept.', txt: 'Aus deinen Wünschen, deinem Alltag und deinen Designideen entwickelt unser Architekturteam das Konzept für dein Haus.',
+    koepfe: ['Wünsche', 'Alltag', 'Designideen'], dinge: ['Satteldach', 'Flachdach', 'Kochen', 'Terrasse', 'Arbeiten', 'Viel Licht', 'Kamin', 'Holz', 'Schlafen'] },
+  /* Runde 66: Projektsteuerung rechts (Entwurf data-psteu): Phasen oben, drei Linien (Kosten, Qualität, Termine) werden hinter dem gelben
+     Strich ruhig, unten die Schritte, der aktuelle steht unter dem Strich */
+  steuerung: { phasen: ['Planung', 'Behörden', 'Bau', 'Übergabe'], linien: ['Kosten', 'Qualität', 'Termine'], schritte: ['Behördenweg', 'Planungsbesprechung', 'Vergabe', 'Baustart', 'Montage', 'Abnahme'] },
+  /* Runde 66: Raumgefühl (eingeschoben bei P 9.3): Kamera ins Haus, gelbe Maße, das gerade gemessene Stück im Satz gelb unterstrichen */
+  /* Satz = u1 z1 u2 z2 u3 z3 (u gelb unterstrichen, wenn gemessen; zwischen u1, z1, u2 und nach z2 je ein Leerzeichen) */
+  raum: { h: 'Raumgefühl.', u: ['Holz-Alu-Fenster', '2,72 Meter Raumhöhe', 'offenem First sogar bis zu fünf Meter'], z: ['und', ', bei', '. Räume voller Licht und Weite.'], masse: ['2,40 m', '2,72 m', 'bis 5,00 m'] },
   /* Sprungmarken im Film als P (die Seite rechnet daraus die Lage mit den Zwischentiteln). s-planen, s-bauen, s-leben: Zwischentitel */
-  marken: [['s-ueberblick', 3.5], ['s-projektcheck', 4.3], ['s-projektplan', 5.05], ['s-hausplanung', 5.3], ['s-innen', 5.6], ['s-aussen', 5.86], ['s-fundament', 6.15], ['s-pm', 7.6], ['s-bausystem', 8.1], ['s-kundendienst', 10.6]],
+  marken: [['s-ueberblick', 3.5], ['s-projektcheck', 4.3], ['s-projektplan', 5.05], ['s-hausplanung', 5.3], ['s-innen', 5.6], ['s-aussen', 5.86], ['s-fundament', 6.05], ['s-pm', 7.6], ['s-bausystem', 8.1], ['s-kundendienst', 10.6]],
   /* Leiste unten: drei Teile mit Bereich in P und Unterzeilen [bis P, Name] (Entwurf). Sprung zum Zwischentitel des Teils */
   leiste: [
     { name: 'Besser planen.', href: 's-planen', r: [4, 6], sub: [[5, 'Machbarkeit'], [5.2, 'Budgetanalyse'], [5.5, 'Entwurfsplanung'], [5.78, 'Innenarchitektur'], [6, 'Gesamtinvestition']] },
-    { name: 'Besser bauen.', href: 's-bauen', r: [6, 8], sub: [[7, 'Bauleitung'], [7.5, 'Außenanlagen'], [8, 'Projektmanager']] },
-    { name: 'Besser leben.', href: 's-leben', r: [8, 11], sub: [[9, 'Gebäudehülle'], [10, 'Innenausstattung'], [10.5, 'Betriebskosten'], [11, 'Kundenservice']] }
+    { name: 'Besser bauen.', href: 's-bauen', r: [6, 8], sub: [[6.6, 'Projektsteuerung'], [7.5, 'Baumanagement'], [8, 'Projektmanager']] },
+    { name: 'Besser leben.', href: 's-leben', r: [8, 11], sub: [[9, 'Bausystem'], [10, 'Innenausstattung'], [10.5, 'Betriebskosten'], [11, 'Kundenservice']] }
   ],
+  /* Runde 66: Unterzeilen der Leiste während der eingeschobenen Szenen */
+  leisteEin: { stil: 'Architekturkonzept', raum: 'Raumgefühl' },
   zurueck: '← Zurück zum Haus',
   /* Punkte im Haus (Ausstattung): Titel, Text, zwei Fakten. Wörtlich aus dem Entwurf */
   punkte: {
@@ -480,8 +493,8 @@ export const FILM = {
     ['lay-innen', 'Innenarchitektur', 'Material, Farbe, Licht.', 3.46, 3.98, { kind: 'layer', e: 4, jump: 's-innen' }],
     ['lay-aussen', 'Außenanlagen', 'Zufahrt, Pool, Garten.', 3.5, 3.98, { kind: 'layer', e: 5, jump: 's-aussen' }],
     ['lay-key', 'Projektmanager', 'Einer für alles.', 3.54, 3.98, { a: 'key', kind: 'layer', e: 6, jump: 's-pm' }],
-    ['gelaende', 'Gelände', 'Vor Ort vermessen', 4.14, 4.44],
-    ['flaeche', 'Grundstück', '768 m²', 4.3, 4.72], ['dimx', '32,00 m', '', 4.42, 4.72], ['dimz', '24,00 m', '', 4.46, 4.72],
+    ['gelaende', 'Gelände', 'Vor Ort vermessen', 4.3, 4.44],
+    ['flaeche', 'Grundstück', '768 m²', 4.44, 4.72], ['dimx', '32,00 m', '', 4.42, 4.72], ['dimz', '24,00 m', '', 4.46, 4.72],
     ['huell', 'Baurecht', 'Geprüft', 4.56, 4.76], ['boden', 'Baugrund', 'Vor Ort geprüft', 4.6, 4.74],
     ['sonne', 'Ausrichtung', 'Sonne über den Tag', 4.8, 5, { free: 1, fd: .04, avoid: 1 }], ['blick', 'Aussicht', 'Der schönste Blick', 4.9, 5, { free: 1, fd: .03, avoid: 1 }],
     ['ghost', 'Dein Haus', 'Am besten Platz', 4.91, 5, { free: 1, fd: .03, avoid: 1 }],
