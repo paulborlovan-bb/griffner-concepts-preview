@@ -508,6 +508,8 @@ section{position:relative}
 /* Runde 61: die linke Spalte bleibt in ihrer Spur (am iPad hochkant schob der lange Stufenname das Haus unter den Text) */
 .sts__vis{min-width:0}
 .sts__names{min-width:0}
+/* Runde 69 (Kunde: zu viel Text, dreimal Ausbaufertig): am Desktop steht der Stufenname nur rechts groß, links nur die Zahl */
+@media (min-width:900px){.sts .sts__names{display:none}}
 @media (min-width:810px) and (max-width:1199px){.sts .sts__name{font-size:var(--t-hm);max-width:8em}}
 .sts__nr{margin:0;display:grid;grid-template-columns:auto auto;column-gap:12px;row-gap:10px;align-items:end}
 .sts__k{grid-column:1 / -1;color:var(--griffner-anthrazit)}
@@ -580,6 +582,26 @@ section{position:relative}
 .svl--nacht .stg__l li::before{background:var(--griffner-weiss)}
 
 /* ---------- RUND UMS HAUS (Runde 48): das Grundstück als Linienplan auf Schwarz, zeichnet sich Gruppe für Gruppe ---------- */
+/* Runde 69: Über schlüsselfertig hinaus (Entwurf S5Umfang). Desktop: Kopf und Teile links, Zeichnung rechts; Telefon: Kopf, Zeichnung, Teile */
+.ur{color:var(--griffner-weiss)}
+.ur__in{display:grid;grid-template-columns:minmax(0,540px) minmax(0,1fr);grid-template-rows:auto auto;column-gap:clamp(40px,6vw,120px);row-gap:clamp(28px,4vh,40px);align-items:center}
+.ur__head{grid-column:1;grid-row:1;display:grid;row-gap:20px;align-self:end}
+.ur__k{margin:0;color:var(--griffner-kalk)}
+.ur__h{margin:0;max-width:10em;font-family:var(--font-display);font-weight:300;font-size:var(--t-l);line-height:var(--lh-d);text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.ur__p{margin:0;max-width:27em;color:var(--griffner-kalk)}
+.ur__list{grid-column:1;grid-row:2;align-self:start;display:grid;border-bottom:1px solid var(--griffner-anthrazit)}
+.ur__it{all:unset;box-sizing:border-box;display:block;width:100%;padding:20px 0 22px;border-top:1px solid var(--griffner-anthrazit);color:var(--griffner-weiss);cursor:pointer;font-family:var(--font-display);font-weight:500;font-size:var(--t-hs);line-height:1.05;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;opacity:.4;transition:opacity 400ms var(--ease)}
+.ur__it.is-on{opacity:1}
+.ur__it:focus-visible{outline:1px solid var(--griffner-gelb);outline-offset:4px}
+.ur__draw{grid-column:2;grid-row:1 / span 2;min-width:0;height:clamp(340px,72vh,720px)}
+.ur__draw svg{display:block;width:100%;height:100%;overflow:visible;stroke:var(--griffner-weiss)}
+@media (max-width:899px){
+  .ur__in{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;row-gap:28px}
+  .ur__head,.ur__list,.ur__draw{grid-column:1;grid-row:auto}
+  .ur__draw{order:2;height:min(46svh,92vw)}
+  .ur__list{order:3}
+  .ur__it{padding:14px 0 16px}
+}
 .rund{color:var(--griffner-weiss)}
 .rund .txt{color:var(--griffner-kalk)}
 .rp{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap-col);align-items:center}

@@ -146,18 +146,28 @@ const BUILD = {
     s.view = { az: -.62, el: .2, rot: .25, ty: .45 };
     return s;
   },
-  /* 08 Fassade: links Lärche, rechts Putz, dahinter Lattung, Hinterlüftung und Fassadenbahn auf Holzfaser */
+  /* 08 Fassade: vier Felder (Holz, Putz, Steinoptik, Fassadenplatten), dahinter Lattung, Hinterlüftung und Fassadenbahn auf Holzfaser */
   fassade() {
     const s = mk(), { add } = s;
     add(cube(-.6, 0, -.08, .6, 1, -.02), MAT.fibre(), null);
     add(cube(-.6, 0, -.02, .6, 1, -.016), MAT.membrane(), [0, 0, .06]);
     const sp = MAT.spruce();
     [-.52, -.18, .18, .52].forEach(x => add(cube(x - .025, 0, -.016, x + .025, 1, .014), sp, [0, 0, .14]));
+    /* Runde 69 (Kunde: jede Fassade ist möglich, nicht nur Holz oder Putz): auf derselben Unterkonstruktion vier Felder,
+       Holz, Putz, Steinoptik und Fassadenplatten. Die Felder kommen beim Auseinanderziehen nacheinander nach vorne */
     const lm = MAT.larch();
-    for (let i = 0; i < 5; i++) { const x0 = -.6 + i * .12; add(cube(x0, 0, .014, x0 + .112, 1, .036), lm, [0, 0, .24]); }
-    add(cube(0, 0, .014, .6, 1, .03), MAT.osb(), [0, 0, .2]);
-    add(cube(0, 0, .03, .6, 1, .042), MAT.putz(), [0, 0, .25]);
-    s.labs.push([[-.3, .9, .036], 'Lärche'], [[.3, .9, .042], 'Putz'], [[-.6, .5, 0], 'Hinterlüftung', true], [[-.6, .3, -.018], 'Fassadenbahn'], [[-.6, .12, -.05], 'Holzfaser']);
+    for (let i = 0; i < 3; i++) { const x0 = -.6 + i * .1; add(cube(x0 + .003, 0, .014, x0 + .097, 1, .036), lm, [0, 0, .22]); }
+    add(cube(-.3, 0, .014, 0, 1, .03), MAT.osb(), [0, 0, .2]);
+    add(cube(-.3, 0, .03, 0, 1, .042), MAT.putz(), [0, 0, .25]);
+    const st = [0xf2ebe0, 0xddd3c4, 0xe9e0d2].map(c => { const m = MAT.concrete(); m.color.setHex(c); return m; });
+    for (let r = 0; r < 12; r++) {
+      const y0 = r / 12 + .003, y1 = (r + 1) / 12 - .003;
+      for (let x0 = r % 2 ? -.05 : 0; x0 < .3; x0 += .1) { const a = Math.max(0, x0) + .003, b = Math.min(.3, x0 + .1) - .003; if (b - a > .02) add(cube(a, y0, .014, b, y1, .04), st[(r + Math.round(x0 * 20)) % 3], [0, 0, .28]); }
+    }
+    const fp = MAT.white(); fp.color.setHex(0x6d7072); fp.roughness = .75;
+    [[0, .5], [.5, 1]].forEach(([y0, y1]) => add(cube(.304, y0 + .003, .014, .6, y1 - .003, .03), fp, [0, 0, .31]));
+    s.labs.push([[-.45, .92, .036], 'Holz'], [[-.15, .92, .042], 'Putz'], [[.15, .92, .04], 'Steinoptik'], [[.45, .92, .03], 'Fassadenplatten'],
+      [[-.6, .5, 0], 'Hinterlüftung', true], [[-.6, .3, -.018], 'Fassadenbahn'], [[-.6, .12, -.05], 'Holzfaser']);
     s.view = { az: -.58, el: .2, rot: .15 };
     return s;
   }

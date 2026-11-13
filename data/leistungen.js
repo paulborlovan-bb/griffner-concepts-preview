@@ -175,7 +175,8 @@ export const UMFANG = {
     /* Runde 67 (Entwurf S5Umfang): Beschriftungen in der Zeichnung bei „Immer dabei“ (Figur, Haus) */
     marken: ['Projektbegleitung', 'Qualität']
   },
-  stufen: { info: 'Der Lieferumfang, schwarz auf weiß', h: 'So entsteht dein Haus.', txt: 'Ausbaufertig, belagsfertig, schlüsselfertig. Jede Stufe schließt die vorige ein. Alles, was hier steht, ist im Preis inbegriffen.' },
+  /* Runde 69 (Kunde): ohne Zeilen über der Überschrift, neue Überschrift und Text */
+  stufen: { h: 'Dein Ausbau.', txt: 'Ausbaufertig, belagsfertig oder schlüsselfertig: Du entscheidest, wie weit wir gehen. Jede Stufe baut auf der vorherigen auf.', alt: 'Ausbaufertig, belagsfertig, schlüsselfertig. Jede Stufe schließt die vorige ein. Alles, was hier steht, ist im Preis inbegriffen.' },
   dazu: {
     info: 'Dazu kommt', h: 'Was in keiner Liste steht.',
     txt: 'Manches lässt sich nicht in Positionen fassen und entscheidet trotzdem darüber, wie gut dein Haus in dreißig Jahren dasteht.',
@@ -399,10 +400,11 @@ export const STUFEN_TEIL = {
 /* EIGEN: Abschluss der drei Stufen und der Weg nach draußen (Leistungsumfang) */
 export const RUND = {
   schluss: 'Schlüsselfertig. Du kannst einziehen.',
-  info: 'Rund ums Haus', h: 'Und alles, was dazugehört.',
-  txt: 'Schlüsselfertig ist das Haus. Auf Wunsch bauen wir weiter, vom Fundament bis zum Garten, mit demselben Ansprechpartner.',
-  liste: ['Fundament', 'Das Haus', 'Innenausbau und Interior', 'Garage und Zufahrt', 'Terrasse', 'Pool', 'Garten', 'Sauna im Haus'],
-  link: 'Im 3D Modell ansehen'
+  /* Runde 69 (Kunde, Entwurf S5Umfang „Über schlüsselfertig hinaus“): statt Linienplan und acht Zeilen die Zeichnung des Auftakts
+     mit vier Teilen, die sich alle 3,2 s abwechseln; Zeigen oder Tippen wählt einen Teil */
+  info: 'Über schlüsselfertig hinaus', h: 'Wir denken dort weiter, wo das Haus aufhört.',
+  txt: 'Was über schlüsselfertig hinausgeht, planen wir von Anfang an mit, nehmen es in deine Gesamtinvestition auf und koordinieren es gemeinsam mit ausgewählten Partnern.',
+  liste: ['Außenanlagen', 'Garage und Nebengebäude', 'Pool und Sauna', 'Innenarchitektur und Einrichtung']
 };
 
 /* ================= Runde 56: Services Übersicht im Entwurf „GRIFFNER Services v2“ (Kunde, Stand 12.11.2026) =================
@@ -490,7 +492,7 @@ export const FILM = {
     ['v-pool', 'Pool.', '', 1.98, 2.5, { a: 'pool', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }], ['v-garten', 'Garten.', '', 2.08, 2.5, { a: 'garten', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
     ['v-sauna', 'Sauna.', '', 2.18, 2.5, { a: 'sauna', free: 1, pr: 1, fd: .04, avoid: 1, ph: 0 }],
     ['lay-plan', 'Planung', 'Machbarkeit, Budget, Entwurf.', 3.3, 3.98, { kind: 'layer', e: [0, 1], jump: 's-projektcheck' }],
-    ['lay-fund', 'Bauleitung', 'Kosten, Qualität, Termine.', 3.38, 3.98, { kind: 'layer', e: 2, jump: 's-fundament' }],
+    ['lay-fund', 'Projektsteuerung', 'Kosten, Qualität, Termine.', 3.38, 3.98, { kind: 'layer', e: 2, jump: 's-fundament' }],
     ['lay-huelle', 'Holzbau', 'Wand, Dach, Decke.', 3.42, 3.98, { kind: 'layer', e: 3, jump: 's-bausystem' }],
     ['lay-innen', 'Innenarchitektur', 'Material, Farbe, Licht.', 3.46, 3.98, { kind: 'layer', e: 4, jump: 's-innen' }],
     ['lay-aussen', 'Außenanlagen', 'Zufahrt, Pool, Garten.', 3.5, 3.98, { kind: 'layer', e: 5, jump: 's-aussen' }],

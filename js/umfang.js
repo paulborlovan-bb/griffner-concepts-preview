@@ -139,6 +139,50 @@ export function initAuftakt() {
   if (loop.poke) { const t = setInterval(() => loop.poke(), 120); setTimeout(() => clearInterval(t), 3200); }
 }
 
+/* ---------- 03b Über schlüsselfertig hinaus (Runde 69, Entwurf S5Umfang) ----------
+   Die Zeichnung des Auftakts mit allem auf dem Grundstück. Vier Teile wechseln sich alle 3,2 s ab, solange die Sektion im Bild ist
+   und niemand auf eine Zeile zeigt; der Teil ist gelb, bei Innenarchitektur hebt das Haus ab und der Ausbau darunter wird gelb. */
+export function initRund() {
+  const r = $('[data-ur]'); if (!r) return;
+  const svg = $('[data-ur-svg]', r), its = $$('[data-ur-it]', r);
+  const G = uaGeo(), S = G.S, L = 8 * S, v = G.vb;
+  const pth = p => `<path d="${p.d}" fill="${p.f}" pathLength="1" vector-effect="non-scaling-stroke"></path>`;
+  svg.innerHTML = '<g data-layer="ground">' + G.ground.map(it => `<g data-gi="${it.id}">${it.p.map(pth).join('')}</g>`).join('') + '</g>' +
+    `<g data-layer="aus">${G.aus.map(pth).join('')}</g><g data-layer="shell">${G.shell.map(pth).join('')}</g>`;
+  svg.setAttribute('viewBox', [v[0], v[1] - L, v[2], v[3] + L].map(x => x.toFixed(1)).join(' '));
+  const aus = $('[data-layer="aus"]', svg), shell = $('[data-layer="shell"]', svg), items = $$('[data-gi]', svg);
+  [aus, shell, ...items].forEach(g => { g.style.transition = 'stroke 500ms cubic-bezier(.2,.7,.2,1)'; });
+  /* Linien zeichnen sich, sobald die Sektion ins Bild kommt */
+  if (!reduce) {
+    const ps = $$('path', svg); ps.forEach(p => { p.style.strokeDasharray = '1 1'; p.style.strokeDashoffset = '1'; });
+    near(r, () => requestAnimationFrame(() => requestAnimationFrame(() => ps.forEach(p => { const Ly = p.closest('[data-layer]').dataset.layer; p.style.transition = 'stroke-dashoffset 1800ms cubic-bezier(.2,.7,.2,1) ' + (Ly === 'ground' ? 0 : Ly === 'aus' ? 200 : 450) + 'ms'; p.style.strokeDashoffset = '0'; }))), '0px 0px -15% 0px');
+  }
+  const Y = '#FFB200', DIM = '#6e6e6b', W8 = '#FFFFFF';
+  const ON = [['zufahrt', 'zaun', 'garten', 'terrasse'], ['garage'], ['pool', 'sauna'], []];
+  const setS = (el, c) => { if (el._s !== c) { el._s = c; el.style.stroke = c; } };
+  let ri = 0, hov = false, vis = false, re = 0, man = false;
+  const paint = () => { items.forEach(g => setS(g, ON[ri].includes(g.dataset.gi) ? Y : DIM)); setS(aus, ri === 3 ? Y : DIM); setS(shell, ri === 3 ? DIM : W8); };
+  const pick = i => { ri = i; its.forEach((b, j) => { b.classList.toggle('is-on', j === i); b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); }); paint(); if (loop.poke) loop.poke(); };
+  its.forEach((b, i) => {
+    /* Runde 70: wer tippt oder klickt, hat gewählt, der Wechsel stoppt (am Handy gibt es kein Hover) */
+    b.addEventListener('click', () => { man = true; pick(i); });
+    b.addEventListener('mouseenter', () => { hov = true; if (ri !== i) pick(i); });
+    b.addEventListener('mouseleave', () => { hov = false; });
+  });
+  pick(0);
+  setInterval(() => { if (man || hov || !vis || document.hidden || reduce) return; pick((ri + 1) % its.length); }, 3200);
+  /* Prüfen: Teil direkt wählen */
+  globalThis.__urPick = pick;
+  loop.add({ tick() {
+    const rb = r.getBoundingClientRect(), vh = innerHeight;
+    vis = rb.top < vh * .7 && rb.bottom > vh * .3;
+    if (rb.bottom < 0 || rb.top > vh) return;
+    const tgt = ri === 3 ? 1 : 0; re = reduce ? tgt : re + (tgt - re) * .08;
+    if (Math.abs(tgt - re) < .002) re = tgt; else if (loop.poke) loop.poke();
+    const t = `translate(0px,${(-L * re).toFixed(1)}px)`; if (shell._t !== t) { shell._t = t; shell.style.transform = t; }
+  } });
+}
+
 /* ---------- 01 Acht Dinge: Bildfolge, das Muster wechselt mit, der Vergleich liegt über dem Muster ---------- */
 export function initAcht() {
   const box = $('[data-ac]'); if (!box) return;
@@ -208,7 +252,7 @@ export function initStufen() {
     let g = null;
     groups[k - 1].forEach(x => { const q = x.getBoundingClientRect(); if (q.top < mid && q.bottom > mid - 40) g = x; });
     if (g !== curG) { if (curG) curG.classList.remove('is-cur'); if (g) g.classList.add('is-cur'); curG = g; }
-    const lb = g ? gName(g) : names[k - 1].textContent;
+    const lb = g ? gName(g) : '';  // Runde 69: nur der Bereich, den du liest (Stufenname steht rechts groß)
     if (lb !== label) { label = lb; if (now) now.textContent = lb; }
     /* Runde 52: der gelesene Bereich hebt sich ab, die anderen der Stufe treten zurück */
     box.classList.toggle('has-cur', !!g);

@@ -5,8 +5,7 @@
 import { loop, reveal } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { initMore, initAcc } from './svc-ui.js';
-import { initGrundplan } from './svc-grundplan.js';
-import { initAuftakt, initAcht, initStufen } from './umfang.js';
+import { initAuftakt, initAcht, initStufen, initRund } from './umfang.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 run('chrome', initChrome);
@@ -18,6 +17,6 @@ run('auftakt', initAuftakt);
 run('mehr-text', () => initMore(document));
 run('acht', initAcht);
 run('stufen', initStufen);
-run('rund', () => initGrundplan(document.querySelector('[data-rp]')));
+run('rund', initRund);  // Runde 69: Über schlüsselfertig hinaus statt Linienplan
 run('acc', () => initAcc(document));
 
