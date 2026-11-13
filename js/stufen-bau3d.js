@@ -51,7 +51,9 @@ export async function createBau(host) {
   R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap;
   R.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:pan-y';
   gl.appendChild(R.domElement);
-  const scene = new T.Scene(); scene.background = new T.Color(0xffffff);
+  /* Runde 64b: Hintergrund aus dem CSS der Bühne (Ausbaustufen schwarz), sonst Weiß */
+  const bgc = getComputedStyle(host).backgroundColor, bgm = bgc && bgc.match(/\d+(\.\d+)?/g), bgOk = bgm && (bgm.length < 4 || +bgm[3] > 0);
+  const scene = new T.Scene(); scene.background = bgOk ? new T.Color().setRGB(bgm[0] / 255, bgm[1] / 255, bgm[2] / 255, T.SRGBColorSpace) : new T.Color(0xffffff);
   const pmrem = new T.PMREMGenerator(R), env = pmrem.fromScene(new RoomEnvironment(R), .04).texture; pmrem.dispose();
   scene.add(new T.HemisphereLight(0xffffff, 0xd9d3c8, 1.15));
   const sun = new T.DirectionalLight(0xfff3e2, 2.4); sun.position.set(-22, 38, 24); sun.castShadow = true;

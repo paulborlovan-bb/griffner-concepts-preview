@@ -15,7 +15,7 @@
   --room-u-hero:var(--griffner-schwarz);
   --room-u-acht:var(--griffner-schwarz); /* Runde 64 (Kunde): Schwarz wie der Auftakt */
   --room-u-inbegriffen:var(--griffner-schwarz);
-  --room-u-stufen:var(--griffner-weiss);
+  --room-u-stufen:var(--griffner-schwarz); /* Runde 64b (Kunde): auch schwarz */
   --room-u-rund:var(--griffner-schwarz);
   --room-u-dazu:var(--griffner-anthrazit);
   --room-u-cta:var(--griffner-schwarz);
@@ -561,6 +561,25 @@ section{position:relative}
 .stx+.stx{margin-top:clamp(40px,6vh,72px)}
 .stx__end{margin:clamp(56px,9vh,104px) 0 0;padding-top:clamp(40px,6vh,64px);border-top:1px solid var(--griffner-schwarz);max-width:12em;font-family:var(--font-display);font-weight:300;font-size:var(--t-l);line-height:var(--lh-d);text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
 
+/* Runde 64b (Kunde): Ausbaustufen schwarz wie Auftakt und Acht Dinge. Umgedreht: Schwarz wird Weiß, Anthrazit (Nebentext) wird Kalk,
+   kräftige Linien weiß, feine Linien Anthrazit */
+.svl--nacht .txt{color:var(--griffner-kalk)}
+.svl--nacht .st__stage{background:var(--griffner-schwarz)}
+.svl--nacht .sh__name,.svl--nacht .sh__drag,.svl--nacht .sts__k,.svl--nacht .sts__of{color:var(--griffner-kalk)}
+.svl--nacht .sts__now b{color:var(--griffner-weiss)}
+.svl--nacht .sh__pin i{box-shadow:0 0 0 2px var(--griffner-schwarz)}
+.svl--nacht .sts__seg{color:rgba(255,255,255,.45)}
+.svl--nacht .sts__seg i{background:var(--griffner-anthrazit)}
+.svl--nacht .sts__seg i::after{background:var(--griffner-weiss)}
+.svl--nacht .sts__seg.is-cur i::after{background:var(--griffner-gelb)}
+.svl--nacht .sts__seg.is-cur,.svl--nacht .sts__seg.is-done{color:var(--griffner-weiss)}
+.svl--nacht .stx__head,.svl--nacht .stx__end{border-top-color:var(--griffner-weiss)}
+.svl--nacht .stx:first-child .stx__head{border-top:0}
+.svl--nacht .stx__k,.svl--nacht .stx__p,.svl--nacht .stx__meta,.svl--nacht .stg__h .info,.svl--nacht .stg__l li{color:var(--griffner-kalk)}
+.svl--nacht .stx__meta b,.svl--nacht .stg.is-cur .stg__l li{color:var(--griffner-weiss)}
+.svl--nacht .stg{border-top-color:var(--griffner-anthrazit)}
+.svl--nacht .stg__l li::before{background:var(--griffner-weiss)}
+
 /* ---------- RUND UMS HAUS (Runde 48): das Grundstück als Linienplan auf Schwarz, zeichnet sich Gruppe für Gruppe ---------- */
 .rund{color:var(--griffner-weiss)}
 .rund .txt{color:var(--griffner-kalk)}
@@ -709,6 +728,7 @@ section{position:relative}
   /* Ausbaustufen: Haus oben angeheftet */
   .sts{grid-template-columns:minmax(0,1fr)}
   .sts__vis{grid-column:1;top:0;z-index:2;height:auto;grid-template-rows:auto 26svh auto;gap:10px;padding:62px 0 12px;background:var(--griffner-weiss);border-bottom:1px solid var(--griffner-kalk)}
+  .svl--nacht .sts__vis{background:var(--griffner-schwarz);border-bottom-color:var(--griffner-anthrazit)}
   .sts__k{display:none}
   .sts__of{padding-bottom:.3em}
   .sts .sts__stage{height:26svh}
