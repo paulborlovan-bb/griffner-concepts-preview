@@ -51,6 +51,7 @@ const BUILD = {
       z = z0;
     });
     s.labs.push([[.0, 1.0, 0], '42,25 cm', true]);
+    s.nolab = true; // Runde 75 (Kunde): ohne Linien und Texte, das Muster in der Mitte
     s.view = { az: -.78, el: .3, rot: .1 };
     return s;
   },
@@ -168,6 +169,7 @@ const BUILD = {
     [[0, .5], [.5, 1]].forEach(([y0, y1]) => add(cube(.304, y0 + .003, .014, .6, y1 - .003, .03), fp, [0, 0, .31]));
     s.labs.push([[-.45, .92, .036], 'Holz'], [[-.15, .92, .042], 'Putz'], [[.15, .92, .04], 'Steinoptik'], [[.45, .92, .03], 'Fassadenplatten'],
       [[-.6, .5, 0], 'Hinterlüftung', true], [[-.6, .3, -.018], 'Fassadenbahn'], [[-.6, .12, -.05], 'Holzfaser']);
+    s.nolab = true; // Runde 75 (Kunde): ohne Linien und Texte, das Muster in der Mitte
     s.view = { az: -.58, el: .2, rot: .15 };
     return s;
   }
@@ -205,7 +207,7 @@ export async function createMuster(host, labsEl) {
     s.box = new T.Box3();
     s.ex.forEach(([m, dx, dy, dz]) => m.position.set(dx, dy, dz)); s.g.updateMatrixWorld(true); s.box.setFromObject(s.g);
     s.ex.forEach(([m]) => m.position.set(0, 0, 0));
-    s.els = s.labs.map(([, txt, hot]) => {
+    s.els = s.nolab ? [] : s.labs.map(([, txt, hot]) => {
       const el = document.createElement('div'); el.className = 'ml' + (hot ? ' is-hot' : ''); el.innerHTML = `<b>${txt}</b>`; labsEl.appendChild(el);
       const ln = document.createElementNS(SV, 'path'); ln.setAttribute('class', 'ml__ln' + (hot ? ' is-hot' : '')); svg.appendChild(ln);
       const dot = document.createElementNS(SV, 'rect'); dot.setAttribute('class', 'ml__pt' + (hot ? ' is-hot' : '')); dot.setAttribute('width', 5); dot.setAttribute('height', 5); svg.appendChild(dot);
@@ -217,28 +219,56 @@ export async function createMuster(host, labsEl) {
   /* Kamera: Blick von vorne links, Abstand so, dass das auseinandergezogene Muster neben die Beschriftungen passt */
   /* Runde 61 (Kunde): am Telefon ohne Beschriftung, das Muster groß in der Mitte */
   const PH = () => innerWidth < 810;
-  const LABW = () => (PH() ? 0 : W < 520 ? W * .46 : Math.min(170, W * .34));
+  /* Runde 75: Muster ohne Beschriftung (s.nolab, Wand und Fassade) brauchen keine Spalte und stehen in der Mitte;
+     die Verschiebung des Bildes (sh) fliegt beim Wechsel mit der Kamera */
+  const LABW = s => (PH() || (s && s.nolab) ? 0 : W < 520 ? W * .46 : Math.min(170, W * .34));
   function frameCam(s, k = 1, from = null) {
     const c = s.box.getCenter(new T.Vector3()), r = s.box.getSize(new T.Vector3()).length() / 2;
-    const vf = cam.fov * Math.PI / 180, effW = W - LABW() - (PH() ? 0 : 24), hf = 2 * Math.atan(Math.tan(vf / 2) * effW / H);
+    const lw = LABW(s), vf = cam.fov * Math.PI / 180, effW = W - lw - (lw ? 24 : 0), hf = 2 * Math.atan(Math.tan(vf / 2) * effW / H);
     const d = r / Math.sin(Math.min(vf, hf) / 2) * (PH() ? .98 : .9);
     const v = s.view, ty = v.ty ?? c.y;
-    const to = { d, az: v.az, el: v.el, tx: c.x, ty, tz: c.z };
+    const to = { d, az: v.az, el: v.el, tx: c.x, ty, tz: c.z, sh: lw / 2 };
+    if (s.nolab && !PH()) fitMid(s, to);
     const f = from || to;
     const m = (a, b) => a + (b - a) * k;
+    cam.setViewOffset(W, H, -m(f.sh ?? to.sh, to.sh), 0, W, H); cam.updateProjectionMatrix();
     const D = m(f.d, to.d), A = m(f.az, to.az), E = m(f.el, to.el);
     cam.position.set(m(f.tx, to.tx) + Math.sin(A) * Math.cos(E) * D, m(f.ty, to.ty) + Math.sin(E) * D, m(f.tz, to.tz) + Math.cos(A) * Math.cos(E) * D);
     cam.lookAt(m(f.tx, to.tx), m(f.ty, to.ty), m(f.tz, to.tz));
     return to;
   }
   let camFrom = null, camTo = null;
+  /* Runde 75: ohne Beschriftung sitzt das Muster wirklich mittig. Die Ecken des auseinandergezogenen Musters (in seiner mittleren Drehung)
+     werden projiziert; Ziel und Abstand so, dass das Bild in der Mitte steht und rundum gleich Rand bleibt (80 % der Bühne) */
+  const cf = new T.PerspectiveCamera(24, 1, .05, 60), fv = new T.Vector3();
+  function fitMid(s, to) {
+    const key = W + 'x' + H;
+    if (s.fitK !== key) {
+      const b = s.box, cr = Math.cos(s.view.rot), sr = Math.sin(s.view.rot), P = [], t = new T.Vector3();
+      for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) P.push(new T.Vector3(x * cr + z * sr, y, -x * sr + z * cr));
+      P.forEach(p => t.add(p)); t.multiplyScalar(1 / 8);
+      cf.fov = cam.fov; cf.aspect = W / H; cf.updateProjectionMatrix();
+      const A = to.az, E = to.el, tv = Math.tan(cf.fov * Math.PI / 360), th = tv * cf.aspect, rt = new T.Vector3(), up = new T.Vector3();
+      let D = to.d;
+      for (let it = 0; it < 6; it++) {
+        cf.position.set(t.x + Math.sin(A) * Math.cos(E) * D, t.y + Math.sin(E) * D, t.z + Math.cos(A) * Math.cos(E) * D); cf.lookAt(t); cf.updateMatrixWorld();
+        let x0 = 9, x1 = -9, y0 = 9, y1 = -9;
+        P.forEach(p => { fv.copy(p).project(cf); x0 = Math.min(x0, fv.x); x1 = Math.max(x1, fv.x); y0 = Math.min(y0, fv.y); y1 = Math.max(y1, fv.y); });
+        rt.setFromMatrixColumn(cf.matrixWorld, 0); up.setFromMatrixColumn(cf.matrixWorld, 1);
+        t.addScaledVector(rt, (x0 + x1) / 2 * D * th).addScaledVector(up, (y0 + y1) / 2 * D * tv);
+        D *= Math.max((x1 - x0) / 2, (y1 - y0) / 2) / .8;
+      }
+      s.fitK = key; s.fit = { d: D, tx: t.x, ty: t.y, tz: t.z };
+    }
+    return Object.assign(to, s.fit);
+  }
 
   function size() {
     const r = host.getBoundingClientRect(); W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
     R.setSize(W, H, false); R.domElement.style.width = '100%'; R.domElement.style.height = '100%';
     cam.aspect = W / H;
-    /* Muster nach rechts, links Platz für die Spalte */
-    const sh = LABW() / 2; cam.setViewOffset(W, H, -sh, 0, W, H);
+    /* Muster nach rechts, links Platz für die Spalte (Runde 75: je Muster, siehe frameCam) */
+    const sh = LABW(cur) / 2; cam.setViewOffset(W, H, -sh, 0, W, H);
     cam.updateProjectionMatrix();
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     if (cur) camTo = frameCam(cur);
@@ -290,7 +320,7 @@ export async function createMuster(host, labsEl) {
       const kc = reduce ? 1 : eio(cl(ts / .7));
       frameCam(cur, kc, camFrom);
       cur.g.updateMatrixWorld(true);
-      place(cur, e > .72);
+      if (!cur.nolab) place(cur, e > .72);
     }
     R.render(scene, cam);
     if (visible && !reduce) raf = requestAnimationFrame(frame);
