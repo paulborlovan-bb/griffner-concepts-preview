@@ -2,7 +2,7 @@
    Quelle: hausbaugehtbesser.com (Startseite) und hausbaugehtbesser.com/leistungsumfang, Stand 10.11.2026, wörtlich übernommen.
    Eigene Zeilen (nicht aus der Quelle) sind mit EIGEN markiert und in TEXTE.md gelistet. Du-Form, keine Gedankenstriche, kein Ausrufezeichen. */
 
-/* Die acht Dinge, Reihenfolge wie auf /leistungsumfang. key = Teil im 3D Haus (js/schnitthaus.js, Concept Bold) und Muster (js/muster3d.js) */
+/* Die acht Dinge, Reihenfolge wie auf /leistungsumfang. Runde 65 (Kunde): neue Bilder, je acht-<key>.jpg im Bildordner. key = Teil im 3D Haus (js/schnitthaus.js, Concept Bold) und Muster (js/muster3d.js) */
 export const ACHT = [
   {
     key: 'openspace', nr: '01', name: 'Patentiertes Open Space Konzept', kurz: 'Open Space, patentiert',
@@ -10,7 +10,7 @@ export const ACHT = [
     griffner: 'Wenige Lastenpunkte ermöglichen ein flexibles Raumkonzept. Der Grundriss folgt deinem Leben.',
     ueblich: 'Tragende Innenwände. Jede Änderung kostet einen Aufpreis.',
     fakten: ['2 Ableitungspunkte', '9,80 m Raumbreite ohne Wand', '0 tragende Innenwände'],
-    bild: 'assets/img/wald-innen.jpg', alt: 'Offener Wohnraum mit Sofa, Essplatz und großen Fenstern zum Wald'
+    bild: 'assets/img/acht-openspace.jpg', alt: 'Offener Wohnraum mit Sofa, Essplatz und Küche, nur eine Holzstütze, große Glasfront zum Garten'
   },
   {
     key: 'wand', nr: '02', name: 'Die GRIFFNER Wand', kurz: 'Die GRIFFNER Wand',
@@ -18,7 +18,7 @@ export const ACHT = [
     griffner: '42,25 cm aus Holz, Holzfaser und Zellulose, diffusionsoffen. Natürliche Dampfbremse, keine Folien. Sie regelt die Feuchte von selbst.',
     ueblich: 'Dünnere Wand mit Kunststoffdämmung.',
     fakten: ['42,25 cm stark', 'U-Wert 0,147 W/m²K', 'ohne PVC-Folien'],
-    bild: 'assets/img/svc-wand.jpg', alt: 'Ein Mitarbeiter in der Manufaktur in Griffen an einem Wandelement'
+    bild: 'assets/img/acht-wand.jpg', alt: 'Hell verputzte Außenwand mit tiefer Fensterlaibung und Blätterschatten'
   },
   {
     key: 'dach', nr: '03', name: 'Dach mit Holzfaser-Zellulosedämmung', kurz: 'Dach mit Holzfaser-Zellulosedämmung',
@@ -26,7 +26,7 @@ export const ACHT = [
     griffner: 'Die Holzfaser-Zellulosedämmung speichert die Hitze des Tages und gibt sie erst nachts ab. Draußen 34 Grad, oben schläfst du.',
     ueblich: 'Leichte Dämmung, das Dachgeschoß heizt sich auf.',
     fakten: ['U-Wert 0,13 W/m²K', 'bis zum First offen', 'Raumhöhen bis zu 5 m im Obergeschoss'],
-    bild: 'assets/img/duene-2.jpg', alt: 'Haus mit Satteldach und Holzfassade in den Dünen'
+    bild: 'assets/img/acht-dach.jpg', alt: 'Haus mit Satteldach aus Metall, Lärchenfassade und großen Glasflächen am Waldrand'
   },
   {
     key: 'fenster', nr: '04', name: 'Holz-Alu-Fenster', kurz: 'Holz-Alu-Fenster',
@@ -34,7 +34,7 @@ export const ACHT = [
     griffner: 'Dreifachverglasung, verdeckte Beschläge. Innen Holz, außen Aluminium, das ohne Anstrich auskommt.',
     ueblich: 'Kunststofffenster in Weiß, innen wie außen.',
     fakten: ['Ug 0,6 W/m²K', 'verdeckt liegende Beschläge', 'innen Natur, Weiß oder Schwarz'],
-    bild: 'assets/img/wald-fenster.jpg', alt: 'Holzfenster mit Blick in den Wald, davor ein Vorhang'
+    bild: 'assets/img/acht-fenster.jpg', alt: 'Holz-Alu-Fenster mit Eichenrahmen und Blick in einen grünen Hof'
   },
   {
     key: 'decke', nr: '05', name: 'Sichtbare Holzdecke', kurz: 'Sichtbare Massivholzdecke',
@@ -42,7 +42,7 @@ export const ACHT = [
     griffner: 'Massivholz oder Tram, natur oder weiß lasiert. Du entscheidest, welche Struktur über dir liegt.',
     ueblich: 'Abgehängte Gipsdecke, weiß gestrichen.',
     fakten: ['Massivholz oder Tram', 'natur oder weiß lasiert', 'in Sichtqualität'],
-    bild: 'assets/img/svc-decke.jpg', alt: 'Wohnraum mit sichtbarer Holzdecke, Balken und offener Galerie'
+    bild: 'assets/img/acht-decke.jpg', alt: 'Raum mit heller, sichtbarer Holzdecke, großen Fenstern und einem Ledersessel'
   },
   {
     key: 'parkett', nr: '06', name: 'Naturparkettböden', kurz: 'Naturparkettböden',
@@ -50,7 +50,7 @@ export const ACHT = [
     griffner: 'Echtes Eichenparkett, kein Dekor auf Folie. Abschleifbar, und mit den Jahren schöner.',
     ueblich: 'Laminat oder Vinyl, austauschbar statt reparierbar.',
     fakten: ['Eiche als Diele', 'gebürstet, naturmatt versiegelt', '21,5 cm Aufbau mit Flächenheizung'],
-    bild: 'assets/img/wald-sessel.jpg', alt: 'Sessel auf Eichenparkett vor einem großen Fenster'
+    bild: 'assets/img/acht-parkett.jpg', alt: 'Eichenparkett mit Sessel vor einem bodentiefen Fenster'
   },
   {
     key: 'raumhoehe', nr: '07', name: 'Raumhöhe 2,72 Meter', kurz: 'Raumhöhe 2,72 Meter',
@@ -58,7 +58,7 @@ export const ACHT = [
     griffner: '22 cm mehr als üblich, in jedem Raum. Auf Wunsch 2,92 Meter.',
     ueblich: '250 cm, im Obergeschoß oft weniger.',
     fakten: ['2,72 m in jedem Raum', 'auf Wunsch 2,92 m', '22 cm mehr als üblich'],
-    bild: 'assets/img/svc-hoehe.jpg', alt: 'Hoher, heller Raum mit Treppe und großen Fenstern'
+    bild: 'assets/img/acht-raumhoehe.jpg', alt: 'Hoher Wohnraum mit Holzdecke, Sofa und großem Fenster in den Garten'
   },
   {
     key: 'fassade', nr: '08', name: 'Fassade in Holz oder Putz', kurz: 'Fassade in Holz oder Putz',
@@ -66,7 +66,7 @@ export const ACHT = [
     griffner: 'Lärche, Putz oder beides. Für eine flexible Gestaltung. Immer hinterlüftet.',
     ueblich: 'Holz nur gegen Aufpreis.',
     fakten: ['Lärche oder Putz', 'immer hinterlüftet', 'Fassadenbahn als zweite wasserführende Ebene'],
-    bild: 'assets/img/wald-eingang.jpg', alt: 'Eingang mit senkrechter Holzfassade aus Lärche'
+    bild: 'assets/img/acht-fassade.jpg', alt: 'Flachdachhaus mit Fassade aus Lärche und Putz, davor Wiese und ein Baum'
   }
 ];
 
