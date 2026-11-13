@@ -284,8 +284,12 @@ export function initServicesFilm() {
     /* Runde 66 (Entwurf): Schwarz über dem 3D während des Architekturkonzepts (danach blendet das Grundstück bis P 4.46 auf), der
        Projektsteuerung und kurz nach einem Sprung der Kamera (dip). Die Schilder im 3D blenden mit */
     if (cov) {
-      const pcv = P >= 5.99 && P < 6.66 ? s(6.0, 6.03) * (1 - s(6.56, 6.62)) : 0, rcv = eng && eng.dip ? Math.min(1, eng.dip * 1.6) : 0;
-      const co = (stA ? 0 : st === 2 && P < 4.47 ? s(4.37, 4.46) : 1) * (1 - pcv) * (1 - rcv), c2 = (1 - co).toFixed(3), s2 = co.toFixed(3);
+      /* Runde 71 (Kunde): beim Zwischentitel Besser planen verschwindet der Ebenenstapel mit dem Schwarz (sonst stand er beim Ausblenden
+         des Titels noch da); vor Besser bauen ist das Schwarz schon zu, also kein Grundstück vor der Projektsteuerung; von der
+         Innenausstattung zu den Betriebskosten fährt die Kamera unter einer kurzen Blende aus dem Bad zum Haus (nicht durch die Wände) */
+      const pcv = P >= 5.98 && P < 6.66 ? s(5.986, 5.998) * (1 - s(6.56, 6.62)) : 0, rcv = eng && eng.dip ? Math.min(1, eng.dip * 1.6) : 0;
+      const tcv = T.i === 0 ? sm(T.u / .2) : 0, icv = P > 9.9 && P < 10.12 ? s(9.95, 9.975) * (1 - s(10.06, 10.09)) : 0;
+      const co = (stA ? 0 : st === 2 && P < 4.47 ? s(4.37, 4.46) : 1) * (1 - pcv) * (1 - rcv) * (1 - tcv) * (1 - icv), c2 = (1 - co).toFixed(3), s2 = co.toFixed(3);
       if (cov.style.opacity !== c2) cov.style.opacity = c2;
       if (l3 && l3.style.opacity !== s2) l3.style.opacity = s2;
       if (rcv > .002) anim = true;
