@@ -163,15 +163,17 @@ export const UMFANG = {
   inbegriffen: ['Andere nennen es', 'Aufpreis.', 'Wir nennen es', 'inbegriffen.'], // Runde 61: Sektion entfernt (Kunde)
   /* Runde 61 (Kunde, Entwurf „GRIFFNER Projektumfang“): neuer Einstieg statt Hero, drei Teile springen zu ihren Sektionen */
   auftakt: {
-    info: 'Der GRIFFNER Leistungsumfang',
+    info: 'Der GRIFFNER Projektumfang', // Runde 67: Seite heißt jetzt Projektumfang (/services/projektumfang)
     h1: 'Dein Projekt endet nicht an der Haustür. Unsere Services auch nicht.',
     txt: 'Kein Projekt gleicht dem anderen. Darum stellen wir den Umfang gemeinsam mit dir zusammen, vom Grundstück über dein Haus bis zum Garten.',
     h2: 'So setzt sich dein Projekt zusammen.',
     teile: [
-      { t: 'Immer dabei.', x: 'Die Qualität, die jedes GRIFFNER Haus ausmacht.', ziel: 'u-acht' },
+      { t: 'Immer dabei.', x: 'Deine persönliche Projektbegleitung von der Planung bis zur Übergabe und die Qualität, die jedes GRIFFNER Haus ausmacht.', ziel: 'u-acht' }, // Runde 67
       { t: 'Dein Ausbau.', x: 'Ausbaufertig, belagsfertig oder schlüsselfertig. Du entscheidest, wie weit wir gehen.', ziel: 'u-stufen' },
       { t: 'Rund ums Haus.', x: 'Zufahrt, Garage, Pool, Garten und Einrichtung, koordiniert mit ausgewählten Partnern.', ziel: 'u-rund' }
-    ]
+    ],
+    /* Runde 67 (Entwurf S5Umfang): Beschriftungen in der Zeichnung bei „Immer dabei“ (Figur, Haus) */
+    marken: ['Projektbegleitung', 'Qualität']
   },
   stufen: { info: 'Der Lieferumfang, schwarz auf weiß', h: 'So entsteht dein Haus.', txt: 'Ausbaufertig, belagsfertig, schlüsselfertig. Jede Stufe schließt die vorige ein. Alles, was hier steht, ist im Preis inbegriffen.' },
   dazu: {
@@ -511,7 +513,7 @@ export const FILM = {
      die Seiten Besser planen und Besser bauen gibt es noch nicht */
   /* Runde 61 (Kunde): Planungsleistungen und Bauleistungen entfernt, nur der Leistungsumfang als Box */
   weiter: { h: 'Das ganze Projekt im Detail.', karten: [
-    { k: 'Für alle, die es genau wissen wollen', t: 'Leistungsumfang.', x: 'Jede Leistung im Detail. Was serienmäßig dabei ist und was du dazu wählen kannst.', l: 'Zum Leistungsumfang', href: 'leistungsumfang.html' }
+    { k: 'Für alle, die es genau wissen wollen', t: 'Projektumfang.', x: 'Jede Leistung im Detail. Was serienmäßig dabei ist und was du dazu wählen kannst.', l: 'Zum Projektumfang', href: 'projektumfang.html' } // Runde 67: Seite umbenannt
   ] },
   /* Nur der Knopf (Entwurf) */
   cta: { h: 'Starte mit dem Projektcheck.', txt: 'Kostenlos, unverbindlich und mit einem Ergebnis, das du in der Hand hältst.', btn: 'Projektcheck anfragen', btnHref: 'https://griffner.com/contact' }

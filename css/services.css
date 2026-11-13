@@ -55,10 +55,9 @@ section{position:relative}
    Gepinnt, rechts die Zeichnung (js/umfang.js initAuftakt), darum die Hilfslinien wie im alten Hero. Unter 900 px steht die Zeichnung oben, Text direkt darunter (Runde 61b, CSS). */
 .ua{position:relative;height:500vh;color:var(--griffner-weiss)}
 .ua__st{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
-.ua__plan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-.ua__plan .g{fill:none;stroke:rgba(255,255,255,.2);stroke-width:1}
-.ua__plan .g.dot{stroke-dasharray:2 6}
-.ua__plan .s{fill:none;stroke:var(--griffner-kalk);stroke-width:1.2;stroke-linecap:round}
+/* Runde 67: bei „Immer dabei“ Figur + Ring gelb, Beschriftungen weiß (Entwurf S5Umfang) */
+.ua__svc{stroke:var(--griffner-gelb)}
+.ua__lab{fill:var(--griffner-weiss);stroke:var(--griffner-schwarz,#000);paint-order:stroke;stroke-linejoin:round;font-family:var(--font-text);font-weight:500;letter-spacing:.14em;text-transform:uppercase}
 .ua__draw{position:absolute;left:46%;right:var(--page-margin);top:12vh;bottom:9vh}
 .ua__draw svg{display:block;width:100%;height:100%;overflow:visible;stroke:var(--griffner-weiss)}
 .ua__hero{position:absolute;left:var(--page-margin);bottom:clamp(64px,12vh,128px);width:min(42vw,700px);display:grid;row-gap:clamp(16px,2.4vh,24px);justify-items:start;will-change:opacity,transform;animation:svh-rise 1.05s var(--ease) backwards 80ms}

@@ -50,8 +50,14 @@ function uaGeo() {
     ...box(12, 3.2, 6, 25, 6.2, 14), pl([[12.35, 6.2, 6.35], [24.65, 6.2, 6.35], [24.65, 6.2, 13.65], [12.35, 6.2, 13.65]]),
     pl([[13, 3.9, 14], [24, 3.9, 14], [24, 5.7, 14], [13, 5.7, 14]]), ln([16.7, 3.9, 14], [16.7, 5.7, 14]), ln([20.3, 3.9, 14], [20.3, 5.7, 14]),
     ...[7.2, 8.4, 9.6, 10.8, 12, 13.2].map(z => ln([25, 3.2, z], [25, 6.2, z]))];
+  /* Runde 67 (Entwurf S5Umfang, Kunde): bei „Immer dabei“ eine Figur (Projektbegleitung) vor dem Haus und ein gestrichelter Ring ums Haus,
+     dazu zwei Beschriftungen (Projektbegleitung an der Figur, Qualität am Obergeschoß). Hebt mit dem Haus ab. */
+  const svc = [], lab = [];
+  { const fx = 24.6, fz = 18.2; svc.push(ln([fx, 0, fz], [fx, 1.15, fz]), ln([fx - .25, 0, fz], [fx, .7, fz], [fx + .25, 0, fz]), ln([fx - .35, 1.05, fz], [fx, 1.35, fz], [fx + .35, 1.05, fz]), ball(fx, 1.62, fz, .26));
+    const rp = []; for (let i = 0; i <= 64; i++) { const t = i / 64 * Math.PI * 2; rp.push([17 + Math.cos(t) * 12.5, 0, 11 + Math.sin(t) * 9.5]); } svc.push({ ...ln(...rp), ring: 1 });
+    lab.push([...Pn(fx + .7, 1.3, fz), [...Pn(fx, -.2, fz)]], [...Pn(25.4, 6.4, 6), null]); }
   const pad = 24;
-  return GEO = { S, ground: [plot, ...items], aus, shell, vb: [x0 - pad, y0 - pad, x1 - x0 + 2 * pad, y1 - y0 + 2 * pad] };
+  return GEO = { S, ground: [plot, ...items], aus, shell, svc, lab, vb: [x0 - pad, y0 - pad, x1 - x0 + 2 * pad, y1 - y0 + 2 * pad] };
 }
 /* Sprung auf griffner.com über SmoothScroll (Lenis), im Prototyp weich */
 function jumpTo(id) {
@@ -61,38 +67,40 @@ function jumpTo(id) {
 }
 export function initAuftakt() {
   const r = $('[data-ua]'); if (!r) return;
-  const st = $('.ua__st', r), svg = $('[data-ua-svg]', r), plan = $('[data-ua-plan]', r), draw = $('[data-ua-draw]', r);
+  const svg = $('[data-ua-svg]', r);
   const he = $('[data-ua-hero]', r), pe = $('[data-ua-panel]', r), steps = $$('[data-ua-step]', r);
   const G = uaGeo(), S = G.S;
   const pth = p => `<path d="${p.d}" fill="${p.f}" pathLength="1" vector-effect="non-scaling-stroke"></path>`;
+  /* Beschriftungen aus Framer (ausgeblendete Felder ua-l1, ua-l2) */
+  const labT = $$('[data-ua-lab]', r).map(e => e.textContent.trim());
   svg.innerHTML = '<g data-layer="ground">' + G.ground.map(it => `<g data-gi="${it.id}" style="transform-box:fill-box;transform-origin:50% 100%">${it.p.map(pth).join('')}</g>`).join('') + '</g>' +
-    `<g data-layer="aus">${G.aus.map(pth).join('')}</g><g data-layer="shell">${G.shell.map(pth).join('')}</g>`;
-  const H = { aus: $('[data-layer="aus"]', svg), shell: $('[data-layer="shell"]', svg), items: $$('[data-gi]', svg), vb: '' };
+    `<g data-layer="aus">${G.aus.map(pth).join('')}</g><g data-layer="shell">${G.shell.map(pth).join('')}</g>` +
+    `<g data-layer="svc" class="ua__svc" opacity="0">${G.svc.map(p => p.ring ? `<path data-ring d="${p.d}" fill="none" pathLength="1" vector-effect="non-scaling-stroke" style="stroke-dasharray:.008 .008"></path>` : pth(p)).join('')}` +
+    G.lab.map((l, i) => `<text class="ua__lab" data-ul="${i}" x="${l[0].toFixed(1)}" y="${l[1].toFixed(1)}">${labT[i] || ''}</text>`).join('') + '</g>';
+  const H = { aus: $('[data-layer="aus"]', svg), shell: $('[data-layer="shell"]', svg), svc: $('[data-layer="svc"]', svg), items: $$('[data-gi]', svg), vb: '' };
+  const ring = $('[data-ring]', H.svc), uls = $$('[data-ul]', H.svc);
   [H.aus, H.shell, ...H.items].forEach(g => { g.style.transition = 'stroke 500ms cubic-bezier(.2,.7,.2,1)'; });
-  /* Linien zeichnen sich beim Laden: Grundstück, dann Ausbau, dann Haus */
+  /* Linien zeichnen sich beim Laden: Grundstück, dann Ausbau, dann Haus (die Figur und der Ring nicht) */
   if (!reduce) {
-    const ps = $$('path', svg); ps.forEach(p => { p.style.strokeDasharray = '1 1'; p.style.strokeDashoffset = '1'; });
+    const ps = $$('[data-layer]:not([data-layer="svc"]) path', svg); ps.forEach(p => { p.style.strokeDasharray = '1 1'; p.style.strokeDashoffset = '1'; });
     requestAnimationFrame(() => requestAnimationFrame(() => ps.forEach(p => { const L = p.closest('[data-layer]').dataset.layer; p.style.transition = 'stroke-dashoffset 1800ms cubic-bezier(.2,.7,.2,1) ' + (L === 'ground' ? 250 : L === 'aus' ? 450 : 700) + 'ms'; p.style.strokeDashoffset = '0'; })));
   }
-  /* Hilfslinien wie im alten Hero (js/svc-plan.js), hier durch die Kanten der Zeichnung */
-  const ln = cls => { const l = document.createElementNS(SVN, 'line'); l.setAttribute('class', cls); plan.appendChild(l); return l; };
-  const gl = ['g', 'g', 'g', 'g', 'g dot'].map(ln), sk = ['s', 's', 's', 's'].map(ln);
-  const jit = [[-2.1, -6, 4], [1.8, 5, -7], [-1.4, 7, 6], [2.4, -5, -4]];
-  const t0 = performance.now() + 200;
-  const set = (l, a, b, c, d) => { l.setAttribute('x1', a.toFixed(1)); l.setAttribute('y1', b.toFixed(1)); l.setAttribute('x2', c.toFixed(1)); l.setAttribute('y2', d.toFixed(1)); };
-  const eioP = x => (x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2), eoP = x => 1 - Math.pow(1 - x, 3);
-  let lastKey = '';
-  function guides(rect, W, Hh, T, fade) {
-    const { l, t, r: rr, b } = rect, ov = Math.max(14, (rr - l) * .06), key = [l, t, rr, b, W, Hh, Math.round(T * 60), fade.toFixed(2)].map(v => Math.round(v)).join(',');
-    if (key === lastKey) return; lastKey = key;
-    plan.setAttribute('viewBox', `0 0 ${W} ${Hh}`); plan.style.opacity = fade.toFixed(3);
-    const g = [[0, t, W, t], [W, b, 0, b], [l, Hh, l, 0], [rr, 0, rr, Hh], [0, (t + b) / 2, W, (t + b) / 2]];
-    gl.forEach((e, i) => { const k = reduce ? 1 : eioP(cl((T - .1 - i * .12) / 1.1)), q = g[i]; set(e, q[0], q[1], q[0] + (q[2] - q[0]) * k, q[1] + (q[3] - q[1]) * k); });
-    const s = [[l - ov, t, rr + ov, t], [rr, t - ov, rr, b + ov], [rr + ov, b, l - ov, b], [l, b + ov, l, t - ov]];
-    sk.forEach((e, i) => { const k = reduce ? 1 : eoP(cl((T - .55 - i * .14) / .9)), sv = reduce || nwPrev ? 1 : eioP(cl((T - 1.75) / .8)), q = s[i], j = jit[i];
-      set(e, q[0], q[1], q[0] + (q[2] - q[0]) * k, q[1] + (q[3] - q[1]) * k);
-      const cx = (q[0] + q[2]) / 2, cy = (q[1] + q[3]) / 2;
-      e.setAttribute('transform', `translate(${(j[1] * (1 - sv)).toFixed(2)} ${(j[2] * (1 - sv)).toFixed(2)}) rotate(${(j[0] * (1 - sv)).toFixed(3)} ${cx.toFixed(1)} ${cy.toFixed(1)})`); });
+  /* Runde 67 (Kunde): die Hilfslinien über die ganze Fläche sind weg, die Zeichnung steht allein */
+  /* Beschriftungen immer 11 px am Schirm. Passt „Projektbegleitung“ rechts neben der Figur nicht mehr ins Fenster
+     (schmale Telefone), steht sie mittig unter der Figur */
+  let labKey = '';
+  function labels() {
+    const M = svg.getScreenCTM(); if (!M || !M.a) return;
+    const k = 1 / M.a, lim = Math.min(innerWidth - 12, svg.getBoundingClientRect().right + 4);
+    const key = [M.a, M.e, lim].map(v => v.toFixed(3)).join(',') + (document.fonts ? document.fonts.status : '');
+    if (key === labKey) return; labKey = key;
+    uls.forEach((t, i) => {
+      /* schwarzer Rand um die Schrift: Linien dahinter (Ring, Haus) laufen nicht durch den Text */
+      const l = G.lab[i]; t.style.fontSize = (11 * k).toFixed(2) + 'px'; t.style.strokeWidth = (5 * k).toFixed(2) + 'px';
+      t.setAttribute('text-anchor', 'start'); t.setAttribute('x', l[0].toFixed(1)); t.setAttribute('y', l[1].toFixed(1)); t.setAttribute('dx', (10 * k).toFixed(1)); t.setAttribute('dy', (4 * k).toFixed(1));
+      if (!l[2] || t.getBoundingClientRect().right <= lim) return;
+      t.setAttribute('text-anchor', 'middle'); t.setAttribute('x', l[2][0].toFixed(1)); t.setAttribute('y', l[2][1].toFixed(1)); t.setAttribute('dx', '0'); t.setAttribute('dy', (14 * k).toFixed(1));
+    });
   }
   const Y = '#FFB200', DIM = '#6e6e6b', W8 = '#FFFFFF';
   const setS = (el, c) => { if (el._s !== c) { el._s = c; el.style.stroke = c; } };
@@ -101,15 +109,14 @@ export function initAuftakt() {
   r.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-jump]'); if (b && r.contains(b)) { e.preventDefault(); jumpTo(b.dataset.jump); } });
   loop.add({ tick(now) {
     const fb = r.getBoundingClientRect(), vh = innerHeight;
-    const T = ((now || performance.now()) - t0) / 1000;
     if (fb.bottom < -50 || fb.top > vh + 50) return;
-    const nw = innerWidth < 900; if (nw !== nwPrev) { nwPrev = nw; lastKey = ''; }  // Telefonlayout kommt aus dem CSS (max-width:899px)
+    const nw = innerWidth < 900; if (nw !== nwPrev) { nwPrev = nw; labKey = ''; }  // Telefonlayout kommt aus dem CSS (max-width:899px)
     const sm = x => { x = cl(x); return x * x * (3 - 2 * x); };
     const p = cl(-fb.top / Math.max(1, fb.height - vh)), hero = 1 - sm((p - .05) / .07), e = sm((p - .1) / .16), pan = sm((p - .17) / .06);
     const step = p < .47 ? 0 : p < .69 ? 1 : 2, L = 12 * S, A = 5.5 * S;
     he.style.opacity = hero.toFixed(3); he.style.transform = `translate3d(0,${(-(1 - hero) * 40).toFixed(1)}px,0)`; he.style.pointerEvents = hero > .5 ? 'auto' : 'none'; he.style.visibility = hero < .01 ? 'hidden' : 'visible';
     pe.style.opacity = pan.toFixed(3); pe.style.transform = `translate3d(0,${((1 - pan) * 24).toFixed(1)}px,0)`; pe.style.pointerEvents = pan > .5 ? 'auto' : 'none'; pe.style.visibility = pan < .01 ? 'hidden' : 'visible';
-    H.shell.style.transform = `translate(0px,${(-L * e).toFixed(1)}px)`; H.aus.style.transform = `translate(0px,${(-A * e).toFixed(1)}px)`;
+    H.shell.style.transform = `translate(0px,${(-L * e).toFixed(1)}px)`; H.svc.style.transform = H.shell.style.transform; H.aus.style.transform = `translate(0px,${(-A * e).toFixed(1)}px)`;
     const v = G.vb, vb = [v[0], v[1] - L * e, v[2], v[3] + L * e], vbs = vb.map(x => x.toFixed(1)).join(' ');
     if (H.vb !== vbs) { H.vb = vbs; svg.setAttribute('viewBox', vbs); }
     const col = i => (pan < .5 ? W8 : i === step ? Y : DIM);
@@ -122,13 +129,13 @@ export function initAuftakt() {
        der aktuelle Teil offen, die anderen (Telefon, niedrige Fenster) nur mit Titel. Kein Wechsel mehr bei pan = .5 */
     const short = nw || vh < 700, sk = step + '|' + short;
     if (sk !== stepPrev) { stepPrev = sk; steps.forEach((a, i) => { const cur = i === step; a.classList.toggle('is-cur', cur); a.style.opacity = cur ? '1' : '.4'; a.classList.toggle('is-short', short && !cur); }); }
-    /* Hilfslinien: Rahmen der Zeichnung im Bild (Seitenverhältnis wie die viewBox, mittig im Feld) */
-    const sr = st.getBoundingClientRect(), dr = draw.getBoundingClientRect(), sc = Math.min(dr.width / vb[2], dr.height / vb[3]);
-    const w = vb[2] * sc, h = vb[3] * sc, l = dr.left - sr.left + (dr.width - w) / 2, t = dr.top - sr.top + (dr.height - h) / 2;
-    const tTop = t + (L * e) * sc;  // der Rahmen bleibt am Grundstück, das Haus hebt darüber ab
-    guides({ l: l + 24 * sc, t: tTop + 24 * sc, r: l + w - 24 * sc, b: t + h - 24 * sc }, sr.width, sr.height, T, 1 - .55 * pan);
-    if (T < 3) loop.poke && loop.poke();
+    /* Runde 67 (Entwurf): Figur, Ring und Beschriftungen nur bei „Immer dabei“, der Ring dreht sich mit dem Scrollen */
+    const k0 = pan > .5 && step === 0 ? sm((p - .27) / .04) * (1 - sm((p - .445) / .025)) : 0, ko = k0.toFixed(3);
+    if (H.svc._o !== ko) { H.svc._o = ko; H.svc.setAttribute('opacity', ko); H.svc.style.visibility = k0 > .001 ? 'visible' : 'hidden'; }
+    if (k0 > .001) { ring.style.strokeDashoffset = (-p * 1.2).toFixed(4); labels(); }
   } });
+  /* Prüfen: Scrollposition zu einem Fortschritt p (0 bis 1) */
+  globalThis.__uaY = q => { const b = r.getBoundingClientRect(); return b.top + scrollY + q * Math.max(1, b.height - innerHeight); };
   if (loop.poke) { const t = setInterval(() => loop.poke(), 120); setTimeout(() => clearInterval(t), 3200); }
 }
 
