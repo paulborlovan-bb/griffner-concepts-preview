@@ -302,8 +302,10 @@ export function initServicesFilm() {
     if (cov) {
       /* Runde 71 (Kunde): beim Zwischentitel Besser planen verschwindet der Ebenenstapel mit dem Schwarz (sonst stand er beim Ausblenden
          des Titels noch da); vor Besser bauen ist das Schwarz schon zu, also kein Grundstück vor der Projektsteuerung; von der
-         Innenausstattung zu den Betriebskosten fährt die Kamera seit Runde 72 in einem Zug aus dem Haus (raumFrame), ohne Blende */
-      const pcv = P >= 5.98 && P < 6.66 ? s(5.986, 5.998) * (1 - s(6.56, 6.62)) : 0, rcv = eng && eng.dip ? Math.min(1, eng.dip * 1.6) : 0;
+         Innenausstattung zu den Betriebskosten fährt die Kamera seit Runde 72 in einem Zug aus dem Haus (raumFrame), ohne Blende.
+         Runde 73 (Kunde): das Schwarz nach der Projektsteuerung bleibt zu, bis die Kamera bei P 6.61 vom alten Fundament mit dem
+         Papierstapel auf das Grundstück gesprungen ist, und öffnet erst dann */
+      const pcv = P >= 5.98 && P < 6.72 ? s(5.986, 5.998) * (1 - s(6.625, 6.68)) : 0, rcv = eng && eng.dip ? Math.min(1, eng.dip * 1.6) : 0;
       const tcv = T.i === 0 ? sm(T.u / .2) : 0;
       const co = (stA ? 0 : st === 2 && P < 4.47 ? s(4.37, 4.46) : 1) * (1 - pcv) * (1 - rcv) * (1 - tcv), c2 = (1 - co).toFixed(3), s2 = co.toFixed(3);
       if (cov.style.opacity !== c2) cov.style.opacity = c2;
@@ -363,13 +365,16 @@ export function initServicesFilm() {
     if (eng && eng.setStage && narrow && T.i < 0) {
       let best = null, bv = .01; [...ch, ...chx].forEach(el => { const v = +el.style.opacity; if (v > bv) { bv = v; best = el; } });
       if (focus && hp && hp.offsetHeight) best = $('[data-hp-title]', hp) || hp;
-      const top = best ? best.offsetTop + (best.parentNode === hp ? hp.offsetTop : 0) : stage.clientHeight * .62;
+      /* Runde 72 (Kunde): in der Eröffnung mit dem aufgefächerten Haus endet die Bühne über dem Titel „GRIFFNER Services.“ */
+      const h5 = !best && P > 2.7 && P < 4.05 ? hk.find(b => b.i === 5) : null;
+      const top = best ? best.offsetTop + (best.parentNode === hp ? hp.offsetTop : 0) : h5 ? h5.el.getBoundingClientRect().top - stage.getBoundingClientRect().top : stage.clientHeight * .62;
       eng.setStage(72, Math.round(top - 20));
     }
     if (einmal) { const v = s(11.5, 11.62); einmal.style.opacity = v.toFixed(3); einmal.style.transform = `translate3d(0,${((1 - v) * 16).toFixed(1)}px,0)`; }
     /* Leiste unten (Runde 55: größer, die drei Teile klar unterscheidbar; am Telefon bekommt der aktuelle Teil mehr Platz) */
     if (nav) {
-      const on = (P > 3.95 && P < 10.98) || (T.i >= 0 && (T.i > 0 || T.u > .5));
+      /* Runde 72 (Kunde): am Telefon keine Leiste vor und während der großen Zwischentitel, sie kommt erst mit dem Kapitel */
+      const on = narrow ? P >= 4 && P < 10.98 && T.i < 0 :(P > 3.95 && P < 10.98) || (T.i >= 0 && (T.i > 0 || T.u > .5));
       nav.classList.toggle('is-on', on);
       /* im Zwischentitel ist sein Teil schon der aktuelle */
       const pi = T.i >= 0 ? T.i : P < 6 ? 0 : P < 8 ? 1 : 2;

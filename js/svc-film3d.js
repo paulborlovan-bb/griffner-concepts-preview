@@ -792,7 +792,7 @@ export async function createFilm(host, cfg = {}) {
       const r = host.getBoundingClientRect(), w = Math.max(1, r.width), h = Math.max(1, r.height);
       if (w === SET.w && h === SET.h) return; SET.w = w; SET.h = h;
       R.setSize(w, h, false); cam.aspect = w / h;
-      const narrow = w < 900; SET.narrow = narrow; SET.phone = Math.min(w, h) < 600; SET.lens = null;
+      const narrow = w < 900; SET.narrow = narrow; SET.phone = Math.min(w, h) < 600; SET.lens = null; SET.pm = parseFloat(getComputedStyle(host).getPropertyValue('--page-margin')) || 24;
     };
     const lens = () => {
       const w = SET.w, h = SET.h, tv = Math.tan((SET.fv || 30) * Math.PI / 360), hoch = SET.narrow && w < h, ow = SET.ow || 0;
@@ -806,15 +806,24 @@ export async function createFilm(host, cfg = {}) {
           const nx = MV.x / -MV.z / tx, ny = MV.y / -MV.z / ty; x0 = Math.min(x0, nx); x1 = Math.max(x1, nx); y0 = Math.min(y0, ny); y1 = Math.max(y1, ny); }
         if (n === 8) { const z = Math.min(2.2, Math.max(1, (x1 - x0) / 1.76, (y1 - y0) / (1.8 * (bot - top) / h))), f2 = fit * (1 + (z - 1) * q.k), r = fit / f2;
           ox = q.k * (x0 + x1) / 2 * r * w / 2; oy -= q.k * (y0 + y1) / 2 * r * h / 2; fit = f2; } }
+      const lk = hoch && !SET.focus ? sm((SET.P - 2.7) / .4) * (1 - sm((SET.P - 4.1) / .15)) : 0;
+      if (lk > .001 && S.U && S.U.grund && S.A && S.A.key) {
+        cam.updateMatrixWorld(); const g = S.U.grund, tx = w / h * tv * fit, ty = tv * fit; g.updateWorldMatrix(true, false); let xL = 1e9, yB = -1e9;
+        const pr = v => { v.applyMatrix4(cam.matrixWorldInverse); return v.z < -.1 ? [(v.x / -v.z / tx + 1) / 2 * w, (1 - v.y / -v.z / ty) / 2 * h] : null; };
+        for (const p of LKP) { const sp = pr(MV.set(p[0], p[1], p[2]).applyMatrix4(g.matrixWorld)); if (sp) { xL = Math.min(xL, sp[0]); yB = Math.max(yB, sp[1]); } }
+        S.A.key.getWorldPosition(MV); const kt = pr(MV);
+        if (xL < 1e9 && kt) { ox += (xL - (SET.pm || 24) - ox) * lk; oy += ((kt[1] - 40 + yB) / 2 - (top + bot) / 2 - oy) * lk; }
+      }
       const key = fit.toFixed(3) + ' ' + oy.toFixed(1) + ' ' + ox.toFixed(1); if (SET.lens === key) return; SET.lens = key;
       cam.fov = Math.atan(tv * fit) * 360 / Math.PI;
       cam.setViewOffset(w, h, ox, oy, w, h);
       cam.updateProjectionMatrix();
     };
-    const MV = new T.Vector3(), MH = [-9.8, 0, -7.7, 6.2, 10, 9.9], MA = [-11.1, 0, -9.5, 15.2, 9.6, 12.2], MK = [-9.8, 0, -7.7, 6.2, 9.6, 16];
+    const LKP = [[-26, -1.4, 13], [-26, -1.4, 18.5], [-26, -.08, 13], [-26, -.08, 18.5], [-16, -1.4, -12], [-16, -1.4, 12], [16, -1.4, 12], [26, -1.4, 18.5], [26, -1.4, 13]];
+    const MV = new T.Vector3(), MH = [-9.8, 0, -7.7, 6.2, 10, 9.9], MA = [-11.1, 0, -9.5, 15.2, 9.6, 12.2], MK = [-9.8, 0, -7.7, 6.2, 9.6, 16], MB = [11.4, 0, -4.8, 27, 13, 0];
     const motiv = PR => { if (SET.fk > .5) return null; const e = (a, b, c, d) => sm((PR - a) / (b - a)) * (1 - sm((PR - c) / (d - c))), mix = (A, B, f) => A.map((v, i) => v + (B[i] - v) * f);
       let k = 0, b = MH;
-      if (PR > 4.95 && PR < 5.05) k = e(4.955, 4.975, 5.025, 5.045);
+      if (PR > 4.95 && PR < 5.1) { k = e(4.955, 4.975, 5.065, 5.1); b = mix(MH, MB, sm((PR - 5.0) / .065)); }
       else if (PR > 5.93 && PR < 7.52) { k = e(5.94, 5.99, 7.42, 7.5); b = mix(MH, MA, sm((PR - 6.95) / .07)); }
       else if (PR > 9.98 && PR < 11.08) { k = e(9.98, 10.04, 11.0, 11.07); b = mix(MH, MK, sm((PR - 10.45) / .1)); }
       k *= (1 - SET.fk * 2) * (1 - (SET.ow || 0)); return k > .001 ? { k, b } : null; };
@@ -845,6 +854,7 @@ export async function createFilm(host, cfg = {}) {
       ['roof', 'wall', 'dims'].forEach(k => { const tg = Math.max(SET.focus && SET.focus.fx && SET.focus.fx[k] ? 1 : 0, k === 'wall' ? autoWall : k === 'dims' ? autoDims : autoRoof); SET.fx[k] += (tg - SET.fx[k]) * (reduce ? 1 : .07); });
       if (SET.focus) SET.lastCam = SET.focus.cam;
       const c = camAt(P);
+      if (SET.narrow && SET.w < SET.h && PR >= 5 && PR < 5.07 && !SET.focus) { const a = camAt(4.9999), u = sm((PR - 5) / .07); for (let j = 1; j < 7; j++) c[j] = a[j] + (c[j] - a[j]) * u; }
       { const w = PR > 5.18 && PR < 5.36 ? sm((PR - 5.19) / .02) * (1 - sm((PR - 5.3) / .045)) : 0; if (w > 0 && !SET.focus) { const a = cl((PR - 5.2) / .1), tg = [0, 4 + 10 * a, 80 - 6 * a, 74, -2.5, 0, 0]; for (let j = 1; j < 7; j++) c[j] += (tg[j] - c[j]) * w; } }
       if (PR >= 6.5 && PR < 7.5 && !SET.focus) { const KB = [[6.5, 14, 32, 98, -5, -3, 5], [7.3, 28, 30, 96, -5, -3, 5], [7.42, 40, 30, 98, -5, -3, 5], [7.5, 15.9, 27.7, 93, .61, 1.95, 0]], w = sm((PR - 6.52) / .08);
         let i = 0; while (i < KB.length - 2 && PR >= KB[i + 1][0]) i++; const a = KB[i], b = KB[i + 1], f = sm(cl((PR - a[0]) / (b[0] - a[0]))); for (let j = 1; j < 7; j++) c[j] += (a[j] + (b[j] - a[j]) * f - c[j]) * w; }
@@ -865,7 +875,7 @@ export async function createFilm(host, cfg = {}) {
       if (SET.fk > .001 && SET.lastCam) { const fk = sm(SET.fk), fc = SET.lastCam; for (let j = 1; j < 7; j++) c[j] = c[j] + (fc[j - 1] - c[j]) * fk; }
       if (SET.camOv && SET.camW > .001) { const w = sm(SET.camW); for (let j = 1; j < 7; j++) c[j] += (SET.camOv[j - 1] - c[j]) * w; }
       { const ow = SET.camOv ? sm(SET.camW || 0) : 0, fv = 30 + ((SET.fovOv || 30) - 30) * ow; SET.ow = ow; if (Math.abs((SET.fv || 30) - fv) > .01) { SET.fv = fv; cam.near = fv > 31 ? .12 : .5; cam.far = fv > 31 ? 240 : 5000; SET.lens = null; } }
-      if (SET.cPrev && Math.abs(PN - SET.pnPrev) > .12 && !reduce && !(Math.abs(PR - SET.prPrev) < .25 && [9, 10].some(b => (SET.prPrev - b) * (PR - b) <= 0))) SET.dip = 1;
+      if (SET.cPrev && Math.abs(PN - SET.pnPrev) > .12 && !reduce && !(Math.abs(PR - SET.prPrev) < .25 && (SET.narrow && SET.w < SET.h ? [5, 9, 10] : [9, 10]).some(b => (SET.prPrev - b) * (PR - b) <= 0))) SET.dip = 1;
       SET.prPrev = PR;
       if (SET.dip > .002) SET.dip *= .86; else SET.dip = 0;
       SET.cPrev = c.slice(); SET.pnPrev = PN;
@@ -917,7 +927,7 @@ export async function createFilm(host, cfg = {}) {
             L.position.copy(u.position); L.rotation.copy(u.rotation); L.scale.copy(u.scale); u.parent.add(L); u.userData.lineCopy = L; }
           if (L) { const ord = [1, 0, 2, 3, 4][ai], k = lw ? sm((PR - (5.385 + ord * .014)) / .022) : 0, lo = k * (1 - sm((PR - 5.486) / .014)); L.visible = lo > .004; L.userData.lm.opacity = .9 * lo; L.position.y = -1.8 * (1 - k); }
           if (lw) o = 0; }
-        if (u.name === 'grund' && PR > 5 && PR < 5.34) o *= 1 - sm((PR - 5.0) / .03) * (1 - sm((PR - 5.292) / .03));
+        if (u.name === 'grund' && PR > 5 && PR < 5.34) o *= 1 - sm((PR - 5.0) / (SET.narrow && SET.w < SET.h ? .055 : .03)) * (1 - sm((PR - 5.292) / .03));
         if (u.name === 'plan' && PR > 5 && PR < 5.34) o *= sm((PR - 5.3) / .03);
         if (PR >= 6 && PR < 7.5) { const BT = x => 6.05 + .87 * x, b7 = true;
           if (u.name === 'fund') { const k = b7 ? sm((PB - BT(.16)) / .08) : 1; u.position.y = -.8 * (1 - k); o = k; }
@@ -931,12 +941,13 @@ export async function createFilm(host, cfg = {}) {
         if (SET.hover !== -1 && !(Array.isArray(SET.hover) ? SET.hover.includes(e) : e === SET.hover)) o *= 1 - .78 * ov;
         if (u.name === 'innen' && PN > 7.9 && PN < 8.6 && PR < 9) o *= sN(8.46, 8.53);
         if (u.name === 'innen' && PR >= 8.94 && PR < 9.06) { u.position.y = 0; o *= sm((PR - 8.96) / .05); }
+        if (u.name === 'grund' && SET.narrow && SET.w < SET.h && PR > 4.98 && PR < 5.1) { const tr = o < .999; if (u.userData.trC !== tr) { u.userData.trC = tr; u.traverse(c => { if (c.material) [].concat(c.material).forEach(m => { m.needsUpdate = true; }); }); } }
         u.userData.op = o; setOp(u, o);
       });
       const U = S.U;
 
       /* Projektcheck */
-      const ck = s(4.12, 4.3) * (1 - s(4.95, 5.15)); setOp(S.check, ck * U.grund.userData.op);
+      const ck = SET.narrow && SET.w < SET.h && PR >= 5 && PR < 5.2 ? .845 * (1 - sm((PR - 5) / .04)) : s(4.12, 4.3) * (1 - s(4.95, 5.15)); setOp(S.check, ck * U.grund.userData.op);
       const sx = -16 + 32 * s(4.25, 4.85); S.scan.position.x = sx; S.scanEdge.position.x = sx;
       if (ck > 0) { S.pts.forEach(([x, z], i) => { const k = cl((sx - x) / 2.5); dummy.position.set(x, .1 + .12 * k, z); dummy.scale.setScalar(Math.max(.001, k)); dummy.updateMatrix(); S.ptsMesh.setMatrixAt(i, dummy.matrix); }); S.ptsMesh.instanceMatrix.needsUpdate = true; }
 
@@ -1175,7 +1186,7 @@ export async function createFilm(host, cfg = {}) {
         if (L.kst && !L.center && L.el.children[1] && L.phB !== !!SET.phone) { L.phB = !!SET.phone; L.el.children[1].style.padding = SET.phone ? '3px 8px 4px' : '6px 9px 7px'; if (L.el.children[1].firstElementChild) L.el.children[1].firstElementChild.style.letterSpacing = SET.phone ? '.1em' : '.2em'; L.wd = 0; }
         if (L.kst && SET.phone && !L.center) { kl.push({ L, x, y, v }); return; }
         if (L.kst) { const h2 = L.el.offsetHeight || 30; if (L.center) x -= (L.el.offsetWidth || 80) / 2; L.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (y - h2 / 2).toFixed(1) + 'px,0)'; L.el.style.opacity = v.toFixed(3); L.el.style.pointerEvents = 'none'; L.on = 1; return; }
-        if (L.big) { const sh = SET.h >= 560; if (L.sub && L.shw !== sh) { L.shw = sh; L.sub.style.display = sh ? '' : 'none'; } L.hh = L.el.offsetHeight || 60; lay.push({ L, x, y: y - L.hh / 2, ax: x, ay: y, v }); return; }
+        if (L.big) { const sh = SET.h >= 560; if (L.sub && L.shw !== sh) { L.shw = sh; L.sub.style.display = sh ? '' : 'none'; } L.hh = L.el.offsetHeight || 60; if (SET.narrow && SET.w < SET.h) { L.wd = L.el.offsetWidth || L.wd; x = SET.w - (SET.pm || 24) - 9 - L.wd; } lay.push({ L, x, y: y - L.hh / 2, ax: x, ay: y, v }); return; }
         if (L.kind === 'warm' || L.avoid) { if (L.kind === 'warm') y += (1 - v) * 16; if (!L.hh) L.hh = L.el.offsetHeight || 40; L.wd = L.el.offsetWidth || L.wd || 160; warmL.push({ L, x, y: y - 7, v }); return; }
         if (L.free) { if (!L.hh) L.hh = L.el.offsetHeight || 40; y = Math.min(y, SET.h - (SET.narrow ? 150 : 112) - L.hh + 7); }
         if (SET.phone && !L.big && L.kind !== 'hot') { L.hh = L.el.offsetHeight || L.hh || 40; L.wd = L.el.offsetWidth || L.wd || 160; pl.push({ L, x, y: y - 7 + (L.dy || 0), v }); return; }

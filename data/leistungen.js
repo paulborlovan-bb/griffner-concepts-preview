@@ -467,9 +467,11 @@ export const FILM = {
   raum: { h: 'Raumgefühl.', u: ['Holz-Alu-Fenster', '2,72 Meter Raumhöhe', 'offenem First sogar bis zu fünf Meter'], z: ['und', ', bei', '. Räume voller Licht und Weite.'], masse: ['2,40 m', '2,72 m', 'bis 5,00 m'] },
   /* Sprungmarken im Film als P (die Seite rechnet daraus die Lage mit den Zwischentiteln). s-planen, s-bauen, s-leben: Zwischentitel */
   marken: [['s-ueberblick', 3.5], ['s-projektcheck', 4.3], ['s-projektplan', 5.05], ['s-hausplanung', 5.3], ['s-innen', 5.6], ['s-aussen', 5.86], ['s-fundament', 6.05], ['s-pm', 7.6], ['s-bausystem', 8.1], ['s-kundendienst', 10.6]],
-  /* Leiste unten: drei Teile mit Bereich in P und Unterzeilen [bis P, Name] (Entwurf). Sprung zum Zwischentitel des Teils */
+  /* Leiste unten: drei Teile mit Bereich in P und Unterzeilen [bis P, Name] (Entwurf). Sprung zum Zwischentitel des Teils.
+     Runde 74 (Kunde): im ersten Teil steht zuerst Architekturkonzept (Zwischentitel und Einschub, P bleibt bei 4), Machbarkeit erst,
+     wenn sich der Balken füllt */
   leiste: [
-    { name: 'Besser planen.', href: 's-planen', r: [4, 6], sub: [[5, 'Machbarkeit'], [5.2, 'Budgetanalyse'], [5.5, 'Entwurfsplanung'], [5.78, 'Innenarchitektur'], [6, 'Gesamtinvestition']] },
+    { name: 'Besser planen.', href: 's-planen', r: [4, 6], sub: [[4.001, 'Architekturkonzept'], [5, 'Machbarkeit'], [5.2, 'Budgetanalyse'], [5.5, 'Entwurfsplanung'], [5.78, 'Innenarchitektur'], [6, 'Gesamtinvestition']] },
     { name: 'Besser bauen.', href: 's-bauen', r: [6, 8], sub: [[6.6, 'Projektsteuerung'], [7.5, 'Baumanagement'], [8, 'Projektmanager']] },
     { name: 'Besser leben.', href: 's-leben', r: [8, 11], sub: [[9, 'Bausystem'], [10, 'Innenausstattung'], [10.5, 'Betriebskosten'], [11, 'Kundenservice']] }
   ],

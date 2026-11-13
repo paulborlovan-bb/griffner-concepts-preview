@@ -173,7 +173,7 @@
   .svf__scrim{background:linear-gradient(0deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.66) 42%,rgba(0,0,0,0) 72%)}
   /* Runde 72 (Kunde: Tabelle zu weit oben): kleiner (engere Zeilen, schmalere Balken) und tiefer, etwa mittig zwischen Kopf und Kapiteltext */
   .svf__ledger{left:var(--page-margin);right:var(--page-margin);width:auto;top:clamp(96px,22svh,230px)}
-  .svf__lrow{grid-template-columns:84px minmax(0,1fr);padding:4px 0 5px}
+  .svf__lrow{grid-template-columns:104px minmax(0,1fr);padding:4px 0 5px} /* Runde 74: 104 px, sonst läuft Bodenplatte in den Balken */
   .svf__lbar{height:10px}
   .svf__ltot{row-gap:10px;padding-top:12px}
   .svf__lseg{height:16px}
@@ -222,9 +222,10 @@
    trennt der Browser (Seite ist deutsch, lang de-AT), wie die Titel im Leistungsumfang. */
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf__scrim,.svw__line{transition:none}.svw__g *{stroke-dashoffset:0}}
 .svf__src{display:none!important}
-/* Runde 57: kurze Telefone (schmal und unter 760 px hoch): die Tabelle rückt nach oben und wird enger */
+/* Runde 57: kurze Telefone (schmal und unter 760 px hoch): die Tabelle wird enger. Runde 74 (Kunde: Tabelle zu weit oben): sie
+   steht etwa mittig zwischen Kopf und Kapiteltitel statt direkt unter dem Kopf (die meisten Telefone in Safari sind unter 760 hoch) */
 @media (max-width:899px) and (max-height:759px){
-  .svf__ledger{top:clamp(76px,10vh,96px)}
+  .svf__ledger{top:clamp(56px,calc(50svh - 215px),150px)}
   .svf__lrow{padding:3px 0 4px}
   .svf__ltot{row-gap:8px;padding-top:10px}
   .svf__lseg{height:14px}
