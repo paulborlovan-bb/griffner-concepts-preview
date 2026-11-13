@@ -5,24 +5,24 @@
 /* Die acht Dinge, Reihenfolge wie auf /leistungsumfang. Runde 65 (Kunde): neue Bilder, je acht-<key>.jpg im Bildordner. key = Teil im 3D Haus (js/schnitthaus.js, Concept Bold) und Muster (js/muster3d.js) */
 export const ACHT = [
   {
-    key: 'openspace', nr: '01', name: 'Patentiertes Open Space Konzept', kurz: 'Open Space, patentiert',
-    claim: 'Keine Innenwand trägt. Der Grundriss folgt deinem Leben.',
+    key: 'openspace', nr: '01', name: 'Open Space®', kurz: 'Open Space®',
+    claim: 'Decke und Dach ruhen vor allem auf den Außenwänden. Raum für einen freien Grundriss.', // Runde 68 (Kunde)
     griffner: 'Wenige Lastenpunkte ermöglichen ein flexibles Raumkonzept. Der Grundriss folgt deinem Leben.',
     ueblich: 'Tragende Innenwände. Jede Änderung kostet einen Aufpreis.',
     fakten: ['2 Ableitungspunkte', '9,80 m Raumbreite ohne Wand', '0 tragende Innenwände'],
     bild: 'assets/img/acht-openspace.jpg', alt: 'Offener Wohnraum mit Sofa, Essplatz und Küche, nur eine Holzstütze, große Glasfront zum Garten'
   },
   {
-    key: 'wand', nr: '02', name: 'Die GRIFFNER Wand', kurz: 'Die GRIFFNER Wand',
-    claim: 'Neunschichtig, diffusionsoffen. Gesünder wohnen, ein Leben lang.',
+    key: 'wand', nr: '02', name: 'Premium Wand', kurz: 'Premium Wand',
+    claim: 'Neun Schichten aus natürlichen Materialien für ein gesundes Raumklima.', // Runde 68 (Kunde)
     griffner: '42,25 cm aus Holz, Holzfaser und Zellulose, diffusionsoffen. Natürliche Dampfbremse, keine Folien. Sie regelt die Feuchte von selbst.',
     ueblich: 'Dünnere Wand mit Kunststoffdämmung.',
     fakten: ['42,25 cm stark', 'U-Wert 0,147 W/m²K', 'ohne PVC-Folien'],
     bild: 'assets/img/acht-wand.jpg', alt: 'Hell verputzte Außenwand mit tiefer Fensterlaibung und Blätterschatten'
   },
   {
-    key: 'dach', nr: '03', name: 'Dach mit Holzfaser-Zellulosedämmung', kurz: 'Dach mit Holzfaser-Zellulosedämmung',
-    claim: 'Draußen 34 Grad, im Schlafzimmer angenehm. Ohne Klimagerät.',
+    key: 'dach', nr: '03', name: 'Natürliche Dachdämmung', kurz: 'Natürliche Dachdämmung',
+    claim: 'Holzfaser und Zellulose halten die Sommerhitze lange draußen.', // Runde 68 (Kunde)
     griffner: 'Die Holzfaser-Zellulosedämmung speichert die Hitze des Tages und gibt sie erst nachts ab. Draußen 34 Grad, oben schläfst du.',
     ueblich: 'Leichte Dämmung, das Dachgeschoß heizt sich auf.',
     fakten: ['U-Wert 0,13 W/m²K', 'bis zum First offen', 'Raumhöhen bis zu 5 m im Obergeschoss'],
@@ -30,39 +30,39 @@ export const ACHT = [
   },
   {
     key: 'fenster', nr: '04', name: 'Holz-Alu-Fenster', kurz: 'Holz-Alu-Fenster',
-    claim: 'Dreifachverglasung, innen Holz in Natur, Weiß oder Schwarz lasiert, außen Aluminium.',
+    claim: 'Dreifach verglast, innen warmes Holz, außen wetterfestes Aluminium.', // Runde 68 (Kunde)
     griffner: 'Dreifachverglasung, verdeckte Beschläge. Innen Holz, außen Aluminium, das ohne Anstrich auskommt.',
     ueblich: 'Kunststofffenster in Weiß, innen wie außen.',
     fakten: ['Ug 0,6 W/m²K', 'verdeckt liegende Beschläge', 'innen Natur, Weiß oder Schwarz'],
     bild: 'assets/img/acht-fenster.jpg', alt: 'Holz-Alu-Fenster mit Eichenrahmen und Blick in einen grünen Hof'
   },
   {
-    key: 'decke', nr: '05', name: 'Sichtbare Holzdecke', kurz: 'Sichtbare Massivholzdecke',
-    claim: 'Echtes Holz über dir, in Sichtqualität, statt abgehängtem Gipskarton.',
+    key: 'decke', nr: '05', name: 'Sichtbare Holzdecke', kurz: 'Sichtbare Holzdecke',
+    claim: 'Massivholz in Sichtqualität, natur oder weiß lasiert.', // Runde 68 (Kunde)
     griffner: 'Massivholz oder Tram, natur oder weiß lasiert. Du entscheidest, welche Struktur über dir liegt.',
     ueblich: 'Abgehängte Gipsdecke, weiß gestrichen.',
     fakten: ['Massivholz oder Tram', 'natur oder weiß lasiert', 'in Sichtqualität'],
     bild: 'assets/img/acht-decke.jpg', alt: 'Raum mit heller, sichtbarer Holzdecke, großen Fenstern und einem Ledersessel'
   },
   {
-    key: 'parkett', nr: '06', name: 'Naturparkettböden', kurz: 'Naturparkettböden',
-    claim: 'Echtes Eichenparkett, kein Dekor auf Folie.',
+    key: 'parkett', nr: '06', name: 'Naturparkett', kurz: 'Naturparkett',
+    claim: 'Eiche, gebürstet und naturmatt, abschleifbar für Generationen.', // Runde 68 (Kunde)
     griffner: 'Echtes Eichenparkett, kein Dekor auf Folie. Abschleifbar, und mit den Jahren schöner.',
     ueblich: 'Laminat oder Vinyl, austauschbar statt reparierbar.',
     fakten: ['Eiche als Diele', 'gebürstet, naturmatt versiegelt', '21,5 cm Aufbau mit Flächenheizung'],
     bild: 'assets/img/acht-parkett.jpg', alt: 'Eichenparkett mit Sessel vor einem bodentiefen Fenster'
   },
   {
-    key: 'raumhoehe', nr: '07', name: 'Raumhöhe 2,72 Meter', kurz: 'Raumhöhe 2,72 Meter',
-    claim: '22 cm mehr als üblich, in jedem Raum. Für spürbare Weite.',
+    key: 'raumhoehe', nr: '07', name: '2,72 Meter Raumhöhe', kurz: '2,72 Meter Raumhöhe',
+    claim: 'Bei offenem First sogar bis zu fünf Meter.', // Runde 68 (Kunde)
     griffner: '22 cm mehr als üblich, in jedem Raum. Auf Wunsch 2,92 Meter.',
     ueblich: '250 cm, im Obergeschoß oft weniger.',
     fakten: ['2,72 m in jedem Raum', 'auf Wunsch 2,92 m', '22 cm mehr als üblich'],
     bild: 'assets/img/acht-raumhoehe.jpg', alt: 'Hoher Wohnraum mit Holzdecke, Sofa und großem Fenster in den Garten'
   },
   {
-    key: 'fassade', nr: '08', name: 'Fassade in Holz oder Putz', kurz: 'Fassade in Holz oder Putz',
-    claim: 'Frei kombinierbar, mit vielen Gestaltungsmöglichkeiten. Immer hinterlüftet.',
+    key: 'fassade', nr: '08', name: 'Fassade nach deiner Wahl', kurz: 'Fassade nach deiner Wahl',
+    claim: 'Holz, Putz, Steinoptik oder Fassadenplatten. Die hinterlüftete Konstruktion lässt dir bei der Gestaltung freie Wahl.', // Runde 68 (Kunde)
     griffner: 'Lärche, Putz oder beides. Für eine flexible Gestaltung. Immer hinterlüftet.',
     ueblich: 'Holz nur gegen Aufpreis.',
     fakten: ['Lärche oder Putz', 'immer hinterlüftet', 'Fassadenbahn als zweite wasserführende Ebene'],
@@ -159,7 +159,7 @@ export const DETAIL = {
 /* Leistungsumfang (leistungsumfang.html) */
 export const UMFANG = {
   hero: { info: 'Der GRIFFNER Leistungsumfang', h1: 'Vergleich uns ruhig. Genau das wollen wir.', txt: 'Ein Haus vergleicht man nicht am Quadratmeterpreis, sondern an dem, was drin steckt. Deshalb legen wir alles offen. Frag beim Vergleich ruhig nach, wer da mithält.' },
-  acht: { info: 'Der Unterschied', h: 'Acht Dinge, die bei uns immer dabei sind.', txt: 'In jeder Ausbaustufe, ohne Sternchen. Anderswo verursachen sie einen Aufpreis oder es gibt sie gar nicht.' },
+  acht: { info: 'Der Unterschied', h: 'Acht Merkmale, die jedes GRIFFNER Haus ausmachen.', txt: 'Dazu begleitet dich in jedem Projekt dein persönlicher Projektmanager, von der Planung bis zur Übergabe.' }, // Runde 68 (Kunde)
   inbegriffen: ['Andere nennen es', 'Aufpreis.', 'Wir nennen es', 'inbegriffen.'], // Runde 61: Sektion entfernt (Kunde)
   /* Runde 61 (Kunde, Entwurf „GRIFFNER Projektumfang“): neuer Einstieg statt Hero, drei Teile springen zu ihren Sektionen */
   auftakt: {
