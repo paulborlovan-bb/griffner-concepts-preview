@@ -117,7 +117,7 @@
       </div>
           <div class="svf__ledger" data-ledger aria-hidden="true">
             <div class="svf__lrow" data-lrow="0"><span data-f="summe-r1">Bodenplatte</span><span class="svf__lbar"><i data-lbar style="width:32.7%;background:#CACACA"></i></span><i class="svf__lmark" data-lmark></i></div>
-            <div class="svf__lrow" data-lrow="1"><span data-f="summe-r2">Haus</span><span class="svf__lbar"><i data-lbar style="width:100.0%;background:#FFFFFF"></i></span><i class="svf__lmark" data-lmark></i></div>
+            <div class="svf__lrow" data-lrow="1"><span data-f="summe-r2">Haus</span><span class="svf__lbar"><i data-lbar style="width:60.0%;background:#FFFFFF"><b class="svf__lbrk"></b></i></span><i class="svf__lmark" data-lmark></i></div>
             <div class="svf__lrow" data-lrow="2"><span data-f="summe-r3">Garage</span><span class="svf__lbar"><i data-lbar style="width:27.7%;background:#CACACA"></i></span><i class="svf__lmark" data-lmark></i></div>
             <div class="svf__lrow" data-lrow="3"><span data-f="summe-r4">Zufahrt</span><span class="svf__lbar"><i data-lbar style="width:17.3%;background:#444442;outline:1px solid #CACACA;outline-offset:-1px"></i></span><i class="svf__lmark" data-lmark></i></div>
             <div class="svf__lrow" data-lrow="4"><span data-f="summe-r5">Terrasse</span><span class="svf__lbar"><i data-lbar style="width:20.0%;background:#CFC3B3"></i></span><i class="svf__lmark" data-lmark></i></div>
@@ -197,36 +197,21 @@
       </div>
     </section>
 
-    <!-- DAS GANZE PROJEKT IM DETAIL (Runde 55, neu im Entwurf): drei Wege, Linie oben, Zeichen zeichnet sich, Pfeil wird beim Hover länger -->
+    <!-- DAS GANZE PROJEKT IM DETAIL (Runde 61): eine Box, Rahmen zeichnet sich, Zeichen zeichnet sich, Pfeil wird beim Hover länger -->
     <section id="s-weiter" class="svw" data-svw data-room="s-weiter">
       <h2 class="svw__h" data-f="weiter-h">Das ganze Projekt im Detail.</h2>
-      <div class="svw__grid">
-        <div class="svw__a svw__a--still" data-wrow="0">
-          <span class="svw__line" data-wline aria-hidden="true" style="transition-delay:0ms,0ms"></span>
-          <svg class="svw__g" data-wglyph viewBox="0 0 64 64" width="48" height="48" aria-hidden="true"><path d="M6 58 H58" pathLength="1"/><path d="M6 58 V6" pathLength="1"/><path d="M6 6 A52 52 0 0 1 58 58" pathLength="1"/></svg>
-          <span class="info svw__k" data-f="weiter1-k">Planungsleistungen</span>
-          <span class="svw__t" data-f="weiter1-t">Besser planen.</span>
-          <span class="svw__x"><span data-f="weiter1-x">Wie wir dein Projekt prüfen, durchrechnen und mit dir planen, bevor gebaut wird.</span></span>
-
-        </div>
-        <div class="svw__a svw__a--still" data-wrow="1">
-          <span class="svw__line" data-wline aria-hidden="true" style="transition-delay:160ms,0ms"></span>
-          <svg class="svw__g" data-wglyph viewBox="0 0 64 64" width="48" height="48" aria-hidden="true"><circle cx="32" cy="32" r="22" pathLength="1"/><path d="M32 4 V60" pathLength="1"/><path d="M4 32 H60" pathLength="1"/></svg>
-          <span class="info svw__k" data-f="weiter2-k">Bauleistungen und Ausstattung</span>
-          <span class="svw__t" data-f="weiter2-t">Besser bauen.</span>
-          <span class="svw__x"><span data-f="weiter2-x">Wie wir bauen und womit wir ausstatten.</span> <strong data-f="weiter2-xb">Von der Hülle bis zu Fenstern, Parkett und Bad.</strong></span>
-
-        </div>
-        <a class="svw__a" href="leistungsumfang.html" data-wrow="2">
-          <span class="svw__line" data-wline aria-hidden="true" style="transition-delay:320ms,0ms"></span>
-          <svg class="svw__g" data-wglyph viewBox="0 0 64 64" width="48" height="48" aria-hidden="true"><path d="M4 52 H60" pathLength="1"/><path d="M10 52 A22 22 0 0 1 54 52" pathLength="1"/><path d="M32 52 V30" pathLength="1"/></svg>
+      <a class="svw__box" href="leistungsumfang.html" data-wrow="0">
+        <span class="svw__line" data-wline aria-hidden="true"></span>
+        <svg class="svw__g" data-wglyph viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M4 52 H60" pathLength="1"/><path d="M10 52 A22 22 0 0 1 54 52" pathLength="1"/><path d="M32 52 V30" pathLength="1"/></svg>
+        <span class="svw__bl">
           <span class="info svw__k" data-f="weiter3-k">Für alle, die es genau wissen wollen</span>
           <span class="svw__t" data-f="weiter3-t">Leistungsumfang.</span>
-          <span class="svw__x"><span data-f="weiter3-x">Jede Leistung im Detail. Was serienmäßig dabei ist und was du dazu wählen kannst.</span></span>
-
+        </span>
+        <span class="svw__br">
+          <span class="svw__x" data-f="weiter3-x">Jede Leistung im Detail. Was serienmäßig dabei ist und was du dazu wählen kannst.</span>
           <span class="svw__l"><span data-f="weiter3-l">Zum Leistungsumfang</span><i data-warr aria-hidden="true"></i></span>
-        </a>
-      </div>
+        </span>
+      </a>
     </section>
 
     <!-- PROJEKTCHECK STARTEN: das gelbe Feld rechts (in Framer eine native Sektion), nur der Knopf zum Kontakt (Runde 55, Entwurf) -->

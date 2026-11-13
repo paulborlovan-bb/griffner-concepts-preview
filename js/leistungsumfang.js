@@ -4,10 +4,9 @@
    → rund ums Haus als Plan (Runde 48) → Kontakt. Runde 53: „Was in keiner Liste steht“ entfernt (Kunde). */
 import { loop, reveal } from './core.js';
 import { initChrome, frame } from './chrome.js';
-import { initPlan } from './svc-plan.js';
 import { initMore, initAcc } from './svc-ui.js';
 import { initGrundplan } from './svc-grundplan.js';
-import { initAcht, initInb, initStufen } from './umfang.js';
+import { initAuftakt, initAcht, initStufen } from './umfang.js';
 
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 run('chrome', initChrome);
@@ -15,10 +14,9 @@ reveal(document);
 loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());
 addEventListener('load', () => loop.poke());
-run('plan', () => initPlan(document));
+run('auftakt', initAuftakt);
 run('mehr-text', () => initMore(document));
 run('acht', initAcht);
-run('inbegriffen', initInb);
 run('stufen', initStufen);
 run('rund', () => initGrundplan(document.querySelector('[data-rp]')));
 run('acc', () => initAcc(document));

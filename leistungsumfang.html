@@ -28,20 +28,28 @@
   <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
 
   <main id="top">
-    <!-- 00 HERO -->
-    <section id="u-hero" class="svh" data-room="u-hero">
-      <svg class="svh__plan" data-plan aria-hidden="true"></svg>
-      <div class="svh__field" data-plan-field data-dock="rect" data-dock-solid="1"></div>
-      <div class="svh__in">
-        <p class="info svh__k" data-reveal="0" data-f="zeile">Der GRIFFNER Leistungsumfang</p>
-        <h1 class="svh__h" data-reveal="80" data-f="headline">Vergleich uns ruhig. Genau das wollen wir.</h1>
-        
-        <div class="svh__foot">
-          <p class="txt" data-reveal="240" data-f="text">Ein Haus vergleicht man nicht am Quadratmeterpreis, sondern an dem, was drin steckt. Deshalb legen wir alles offen. Frag beim Vergleich ruhig nach, wer da mithält.</p>
-          <a class="svh__back info" href="leistungen.html"><span data-f="zurueck">Zur Übersicht Services</span></a>
+    <!-- 00 AUFTAKT (Runde 61, Entwurf „GRIFFNER Projektumfang“): gepinnt. Rechts die Zeichnung (Grundstück, Haus, Ausbau) mit Hilfslinien
+         wie im alten Hero, sie geht beim Scrollen auseinander; links erst der Einstieg, dann die drei Teile, die das Projekt ausmachen. -->
+    <section id="u-hero" class="ua" data-ua data-room="u-hero">
+      <div class="ua__st">
+        <svg class="ua__plan" data-ua-plan aria-hidden="true"></svg>
+        <div class="ua__draw" data-ua-draw aria-hidden="true"><svg data-ua-svg preserveAspectRatio="xMidYMid meet" fill="none" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"></svg></div>
+        <div class="ua__hero" data-ua-hero>
+          <p class="info ua__k" data-f="ua-zeile">Der GRIFFNER Leistungsumfang</p>
+          <h1 class="ua__h" data-f="ua-h">Dein Projekt endet nicht an der Haustür. Unsere Services auch nicht.</h1>
+          <p class="txt ua__p" data-f="ua-text">Kein Projekt gleicht dem anderen. Darum stellen wir den Umfang gemeinsam mit dir zusammen, vom Grundstück über dein Haus bis zum Garten.</p>
+          <a class="svh__back ua__back info" href="leistungen.html"><span data-f="ua-zurueck">Zur Übersicht Services</span></a>
         </div>
+        <div class="ua__panel" data-ua-panel>
+          <h2 class="ua__h2" data-f="ua-h2">So setzt sich dein Projekt zusammen.</h2>
+          <div class="ua__steps">
+            <button type="button" class="ua__step" data-ua-step="0" data-jump="u-acht"><span class="ua__no info">01</span><span class="ua__t" data-f="ua-t1">Immer dabei.</span><span class="ua__x" data-f="ua-x1">Die Qualität, die jedes GRIFFNER Haus ausmacht.</span></button>
+            <button type="button" class="ua__step" data-ua-step="1" data-jump="u-stufen"><span class="ua__no info">02</span><span class="ua__t" data-f="ua-t2">Dein Ausbau.</span><span class="ua__x" data-f="ua-x2">Ausbaufertig, belagsfertig oder schlüsselfertig. Du entscheidest, wie weit wir gehen.</span></button>
+            <button type="button" class="ua__step" data-ua-step="2" data-jump="u-rund"><span class="ua__no info">03</span><span class="ua__t" data-f="ua-t3">Rund ums Haus.</span><span class="ua__x" data-f="ua-x3">Zufahrt, Garage, Pool, Garten und Einrichtung, koordiniert mit ausgewählten Partnern.</span></button>
+          </div>
+        </div>
+        <p class="ua__scroll info" aria-hidden="true"><i></i></p>
       </div>
-      <p class="svh__scroll info" aria-hidden="true"><i></i></p>
     </section>
 
     <!-- 01 DER UNTERSCHIED: acht Dinge als Bildfolge (gepinnt). Links das Bild, rechts das Muster in 3D und der Satz. Vergleich auf Wunsch -->
@@ -175,13 +183,6 @@
       </div>
     </section>
 
-    <!-- 02 INBEGRIFFEN: „Aufpreis“ wird durchgestrichen -->
-    <section id="u-inbegriffen" class="inb" data-room="u-inbegriffen">
-      <div class="wrap pad-y">
-        <p class="inb__p" data-inb><span data-f="satz1">Andere nennen es</span> <span class="inb__x"><span class="strk" data-f="satz2">Aufpreis.</span></span><br><span class="inb__2" data-f="satz3">Wir nennen es</span> <span class="inb__2 inb__y" data-f="satz4">inbegriffen.</span></p>
-      </div>
-    </section>
-
     <!-- 03 LIEFERUMFANG (Runde 48): die drei Stufen als Geschichte. Links bleibt das Haus im Schnitt stehen (Runde 51: mit Satteldach), mit großer Nummer und der Leiste,
          die sich beim Lesen füllt. Rechts jede Stufe mit allen Positionen offen; das Haus baut sich mit und macht den Bereich hell, den du gerade liest. -->
     <section id="u-stufen" class="svl" data-room="u-stufen">
@@ -201,7 +202,7 @@
               <p class="sts__nr" aria-hidden="true"><span class="info sts__k" data-f="stufe">Ausbaustufe</span><span class="sts__big"><span data-sts-nr>01</span></span><span class="info sts__of">/ 03</span></p>
               <div class="sts__names" aria-hidden="true"><span class="sts__name is-on" data-sts-name data-f="s1-name">Ausbaufertig</span><span class="sts__name" data-sts-name data-f="s2-name">Belagsfertig</span><span class="sts__name" data-sts-name data-f="s3-name">Schlüsselfertig</span></div>
             </div>
-            <div class="st__stage sts__stage" data-st-stage><p class="sh__name info sts__now" aria-hidden="true"><span data-f="haus">Haus mit Satteldach im Schnitt</span><b data-sts-now></b></p><p class="sh__drag info" aria-hidden="true" data-f="drehen">Ziehen dreht das Haus</p></div>
+            <div class="st__stage sts__stage" data-st-stage><p class="sh__name info sts__now" aria-hidden="true"><span data-f="bau">Dein Haus entsteht</span><b data-sts-now></b></p><p class="sh__drag info" aria-hidden="true" data-f="drehen">Ziehen dreht das Haus</p></div>
             <div class="sts__meter" aria-hidden="true">
               <span class="sts__seg is-cur" data-sts-seg><i></i><span class="info">01<span class="sts__segn"> <span data-f="s1-name">Ausbaufertig</span></span></span></span>
               <span class="sts__seg" data-sts-seg><i></i><span class="info">02<span class="sts__segn"> <span data-f="s2-name">Belagsfertig</span></span></span></span>

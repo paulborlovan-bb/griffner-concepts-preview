@@ -199,11 +199,13 @@ export async function createMuster(host, labsEl) {
   };
 
   /* Kamera: Blick von vorne links, Abstand so, dass das auseinandergezogene Muster neben die Beschriftungen passt */
-  const LABW = () => (W < 520 ? W * .46 : Math.min(170, W * .34));
+  /* Runde 61 (Kunde): am Telefon ohne Beschriftung, das Muster groß in der Mitte */
+  const PH = () => innerWidth < 810;
+  const LABW = () => (PH() ? 0 : W < 520 ? W * .46 : Math.min(170, W * .34));
   function frameCam(s, k = 1, from = null) {
     const c = s.box.getCenter(new T.Vector3()), r = s.box.getSize(new T.Vector3()).length() / 2;
-    const vf = cam.fov * Math.PI / 180, effW = W - LABW() - 24, hf = 2 * Math.atan(Math.tan(vf / 2) * effW / H);
-    const d = r / Math.sin(Math.min(vf, hf) / 2) * .9;
+    const vf = cam.fov * Math.PI / 180, effW = W - LABW() - (PH() ? 0 : 24), hf = 2 * Math.atan(Math.tan(vf / 2) * effW / H);
+    const d = r / Math.sin(Math.min(vf, hf) / 2) * (PH() ? .98 : .9);
     const v = s.view, ty = v.ty ?? c.y;
     const to = { d, az: v.az, el: v.el, tx: c.x, ty, tz: c.z };
     const f = from || to;

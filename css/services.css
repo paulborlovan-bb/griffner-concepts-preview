@@ -51,6 +51,42 @@ section{position:relative}
 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
 .w>span{display:inline-block;transform:translateY(112%);transition:transform 800ms var(--ease) calc(var(--i) * 30ms)}
 
+/* ---------- AUFTAKT Leistungsumfang (Runde 61, Entwurf „GRIFFNER Projektumfang“, erste Sektion) ----------
+   Gepinnt, rechts die Zeichnung (js/umfang.js initAuftakt), darum die Hilfslinien wie im alten Hero. Unter 900 px (.is-nw) steht die Zeichnung oben, Text unten. */
+.ua{position:relative;height:500vh;color:var(--griffner-weiss)}
+.ua__st{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.ua__plan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.ua__plan .g{fill:none;stroke:rgba(255,255,255,.2);stroke-width:1}
+.ua__plan .g.dot{stroke-dasharray:2 6}
+.ua__plan .s{fill:none;stroke:var(--griffner-kalk);stroke-width:1.2;stroke-linecap:round}
+.ua__draw{position:absolute;left:46%;right:var(--page-margin);top:12vh;bottom:9vh}
+.ua__draw svg{display:block;width:100%;height:100%;overflow:visible;stroke:var(--griffner-weiss)}
+.ua__hero{position:absolute;left:var(--page-margin);bottom:clamp(64px,12vh,128px);width:min(42vw,700px);display:grid;row-gap:clamp(16px,2.4vh,24px);justify-items:start;will-change:opacity,transform;animation:svh-rise 1.05s var(--ease) backwards 80ms}
+.ua__h{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-l);line-height:var(--lh-d);text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.ua__k{margin:0;color:var(--griffner-kalk)}
+.ua__p{max-width:27em;color:var(--griffner-kalk)}
+.ua__back{margin-top:clamp(4px,1vh,12px)}
+.ua__panel{position:absolute;left:var(--page-margin);top:0;bottom:0;width:min(38vw,520px);box-sizing:border-box;padding:clamp(96px,14vh,140px) 0 clamp(40px,7vh,72px);display:grid;align-content:center;row-gap:clamp(24px,4vh,44px);opacity:0;visibility:hidden;pointer-events:none;will-change:opacity,transform}
+.ua__h2{margin:0;max-width:9em;font-family:var(--font-display);font-weight:300;font-size:var(--t-m);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
+.ua__steps{display:grid}
+.ua__step{all:unset;box-sizing:border-box;display:grid;row-gap:8px;padding:18px 0 20px;border-top:1px solid var(--griffner-anthrazit);color:var(--griffner-weiss);cursor:pointer;transition:opacity 400ms var(--ease)}
+.ua__step:last-child{border-bottom:1px solid var(--griffner-anthrazit)}
+.ua__step:focus-visible{outline:1px solid var(--griffner-gelb);outline-offset:4px}
+.ua__no{color:var(--griffner-kalk)}
+.ua__step.is-cur .ua__no{color:var(--griffner-gelb)}
+.ua__t{font-family:var(--font-display);font-weight:500;font-size:var(--t-hs);line-height:1.1;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0}
+.ua__x{max-width:26em;font-size:var(--fs-text-web);line-height:var(--lh-body);text-wrap:pretty;color:var(--griffner-kalk)}
+.ua__step.is-short .ua__x{display:none}
+@media (hover:hover){.ua__step:hover{opacity:1!important}.ua__step:hover .ua__t{color:var(--griffner-gelb)}}
+.ua__scroll{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);margin:0}
+.ua__scroll i{display:block;width:1px;height:40px;background:currentColor;transform-origin:top;animation:gri-scroll 2.4s var(--ease) infinite}
+.ua.is-nw .ua__draw{left:var(--page-margin);right:var(--page-margin);top:84px;bottom:auto;height:38vh;height:38svh}
+.ua.is-nw .ua__hero{right:var(--page-margin);width:auto;bottom:clamp(56px,9vh,80px)}
+.ua.is-nw .ua__panel{right:var(--page-margin);width:auto;top:auto;bottom:0;padding:0 0 28px;align-content:end;row-gap:16px}
+.ua.is-nw .ua__step{padding:12px 0 14px;row-gap:6px}
+.ua.is-nw .ua__scroll{display:none}
+@media (prefers-reduced-motion:reduce){.ua__hero{animation:none}}
+
 /* ---------- HERO mit dem Plan ---------- */
 .svh{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;color:var(--griffner-weiss)}
 .svh__plan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
@@ -447,7 +483,11 @@ section{position:relative}
 /* ---------- AUSBAUSTUFEN ALS GESCHICHTE (Runde 48): links bleibt das Haus mit großer Nummer und Leiste, rechts drei Teile, alles offen ---------- */
 .sts{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap-col);align-items:start}
 .sts__vis{grid-column:1 / span 6;position:sticky;top:clamp(84px,11vh,108px);height:calc(100vh - clamp(84px,11vh,108px) - 32px);height:calc(100svh - clamp(84px,11vh,108px) - 32px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:18px}
-.sts__top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.sts__top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;min-width:0}
+/* Runde 61: die linke Spalte bleibt in ihrer Spur (am iPad hochkant schob der lange Stufenname das Haus unter den Text) */
+.sts__vis{min-width:0}
+.sts__names{min-width:0}
+@media (min-width:810px) and (max-width:1199px){.sts .sts__name{font-size:var(--t-hm);max-width:8em}}
 .sts__nr{margin:0;display:grid;grid-template-columns:auto auto;column-gap:12px;row-gap:10px;align-items:end}
 .sts__k{grid-column:1 / -1;color:var(--griffner-anthrazit)}
 .sts__big{display:block;overflow:hidden;font-family:var(--font-display);font-weight:300;font-size:var(--t-zahl);line-height:.85;letter-spacing:-.02em;font-variant-numeric:tabular-nums;padding-top:.06em}
@@ -586,6 +626,7 @@ section{position:relative}
   .fo--acht .fo__p{font-size:clamp(16px,4.4vw,19px)}
   .fo--acht .fo__txt{gap:10px}
   .fo--acht .fo__it{gap:10px}
+  .fo--acht .ac__labs{display:none} /* Runde 61: am Telefon nur das Muster, groß in der Mitte */
   .ml b{letter-spacing:.12em}
   .os__metrik{grid-template-columns:1fr 1fr;row-gap:24px}
   .os__metrik b{font-size:var(--t-m)}

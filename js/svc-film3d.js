@@ -38,7 +38,7 @@ const svgTex = (url, w, h) => { const t = new T.Texture(); t.colorSpace = T.SRGB
 
 /* GRIFFNER Services v2: Szene als Architekturmodell. Einheiten in Metern, y oben.
    Jede "Einheit" (unit) ist eine Ebene der Explosionszeichnung und landet in ihrem Kapitel. */
-function buildScene(T) {
+export function buildScene(T) {
   const C = { weiss: 0xEAE8E3, sand: 0xCFC3B3, kalk: 0xCACACA, beton: 0xB9B7B2, anth: 0x444442, ground: 0x242423, gelb: 0xFFB200, salbei: 0x8B907C, glas: 0x0b0c0d, schwarz: 0x000000 };
   const GAP = 11.5;
   const grp = (parent, name) => { const g = new T.Group(); g.name = name; g.userData.mats = []; if (parent) parent.add(g); return g; };

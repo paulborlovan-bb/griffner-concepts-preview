@@ -136,7 +136,7 @@ export const UEBERSICHT = {
 /* EIGEN (Runde 46): Bedienung, Knöpfe und kurze Hinweise */
 export const UI = {
   weiter: 'Weiterlesen', weniger: 'Weniger', mehrDazu: 'Mehr dazu', mehrErfahren: 'Mehr erfahren',
-  haus: 'Haus mit Satteldach im Schnitt', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
+  haus: 'Haus mit Satteldach im Schnitt', bau: 'Dein Haus entsteht', drehen: 'Ziehen dreht das Haus', ganzesHaus: 'Ganzes Haus',
   zurueck: 'Zur Übersicht Services', vergleich: 'Im Vergleich', schliessen: 'Schließen',
   position: 'Position', positionen: 'Positionen', bereich: 'Bereich', bereiche: 'Bereiche',
   stufeWaehlen: 'Wähle eine Stufe. Das Haus zeigt, was dazukommt.', stufe: 'Stufe', alle: 'Alle', ansehen: 'ansehen'
@@ -160,7 +160,19 @@ export const DETAIL = {
 export const UMFANG = {
   hero: { info: 'Der GRIFFNER Leistungsumfang', h1: 'Vergleich uns ruhig. Genau das wollen wir.', txt: 'Ein Haus vergleicht man nicht am Quadratmeterpreis, sondern an dem, was drin steckt. Deshalb legen wir alles offen. Frag beim Vergleich ruhig nach, wer da mithält.' },
   acht: { info: 'Der Unterschied', h: 'Acht Dinge, die bei uns immer dabei sind.', txt: 'In jeder Ausbaustufe, ohne Sternchen. Anderswo verursachen sie einen Aufpreis oder es gibt sie gar nicht.' },
-  inbegriffen: ['Andere nennen es', 'Aufpreis.', 'Wir nennen es', 'inbegriffen.'],
+  inbegriffen: ['Andere nennen es', 'Aufpreis.', 'Wir nennen es', 'inbegriffen.'], // Runde 61: Sektion entfernt (Kunde)
+  /* Runde 61 (Kunde, Entwurf „GRIFFNER Projektumfang“): neuer Einstieg statt Hero, drei Teile springen zu ihren Sektionen */
+  auftakt: {
+    info: 'Der GRIFFNER Leistungsumfang',
+    h1: 'Dein Projekt endet nicht an der Haustür. Unsere Services auch nicht.',
+    txt: 'Kein Projekt gleicht dem anderen. Darum stellen wir den Umfang gemeinsam mit dir zusammen, vom Grundstück über dein Haus bis zum Garten.',
+    h2: 'So setzt sich dein Projekt zusammen.',
+    teile: [
+      { t: 'Immer dabei.', x: 'Die Qualität, die jedes GRIFFNER Haus ausmacht.', ziel: 'u-acht' },
+      { t: 'Dein Ausbau.', x: 'Ausbaufertig, belagsfertig oder schlüsselfertig. Du entscheidest, wie weit wir gehen.', ziel: 'u-stufen' },
+      { t: 'Rund ums Haus.', x: 'Zufahrt, Garage, Pool, Garten und Einrichtung, koordiniert mit ausgewählten Partnern.', ziel: 'u-rund' }
+    ]
+  },
   stufen: { info: 'Der Lieferumfang, schwarz auf weiß', h: 'So entsteht dein Haus.', txt: 'Ausbaufertig, belagsfertig, schlüsselfertig. Jede Stufe schließt die vorige ein. Alles, was hier steht, ist im Preis inbegriffen.' },
   dazu: {
     info: 'Dazu kommt', h: 'Was in keiner Liste steht.',
@@ -484,9 +496,8 @@ export const FILM = {
   modell: 'Ein GRIFFNER Haus',
   /* Nach dem Film: drei Wege ins Detail (in Framer eine native Sektion). Runde 56 (Kunde): nur der Leistungsumfang hat einen Link,
      die Seiten Besser planen und Besser bauen gibt es noch nicht */
+  /* Runde 61 (Kunde): Planungsleistungen und Bauleistungen entfernt, nur der Leistungsumfang als Box */
   weiter: { h: 'Das ganze Projekt im Detail.', karten: [
-    { k: 'Planungsleistungen', t: 'Besser planen.', x: 'Wie wir dein Projekt prüfen, durchrechnen und mit dir planen, bevor gebaut wird.' },
-    { k: 'Bauleistungen und Ausstattung', t: 'Besser bauen.', x: 'Wie wir bauen und womit wir ausstatten.', xb: 'Von der Hülle bis zu Fenstern, Parkett und Bad.' },
     { k: 'Für alle, die es genau wissen wollen', t: 'Leistungsumfang.', x: 'Jede Leistung im Detail. Was serienmäßig dabei ist und was du dazu wählen kannst.', l: 'Zum Leistungsumfang', href: 'leistungsumfang.html' }
   ] },
   /* Nur der Knopf (Entwurf) */
