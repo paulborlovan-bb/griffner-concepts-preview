@@ -3,6 +3,8 @@
 :root{
   --t-hero:4.625rem; --t-xl:4.625rem; --t-l:3rem; --t-kap:3.25rem; --t-m:2.25rem; --t-zitat:1.875rem; --t-einl:2.125rem; --t-zahl:5rem;
   --t-body-l:1.125rem; --t-body:1rem; --t-body-s:.9375rem; --t-info:.6875rem; --t-label:.625rem; --t-hs:1.125rem;
+  /* Runde 60 (Services wie die globalen Stile): Display/Jahr, Headline/M, Headline/XS, Display/S */
+  --t-jahr:6rem; --t-hm:2rem; --t-hxs:.875rem; --t-ds:1.125rem;
   --lh-d:1.02; --lh-zitat:1.15; --lh-body:1.45;
   --ease:cubic-bezier(0.22,1,0.36,1);
   --dur-big:1400ms; --dur-small:750ms; --dur-glide:1300ms; --rise-web:24px;
@@ -34,8 +36,9 @@
   --room-w-next:var(--griffner-schwarz);
   --room-w-kontakt:var(--griffner-schwarz); /* Runde 24 (Kundenwunsch): hinter dem gelben Feld Schwarz statt Weiß */
 }
-@media (max-width:1199px){:root{--t-kap:2.375rem;--t-hero:3.25rem;--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-zitat:1.625rem;--t-einl:1.75rem;--t-zahl:3.75rem;--t-body-l:1.0625rem}}
-@media (max-width:809px){:root{--t-kap:1.875rem;--t-hero:2.5rem;--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-zitat:1.375rem;--t-einl:1.5rem;--t-zahl:3.25rem;--t-body-l:1rem;--t-info:.625rem}}
+@media (max-width:1199px){:root{--t-kap:2.375rem;--t-hero:3.25rem;--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-zitat:1.625rem;--t-einl:1.75rem;--t-zahl:3.75rem;--t-body-l:1.0625rem;--t-jahr:4.5rem;--t-hm:1.5rem;--t-ds:1.0625rem;--page-margin:44px}}
+@media (max-width:809px){:root{--t-kap:1.875rem;--t-hero:2.5rem;--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-zitat:1.375rem;--t-einl:1.5rem;--t-zahl:3.25rem;--t-body-l:1rem;--t-info:.625rem;--t-jahr:3.25rem;--t-hm:1.375rem;--t-ds:.9375rem;--t-hs:1.0625rem;--page-margin:24px}}
+/* Runde 60: Seitenrand wie griffner.com: Desktop clamp(24px, 5.5vw, 80px) (GriffnerMotion withPageMargin), Tablet 44 px, Telefon 24 px (Canvas) */
 html{font-size:16px}
 @media (min-width:1200px){html{font-size:calc(16px + (100vw - 1200px) * 4 / 720)}}
 @media (min-width:1920px){html{font-size:20px}}

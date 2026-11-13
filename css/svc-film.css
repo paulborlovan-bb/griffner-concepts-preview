@@ -1,6 +1,8 @@
 /* Runde 55/56: Services Übersicht im Entwurf (GRIFFNER Services v2, S2Services, Runde 56 eins zu eins mit Kopf „komplex“). Der Film #s-film, „Das ganze Projekt im Detail“
    (#s-weiter) und das gelbe Feld #s-cta. Größen, Schnitte und Abstände wie im Entwurf, Tokens aus dem Design System. Dazu (Kunde):
-   schwarze Zwischentitel und eine größere Leiste unten. Keine Rundungen außer den Punkten im Haus (Entwurf), keine Schatten. */
+   schwarze Zwischentitel und eine größere Leiste unten. Keine Rundungen außer den Punkten im Haus (Entwurf), keine Schatten.
+   Runde 60 (Kunde: wie die globalen Stile der Website): alle Schriftgrößen aus den Textstilen von griffner.com (Tokens in site.css,
+   Stufen ab 1200 und ab 810 wie in Framer) statt der fließenden Größen des Entwurfs. Ausnahme: die Wortwolke um die Baustelle (Tiefe). */
 :root{--room-s-film:var(--griffner-schwarz);--room-s-weiter:var(--griffner-schwarz);--room-s-cta:var(--griffner-schwarz)}
 .svf{position:relative;color:var(--griffner-weiss);--svf-nav:112px;--svf-pb:clamp(148px,20vh,204px);overflow-anchor:none} /* Runde 57: der Film ist nur vom Scrollen gesteuert, kein Scroll Anchoring darin (Firefox schob sonst nach) */
 .svf__film{position:relative;height:3589vh}
@@ -21,11 +23,11 @@
 .svf__kdim{position:absolute;inset:0;background:var(--griffner-schwarz);opacity:0}
 .svf__hkw{position:absolute;left:0;right:0;bottom:0;padding:0 var(--page-margin) var(--svf-pb);display:grid;align-items:end;justify-items:start}
 .svf__hk{grid-area:1 / 1;margin:0;font-family:var(--font-display);font-weight:300;letter-spacing:0;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
-.svf__hk--1{max-width:10.5em;font-size:clamp(38px,5.4vw,100px);line-height:.93}
-.svf__hk--2{display:grid;row-gap:.28em;justify-items:start;font-size:clamp(32px,4.2vw,76px);line-height:.94}
+.svf__hk--1{max-width:10.5em;font-size:var(--t-hero);line-height:var(--lh-d)}
+.svf__hk--2{display:grid;row-gap:.28em;justify-items:start;font-size:var(--t-l);line-height:var(--lh-d)}
 .svf__hkl{display:block;max-width:12em;text-wrap:balance;transition:color 700ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
 .svf__hkl.is-dim{color:var(--griffner-kalk)}
-.svf__hk--5{font-size:clamp(48px,7vw,150px);line-height:.9;max-width:6.2em;transform-origin:left bottom;will-change:transform}
+.svf__hk--5{font-size:var(--t-jahr);line-height:.9;max-width:6.2em;transform-origin:left bottom;will-change:transform}
 .svf__herok .w,.svf__ts .w{padding:.14em .05em .12em;margin:-.14em -.05em -.12em}
 .svf__herok .w>span,.svf__ts .w>span{position:relative;transform:translate3d(0,160%,0);visibility:hidden;transition:none;will-change:transform}
 /* Das Logo fliegt aus der Kopfzeile auf den Baucontainer (js/svc-film3d.js), fest am Bildschirm */
@@ -38,12 +40,12 @@
 .svf__lrow,.svf__brow{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;column-gap:18px;padding:clamp(5px,.9vh,10px) 0 clamp(6px,1vh,11px);border-top:1px solid var(--griffner-anthrazit)}
 .svf__lrow{position:relative;opacity:0}
 .svf__brow{grid-template-columns:110px minmax(0,1fr);padding:clamp(5px,.9vh,9px) 0 clamp(6px,1vh,10px)}
-.svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:15px;line-height:1.25}
+.svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:var(--t-body-s);line-height:1.25}
 .svf__lbar{display:block;height:12px}
 .svf__lbar>i,.svf__lseg>i,.svf__bbar i{display:block;height:100%;transform:scaleX(0);transform-origin:left center}
 .svf__lmark{position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--griffner-gelb);transform:scaleX(0);transform-origin:left center}
 .svf__ltot{display:grid;row-gap:12px;padding-top:14px;border-top:1px solid var(--griffner-weiss)}
-.svf__ltk,.svf__bokt{font-family:var(--font-display);font-weight:500;font-size:18px;letter-spacing:.04em;line-height:1.05;text-transform:uppercase}
+.svf__ltk,.svf__bokt{font-family:var(--font-display);font-weight:500;font-size:var(--t-hs);letter-spacing:.04em;line-height:1.08;text-transform:uppercase}
 .svf__lseg{display:flex;gap:1px;height:20px}
 .svf__bk{margin:0 0 12px;color:var(--griffner-kalk)}
 .svf__brows{position:relative;display:grid}
@@ -54,7 +56,7 @@
 .svf__btoday>i{position:absolute;top:-6px;bottom:0;left:0;width:2px;margin-left:-1px;background:var(--griffner-gelb)}
 .svf__bok{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:18px;padding-top:16px;border-top:1px solid var(--griffner-weiss)}
 .svf__bok>div{display:grid;row-gap:6px}
-.svf__bokt{font-size:15px}
+.svf__bokt{font-size:var(--t-hxs)}
 .svf__bok .info{color:var(--griffner-kalk);opacity:0}
 
 /* Kapitel: unten links, über der Leiste */
@@ -67,16 +69,16 @@
 .svf__ch[data-ch="11"]{row-gap:18px}
 .svf__k{margin:0;color:var(--griffner-kalk)}
 .svf__h1,.svf__h,.svf__einmal,.svf-hp__t,.svf-cta__h,.svf-ts__h,.svw__h{margin:0;font-family:var(--font-display);font-weight:300;letter-spacing:0;text-transform:uppercase;font-feature-settings:'liga' 0;text-wrap:balance}
-.svf__h1{max-width:10.5em;font-size:clamp(38px,5.4vw,100px);line-height:.93}
-.svf__h{max-width:10em;font-size:clamp(34px,4.2vw,76px);line-height:.94}
-.svf__h--s{max-width:12em;font-size:clamp(30px,3.6vw,64px)}
-.svf__h--m{max-width:11em;font-size:clamp(30px,3.8vw,68px)}
-.svf__h--l,.svf__einmal{max-width:11em;font-size:clamp(34px,4.6vw,84px);line-height:.94}
+.svf__h1{max-width:10.5em;font-size:var(--t-hero);line-height:var(--lh-d)}
+.svf__h{max-width:10em;font-size:var(--t-l);line-height:var(--lh-d)}
+.svf__h--s{max-width:12em}
+.svf__h--m{max-width:11em}
+.svf__h--l,.svf__einmal{max-width:11em;font-size:var(--t-l);line-height:var(--lh-d)}
 .svf__r{font-size:.32em;line-height:0;vertical-align:1.9em;margin-left:.06em;letter-spacing:0}
 .svf__einmal{opacity:0;max-width:none}
 .svf__einmal em{font-style:normal;color:var(--griffner-gelb)}
-/* Runde 56: Kapiteltext wie im Entwurf (Text des Design Systems: 16 bis 18 px, Schnitt 500) */
-.svf__p{margin:0;max-width:27em;font-size:clamp(16px,1.2vw,18px);line-height:var(--leading-body,1.45);text-wrap:pretty;font-weight:500}
+/* Runde 60: Kapiteltext im Stil Body/L der Website (Runde 56 hatte den Entwurf: 16 bis 18 px, Schnitt 500) */
+.svf__p{margin:0;max-width:27em;font-size:var(--t-body-l);line-height:var(--leading-body,1.45);text-wrap:pretty;font-weight:400}
 .svf__l3{font-weight:500}
 .svf__p strong{font-weight:600;color:var(--griffner-weiss)}
 /* Ausstattung: die vier Dinge sind Knöpfe, der gezeigte ist gelb unterstrichen (Entwurf) */
@@ -91,12 +93,12 @@
 /* Karte zu einem Punkt im Haus (Entwurf: an der Stelle des Kapitels, der dunkle Schein dahinter) */
 .svf__hp{row-gap:18px;opacity:0;pointer-events:none;transform:translate3d(0,16px,0);transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1)),transform 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
 .svf.is-focus .svf__hp{opacity:1;pointer-events:auto;transform:none}
-.svf-hp__t{max-width:10em;font-size:clamp(32px,3.8vw,68px);line-height:.94}
+.svf-hp__t{max-width:10em;font-size:var(--t-l);line-height:var(--lh-d)}
 .svf-hp__x{margin:0;max-width:27em;font-size:var(--fs-text-web);line-height:var(--leading-body,1.45);font-weight:400;text-wrap:pretty}
 .svf-hp__fs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px;width:min(100%,460px)}
 .svf-hp__f{display:grid;row-gap:6px;padding-top:12px;border-top:1px solid var(--griffner-anthrazit);min-width:0}
-.svf-hp__f b{font-family:var(--font-display);font-weight:300;font-size:clamp(22px,2vw,34px);line-height:1;font-variant-numeric:tabular-nums}
-.svf-hp__f span{font-size:13px;line-height:1.35;color:var(--griffner-kalk)}
+.svf-hp__f b{font-family:var(--font-display);font-weight:300;font-size:var(--t-zitat);line-height:1;font-variant-numeric:tabular-nums}
+.svf-hp__f span{font-size:var(--t-body-s);line-height:1.4;color:var(--griffner-kalk)}
 .svf-hp__back{display:flex;align-items:center;gap:10px;margin:0;padding:6px 0;background:none;border:0;border-bottom:1px solid currentColor;color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity 160ms}
 .svf-hp__back:hover{opacity:.64}
 
@@ -104,7 +106,7 @@
 .svf__ts{position:absolute;inset:0;z-index:4;background:var(--griffner-schwarz);display:grid;place-items:center;padding:0 var(--page-margin) var(--svf-nav);opacity:0;visibility:hidden;pointer-events:none}
 .svf-ts__b{grid-area:1 / 1;display:grid;row-gap:clamp(18px,3vh,32px);justify-items:center;text-align:center;visibility:hidden}
 .svf-ts__n{margin:0;color:var(--griffner-kalk)}
-.svf-ts__h{max-width:9em;font-size:clamp(56px,10.4vw,196px);line-height:.9}
+.svf-ts__h{max-width:9em;font-size:var(--t-jahr);line-height:.9}
 
 /* Leiste unten: besser planen, bauen, leben. Runde 55 (Kunde): größer, Nummer, Name in der Display-Schrift, der aktuelle Teil weiß mit gelbem Zeichen */
 .svf__nav{position:absolute;left:0;right:0;bottom:0;z-index:5;height:var(--svf-nav);box-sizing:border-box;padding:0 var(--page-margin);background:var(--griffner-schwarz);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(16px,3vw,48px);opacity:0;pointer-events:none;transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
@@ -116,17 +118,17 @@
 .svf-nav__no{flex:none;font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web,11px);letter-spacing:var(--tracking-info-web,.2em);color:var(--griffner-kalk);font-variant-numeric:tabular-nums}
 .svf-nav__m{flex:none;width:10px;height:8px;background:var(--griffner-gelb);opacity:0;transition:opacity 400ms}
 .svf__nav [data-pl].is-cur .svf-nav__m{opacity:1}
-.svf-nav__n{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-display);font-weight:500;font-size:clamp(17px,1.55vw,27px);line-height:1;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;opacity:.5;transition:opacity 400ms}
+.svf-nav__n{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-display);font-weight:500;font-size:var(--t-hs);line-height:1.08;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;opacity:.5;transition:opacity 400ms}
 .svf__nav [data-pl].is-cur .svf-nav__n,.svf__nav [data-pl]:hover .svf-nav__n{opacity:1}
 .svf-nav__bar{position:relative;display:block;height:3px;background:var(--griffner-anthrazit);overflow:hidden}
 .svf-nav__bar i{position:absolute;inset:0;background:var(--griffner-weiss);transform:scaleX(0);transform-origin:left center}
 .svf__nav [data-pl].is-done .svf-nav__bar i{background:var(--griffner-kalk)}
-.svf-nav__sub{min-width:0;height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-display);font-weight:500;font-size:14px;line-height:17px;letter-spacing:.05em;text-transform:uppercase;color:var(--griffner-weiss);opacity:0;transition:opacity 400ms}
+.svf-nav__sub{min-width:0;height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-display);font-weight:500;font-size:var(--t-hxs);line-height:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--griffner-weiss);opacity:0;transition:opacity 400ms}
 .svf__nav [data-pl].is-cur .svf-nav__sub{opacity:1}
 
 /* Das ganze Projekt im Detail (Runde 55, Entwurf): drei Wege. In Framer eine native Sektion */
 .svw{position:relative;padding:var(--section-pad) var(--page-margin);display:grid;row-gap:clamp(48px,8vh,88px);background:var(--griffner-schwarz);color:var(--griffner-weiss)}
-.svw__h{max-width:10em;font-size:clamp(34px,4.2vw,76px);line-height:.94}
+.svw__h{max-width:10em;font-size:var(--t-l);line-height:var(--lh-d)}
 .svw__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:clamp(48px,6vh,64px) var(--gap-col)}
 .svw__a{position:relative;display:grid;grid-template-rows:auto auto auto 1fr auto;row-gap:18px;padding-top:28px;color:var(--griffner-weiss);text-decoration:none}
 .svw__a:hover{opacity:1}
@@ -137,7 +139,7 @@
 .svw__g{display:block;overflow:visible;fill:none;stroke:currentColor;stroke-width:1;margin-bottom:10px}
 .svw__g *{vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
 .svw__k{margin:0;color:var(--griffner-kalk)}
-.svw__t{font-family:var(--font-display);font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;font-size:clamp(22px,1.9vw,32px);line-height:1.05}
+.svw__t{font-family:var(--font-display);font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-feature-settings:'liga' 0;font-size:var(--t-hm);line-height:1.05}
 .svw__x{max-width:24em;font-size:var(--fs-text-web);line-height:var(--leading-body,1.45);color:var(--griffner-kalk);text-wrap:pretty}
 .svw__x strong{font-weight:600;color:var(--griffner-weiss)}
 .svw__l{display:inline-flex;align-items:center;gap:14px;padding-top:10px;font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em}
@@ -148,7 +150,7 @@
 .svf-cta{position:relative;padding:var(--section-pad) 0 var(--section-pad) var(--page-margin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap-col);color:var(--griffner-schwarz)}
 .svf-cta__box{grid-column:4 / -1;background:var(--griffner-gelb);min-width:min(100%,320px);box-sizing:border-box;padding:clamp(56px,10vh,120px) var(--page-margin) clamp(44px,8vh,96px) clamp(28px,4vw,72px)}
 .svf-cta__in{position:relative;z-index:6;display:grid;row-gap:26px;justify-items:start}
-.svf-cta__h{max-width:10em;font-size:clamp(34px,4.6vw,84px);line-height:.94}
+.svf-cta__h{max-width:10em;font-size:var(--t-l);line-height:var(--lh-d)}
 .svf-cta .svf__p{max-width:24em}
 .svf-cta__acts{display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px;padding-top:6px}
 .svf-btn{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 28px;background:var(--griffner-schwarz);color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;text-decoration:none;transition:background-color 300ms}
@@ -164,19 +166,20 @@
   .svf__bok{grid-template-columns:repeat(3,minmax(0,auto))}
   .svf__ch::before{width:100%;height:calc(100% + 12vh);background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.6) 55%,rgba(0,0,0,0) 100%)}
   .svf__ch{row-gap:14px}
-  .svf__h--s,.svf__h--m,.svf-hp__t{font-size:clamp(24px,7.4vw,30px)}
+  .svf__h{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
   .svf__hp{row-gap:12px}
-  .svf__p,.svf-hp__x{font-size:16px}
   .svf-hp__fs{column-gap:14px}
-  .svf-hp__f b{font-size:clamp(17px,5.2vw,22px);overflow-wrap:anywhere;hyphens:auto}
+  .svf-hp__f b{overflow-wrap:anywhere;hyphens:auto}
   /* Runde 54: Ebenen-Schilder am Telefon kleiner und auf dunklem Grund, damit sie über dem Modell lesbar bleiben */
   .svf-m--lay3>span:last-child{background:rgba(0,0,0,.72);padding:3px 6px 4px;gap:1px!important}
   .svf-m--lay3>span:last-child>span:first-child{font-size:12px!important}
   .svf-m--lay3>span:last-child>span+span{font-size:11px!important}
+  /* Runde 60: die Zeile unter den Ebenen-Schildern bleibt am Telefon 12 px wie bisher (bewusst kleiner als Body/S): sechs Schilder
+     übereinander reichen sonst auf kleinen Telefonen in den Kapiteltitel. Die zwei Regeln darüber greifen seit Runde 56 nicht mehr */
+  .svf__l3 button [data-sub][style*="white-space:normal"]{font-size:12px!important}
   .svf-m--lay3>span:first-child{width:14px!important}
   .svf-m3:not(.svf-m--lay3):not(.svf-m--hot)>span:last-child{padding:4px 7px 5px!important}
-  .svf-m3:not(.svf-m--lay3):not(.svf-m--hot)>span:last-child>span{font-size:10px!important;letter-spacing:.14em!important}
-  .svf-ts__h{font-size:clamp(44px,14vw,76px)}
+  .svf-m3:not(.svf-m--lay3):not(.svf-m--hot)>span:last-child>span{letter-spacing:.14em!important}
   /* Runde 55: am Telefon bekommt der aktuelle Teil der Leiste den Platz, die anderen zeigen ihre Nummer */
   .svf__nav{column-gap:14px;grid-template-columns:2.4fr 1fr 1fr;transition:opacity 500ms var(--ease-out,cubic-bezier(.2,.7,.2,1)),grid-template-columns 600ms var(--ease-out,cubic-bezier(.2,.7,.2,1))}
   .svf__nav[data-cur="1"]{grid-template-columns:1fr 2.4fr 1fr}
@@ -184,7 +187,7 @@
   .svf__nav [data-pl]{row-gap:9px}
   .svf-nav__top{gap:8px}
   .svf-nav__m{display:none}
-  .svf-nav__n{font-size:15px}
+  .svf-nav__n{font-size:var(--t-hxs)} /* Runde 60: Headline/XS, Headline/S passt am Telefon nicht in die Leiste */
   .svf__nav [data-pl]:not(.is-cur) .svf-nav__n{opacity:0}
   .svf-cta{padding-right:var(--page-margin)}
   .svf-cta__box{grid-column:1 / -1;padding:56px 24px 44px}
@@ -193,17 +196,10 @@
 @media (max-width:899px) and (max-height:700px){
   .svf{--svf-pb:108px}
   .svf__ch{row-gap:10px}
-  .svf__h,.svf__h--m{font-size:29px}
-  .svf__h--s{font-size:26px}
-  .svf__h--l,.svf__einmal{font-size:30px}
-  .svf__p,.svf-hp__x{font-size:15px;line-height:1.38}
+  .svf__p,.svf-hp__x{font-size:var(--t-body-s);line-height:1.4} /* Runde 60: Body/S */
 }
-/* Runde 58: schmale Telefone (320 px): ein Kapiteltitel ist oft ein einziges langes Wort (Machbarkeitsanalyse.), das nicht umbrechen kann. Darum mit der Breite kleiner. */
-@media (max-width:359px){
-  .svf__h,.svf__h--m{font-size:8.4vw}
-  .svf__h--s{font-size:7vw}
-  .svf__h--l,.svf__einmal{font-size:8.8vw}
-}
+/* Runde 58 machte lange Kapiteltitel (Machbarkeitsanalyse.) auf 320 px kleiner. Runde 60: Display/L bleibt überall, lange Wörter
+   trennt der Browser (Seite ist deutsch, lang de-AT), wie die Titel im Leistungsumfang. */
 @media (prefers-reduced-motion:reduce){.svf__hp,.svf__nav,.svf__scrim,.svw__line{transition:none}.svw__g *{stroke-dashoffset:0}}
 .svf__src{display:none!important}
 /* Runde 57: kurze Telefone (schmal und unter 760 px hoch): Tabelle und Bauzeitplan rücken nach oben, der Plan wird enger.
@@ -220,7 +216,6 @@
 /* Runde 57: sehr kurze Telefone (iPhone SE in Safari mit beiden Leisten, 375 x 553): Tabelle und Plan kleiner, damit sie über dem Text bleiben */
 @media (max-width:899px) and (max-height:600px){
   .svf__lrow,.svf__brow{padding:2px 0 3px}
-  .svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:13px}
   .svf__lbar{height:10px}
   .svf__bk{margin-bottom:6px}
   .svf__bok{padding-top:8px}
