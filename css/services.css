@@ -83,7 +83,8 @@ section{position:relative}
 /* Runde 61b (Kunde: am Telefon unruhig am Anfang, Text sehr tief): unter 900 px per CSS (nicht erst per Skript) oben die Zeichnung,
    etwas kleiner (höchstens 34 % der Höhe), der Text direkt darunter. Wird es eng, gibt die Zeichnung nach (Zeile minmax). */
 @media (max-width:899px){
-  .ua__st{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(150px,34svh) auto;align-content:start;row-gap:clamp(20px,3.2svh,32px);box-sizing:border-box;padding:76px var(--page-margin) 24px}
+  /* Runde 63 (Kunde: zu nah am Logo): das Logo endet auf griffner.com bei 83 px, die Eckstriche beginnen jetzt bei rund 110 px */
+  .ua__st{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(140px,32svh) auto;align-content:start;row-gap:clamp(20px,3.2svh,32px);box-sizing:border-box;padding:112px var(--page-margin) 24px}
   .ua__draw,.ua__hero,.ua__panel{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:auto}
   .ua__draw{grid-row:1;grid-column:1;height:auto;min-height:0}
   .ua__hero,.ua__panel{grid-row:2;grid-column:1;align-self:start}

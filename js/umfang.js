@@ -118,8 +118,10 @@ export function initAuftakt() {
     H.items.forEach(g => { const id = g.dataset.gi; if (id === 'plot') { setS(g, pan < .5 || step === 2 ? W8 : DIM); return; } setS(g, col(2));
       const j = ORD.indexOf(id) + (id === 'garten' ? gi++ * .5 : 0), k = sm((p - .71 - j * .018) / .03), t = `scale(${Math.max(.001, k).toFixed(3)})`;
       if (g._t !== t) { g._t = t; g.style.transform = t; g.style.visibility = k < .01 ? 'hidden' : 'visible'; } });
-    const sk = step + '|' + (pan >= .5) + '|' + (nw || vh < 700);
-    if (sk !== stepPrev) { stepPrev = sk; steps.forEach((a, i) => { const cur = pan >= .5 && i === step; a.classList.toggle('is-cur', cur); a.style.opacity = pan < .5 || cur ? '1' : '.4'; a.classList.toggle('is-short', (nw || vh < 700) && !cur && pan >= .5); }); }
+    /* Runde 63 (Kunde: beim Scrollen kurz alle drei Texte, dann Sprung): die Teile kommen gleich im Endzustand,
+       der aktuelle Teil offen, die anderen (Telefon, niedrige Fenster) nur mit Titel. Kein Wechsel mehr bei pan = .5 */
+    const short = nw || vh < 700, sk = step + '|' + short;
+    if (sk !== stepPrev) { stepPrev = sk; steps.forEach((a, i) => { const cur = i === step; a.classList.toggle('is-cur', cur); a.style.opacity = cur ? '1' : '.4'; a.classList.toggle('is-short', short && !cur); }); }
     /* Hilfslinien: Rahmen der Zeichnung im Bild (Seitenverhältnis wie die viewBox, mittig im Feld) */
     const sr = st.getBoundingClientRect(), dr = draw.getBoundingClientRect(), sc = Math.min(dr.width / vb[2], dr.height / vb[3]);
     const w = vb[2] * sc, h = vb[3] * sc, l = dr.left - sr.left + (dr.width - w) / 2, t = dr.top - sr.top + (dr.height - h) / 2;
