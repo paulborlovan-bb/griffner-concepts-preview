@@ -43,9 +43,6 @@
 .svf__lrow>span:first-child,.svf__brow>span:first-child{font-size:var(--t-body-s);line-height:1.25}
 .svf__lbar{display:block;height:12px}
 .svf__lbar>i,.svf__lseg>i,.svf__bbar i{display:block;height:100%;transform:scaleX(0);transform-origin:left center}
-/* Runde 61: Achsenbruch im Haus Balken (der Posten ist viel größer als gezeigt) */
-.svf__lbar>i{position:relative}
-.svf__lbrk{position:absolute;top:-2px;bottom:-2px;left:74%;width:9px;background:var(--griffner-schwarz);transform:skewX(-28deg)}
 .svf__lmark{position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--griffner-gelb);transform:scaleX(0);transform-origin:left center}
 .svf__ltot{display:grid;row-gap:12px;padding-top:14px;border-top:1px solid var(--griffner-weiss)}
 .svf__ltk,.svf__bokt{font-family:var(--font-display);font-weight:500;font-size:var(--t-hs);letter-spacing:.04em;line-height:1.08;text-transform:uppercase}

@@ -89,7 +89,7 @@ export function initAuftakt() {
     const g = [[0, t, W, t], [W, b, 0, b], [l, Hh, l, 0], [rr, 0, rr, Hh], [0, (t + b) / 2, W, (t + b) / 2]];
     gl.forEach((e, i) => { const k = reduce ? 1 : eioP(cl((T - .1 - i * .12) / 1.1)), q = g[i]; set(e, q[0], q[1], q[0] + (q[2] - q[0]) * k, q[1] + (q[3] - q[1]) * k); });
     const s = [[l - ov, t, rr + ov, t], [rr, t - ov, rr, b + ov], [rr + ov, b, l - ov, b], [l, b + ov, l, t - ov]];
-    sk.forEach((e, i) => { const k = reduce ? 1 : eoP(cl((T - .55 - i * .14) / .9)), sv = reduce ? 1 : eioP(cl((T - 1.75) / .8)), q = s[i], j = jit[i];
+    sk.forEach((e, i) => { const k = reduce ? 1 : eoP(cl((T - .55 - i * .14) / .9)), sv = reduce || nwPrev ? 1 : eioP(cl((T - 1.75) / .8)), q = s[i], j = jit[i];
       set(e, q[0], q[1], q[0] + (q[2] - q[0]) * k, q[1] + (q[3] - q[1]) * k);
       const cx = (q[0] + q[2]) / 2, cy = (q[1] + q[3]) / 2;
       e.setAttribute('transform', `translate(${(j[1] * (1 - sv)).toFixed(2)} ${(j[2] * (1 - sv)).toFixed(2)}) rotate(${(j[0] * (1 - sv)).toFixed(3)} ${cx.toFixed(1)} ${cy.toFixed(1)})`); });
@@ -98,27 +98,15 @@ export function initAuftakt() {
   const setS = (el, c) => { if (el._s !== c) { el._s = c; el.style.stroke = c; } };
   const ORD = ['zufahrt', 'garage', 'terrasse', 'pool', 'sauna', 'zaun', 'garten'];
   let nwPrev = null, stepPrev = '';
-  /* Telefon: die Zeichnung bekommt den Platz über dem Text (Einstieg, dann Teile mit dem längsten offenen Text), damit nichts übereinander liegt */
-  let fitK = '', fitH = [0, 0];
-  function fit(nw, vh) {
-    if (!nw) { draw.style.height = ''; draw._h = null; return; }
-    const top = draw.offsetTop || 84, gap = 20, heroH = he.offsetHeight + (parseFloat(getComputedStyle(he).bottom) || 0);
-    const keep = steps.map(a => a.className); steps.forEach((a, i) => a.classList.toggle('is-short', i < steps.length - 1));
-    const panH = pe.offsetHeight; steps.forEach((a, i) => { a.className = keep[i]; }); stepPrev = '';
-    fitH = [Math.max(120, vh - top - heroH - gap), Math.max(120, vh - top - panH - gap)];
-  }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitK = ''; loop.poke(); });
   r.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-jump]'); if (b && r.contains(b)) { e.preventDefault(); jumpTo(b.dataset.jump); } });
   loop.add({ tick(now) {
     const fb = r.getBoundingClientRect(), vh = innerHeight;
     const T = ((now || performance.now()) - t0) / 1000;
     if (fb.bottom < -50 || fb.top > vh + 50) return;
-    const nw = innerWidth < 900; if (nw !== nwPrev) { nwPrev = nw; r.classList.toggle('is-nw', nw); }
+    const nw = innerWidth < 900; if (nw !== nwPrev) { nwPrev = nw; lastKey = ''; }  // Telefonlayout kommt aus dem CSS (max-width:899px)
     const sm = x => { x = cl(x); return x * x * (3 - 2 * x); };
     const p = cl(-fb.top / Math.max(1, fb.height - vh)), hero = 1 - sm((p - .05) / .07), e = sm((p - .1) / .16), pan = sm((p - .17) / .06);
     const step = p < .47 ? 0 : p < .69 ? 1 : 2, L = 12 * S, A = 5.5 * S;
-    const fk = innerWidth + 'x' + vh + nw; if (fk !== fitK) { fitK = fk; fit(nw, vh); }
-    if (nw) { const hp = Math.round(fitH[0] + (fitH[1] - fitH[0]) * pan); if (draw._h !== hp) { draw._h = hp; draw.style.height = hp + 'px'; } }
     he.style.opacity = hero.toFixed(3); he.style.transform = `translate3d(0,${(-(1 - hero) * 40).toFixed(1)}px,0)`; he.style.pointerEvents = hero > .5 ? 'auto' : 'none'; he.style.visibility = hero < .01 ? 'hidden' : 'visible';
     pe.style.opacity = pan.toFixed(3); pe.style.transform = `translate3d(0,${((1 - pan) * 24).toFixed(1)}px,0)`; pe.style.pointerEvents = pan > .5 ? 'auto' : 'none'; pe.style.visibility = pan < .01 ? 'hidden' : 'visible';
     H.shell.style.transform = `translate(0px,${(-L * e).toFixed(1)}px)`; H.aus.style.transform = `translate(0px,${(-A * e).toFixed(1)}px)`;
