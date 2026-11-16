@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Projects, Galerie mit sechs Varianten / GRIFFNER</title>
-<meta name="description" content="Acht Häuser, sechsmal anders gezeigt. Jedes öffnet sich mit Bildern und den wichtigsten Daten.">
+<title>Projects, Galerie mit zwei Varianten / GRIFFNER</title>
+<meta name="description" content="Acht Häuser, zweimal anders gezeigt. Jedes öffnet sich mit Bildern und den wichtigsten Daten.">
 <link rel="stylesheet" href="ds/fonts.css">
 <link rel="stylesheet" href="ds/colors.css">
 <link rel="stylesheet" href="ds/typography.css">
@@ -16,9 +16,9 @@
 <link rel="stylesheet" href="css/galerie.css">
 </head>
 <body data-page="projects" data-variant="galerie">
-<!-- Projekt-Galerie: sechs Abschnitte, die wir auf der Projects Seite einsetzen können. Alle zeigen dieselben acht Häuser (data/galerie.js,
+<!-- Projekt-Galerie: zwei Abschnitte, die wir auf der Projects Seite einsetzen können. Alle zeigen dieselben acht Häuser (data/galerie.js,
      Quelle data/referenzen.js) und öffnen sie im selben Projektfenster (Bilder, Daten, Link). Logik in js/galerie.js, Gestaltung in css/galerie.css.
-     Runde 2: 01 Schweben bleibt, 02 bis 06 sind neu (Namen, Stapel, Strömung, Schichten, Bühne).
+     Runde 3: nur noch Schichten und Bühne (ausgewählt aus Runde 2, jetzt 01 und 02). Schweben, Namen, Stapel, Strömung sind entfernt.
      Neues Haus: Eintrag in data/referenzen.js, Vorschaubild 600 px nach assets/img/projekte/galerie/ (siehe data/galerie.js), id in ORDER. -->
 <div class="site">
   <div class="bgl" data-bgl aria-hidden="true"></div>
@@ -33,91 +33,21 @@
       <div class="wrap gi__in">
         <div class="gi__t">
           <p class="info" data-reveal>Projects / Galerie</p>
-          <h1 class="gi__h" data-reveal="80">Sechs Wege durch unsere Häuser.</h1>
+          <h1 class="gi__h" data-reveal="80">Zwei Wege durch unsere Häuser.</h1>
         </div>
-        <p class="txt gi__txt" data-reveal="160">Dieselben <span data-g-n>8</span> Häuser, sechsmal anders gezeigt. Jede Variante öffnet ein Haus im selben Fenster, mit Bildern und den wichtigsten Daten. Such dir aus, was auf unsere Projects Seite passt.</p>
+        <p class="txt gi__txt" data-reveal="160">Dieselben <span data-g-n>8</span> Häuser, zweimal anders gezeigt. Jede Variante öffnet ein Haus im selben Fenster, mit Bildern und den wichtigsten Daten.</p>
         <ol class="gi__list" data-reveal="240">
-          <li><a href="#g-schweben"><span class="info">01</span><span class="gi__n">Schweben</span><span class="gi__d">Eine Wolke aus Bildern, die du ziehen kannst</span></a></li>
-          <li><a href="#g-namen"><span class="info">02</span><span class="gi__n">Namen</span><span class="gi__d">Die Bilder folgen dem Namen, über dem du bist</span></a></li>
-          <li><a href="#g-stapel"><span class="info">03</span><span class="gi__n">Stapel</span><span class="gi__d">Jedes Haus ein Stapel Fotos zum Auffächern und Verschieben</span></a></li>
-          <li><a href="#g-stroemung"><span class="info">04</span><span class="gi__n">Strömung</span><span class="gi__d">Drei Reihen ziehen langsam vorbei</span></a></li>
-          <li><a href="#g-schichten"><span class="info">05</span><span class="gi__n">Schichten</span><span class="gi__d">Beim Scrollen steigen die Bilder in Schichten auf</span></a></li>
-          <li><a href="#g-buehne"><span class="info">06</span><span class="gi__n">Bühne</span><span class="gi__d">Ein Haus in der Mitte, die anderen schweben darum</span></a></li>
+          <li><a href="#g-schichten"><span class="info">01</span><span class="gi__n">Schichten</span><span class="gi__d">Beim Scrollen steigen die Bilder in Schichten auf</span></a></li>
+          <li><a href="#g-buehne"><span class="info">02</span><span class="gi__n">Bühne</span><span class="gi__d">Ein Haus in der Mitte, die anderen schweben darum</span></a></li>
         </ol>
       </div>
     </section>
 
-    <!-- 01 SCHWEBEN: freie Fläche, Karten in verschiedenen Tiefen, ziehen mit Maus oder Finger, die Fläche wiederholt sich endlos -->
-    <section id="g-schweben" class="gv gv--sand" data-room="g-schweben">
-      <div class="wrap gv__kopf">
-        <div class="gv__t">
-          <p class="info" data-reveal>Variante 01 / Schweben</p>
-          <h2 class="h-xl" data-reveal="80">Jedes Haus ein Unikat.</h2>
-        </div>
-        <p class="txt gv__txt" data-reveal="160">Zieh die Fläche in jede Richtung. Ein Klick öffnet das Haus mit Bildern und Daten.</p>
-      </div>
-      <div class="gs" data-g="schweben">
-        <div class="gs__f" data-gs-f></div>
-        <div class="gs__bar">
-          <span class="info gs__hint"><span class="gs__fine">Ziehen zum Erkunden / Klicken zum Öffnen</span><span class="gs__touch">Wischen zum Erkunden / Tippen zum Öffnen</span></span>
-          <span class="info gs__cur" data-gs-cur aria-live="polite"></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 02 NAMEN: große Liste der Namen; über einem Namen schweben seine Bilder mit dem Mauszeiger mit. Am Telefon eine Bildreihe unter jedem Namen -->
-    <section id="g-namen" class="gv gv--schwarz" data-room="g-namen">
-      <div class="wrap gv__kopf">
-        <div class="gv__t">
-          <p class="info" data-reveal>Variante 02 / Namen</p>
-          <h2 class="h-xl" data-reveal="80">Jedes Haus hat seinen Namen.</h2>
-        </div>
-        <p class="txt gv__txt" data-reveal="160">Fahr über einen Namen, und seine Bilder folgen dir. Ein Klick öffnet das Haus mit allen Bildern und Daten.</p>
-      </div>
-      <div class="gn" data-g="namen">
-        <ol class="wrap gn__list" data-gn-list></ol>
-        <div class="gn__float" data-gn-float aria-hidden="true"></div>
-      </div>
-    </section>
-
-    <!-- 03 STAPEL: jedes Haus ein Stapel Fotos auf dem Tisch; darüberfahren fächert ihn auf, ziehen verschiebt ihn -->
-    <section id="g-stapel" class="gv gv--sand" data-room="g-stapel">
-      <div class="wrap gv__kopf">
-        <div class="gv__t">
-          <p class="info" data-reveal>Variante 03 / Stapel</p>
-          <h2 class="h-xl" data-reveal="80">Leg dir deine Favoriten zurecht.</h2>
-        </div>
-        <p class="txt gv__txt" data-reveal="160">Jeder Stapel ist ein Haus. Fahr darüber, um ihn aufzufächern, und zieh ihn, wohin du willst. Ein Klick öffnet das Bild.</p>
-      </div>
-      <div class="gk" data-g="stapel">
-        <div class="gk__t" data-gk-t></div>
-        <p class="info gk__hint"><span class="gs__fine">Darüberfahren zum Auffächern / Ziehen zum Verschieben</span><span class="gs__touch">Tippen zum Öffnen / Seitlich ziehen zum Verschieben</span></p>
-      </div>
-    </section>
-
-    <!-- 04 STRÖMUNG: drei Reihen ziehen in verschiedenen Tempi vorbei, Scrollen beschleunigt sie; über einem Bild bleiben alle Bilder desselben Hauses hell -->
-    <section id="g-stroemung" class="gv gv--weiss" data-room="g-stroemung">
-      <div class="wrap gv__kopf">
-        <div class="gv__t">
-          <p class="info" data-reveal>Variante 04 / Strömung</p>
-          <h2 class="h-xl" data-reveal="80">Häuser in Bewegung.</h2>
-        </div>
-        <p class="txt gv__txt" data-reveal="160">Drei Reihen ziehen vorbei. Fahr über ein Bild, und alle Bilder desselben Hauses bleiben hell. Ein Klick öffnet es.</p>
-      </div>
-      <div class="gf" data-g="stroemung">
-        <div class="gf__rows" data-gf-rows></div>
-        <div class="wrap gf__cap" aria-live="polite">
-          <span class="info gf__info" data-gf-info>Fahr über ein Bild</span>
-          <span class="gf__name" data-gf-name></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 05 SCHICHTEN: gepinnte Bühne; pro Haus steigen seine Bilder in drei Tiefen am großen Namen vorbei -->
+    <!-- 01 SCHICHTEN: gepinnte Bühne; pro Haus steigen seine Bilder in drei Tiefen am großen Namen vorbei -->
     <section id="g-schichten" class="gv gv--schwarz" data-room="g-schichten">
       <div class="wrap gv__kopf">
         <div class="gv__t">
-          <p class="info" data-reveal>Variante 05 / Schichten</p>
+          <p class="info" data-reveal>Variante 01 / Schichten</p>
           <h2 class="h-xl" data-reveal="80">Ein Haus nach dem anderen.</h2>
         </div>
         <p class="txt gv__txt" data-reveal="160">Scroll weiter, und die Bilder steigen in Schichten an dir vorbei. Klick auf ein Bild oder den Namen, um das Haus zu öffnen.</p>
@@ -135,11 +65,11 @@
       </div>
     </section>
 
-    <!-- 06 BÜHNE: ein Haus groß in der Mitte, die anderen schweben als kleine Bilder darum; darüberfahren holt eins auf die Bühne -->
+    <!-- 02 BÜHNE: ein Haus groß in der Mitte, die anderen schweben als kleine Bilder darum; darüberfahren holt eins auf die Bühne -->
     <section id="g-buehne" class="gv gv--weiss" data-room="g-buehne">
       <div class="wrap gv__kopf">
         <div class="gv__t">
-          <p class="info" data-reveal>Variante 06 / Bühne</p>
+          <p class="info" data-reveal>Variante 02 / Bühne</p>
           <h2 class="h-xl" data-reveal="80">Ein Haus im Mittelpunkt.</h2>
         </div>
         <p class="txt gv__txt" data-reveal="160">Fahr über ein Bild am Rand, und das Haus kommt auf die Bühne. Ein Klick öffnet es mit allen Bildern und Daten.</p>

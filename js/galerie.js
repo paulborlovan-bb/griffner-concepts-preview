@@ -1,10 +1,7 @@
-/* Projekt-Galerie (projects-galerie.html): sechs Abschnitte, die dieselben acht Häuser zeigen, und ein Projektfenster für alle.
-   01 Schweben   freie Fläche mit Karten in verschiedenen Tiefen, ziehen mit Maus oder Finger, wiederholt sich endlos
-   02 Namen      große Liste der Namen, über einem Namen schweben seine Bilder mit dem Mauszeiger mit (Telefon: Bildreihe)
-   03 Stapel     jedes Haus ein Stapel Fotos, darüberfahren fächert auf, ziehen verschiebt (mit Schwung)
-   04 Strömung   drei Reihen ziehen in verschiedenen Tempi, Scrollen beschleunigt, über einem Bild bleibt sein Haus hell
-   05 Schichten  gepinnte Bühne, pro Haus steigen seine Bilder in drei Tiefen am großen Namen vorbei
-   06 Bühne      ein Haus groß in der Mitte, die anderen schweben darum, darüberfahren holt eins auf die Bühne
+/* Projekt-Galerie (projects-galerie.html): zwei Abschnitte, die dieselben acht Häuser zeigen, und ein Projektfenster für beide.
+   Runde 3: aus Runde 2 ausgewählt, Schweben, Namen, Stapel und Strömung sind entfernt.
+   01 Schichten  gepinnte Bühne, pro Haus steigen seine Bilder in drei Tiefen am großen Namen vorbei
+   02 Bühne      ein Haus groß in der Mitte, die anderen schweben darum, darüberfahren holt eins auf die Bühne
    Projektfenster: Bilder (Wischblende, Pfeile, Wischen, Pfeiltasten, kleine Bilder), Art, Name, Text, Daten, Link, voriges und nächstes Projekt.
    Daten in data/galerie.js. Ohne Bewegung (prefers-reduced-motion) stehen alle Abschnitte ruhig in ihrer Endlage. */
 import { loop, reveal, $, $$, clamp, lerp, reduce, vhs } from './core.js';
@@ -17,11 +14,9 @@ const pad2 = n => String(n).padStart(2, '0');
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 const now = () => performance.now();
 const mod = (a, n) => ((a % n) + n) % n;
-const rng = s => () => (s = (s * 16807) % 2147483647, (s - 1) / 2147483646);
 /* Fortschritt einer gepinnten Strecke: 0 Oberkante oben, 1 Unterkante unten */
 const scene = el => { const r = el.getBoundingClientRect(), span = r.height - vhs(); return span > 0 ? clamp(-r.top / span) : r.top <= 0 ? 1 : 0; };
 const near = (el, m = 1.15) => { const r = el.getBoundingClientRect(), vh = vhs(); return r.bottom > -vh * .15 && r.top < vh * m; };
-const capHTML = p => `<span class="gcap"><span class="info">${esc(p.info)}</span><b>${esc(p.name)}</b></span>`;
 const imgHTML = (im, big) => `<img src="${big ? im.l : im.t}" alt="" decoding="async" draggable="false"${big ? '' : ' loading="lazy"'}${im.pos ? ` style="object-position:${im.pos}"` : ''}>`;
 const onResize = fn => { let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { fn(); loop.poke(); }, 120); }); };
 
@@ -33,294 +28,17 @@ if (document.fonts) document.fonts.ready.then(() => loop.poke());
 addEventListener('load', () => loop.poke());
 
 const WIN = initWin();
-run('schweben', () => initSchweben($('[data-g="schweben"]')));
-run('namen', () => initNamen($('[data-g="namen"]')));
-run('stapel', () => initStapel($('[data-g="stapel"]')));
-run('stroemung', () => initStroemung($('[data-g="stroemung"]')));
 run('schichten', () => initSchichten($('[data-g="schichten"]')));
 run('buehne', () => initBuehne($('[data-g="buehne"]')));
 
-/* Ein Klick auf eine Karte in irgendeiner Variante öffnet das Projektfenster, nicht nach einem Ziehen */
+/* Ein Klick auf ein Bild in einer Variante öffnet das Projektfenster */
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-g] [data-p]');
-  if (!c || c.hasAttribute('data-own')) return;  // data-own: die Variante öffnet selbst
-  const g = c.closest('[data-g]');
-  if (g.dataset.dragged === '1') { e.preventDefault(); return; }
+  if (!c) return;
   WIN.open(+c.dataset.p, +c.dataset.i || 0, $('img', c));
 });
 
-/* Ziehen mit Maus oder Finger. Am Telefon gehört senkrechtes Wischen der Seite (touch-action: pan-y). */
-function drag(el, g, { move, end }) {
-  let id = null, sx = 0, sy = 0, lx = 0, ly = 0, lt = 0, vx = 0, vy = 0, on = false;
-  el.addEventListener('pointerdown', e => {
-    if (e.button !== 0) return;
-    id = e.pointerId; sx = lx = e.clientX; sy = ly = e.clientY; lt = now(); vx = vy = 0; on = false;
-  });
-  el.addEventListener('pointermove', e => {
-    if (e.pointerId !== id) return;
-    if (!on) {
-      const tx = e.clientX - sx, ty = e.clientY - sy;
-      if (Math.hypot(tx, ty) < 6) return;
-      if (e.pointerType !== 'mouse' && Math.abs(ty) > Math.abs(tx)) { id = null; return; }
-      on = true; g.classList.add('is-drag');
-      try { el.setPointerCapture(id); } catch (err) { /* schon losgelassen */ }
-    }
-    const t = now(), dt = Math.max(1, t - lt), dx = e.clientX - lx, dy = e.clientY - ly;
-    vx = lerp(vx, dx / dt * 16.7, .5); vy = lerp(vy, dy / dt * 16.7, .5);
-    lx = e.clientX; ly = e.clientY; lt = t;
-    move(dx, dy);
-  });
-  const up = e => {
-    if (e.pointerId !== id) return;
-    id = null;
-    if (on) {
-      g.classList.remove('is-drag'); g.dataset.dragged = '1';
-      setTimeout(() => { g.dataset.dragged = ''; }, 60);
-      const still = now() - lt > 90;
-      end(still ? 0 : vx, still ? 0 : vy);
-    }
-    on = false;
-  };
-  el.addEventListener('pointerup', up);
-  el.addEventListener('pointercancel', up);
-}
-
-/* ---------- 01 Schweben ---------- */
-function initSchweben(g) {
-  if (!g) return;
-  const f = $('[data-gs-f]', g), cur = $('[data-gs-cur]', g), R = rng(11);
-  const items = [];
-  L.forEach((p, pi) => p.img.slice(0, 5).forEach((im, ii) => items.push([pi, ii])));  // bis zu fünf Bilder pro Haus
-  for (let i = items.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [items[i], items[j]] = [items[j], items[i]]; }
-  f.innerHTML = items.map(([pi, ii], k) => {
-    const p = L[pi], im = p.img[ii];
-    return `<button class="gs__c" type="button" data-p="${pi}" data-i="${ii}" aria-label="${esc(p.name)} öffnen">`
-      + `<span class="gs__in" style="transition-delay:${(k % 14) * 55}ms"><span class="gs__im" style="--r:${im.r}">${imgHTML(im)}</span>${capHTML(p)}</span></button>`;
-  }).join('');
-  cur.textContent = `${items.length} Bilder aus ${N} Häusern`;
-  const cards = $$('.gs__c', f).map((el, k) => { const d = .5 + R() * .8; return { el, d, sz: .55 + d * .5 + R() * .18, jx: R(), jy: R(), r: L[items[k][0]].img[items[k][1]].r }; });
-  let W = 0, H = 0, sw = 0, sh = 0;
-  const layout = () => {
-    sw = g.clientWidth; sh = g.clientHeight;
-    const base = sw < 700 ? clamp(sw * .3, 96, 150) : clamp(sw * .14, 120, 250);
-    let mw = 0;
-    cards.forEach(c => { c.w = Math.round(base * c.sz * (c.r < 1 ? .7 : 1)); c.h = c.w / c.r; c.el.style.setProperty('--w', c.w + 'px'); mw = Math.max(mw, c.w); });
-    W = Math.max(sw * 1.75, sw + 2 * mw + 200); H = Math.max(sh * 1.6, sh + 2 * mw + 200);
-    const cols = sw < 700 ? 5 : 6, rows = Math.ceil(cards.length / cols), cw = W / cols, ch = H / rows;
-    cards.forEach((c, k) => {
-      const col = k % cols, row = Math.floor(k / cols);
-      c.x = col * cw + c.jx * Math.max(0, cw - c.w); c.y = row * ch + c.jy * Math.max(0, ch - c.h - 40);
-      c.el.style.zIndex = Math.round(c.d * 100);
-    });
-  };
-  layout(); onResize(layout);
-
-  const o = { x: 0, y: 0 }, v = { x: 0, y: 0 };
-  let mx = 0, my = 0, smx = 0, smy = 0, hov = false, last = now();
-  drag(g, g, {
-    move: (dx, dy) => { o.x += dx; o.y += dy; v.x = v.y = 0; loop.poke(); },
-    end: (vx, vy) => { v.x = vx; v.y = vy; loop.poke(); },
-  });
-  g.addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    const r = g.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5;
-  });
-  g.addEventListener('pointerover', e => { hov = !!e.target.closest('.gs__c'); });
-  g.addEventListener('pointerleave', () => { hov = false; mx = my = 0; });
-  new IntersectionObserver((es, io) => es.forEach(e => { if (e.isIntersecting) { g.classList.add('is-in'); io.disconnect(); } }), { threshold: .15 }).observe(g);
-
-  loop.add({ tick() {
-    if (!near(g)) { last = now(); return; }
-    const t = now(), dt = Math.min(64, t - last); last = t;
-    if (!reduce) {
-      if (!g.classList.contains('is-drag')) {
-        o.x += v.x * dt / 16.7; o.y += v.y * dt / 16.7;
-        const k = Math.pow(.93, dt / 16.7); v.x *= k; v.y *= k;
-        if (!hov) o.x -= .014 * dt;  // ganz langsames Treiben nach links
-      }
-      smx = lerp(smx, mx, .05); smy = lerp(smy, my, .05);
-    }
-    const sy = reduce ? 0 : -g.getBoundingClientRect().top * .3;  // Scrollen schiebt die Wolke ein wenig mit
-    const ox = (W - sw) / 2, oy = (H - sh) / 2;
-    for (const c of cards) {
-      const x = mod(c.x + (o.x - smx * 70) * c.d, W) - ox, y = mod(c.y + (o.y + sy - smy * 50) * c.d, H) - oy;
-      c.el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-    }
-    if (!reduce) loop.poke();
-  } });
-}
-
-/* ---------- 02 Namen ---------- */
-function initNamen(g) {
-  if (!g) return;
-  const list = $('[data-gn-list]', g), fl = $('[data-gn-float]', g);
-  /* Plätze der schwebenden Bilder um den Mauszeiger: x, y (× Grundbreite), Breite, Nachlauf (kleiner = träger) */
-  const SLOT = [[-.2, -.7, 1, .15], [.5, -.3, .6, .1], [-.7, .16, .5, .08], [.28, .44, .42, .062]];
-  list.innerHTML = L.map((p, pi) => `<li class="gn__row">`
-    + `<button class="gn__b" type="button" data-p="${pi}" data-i="0" data-own aria-label="${esc(p.name)} öffnen">`
-    + `<span class="info gn__nr">${pad2(pi + 1)}</span><span class="gn__name">${esc(p.name)}</span>`
-    + `<span class="info gn__info">${esc(p.info)}</span><span class="info gn__cnt">${pad2(p.img.length)} Bilder</span></button>`
-    + `<div class="gn__strip">${p.img.map((im, ii) => `<button class="gn__th" type="button" data-p="${pi}" data-i="${ii}" aria-label="${esc(p.name)}, Bild ${ii + 1}" style="--r:${im.r}">${imgHTML(im)}</button>`).join('')}</div></li>`).join('');
-  fl.innerHTML = L.map((p, pi) => `<div class="gn__grp" data-k="${pi}">${p.img.slice(0, 4).map((im, j) =>
-    `<span class="gn__fi" style="--j:${j}"><img src="${j ? im.t : im.m}" alt="" decoding="async" loading="lazy" draggable="false"${im.pos ? ` style="object-position:${im.pos}"` : ''}></span>`).join('')}</div>`).join('');
-  const grps = $$('.gn__grp', fl).map((el, pi) => ({ el, fs: $$('.gn__fi', el).map((e, j) => ({ e, j, r: L[pi].img[j].r, x: 0, y: 0, w: 0, h: 0 })) }));
-  const fine = matchMedia('(hover:hover) and (pointer:fine)');
-  let act = -1, mx = 0, my = 0, base = 0, live = false, lastSY = 0, last = now();
-  const layout = () => {
-    base = clamp(innerWidth * .2, 200, 340);
-    grps.forEach(gp => gp.fs.forEach(f => { f.w = base * SLOT[f.j][2] * (f.r < 1 ? .72 : 1); f.h = f.w / f.r; f.e.style.width = `${f.w.toFixed(1)}px`; f.e.style.height = `${f.h.toFixed(1)}px`; }));
-  };
-  layout(); onResize(layout);
-  const target = (f, r) => [mx - r.left + SLOT[f.j][0] * base - f.w / 2, my - r.top + SLOT[f.j][1] * base - f.h / 2];
-  const setAct = k => {
-    if (k === act) return;
-    if (act >= 0) grps[act].el.classList.remove('is-on');
-    act = k;
-    if (k < 0) return;
-    const gp = grps[k], r = g.getBoundingClientRect();
-    gp.fs.forEach(f => { const [tx, ty] = target(f, r); f.x = tx; f.y = ty + 50 + f.j * 16; });  // steigen leicht von unten ein
-    gp.el.classList.add('is-on');
-    live = true; loop.poke();
-  };
-  const pick = el => { const b = el && el.closest && el.closest('.gn__b'); return b && g.contains(b) ? +b.dataset.p : -1; };
-  g.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || !fine.matches) return; mx = e.clientX; my = e.clientY; setAct(pick(e.target)); live = true; loop.poke(); });
-  g.addEventListener('pointerleave', () => setAct(-1));
-  list.addEventListener('click', e => {
-    const b = e.target.closest('.gn__b'); if (!b) return;
-    const k = +b.dataset.p;
-    WIN.open(k, 0, act === k ? $('img', grps[k].fs[0].e) : null);
-  });
-  loop.add({ tick() {
-    const t = now(), dt = Math.min(64, t - last); last = t;
-    if (!live || !near(g)) return;
-    if (scrollY !== lastSY) { lastSY = scrollY; if (act >= 0) setAct(pick(document.elementFromPoint(mx, my))); }  // Scrollen ohne Mausbewegung
-    const r = g.getBoundingClientRect();
-    let busy = false;
-    for (const gp of grps) for (const f of gp.fs) {
-      const [tx, ty] = target(f, r), k = reduce ? 1 : 1 - Math.pow(1 - SLOT[f.j][3], dt / 16.7);
-      f.x += (tx - f.x) * k; f.y += (ty - f.y) * k;
-      if (Math.abs(tx - f.x) + Math.abs(ty - f.y) > .3) busy = true;
-      f.e.style.transform = `translate3d(${f.x.toFixed(1)}px,${f.y.toFixed(1)}px,0)`;
-    }
-    if (busy) loop.poke(); else if (act < 0) live = false;
-  } });
-}
-
-/* ---------- 03 Stapel ---------- */
-function initStapel(g) {
-  if (!g) return;
-  const t = $('[data-gk-t]', g), R = rng(7);
-  /* aufgefächert: x, y (× Kartenbreite), Drehung; Bild 1 bleibt vorn */
-  const FAN = [[0, 0, -1], [-.6, -.1, -7], [.6, -.04, 6], [.05, -.5, -2.5]];
-  const quer = p => p.img.map((im, ii) => [im, ii]).filter(([im]) => im.r >= 1.2).slice(0, 4);  // Hochformate würden unter dem Stapel herausragen
-  t.innerHTML = L.map((p, pi) => `<div class="gk__s" data-k="${pi}"><div class="gk__p" style="transition-delay:${pi * 90}ms">`
-    + quer(p).map(([im, ii], j) => `<button class="gk__c" type="button" data-p="${pi}" data-i="${ii}" aria-label="${esc(p.name)}, Bild ${ii + 1}" style="--j:${j}">${imgHTML(im)}</button>`).join('')
-    + `<span class="gk__lab"><span class="info">${esc(p.info)}</span><b>${esc(p.name)}</b></span></div></div>`).join('');
-  const st = $$('.gk__s', t).map((el, pi) => ({
-    el, pi, x: 0, y: 0, vx: 0, vy: 0, jx: R() - .5, jy: R() - .5,
-    cs: $$('.gk__c', el).map((e, j) => ({ e, j, r: L[pi].img[+e.dataset.i].r, rx: (R() - .5) * 12, ry: (R() - .5) * 10, rr: j ? (R() - .5) * 9 : (R() - .5) * 3 })),
-    lab: $('.gk__lab', el),
-  }));
-  let sw = 0, sh = 0, W = 0, top = 10, last = now(), moving = false;
-  const layout = () => {
-    sw = t.clientWidth;
-    const phone = sw < 700, cols = phone ? 2 : sw < 1024 ? 3 : 4, rows = Math.ceil(N / cols);
-    W = phone ? sw * .36 : clamp(sw * .14, 150, 250);
-    const pm = phone ? 16 : (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-margin')) || 48);
-    const x0 = pm + W * .62, uw = sw - 2 * x0, cellH = W * (phone ? 1.1 : 1.05) + (phone ? 70 : 100);
-    sh = rows * cellH + (phone ? 70 : 130);
-    t.style.height = `${Math.round(sh)}px`;
-    st.forEach((s, k) => {
-      const col = k % cols, row = Math.floor(k / cols), shift = (row % 2 ? .22 : -.1) * (phone ? .4 : 1);
-      s.x = clamp(x0 + uw * (col + shift + s.jx * .3) / (cols - 1), x0, sw - x0);
-      s.y = (phone ? 30 : 60) + (row + .5) * cellH + s.jy * cellH * .12;
-      s.vx = s.vy = 0;
-      s.cs.forEach(c => {
-        const w = W, f = FAN[c.j];
-        c.e.style.cssText = `--j:${c.j};--r:${c.r};--cw:${w.toFixed(1)}px;--rx:${c.rx.toFixed(1)}px;--ry:${c.ry.toFixed(1)}px;--rr:${c.rr.toFixed(2)}deg;--fx:${(f[0] * W).toFixed(1)}px;--fy:${(f[1] * W).toFixed(1)}px;--fr:${f[2]}deg`;
-      });
-      s.lab.style.cssText = `width:${Math.round(W * (phone ? 1.12 : 1.3))}px;top:${Math.round(W / 1.333 / 2 + 20)}px`;
-      place(s);
-    });
-  };
-  const place = s => { s.el.style.transform = `translate3d(${s.x.toFixed(1)}px,${s.y.toFixed(1)}px,0)`; };
-  st.forEach(s => {
-    s.el.addEventListener('pointerdown', () => { s.el.style.zIndex = ++top; });
-    drag(s.el, g, {
-      move: (dx, dy) => { s.x += dx; s.y += dy; s.vx = s.vy = 0; place(s); },
-      end: (vx, vy) => { s.vx = vx; s.vy = vy; moving = true; loop.poke(); },
-    });
-  });
-  layout(); onResize(layout);
-  new IntersectionObserver((es, io) => es.forEach(e => { if (e.isIntersecting) { g.classList.add('is-in'); io.disconnect(); } }), { threshold: .2 }).observe(g);
-  loop.add({ tick() {
-    const tt = now(), dt = Math.min(64, tt - last); last = tt;
-    if (!moving) return;
-    moving = false;
-    const m = W * .45, fr = Math.pow(.92, dt / 16.7);
-    for (const s of st) {
-      if (Math.abs(s.vx) + Math.abs(s.vy) < .05) continue;
-      s.x += s.vx * dt / 16.7; s.y += s.vy * dt / 16.7; s.vx *= fr; s.vy *= fr;
-      if (s.x < m || s.x > sw - m) { s.x = clamp(s.x, m, sw - m); s.vx *= -.4; }   // weich vom Rand zurück
-      if (s.y < m || s.y > sh - m) { s.y = clamp(s.y, m, sh - m); s.vy *= -.4; }
-      place(s); moving = true;
-    }
-    if (moving) loop.poke();
-  } });
-}
-
-/* ---------- 04 Strömung ---------- */
-function initStroemung(g) {
-  if (!g) return;
-  const box = $('[data-gf-rows]', g), inf = $('[data-gf-info]', g), nm = $('[data-gf-name]', g), R = rng(5);
-  const fine = matchMedia('(hover:hover) and (pointer:fine)'), HINT = fine.matches ? 'Fahr über ein Bild' : 'Tipp auf ein Bild, um das Haus zu öffnen';
-  inf.textContent = HINT;
-  const all = [];
-  L.forEach((p, pi) => p.img.forEach((im, ii) => all.push([pi, ii])));
-  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
-  const NR = 3, items = [[], [], []];
-  all.forEach((it, k) => items[k % NR].push(it));
-  const one = ([pi, ii], copy) => `<button class="gf__c" type="button" data-p="${pi}" data-i="${ii}"${copy ? ' tabindex="-1"' : ''} aria-label="${esc(L[pi].name)}, Bild ${ii + 1}" style="--r:${L[pi].img[ii].r}">${imgHTML(L[pi].img[ii]).replace(' loading="lazy"', '')}</button>`;
-  box.innerHTML = items.map((row, ri) => `<div class="gf__row" data-r="${ri}"><div class="gf__track">`
-    + [0, 1, 2].map(c => `<div class="gf__set"${c ? ' aria-hidden="true"' : ''}>${row.map(it => one(it, c)).join('')}</div>`).join('') + `</div></div>`).join('');
-  const SPEED = [.02, .032, .025], DIR = [1, -1, 1], BOOST = [.5, .9, .7];  // px pro ms, 1 = nach links
-  const rows = $$('.gf__row', box).map((el, ri) => ({ el, ri, tr: $('.gf__track', el), set: $('.gf__set', el), x: R() * 400, v: 0, h: 1, hov: false, sw: 1 }));
-  const cards = $$('.gf__c', box);
-  const measure = () => rows.forEach(r => { r.sw = r.set.offsetWidth || 1; });
-  measure(); onResize(measure);
-  addEventListener('load', measure);
-  rows.forEach(r => {
-    r.el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') r.hov = true; });
-    r.el.addEventListener('pointerleave', () => { r.hov = false; });
-    drag(r.el, g, { move: dx => { r.x -= dx; r.v = 0; loop.poke(); }, end: vx => { r.v = -vx; loop.poke(); } });
-  });
-  let hp = null;
-  const hl = p => {
-    if (p === hp) return;
-    hp = p;
-    g.classList.toggle('is-hl', p != null);
-    cards.forEach(c => c.classList.toggle('is-p', c.dataset.p === p));
-    if (p == null) { inf.textContent = HINT; nm.textContent = ''; return; }
-    inf.textContent = L[+p].info; nm.textContent = L[+p].name;
-  };
-  box.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const c = e.target.closest('.gf__c'); hl(c ? c.dataset.p : null); });
-  box.addEventListener('pointerleave', () => hl(null));
-  let last = now(), lastSY = scrollY;
-  loop.add({ tick() {
-    const t = now(), dt = Math.min(64, t - last); last = t;
-    const dy = Math.min(160, Math.abs(scrollY - lastSY)); lastSY = scrollY;
-    if (!near(g)) return;
-    for (const r of rows) {
-      r.h = lerp(r.h, r.hov ? 0 : 1, 1 - Math.pow(.9, dt / 16.7));   // über einer Reihe bleibt sie fast stehen
-      if (!reduce && !g.classList.contains('is-drag')) r.x += DIR[r.ri] * (SPEED[r.ri] * dt * r.h + dy * BOOST[r.ri] * .45);
-      r.x += r.v * dt / 16.7; r.v *= Math.pow(.93, dt / 16.7);
-      r.tr.style.transform = `translate3d(${(-mod(r.x, r.sw)).toFixed(1)}px,0,0)`;
-    }
-    if (!reduce || rows.some(r => Math.abs(r.v) > .05)) loop.poke();
-  } });
-}
-
-/* ---------- 05 Schichten ---------- */
+/* ---------- 01 Schichten ---------- */
 function initSchichten(g) {
   if (!g) return;
   const box = $('[data-gl-imgs]', g), mid = $('.gl__mid', g), nm = $('[data-gl-name]', g), inf = $('[data-gl-info]', g), nr = $('[data-gl-nr]', g), line = $('[data-gl-line]', g);
@@ -369,7 +87,7 @@ function initSchichten(g) {
   } });
 }
 
-/* ---------- 06 Bühne ---------- */
+/* ---------- 02 Bühne ---------- */
 function initBuehne(g) {
   if (!g) return;
   const ring = $('[data-gb-ring]', g), stage = $('[data-gb-stage]', g), A = $('[data-gb-a]', g), B = $('[data-gb-b]', g);
