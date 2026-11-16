@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects, Album mit sechs Varianten / GRIFFNER</title>
+<meta name="description" content="Unsere Häuser als Album. Nur Bilder, ein Klick öffnet ein Bild groß mit dem Namen des Hauses.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/projects.css">
+<link rel="stylesheet" href="css/album.css">
+</head>
+<body data-page="projects" data-variant="album">
+<!-- Projekt-Album: sechs schmale Bildstrecken wie ein Fotoalbum oder ein Instagram Profil. Keine Texte zu den Häusern, nur Bilder.
+     Ein Klick öffnet das Bild im Leuchtkasten mit kleinem Titel (Name des Hauses). Beim Scrollen kommen weitere Häuser dazu (je zwei).
+     Alle Varianten zeigen dieselben acht Häuser (data/galerie.js, Quelle data/referenzen.js). Logik in js/album.js, Gestaltung in css/album.css.
+     Vorbilder vom Nutzer: agreeable-commit-770260 (Lieblingsrichtung, Reihen aus zwei Bildern), bentogallery, orange-globe-194681, cmsmediabento, dynamicmasonrycms. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+    <!-- 00 EINSTIEG -->
+    <section id="a-start" class="ai" data-room="a-start">
+      <div class="ai__in">
+        <p class="info" data-reveal>Projects / Album</p>
+        <h1 class="ai__h" data-reveal="80">Unsere Häuser als Album.</h1>
+        <p class="ai__txt" data-reveal="160">Sechs Varianten, nur Bilder. Ein Klick öffnet ein Bild groß, mit dem Namen des Hauses. Beim Scrollen kommen weitere Häuser dazu.</p>
+        <ol class="ai__list" data-reveal="240">
+          <li><a href="#a-album"><span class="info">01</span><span class="ai__n">Album</span></a></li>
+          <li><a href="#a-raster"><span class="info">02</span><span class="ai__n">Raster</span></a></li>
+          <li><a href="#a-bento"><span class="info">03</span><span class="ai__n">Bento</span></a></li>
+          <li><a href="#a-mauer"><span class="info">04</span><span class="ai__n">Mauerwerk</span></a></li>
+          <li><a href="#a-streifen"><span class="info">05</span><span class="ai__n">Streifen</span></a></li>
+          <li><a href="#a-beitrag"><span class="info">06</span><span class="ai__n">Beitrag</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 01 ALBUM: Reihen aus zwei Bildern, eines breit, eines schmal. Darüberfahren macht ein Bild breit und farbig, das andere tritt grau zurück -->
+    <section id="a-album" class="av av--schwarz" data-room="a-album">
+      <div class="av__kopf"><p class="info av__nr">01</p><h2 class="av__name">Album</h2><p class="av__hint"><span class="a-fine">Fahr über ein Bild, und es nimmt sich den Platz in seiner Reihe.</span><span class="a-touch">Tipp auf ein graues Bild, und es nimmt sich den Platz in seiner Reihe.</span></p></div>
+      <div class="aa" data-a="album"></div>
+    </section>
+
+    <!-- 02 RASTER: drei Spalten, quadratische Kacheln wie ein Profil -->
+    <section id="a-raster" class="av av--weiss" data-room="a-raster">
+      <div class="av__kopf"><p class="info av__nr">02</p><h2 class="av__name">Raster</h2><p class="av__hint">Drei Spalten, jedes Bild gleich groß, wie ein Profil.</p></div>
+      <div class="ar" data-a="raster"></div>
+    </section>
+
+    <!-- 03 BENTO: jedes Haus ein Block aus großen und kleinen Feldern, die Blöcke schließen lückenlos aneinander -->
+    <section id="a-bento" class="av av--sand" data-room="a-bento">
+      <div class="av__kopf"><p class="info av__nr">03</p><h2 class="av__name">Bento</h2><p class="av__hint">Jedes Haus ein Block aus großen und kleinen Feldern.</p></div>
+      <div class="ab" data-a="bento"></div>
+    </section>
+
+    <!-- 04 MAUERWERK: Spalten mit den Bildern in ihrem eigenen Format, hoch bleibt hoch -->
+    <section id="a-mauer" class="av av--weiss" data-room="a-mauer">
+      <div class="av__kopf"><p class="info av__nr">04</p><h2 class="av__name">Mauerwerk</h2><p class="av__hint">Jedes Bild in seinem eigenen Format, Spalte an Spalte.</p></div>
+      <div class="am" data-a="mauer"></div>
+    </section>
+
+    <!-- 05 STREIFEN: jedes Haus eine Reihe schmaler Streifen, eines ist offen. Am Telefon liegen die Streifen untereinander -->
+    <section id="a-streifen" class="av av--schwarz" data-room="a-streifen">
+      <div class="av__kopf"><p class="info av__nr">05</p><h2 class="av__name">Streifen</h2><p class="av__hint"><span class="a-fine">Jedes Haus eine Reihe. Fahr über einen Streifen, und er öffnet sich.</span><span class="a-touch">Jedes Haus eine Reihe. Tipp auf einen Streifen, und er öffnet sich.</span></p></div>
+      <div class="as" data-a="streifen"></div>
+    </section>
+
+    <!-- 06 BEITRAG: eine schmale Spalte, jedes Haus ein Beitrag mit Bildern zum Wischen -->
+    <section id="a-beitrag" class="av av--sand" data-room="a-beitrag">
+      <div class="av__kopf"><p class="info av__nr">06</p><h2 class="av__name">Beitrag</h2><p class="av__hint">Jedes Haus ein Beitrag. Wisch durch die Bilder.</p></div>
+      <div class="ap" data-a="beitrag"></div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+
+<!-- Sprung zwischen den Varianten, unten in der Mitte, nur zwischen Einstieg und Fußzeile sichtbar -->
+<nav class="aswitch" data-aswitch aria-label="Varianten">
+  <a href="#a-album">01</a><a href="#a-raster">02</a><a href="#a-bento">03</a><a href="#a-mauer">04</a><a href="#a-streifen">05</a><a href="#a-beitrag">06</a>
+</nav>
+
+<!-- LEUCHTKASTEN: ein Bild groß, oben Zähler und Schließen, Pfeile an der Seite, unten kleiner Titel und die Bilder dieses Hauses.
+     Pfeile, Wischen und Pfeiltasten gehen durch alle Bilder, am Ende eines Hauses weiter zum nächsten. -->
+<dialog class="alb" data-alb aria-label="Bild">
+  <div class="alb__top">
+    <span class="info alb__cnt" data-alb-cnt></span>
+    <button class="alb__x info" type="button" data-alb-close>Schließen <i aria-hidden="true"></i></button>
+  </div>
+  <div class="alb__stage" data-alb-stage>
+    <img class="alb__img" data-alb-a alt="">
+    <img class="alb__img" data-alb-b alt="" aria-hidden="true">
+  </div>
+  <button class="alb__arr alb__arr--l" type="button" data-alb-prev aria-label="Voriges Bild"><i aria-hidden="true"></i></button>
+  <button class="alb__arr alb__arr--r" type="button" data-alb-next aria-label="Nächstes Bild"><i aria-hidden="true"></i></button>
+  <div class="alb__foot">
+    <p class="alb__t" data-alb-t></p>
+    <div class="alb__th" data-alb-th></div>
+  </div>
+</dialog>
+<script type="module" src="js/album.js"></script>
+</body>
+</html>
