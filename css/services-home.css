@@ -1,5 +1,6 @@
 /* Services auf der Startseite (services-home.html). Abläufe in js/services-home.js.
    Runde 1: 01 Drei Kapitel und 02 Drei Titel (gewählt). Runde 2: 03 Quer, 04 Reiter, 05 Geteilt, 06 Fächer, 07 Vollbild in ihrem Stil.
+   Runde 3: die Bilder bewegen sich (Treiben und Parallaxe).
    Wie griffner.com: Schwarz, Weiß, Sand für die Hinweisstreifen, Gelb nur als Akzent, Ofelia, Versalien für Überschriften.
    Keine Rundungen, keine Schatten. Überschriften in der Größe der Startseite (Different Ideas of Living). */
 :root{
@@ -219,6 +220,14 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shv__subs li.is-cur{opacity:1}
 .shv__bar{position:relative;z-index:1;grid-column:1 / -1;grid-row:2}
 
+/* ---------- Bewegung in den Bildern (Runde 3): langsames Treiben (Zoom und Schwenk), Parallaxe-Ebene für 01, 03, 05 ---------- */
+@keyframes sh-drift{from{scale:1.06;translate:-2% -1.2%}to{scale:1.13;translate:2% 1.2%}}
+.sh1__pic img,.sh2__img,.shq__pic img,.shr__img,.shg__pic img,.shf__p img,.shv__img{animation:sh-drift 12s ease-in-out infinite alternate}
+[data-par]{position:relative}
+.sh-par{position:absolute;inset:-6% 0;display:block;will-change:transform}
+[data-par="x"] .sh-par{inset:0 -6%}
+.sh2__pics,.shv__pics{will-change:transform}
+
 /* ---------- Sprung zwischen den Varianten ---------- */
 .shsw{position:fixed;right:10px;top:50%;z-index:40;display:flex;flex-direction:column;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translate(8px,-50%);opacity:0;pointer-events:none;transition:opacity 400ms,transform 400ms var(--ease)}
 .shsw.is-on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
@@ -316,5 +325,6 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 }
 @media (prefers-reduced-motion:reduce){
   .sh2__t,.sh2__img,.shq__c,.shr__img,.shg__t,.shg__pic img,.shf__p,.shf__p img,.shf__more,.shv__t,.shv__img{transition:none}
+  .sh1__pic img,.sh2__img,.shq__pic img,.shr__img,.shg__pic img,.shf__p img,.shv__img{animation:none}
   .shr__side.is-in>*,.shg__subs.is-in li{animation:none}
 }

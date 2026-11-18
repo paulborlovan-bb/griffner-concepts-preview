@@ -9,7 +9,8 @@
    05 Geteilt       links stehen Titel und Leistungen (sticky), rechts ziehen drei Bilder vorbei; das Bild in der Mitte wählt den Teil
    06 Fächer        drei Bilder nebeneinander, das aktive öffnet sich; läuft von selbst (5,2 s), bis jemand wählt
    07 Vollbild      wie 02, das Bild füllt die Fläche und läuft durch alle dreizehn Leistungen
-   Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, alles bleibt bedienbar. */
+   Runde 3: alle Bilder treiben langsam (Zoom und Schwenk); 01, 03, 05 mit Parallaxe, 02 steigt und 07 schwenkt beim Scrollen.
+   Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Treiben, keine Parallaxe, alles bleibt bedienbar. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
 import { FILM } from '../data/leistungen.js';
@@ -19,6 +20,10 @@ const pad2 = n => String(n).padStart(2, '0');
 const cl = v => Math.max(0, Math.min(1, v));
 const run = (name, fn) => { try { fn(); } catch (e) { console.error(name, e); } };
 const IMG = n => `assets/img/sh/${n}.jpg`;
+/* Bewegung in den Bildern (Runde 3): jedes Bild treibt langsam (CSS sh-drift, Zoom und Schwenk); dl(k) startet versetzt, damit nicht alle gleich laufen.
+   par() legt ein Bild in eine etwas größere Ebene (.sh-par), die beim Scrollen gegen die Bewegung läuft (Parallaxe, siehe parallax()) */
+const dl = k => `animation-delay:-${((k * 4.7) % 12).toFixed(1)}s`;
+const par = html => `<span class="sh-par">${html}</span>`;
 
 /* Die drei Teile und ihre Leistungen (Namen wie in der Leiste des Films), dazu Überschrift, Satz und Bild jeder Leistung */
 const K = Object.fromEntries(FILM.kapitel.map(k => [k.id, k]));
@@ -52,7 +57,7 @@ const titlesHtml = cls => TEILE.map(t => `<p class="${cls}" data-t="${t.i}">${es
 function v1() {
   const el = $('[data-sh1]'); if (!el) return;
   el.innerHTML = TEILE.map(t => `<article class="sh1__c" data-reveal="${t.i * 120}">
-    <a class="sh1__pic" href="leistungen.html" tabindex="-1" aria-hidden="true"><img src="${IMG(t.hoch)}" alt="" loading="lazy" decoding="async"></a>
+    <a class="sh1__pic" data-par="y" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(`<img src="${IMG(t.hoch)}" style="${dl(t.i)}" alt="" loading="lazy" decoding="async">`)}</a>
     <p class="info sh1__n">${esc(t.n)}</p>
     <h3 class="sh1__t">${esc(t.name)}</h3>
     <ul class="sh1__subs">${subsLi(t)}</ul>
@@ -64,11 +69,13 @@ function v2() {
   const sec = $('[data-sh2]'); if (!sec) return;
   const ts = $('[data-sh2-ts]', sec), pics = $('[data-sh2-pics]', sec), subs = $('[data-sh2-subs]', sec), num = $('[data-sh2-n]', sec), bar = $('[data-sh2-bar]', sec);
   ts.innerHTML = titlesHtml('sh2__t');
-  pics.innerHTML = TEILE.map(t => `<img class="sh2__img" data-t="${t.i}" src="${IMG(t.hoch)}" alt="" decoding="async">`).join('');
+  pics.innerHTML = TEILE.map(t => `<img class="sh2__img" data-t="${t.i}" src="${IMG(t.hoch)}" style="${dl(t.i)}" alt="" decoding="async">`).join('');
   bar.innerHTML = barHtml(false);
   let last = -1;
   loop.add({ tick() {
     const r = sec.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight), pr = cl(-r.top / span);
+    /* das Bild steigt beim Scrollen langsam (über den ganzen Abschnitt, damit es an den Wechseln nicht springt) */
+    if (!reduce) pics.style.transform = `translate3d(0,${((.5 - pr) * 56).toFixed(1)}px,0)`;
     /* jeder Teil bekommt ein Drittel; im Teil wandert die Leiste durch seine Leistungen */
     const f = Math.min(2.999, pr * 3), cur = Math.floor(f), inn = f - cur, list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor(inn * list.length));
     if (cur !== last) {
@@ -91,7 +98,7 @@ function vQ() {
       <p class="sh-lead">${esc(LEAD)}</p>
       <a class="sh-link info" href="leistungen.html">Alle Services</a>
     </div>` + TEILE.map(t => `<article class="shq__c" data-p="${t.i}">
-      <a class="shq__pic" href="leistungen.html" tabindex="-1" aria-hidden="true"><img src="${IMG(t.hoch)}" style="object-position:${t.pos}" alt="" decoding="async"></a>
+      <a class="shq__pic" data-par="x" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(`<img src="${IMG(t.hoch)}" style="object-position:${t.pos};${dl(t.i)}" alt="" decoding="async">`)}</a>
       <p class="info shq__n">${esc(t.n)}</p>
       <h3 class="shq__t">${esc(t.name)}</h3>
       <ul class="shq__subs">${subsLi(t)}</ul>
@@ -126,7 +133,7 @@ function vR() {
   const sec = $('[data-shr]'); if (!sec) return;
   const tabs = $('[data-shr-tabs]', sec), pics = $('[data-shr-pics]', sec), side = $('[data-shr-side]', sec), body = $('[data-shr-body]', sec);
   tabs.innerHTML = barHtml(true);
-  pics.innerHTML = SL.map((s, i) => `<img class="shr__img" data-i="${i}" src="${IMG(s.img)}" alt="" decoding="async"${i > 2 ? ' loading="lazy"' : ''}>`).join('');
+  pics.innerHTML = SL.map((s, i) => `<img class="shr__img" data-i="${i}" src="${IMG(s.img)}" style="${dl(i)}" alt="" decoding="async"${i > 2 ? ' loading="lazy"' : ''}>`).join('');
   const DUR = 3200, imgs = $$('.shr__img', pics);
   let i = 0, t0 = performance.now(), vis = false, hold = false, raf = 0, teil = -1;
   /* Füllung des aktuellen Reiters: Anteil der Leistungen, die schon liefen, plus die laufende Zeit */
@@ -168,7 +175,7 @@ function vG() {
   ts.innerHTML = titlesHtml('shg__t');
   bar.innerHTML = barHtml(false);
   panesEl.innerHTML = TEILE.map(t => `<figure class="shg__pane" data-p="${t.i}">
-      <a class="shg__pic" href="leistungen.html" tabindex="-1" aria-hidden="true"><img src="${IMG(t.hoch)}" style="object-position:${t.pos}" alt="" loading="lazy" decoding="async"></a>
+      <a class="shg__pic" data-par="y" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(`<img src="${IMG(t.hoch)}" style="object-position:${t.pos};${dl(t.i)}" alt="" loading="lazy" decoding="async">`)}</a>
       <figcaption class="shg__cap"><ul class="shg__pl">${subsLi(t)}</ul></figcaption>
     </figure>`).join('') + '<a class="sh-link info shg__end" href="leistungen.html">Alle Services</a>';
   const panes = $$('.shg__pane', panesEl);
@@ -194,7 +201,7 @@ function vF() {
   const sec = $('[data-shf]'); if (!sec) return;
   const row = $('[data-shf-row]', sec);
   row.innerHTML = TEILE.map(t => `<div class="shf__p" data-p="${t.i}" role="button" tabindex="0" aria-expanded="false" aria-label="${esc(t.name)}">
-      <img src="${IMG(FAN[t.i][0])}" style="object-position:${FAN[t.i][1]}" alt="" decoding="async">
+      <img src="${IMG(FAN[t.i][0])}" style="object-position:${FAN[t.i][1]};${dl(t.i)}" alt="" decoding="async">
       <div class="shf__c">
         <span class="shf__line" aria-hidden="true"><i></i></span>
         <p class="info shf__n">${esc(t.n)}</p>
@@ -231,12 +238,14 @@ function vV() {
   const sec = $('[data-shv]'); if (!sec) return;
   const ts = $('[data-shv-ts]', sec), pics = $('[data-shv-pics]', sec), subs = $('[data-shv-subs]', sec), num = $('[data-shv-n]', sec), bar = $('[data-shv-bar]', sec);
   ts.innerHTML = titlesHtml('shv__t');
-  pics.innerHTML = SL.map((s, i) => `<img class="shv__img" data-i="${i}" src="${IMG(s.img)}" alt="" decoding="async"${i > 1 ? ' loading="lazy"' : ''}>`).join('');
+  pics.innerHTML = SL.map((s, i) => `<img class="shv__img" data-i="${i}" src="${IMG(s.img)}" style="${dl(i)}" alt="" decoding="async"${i > 1 ? ' loading="lazy"' : ''}>`).join('');
   bar.innerHTML = barHtml(false);
-  const imgs = $$('.shv__img', pics);
+  const imgs = $$('.shv__img', pics), wide = matchMedia('(min-width:900px)');
   let last = -1, lastI = -1;
   loop.add({ tick() {
     const r = sec.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight), pr = cl(-r.top / span);
+    /* die ganze Fläche schwenkt beim Scrollen langsam nach links (nur am breiten Bildschirm, dort füllt sie die Bühne) */
+    pics.style.transform = !reduce && wide.matches ? `translate3d(${((.5 - pr) * 3).toFixed(2)}%,0,0) scale(1.05)` : '';
     const f = Math.min(2.999, pr * 3), cur = Math.floor(f), inn = f - cur, list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor(inn * list.length));
     if (cur !== last) {
       last = cur; num.textContent = TEILE[cur].n;
@@ -247,6 +256,21 @@ function vV() {
     const gi = SL.indexOf(list[si]);
     if (gi !== lastI) { lastI = gi; imgs.forEach((im, k) => im.classList.toggle('is-on', k === gi)); }
     setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
+  } });
+}
+
+/* Parallaxe für Bilder im Fluss (01, 03, 05): die Ebene läuft gegen die Bewegung, 01 und 05 senkrecht, 03 quer zur Spur */
+function parallax() {
+  if (reduce) return;
+  const els = $$('[data-par]').map(el => ({ el, ax: el.dataset.par, p: $('.sh-par', el) }));
+  loop.add({ tick() {
+    const vw = innerWidth, vh = innerHeight;
+    els.forEach(({ el, ax, p }) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -80 || r.top > vh + 80 || r.right < -80 || r.left > vw + 80) return;
+      if (ax === 'x') { const d = Math.max(-1, Math.min(1, (r.left + r.width / 2 - vw / 2) / (vw / 2 + r.width / 2))); p.style.transform = `translate3d(${(-d * r.width * .05).toFixed(1)}px,0,0)`; }
+      else { const d = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2))); p.style.transform = `translate3d(0,${(-d * r.height * .05).toFixed(1)}px,0)`; }
+    });
   } });
 }
 
@@ -266,7 +290,7 @@ function sw() {
 }
 
 run('chrome', initChrome);
-run('v1', v1); run('v2', v2); run('v3', vQ); run('v4', vR); run('v5', vG); run('v6', vF); run('v7', vV); run('sw', sw);
+run('v1', v1); run('v2', v2); run('v3', vQ); run('v4', vR); run('v5', vG); run('v6', vF); run('v7', vV); run('par', parallax); run('sw', sw);
 reveal(document);
 loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());
