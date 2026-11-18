@@ -1,5 +1,5 @@
 /* 07 EINZUG. Der Film läuft stumm, sobald er im Bild ist. Die großen Untertitel folgen der Filmzeit, jeder ist auch ein Sprungpunkt. */
-import { $, h, reduce } from './core.js';
+import { $, h, reduce, lazyPoster } from './core.js';
 import { FILM } from '../data/content.js';
 
 let V, cap, bar, btn, items, now, cur = -1, userPaused = false;
@@ -13,6 +13,8 @@ function go(i) {
 }
 export function initFilm() {
   V = $('[data-f-video]'); cap = $('[data-f-cap]'); bar = $('[data-f-bar]'); btn = $('[data-f-btn]');
+  /* Standbild erst kurz vorher; beobachtet wird der Film selbst (die Hülle .film__media ist display: contents, ohne Kasten) */
+  lazyPoster(V, V);
   const list = $('[data-f-list]');
   items = FILM.map(([a, , t], i) => {
     const li = h('li'), b = h('button', { type: 'button', class: 'info' }, t.replace(/\.$/, ''));

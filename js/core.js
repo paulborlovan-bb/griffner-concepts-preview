@@ -36,6 +36,28 @@ export const h = (tag, attrs = {}, html = '') => { const el = document.createEle
    hier die Höhe der Sektion heraus (Concepts 14544 statt 900) und alle Strecken liefen falsch. Darum das echte Dokument über globalThis. */
 const realDoc = () => (typeof globalThis !== 'undefined' && globalThis.document) || document;
 export const vhs = () => realDoc().documentElement.clientHeight || innerHeight;
+/* Standbild eines Films (data-poster): erst drei Bildschirme vorher laden, nicht schon beim Öffnen der Seite. Bilder aus Framer
+   (…?width=W&height=H) in der Größe, die der Kasten auf diesem Bildschirm braucht (Breite oder, beim Zuschnitt, Höhe mal
+   Seitenverhältnis, mal Zoom, mal Pixeldichte), nie kleiner; sonst das Original. Ohne data-poster (Prototyp) bleibt alles. */
+export function lazyPoster(v, box, zoom = 1) {
+  const src = v && v.getAttribute('data-poster');
+  if (!src || !box) return;
+  const set = () => {
+    let url = src;
+    const m = /^(https:\/\/framerusercontent\.com\/images\/[^?#]+)\?width=(\d+)&height=(\d+)$/.exec(src);
+    const r = box.getBoundingClientRect(), dpr = (typeof globalThis !== 'undefined' && globalThis.devicePixelRatio) || 1;
+    if (m && r.width > 0) {
+      /* scale-down-to begrenzt die längere Seite: Breite danach = w · x / L */
+      const w = +m[2], L = Math.max(w, +m[3]), need = Math.max(r.width, r.height * w / +m[3]) * zoom * dpr;
+      const step = [1024, 1600, 2048, 2400, 3200].find(x => w * x / L >= need && x < L);
+      if (step) url = `${m[1]}?scale-down-to=${step}&width=${m[2]}&height=${m[3]}`;
+    }
+    v.setAttribute('poster', url);
+  };
+  if (typeof IntersectionObserver !== 'function') return set();
+  const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); set(); } }, { rootMargin: '300% 0px 300% 0px' });
+  io.observe(box);
+}
 /* h: Höhe der gepinnten Bühne, wenn sie nicht 100svh ist */
 export function prog(el, h) {
   const r = el.getBoundingClientRect(), vh = vhs();

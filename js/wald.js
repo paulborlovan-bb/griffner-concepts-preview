@@ -1,7 +1,7 @@
 /* Seite eines Concepts (bold.html, calm.html, light.html, free.html, erzeugt von tools/pages.mjs).
    Ankommen, Eckdaten, Die Idee, Film oder Bildband, Raum und Licht, Grundriss (Bold, Calm, Light), Nächstes Concept, Kontakt.
    Welches Concept, steht als data-concept an jeder Sektion. Header, Menü und Footer kommen aus chrome.js. */
-import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store } from './core.js';
+import { $, $$, E, lerp, clamp, ease, loop, reveal, reduce, store, lazyPoster } from './core.js';
 import { CONCEPTS } from '../data/content.js';
 import { initAkte } from './akte.js';
 import { initChrome, frame } from './chrome.js';
@@ -46,6 +46,8 @@ function initFilm() {
   const box = $('[data-wf-box]'), v = $('[data-wf-video]') || $('[data-wf-img]');
   if (!box || !v) return;
   if (v.tagName === 'VIDEO') {
+    /* Standbild erst kurz vorher, der Film zoomt beim Öffnen von 1.16 auf 1 */
+    lazyPoster(v, box, 1.16);
     new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause(); }), { threshold: .2 }).observe(box);
     if (reduce) v.controls = true;
   }

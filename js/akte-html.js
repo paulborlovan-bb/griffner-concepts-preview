@@ -11,6 +11,26 @@ const NN = n => String(n).padStart(2, '0');
 /* Texte kommen in Framer aus den Eigenschaften der Komponente, darum immer maskieren */
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/* Bilder aus Framer (…/images/x.jpg?width=W&height=H): mehrere Größen aus dem CDN (scale-down-to), der Browser nimmt die
+   kleinste, die auf diesem Bildschirm (auch Retina) noch scharf ist. Bisher lud jede Karte und jedes Bild der Bildfolge das
+   Original (bis 4800 px). sizes = angezeigte Breite; beim Zuschnitt (object-fit: cover) zählt die Höhe mal Seitenverhältnis.
+   Framer rendert das Markup ohne Fenster, darum hier eine großzügige Schätzung aus den Maßen von js/akte.js (layout);
+   js/akte.js setzt sizes nach dem Vermessen genau. Alle Bilder laden spät (loading="lazy"), js/akte.js holt sie rechtzeitig. */
+const AK_W = [512, 1024, 1600, 2048, 2400, 3200];
+const akF = n => (Math.round(n * 1000) / 1000).toString();
+function akImg(src, sizes, attrs) {
+  const m = /^(https:\/\/framerusercontent\.com\/images\/[^?#"]+)\?width=(\d+)&height=(\d+)$/.exec(String(src || ''));
+  if (!m) return `<img src="${src}"${attrs}>`;
+  /* scale-down-to begrenzt die längere Seite: ein Hochformat ist danach schmaler, die Angabe …w ist die echte Breite */
+  const w = +m[2], h = +m[3], a = w / h, L = Math.max(w, h), q = `width=${m[2]}&height=${m[3]}`;
+  const set = AK_W.filter(x => x < L).map(x => `${m[1]}?scale-down-to=${x}&${q} ${Math.round(w * x / L)}w`).concat(`${src} ${w}w`).join(', ');
+  return `<img src="${src}" srcset="${set}" sizes="${sizes(a)}" data-ak-ar="${akF(a)}"${attrs}>`;
+}
+/* Bildfolge: Telefon W = 100vw − 32, H = min(100vh − 126, 1.32 W); Desktop W ≤ 85vw, H ≤ 74vh.
+   Karten und das kleine Bild im Satz zeigen dieselben Bilder wie die Bildfolge: gleiche sizes, damit jedes Bild nur
+   einmal lädt (eine eigene kleine Größe für die Karten hieße zweimal laden, im Test mehr statt weniger). */
+const akSlide = a => `(max-width: 759px) max(100vw - 32px, min(100vh - 126px, 132vw - 42px) * ${akF(a)}), max(85vw, 74vh * ${akF(a)})`;
+
 /* Alle Bilder eines Hauses, das Hauptbild zuerst, ohne Doppelte */
 export function poolOf(c) {
   if (c.pool && c.pool.length) return c.pool;
@@ -37,9 +57,9 @@ export function aktHtml(c, i, n, { one = false, go = true } = {}) {
         <h3 class="ak__h"><a class="ak__hl" href="${esc(c.href)}">${esc(raw)}${dot}</a></h3>${String(c.fuer || '').trim() ? `
         <p class="ak__fuer">${esc(c.fuer)}</p>` : ''}
       </div>
-      <div class="ak__cards" aria-hidden="true">${cards.map(src => `<figure class="ak__card" data-ak-card><img src="${src}" alt="" loading="lazy" decoding="async"></figure>`).join('')}</div>
+      <div class="ak__cards" aria-hidden="true">${cards.map(src => `<figure class="ak__card" data-ak-card>${akImg(src, akSlide, ' alt="" loading="lazy" decoding="async"')}</figure>`).join('')}</div>
       <div class="ak__about" data-ak-about>
-        <p class="ak__say"><span class="ak__thumb" data-ak-thumb><img src="${thumb}" alt="" loading="lazy" decoding="async"></span>${words}</p>
+        <p class="ak__say"><span class="ak__thumb" data-ak-thumb>${akImg(thumb, akSlide, ' alt="" loading="lazy" decoding="async"')}</span>${words}</p>
         <div class="ak__rule" data-ak-rule></div>
         <div class="ak__row" data-ak-row>${go ? `
           <a class="ak__go" href="${esc(c.href)}" aria-label="${esc(`Concept ${c.name} ansehen`)}">${esc(c.go || 'Concept ansehen')}</a>` : ''}
@@ -47,7 +67,7 @@ export function aktHtml(c, i, n, { one = false, go = true } = {}) {
         </div>
       </div>
       <div class="ak__frame" id="${fid}" data-ak-frame data-dock="edge" data-dock-x=".8" data-dock-trigger="${fid}" data-dock-hide="1" role="group" aria-roledescription="Bildfolge" aria-label="Bilder von Concept ${short}">
-        <div class="ak__slides" data-ak-slides>${pool.map((src, k) => `<div class="ak__slide" data-ak-slide${k ? ' aria-hidden="true"' : ''}><img src="${src}" alt="Concept ${short}, Bild ${k + 1} von ${pool.length}, ${kind}" style="object-position:${k ? '50% 50%' : (c.pos || '50% 50%')}"${k ? ' loading="lazy"' : ''} decoding="async"></div>`).join('')}</div>
+        <div class="ak__slides" data-ak-slides>${pool.map((src, k) => `<div class="ak__slide" data-ak-slide${k ? ' aria-hidden="true"' : ''}>${akImg(src, akSlide, ` alt="Concept ${short}, Bild ${k + 1} von ${pool.length}, ${kind}" style="object-position:${k ? '50% 50%' : (c.pos || '50% 50%')}" loading="lazy" decoding="async"`)}</div>`).join('')}</div>
         <a class="ak__open" href="${esc(c.href)}" tabindex="-1" aria-hidden="true"></a>
         <div class="ak__ui" data-ak-ui>
           <span class="info ak__count" data-ak-count>01 / ${NN(pool.length)}</span>

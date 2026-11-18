@@ -90,6 +90,19 @@ function akt(el, mouse) {
   let lw = 0, lh = 0, W = 0, H = 0, X = 0, Y = 0, on = [], uc = null, live = false, cx0 = 0, cy0 = 0, s0 = .5;
   let tcx = 0, tcy = 0, kT = .1, ixT = 0, iyT = 0, man = 0, manC = 0, lastK = -1, free = 0;
   const sv = slides.map(() => -9);
+  /* Bilder: alle laden spät (loading="lazy"). Erst wenn der Akt näher als drei Bildschirme ist (near), holt die Bildfolge
+     ihr aktuelles Bild und die Karten sofort, vorher nichts: so lädt die Seite beim Öffnen nur, was oben zu sehen ist. */
+  let near = false;
+  const eager = im => { if (im && im.loading === 'lazy') im.loading = 'eager'; };
+  /* sizes genau setzen (angezeigte Breite in CSS px; bei object-fit: cover Höhe mal Seitenverhältnis), der Browser wählt
+     dazu aus srcset die kleinste scharfe Größe. Nur kleiner stellen, solange das Bild noch nicht geladen ist, größer immer. */
+  const fit = (im, w, h) => {
+    const a = im && parseFloat(im.dataset.akAr);
+    if (!a || !(w > 0) || !(h > 0)) return;
+    const need = Math.ceil(Math.max(w, h * a)), was = +im.dataset.akNeed || 0;
+    if (need === was || (was && need < was && im.complete)) return;
+    im.dataset.akNeed = String(need); im.sizes = need + 'px';
+  };
 
   /* Bildfolge als Streifen: das nächste Bild schiebt sich von rechts über das aktuelle, das aktuelle weicht etwas nach links */
   const place = pos => {
@@ -101,7 +114,7 @@ function akt(el, mouse) {
       s.style.visibility = '';
       s.style.zIndex = v > 0 ? 2 : 1;
       s.style.transform = `translate3d(${(v > 0 ? v * 100 : v * 32).toFixed(2)}%,0,0)`;
-      const im = $('img', s); if (im && im.loading === 'lazy') im.loading = 'eager';
+      if (near) eager($('img', s));
     });
     const k = ((Math.round(pos) % N) + N) % N;
     if (k !== lastK) {
@@ -153,7 +166,23 @@ function akt(el, mouse) {
       Object.assign(f.style, { width: w + 'px', aspectRatio: String(s[3]), left: s[0] + '%', top: y + 'px' });
       return { f, s, x: s[0] / 100 * cw, y };
     });
+    /* Bildfolge: in voller Größe genau W × H (beim Wachsen ist Rahmen mal Zoom nie größer). Karten und kleines Bild zeigen
+       dieselben Bilder: gleiche Größe, damit jedes nur einmal lädt */
+    [...slides, ...cardsEl, thumb].forEach(el => fit($('img', el), W, H));
   };
+
+  /* Drei Bildschirme vorher: vermessen (sizes), dann das aktuelle Bild der Bildfolge und die Karten holen */
+  const warm = () => {
+    if (near) return;
+    near = true;
+    lw = sticky.clientWidth; lh = vhs(); layout(lw, lh);
+    slides.forEach((s, j) => { if (sv[j] !== 9) eager($('img', s)); });
+    cardsEl.forEach(f => { if (f.style.display !== 'none') eager($('img', f)); });
+  };
+  if (typeof IntersectionObserver === 'function') {
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); warm(); } }, { rootMargin: '300% 0px 300% 0px' });
+    io.observe(stage);
+  } else warm();
 
   return {
     relayout() { lw = 0; },

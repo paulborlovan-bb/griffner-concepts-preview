@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services auf der Startseite, fünf Varianten / GRIFFNER</title>
+<meta name="description" content="Fünf Varianten für einen kurzen Abschnitt Services auf der Startseite von griffner.com.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/services-home.css">
+</head>
+<body data-page="services-home">
+<!-- Services auf der Startseite (2026-11-18): fünf Varianten eines kurzen Abschnitts, der zur Seite Services führt. Alle auf einer Seite,
+     jede mit einem sandfarbenen Streifen davor (Nummer, Name, Hinweis). Texte aus data/leistungen.js (FILM), Bilder sind Standbilder aus
+     dem Film der Seite Services (assets/img/sh, gerendert aus leistungen.html). Abläufe in js/services-home.js, Gestaltung in
+     css/services-home.css. Neu geschrieben sind nur die Zeilen „Was wir für dich übernehmen“ und „Mit GRIFFNER Services …“. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+    <!-- EINSTIEG -->
+    <section id="sh-start" class="shi" data-room="sh-start">
+      <div class="shi__in">
+        <p class="info" data-reveal>Startseite / Services</p>
+        <h1 class="shi__h" data-reveal="80">Services auf der Startseite.</h1>
+        <p class="shi__txt" data-reveal="160">Fünf Varianten für einen kurzen Abschnitt auf der Startseite. Jede zeigt die drei Teile aus dem Film und führt zur Seite Services.</p>
+        <ol class="shi__list" data-reveal="240">
+          <li><a href="#v1"><span class="info">01</span><span class="shi__n">Drei Kapitel</span></a></li>
+          <li><a href="#v2"><span class="info">02</span><span class="shi__n">Drei Titel</span></a></li>
+          <li><a href="#v3"><span class="info">03</span><span class="shi__n">Kurzfilm</span></a></li>
+          <li><a href="#v4"><span class="info">04</span><span class="shi__n">Wörter</span></a></li>
+          <li><a href="#v5"><span class="info">05</span><span class="shi__n">Liste</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 01 DREI KAPITEL: wie „Different Ideas of Living“. Überschrift und Text, drei hohe Bilder aus dem Film, darunter die Leistungen jedes Teils -->
+    <div class="sht" data-room="tag" id="v1"><p class="info">Variante 01</p><p class="sht__n">Drei Kapitel</p><p class="sht__x">Aufgebaut wie Different Ideas of Living: Überschrift, drei Bilder aus dem Film, darunter die Leistungen. Ruhig, auf einen Blick erfasst.</p></div>
+    <section class="sh1" data-room="v1" aria-labelledby="sh1-h">
+      <div class="sh-head">
+        <h2 class="sh-h" id="sh1-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
+        <p class="sh-lead" data-reveal="120">Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.</p>
+      </div>
+      <div class="sh1__cols" data-sh1></div>
+      <div class="sh-foot"><p class="info sh-foot__l">Services</p><a class="sh-link info" href="leistungen.html">Alle Services</a></div>
+    </section>
+
+    <!-- 02 DREI TITEL: kurzer Ausschnitt aus dem Film. Die Bühne steht, beim Scrollen wechseln Besser planen, bauen, leben; die Leiste füllt sich -->
+    <div class="sht" data-room="tag" id="v2"><p class="info">Variante 02</p><p class="sht__n">Drei Titel</p><p class="sht__x">Ein Ausschnitt aus dem Film. Die Fläche bleibt stehen, beim Scrollen wechseln die drei Titel, die Leiste unten füllt sich. Etwa zwei Bildschirmhöhen.</p></div>
+    <section class="sh2" data-room="v2" data-sh2 aria-label="Services, drei Titel">
+      <div class="sh2__stage">
+        <div class="sh2__txt">
+          <p class="info sh2__k">Services</p>
+          <p class="info sh2__n" data-sh2-n>01 / 03</p>
+          <div class="sh2__ts" data-sh2-ts></div>
+          <ul class="sh2__subs" data-sh2-subs></ul>
+          <a class="sh-link info" href="leistungen.html">Alle Services</a>
+        </div>
+        <div class="sh2__pics" data-sh2-pics></div>
+        <div class="sh-bar sh2__bar" data-sh2-bar></div>
+      </div>
+    </section>
+
+    <!-- 03 KURZFILM: die dreizehn Leistungen als Bildfolge, die von selbst läuft. Leiste wie im Film; ein Klick auf einen Teil springt dorthin -->
+    <div class="sht" data-room="tag" id="v3"><p class="info">Variante 03</p><p class="sht__n">Kurzfilm</p><p class="sht__x">Der Film als kurze Bildfolge in einem Bildschirm: die dreizehn Leistungen laufen von selbst durch, die Leiste zeigt, wo du bist. Ein Klick auf einen Teil springt dorthin.</p></div>
+    <section class="sh3" data-room="v3" data-sh3 aria-label="Services, Kurzfilm">
+      <div class="sh-row">
+        <p class="info sh-row__k">Services</p><p class="sh-row__t">Hausbau ist komplex. Wir nehmen dir das ab.</p><a class="sh-link info" href="leistungen.html">Alle Services</a>
+      </div>
+      <div class="sh3__frame">
+        <div class="sh3__pics" data-sh3-pics></div>
+        <div class="sh3__cap" data-sh3-cap aria-live="polite"></div>
+      </div>
+      <div class="sh-bar sh3__bar" data-sh3-bar></div>
+    </section>
+
+    <!-- 04 WÖRTER: der Einstieg der Seite Services in einem Bild. Die vielen Dinge rund um den Hausbau ziehen vorbei, dann der eine Satz -->
+    <div class="sht" data-room="tag" id="v4"><p class="info">Variante 04</p><p class="sht__n">Wörter</p><p class="sht__x">Der Einstieg der Seite Services in einem Bild: die vielen Dinge rund um den Hausbau ziehen vorbei, dann kommt der eine Satz. Nur Schrift, kein Bild.</p></div>
+    <section class="sh4" data-room="v4" data-sh4 aria-labelledby="sh4-h">
+      <div class="sh4__rows" data-sh4-rows aria-hidden="true"></div>
+      <div class="sh4__in">
+        <h2 class="sh4__h" id="sh4-h"><span class="sh4__a">Hausbau ist komplex.</span> <span class="sh4__b">Wir nehmen dir das ab.</span></h2>
+        <p class="sh4__p">Nicht nur für dein Haus. Sondern für dein ganzes Projekt.</p>
+        <a class="sh-link info" href="leistungen.html">GRIFFNER Services</a>
+      </div>
+    </section>
+
+    <!-- 05 LISTE: wie die Liste der Projects auf der Startseite. Jede Leistung eine Zeile, Darüberfahren zeigt ihr Bild aus dem Film -->
+    <div class="sht" data-room="tag" id="v5"><p class="info">Variante 05</p><p class="sht__n">Liste</p><p class="sht__x">Aufgebaut wie die Projects auf der Startseite: jede Leistung eine Zeile, beim Darüberfahren erscheint ihr Bild aus dem Film. Am Telefon öffnet ein Tipp die Zeile.</p></div>
+    <section class="sh5" data-room="v5" data-sh5 aria-label="Services, Liste">
+      <div class="sh-row">
+        <p class="info sh-row__k">Services</p><p class="sh-row__t">Was wir für dich übernehmen</p><a class="sh-link info" href="leistungen.html">Alle Services</a>
+      </div>
+      <div class="sh5__grid">
+        <ol class="sh5__list" data-sh5-list></ol>
+        <div class="sh5__pic" data-sh5-pic aria-hidden="true"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+
+<!-- Sprung zwischen den Varianten, unten in der Mitte -->
+<nav class="shsw" data-shsw aria-label="Varianten">
+  <a href="#v1">01</a><a href="#v2">02</a><a href="#v3">03</a><a href="#v4">04</a><a href="#v5">05</a>
+</nav>
+<script type="module" src="js/services-home.js"></script>
+</body>
+</html>
