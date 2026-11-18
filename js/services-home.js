@@ -4,12 +4,13 @@
    Runde 1, gewählt:
    01 Drei Kapitel  drei Bilder, darunter die Leistungen jedes Teils (Liste aus FILM.leiste)
    02 Drei Titel    die Bühne steht (sticky), Fortschritt durch den Abschnitt wählt Teil und Leistung; Leiste wie im Film
-   Runde 2, neu im Stil von 01 und 02:
-   03 Quer          stehende Bühne, Überschrift und die drei Kapitel aus 01 ziehen quer vorbei (Höhe aus der Spurbreite)
-   04 Reiter        Überschrift aus 01, Teile als Reiter (Leiste), Bild läuft durch die Leistungen (3,2 s), nur solange sichtbar
-   05 Geteilt       links stehen Titel und Leistungen (sticky), rechts ziehen drei Bilder vorbei; das Bild in der Mitte wählt den Teil
-   06 Fächer        drei Bilder nebeneinander, das aktive öffnet sich; läuft von selbst (5,2 s), bis jemand wählt
-   07 Vollbild      wie 02, das Bild füllt die Fläche und läuft durch alle dreizehn Leistungen
+   Runde 2 (03 Quer, 04 Reiter, 05 Geteilt, 06 Fächer, 07 Vollbild): nicht gewählt, entfernt.
+   Runde 5, wieder im Stil von 01 und 02:
+   03 Zeilen        Überschrift aus 01, drei große Titelzeilen mit Leistungen; am Rechner folgt das Bild der Maus, sonst steht es in der Zeile
+   04 Karten        drei schwarze Karten (Aufbau wie 02) legen sich beim Scrollen übereinander, ihre Streifen bleiben oben stehen
+   05 Folge         01 als stehende Fläche: der Fortschritt wählt Kapitel und Leistung, die Leiste aus 02 läuft mit
+   06 Mitte         wie 02, das Bild in der Mitte zwischen Besser und dem wechselnden Wort
+   07 Versetzt      01 versetzt und verschieden groß, die Spalten laufen verschieden schnell, der Titel liegt halb im Bild
    Runde 3: alle Bilder treiben langsam (Zoom und Schwenk); 01, 03, 05 mit Parallaxe, 02 steigt und 07 schwenkt beim Scrollen.
    Runde 4: statt der Standbilder dieselben Stellen als Film (Kamera fährt, Haus entsteht, Jahreszeiten), Parallaxe und Schwenk stärker.
    Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Treiben, keine Parallaxe, die Filme bleiben beim Poster, alles bleibt bedienbar. */
@@ -92,174 +93,159 @@ function v2() {
   } });
 }
 
-/* ---------- 03 Quer ---------- */
-function vQ() {
-  const sec = $('[data-shq]'); if (!sec) return;
-  const track = $('[data-shq-track]', sec), bar = $('[data-shq-bar]', sec);
-  track.innerHTML = `<div class="shq__intro">
-      <p class="info shq__k">Services</p>
-      <h2 class="sh-h shq__h">Hausbau ist komplex. Wir nehmen dir das ab.</h2>
-      <p class="sh-lead">${esc(LEAD)}</p>
-      <a class="sh-link info" href="leistungen.html">Alle Services</a>
-    </div>` + TEILE.map(t => `<article class="shq__c" data-p="${t.i}">
-      <a class="shq__pic" data-par="x" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(media(t.hoch, '', `object-position:${t.pos};${dl(t.i)}`))}</a>
-      <p class="info shq__n">${esc(t.n)}</p>
-      <h3 class="shq__t">${esc(t.name)}</h3>
-      <ul class="shq__subs">${subsLi(t)}</ul>
+/* Filme je Teil: quer (1280 x 800) mit Ausschnitt, hoch (720 x 1080) mit Ausschnitt aus TEILE */
+const WIDE = [['machbarkeit', '62% 50%'], ['bau', '50% 30%'], ['betrieb', '58% 50%']];
+const wideM = (t, cls = '', attrs = '') => media(WIDE[t.i][0], cls, `object-position:${WIDE[t.i][1]};${dl(t.i)}`, attrs);
+const hochM = (t, cls = '', attrs = '') => media(t.hoch, cls, `object-position:${t.pos};${dl(t.i)}`, attrs);
+const split = name => { const k = name.indexOf(' '); return k < 0 ? [name, ''] : [name.slice(0, k), name.slice(k + 1)]; };
+const FINE = matchMedia('(hover:hover) and (pointer:fine)');
+const prOf = sec => { const r = sec.getBoundingClientRect(); return cl(-r.top / Math.max(1, r.height - innerHeight)); };
+
+/* ---------- 03 Zeilen ---------- */
+function vZ() {
+  const sec = $('[data-shz]'); if (!sec) return;
+  const rowsEl = $('[data-shz-rows]', sec), fl = $('[data-shz-float]', sec), fi = $('[data-shz-fi]', sec);
+  rowsEl.innerHTML = TEILE.map(t => `<a class="shz__r" data-p="${t.i}" href="leistungen.html">
+      <span class="info shz__n">${esc(t.n)}</span>
+      <span class="shz__t">${esc(t.name)}</span>
+      <span class="shz__pic" aria-hidden="true">${wideM(t)}</span>
+      <ul class="shz__subs">${subsLi(t)}</ul>
+    </a>`).join('');
+  fi.innerHTML = TEILE.map(t => hochM(t, 'shz__img is-st', `data-p="${t.i}"`)).join('');
+  const rows = $$('.shz__r', rowsEl), vs = $$('video', fi);
+  let cur = -1, mx = 0, my = 0, fx = 0, fy = 0, rot = 0, raf = 0, inside = false;
+  const set = i => {
+    if (i === cur) return; cur = i;
+    rows.forEach((r, k) => r.classList.toggle('is-cur', k === i));
+    rowsEl.classList.toggle('is-hov', i >= 0); fl.classList.toggle('is-on', i >= 0);
+    vs.forEach((v, k) => v.classList.toggle('is-on', k === i));
+    syncV();
+  };
+  /* das Bild folgt dem Zeiger mit etwas Verzug und neigt sich in die Laufrichtung */
+  const place = () => { fl.style.transform = `translate3d(${fx.toFixed(1)}px,${fy.toFixed(1)}px,0) translate(-50%,-50%) rotate(${rot.toFixed(2)}deg)`; };
+  const step = () => {
+    raf = 0; const dx = mx - fx, dy = my - fy;
+    fx += dx * .14; fy += dy * .14; rot += (Math.max(-7, Math.min(7, dx * .05)) - rot) * .12; place();
+    if (Math.abs(dx) > .3 || Math.abs(dy) > .3 || Math.abs(rot) > .05) raf = requestAnimationFrame(step);
+  };
+  const pick = () => { const el = document.elementFromPoint(mx, my), r = el && el.closest('.shz__r'); set(r && rowsEl.contains(r) ? +r.dataset.p : -1); };
+  rowsEl.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !FINE.matches) return;
+    mx = e.clientX; my = e.clientY;
+    if (!inside) { inside = true; fx = mx; fy = my; rot = 0; place(); }
+    pick();
+    if (reduce) { fx = mx; fy = my; place(); } else if (!raf) raf = requestAnimationFrame(step);
+  });
+  rowsEl.addEventListener('pointerleave', () => { inside = false; set(-1); });
+  addEventListener('scroll', () => { if (inside) pick(); }, { passive: true });
+}
+
+/* ---------- 04 Karten ---------- */
+function vK() {
+  const sec = $('[data-shk]'); if (!sec) return;
+  const box = $('[data-shk-cards]', sec);
+  box.innerHTML = TEILE.map(t => `<article class="shk__c" data-p="${t.i}" style="--i:${t.i}">
+      <div class="shk__strip"><p class="info shk__n">${esc(t.n)}</p><p class="shk__sn">${esc(t.name)}</p><p class="info shk__cnt">${SUBS(t).length} Leistungen</p></div>
+      <div class="shk__body">
+        <a class="shk__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${wideM(t, 'is-st')}</a>
+        <div class="shk__txt">
+          <h3 class="shk__t">${esc(t.name)}</h3>
+          <ul class="shk__subs">${subsLi(t)}</ul>
+          <a class="sh-link info" href="leistungen.html">Alle Services</a>
+        </div>
+      </div>
+    </article>`).join('');
+  const cards = $$('.shk__c', box), strips = cards.map(c => $('.shk__strip', c)), vs = cards.map(c => $('video', c)), n = cards.length;
+  loop.add({ tick() {
+    const vh = innerHeight, rs = cards.map(c => c.getBoundingClientRect());
+    if (rs[0].top > vh + 200 || rs[n - 1].bottom < -200) return;
+    cards.forEach((c, k) => {
+      const S = strips[k].offsetHeight, r = rs[k], next = k < n - 1 ? rs[k + 1].top : Infinity;
+      /* die nächste Karte schiebt sich darüber: diese wird dunkler und rückt etwas nach hinten */
+      const u = k < n - 1 ? cl(1 - (next - r.top - S) / Math.max(1, r.height - S)) : 0;
+      c.style.setProperty('--u', u.toFixed(3));
+      /* Film spielt, solange vom Bild etwas zu sehen ist */
+      vs[k].classList.toggle('is-on', Math.min(next, vh) - Math.max(r.top + S, 0) > 40);
+    });
+  } });
+}
+
+/* ---------- 05 Folge ---------- */
+function vL() {
+  const sec = $('[data-shl]'); if (!sec) return;
+  const cols = $('[data-shl-cols]', sec), bar = $('[data-shl-bar]', sec);
+  cols.innerHTML = TEILE.map(t => `<article class="shl__c" data-p="${t.i}">
+      <a class="shl__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${wideM(t, 'is-st')}</a>
+      <p class="info shl__n">${esc(t.n)}</p>
+      <h3 class="shl__t">${esc(t.name)}</h3>
+      <ul class="shl__subs">${subsLi(t)}</ul>
     </article>`).join('');
   bar.innerHTML = barHtml(false);
-  const cards = $$('.shq__c', track), SLOW = 1.5;
-  let travel = 0, stops = [0, 0];
-  /* Weg der Spur = rechte Kante der letzten Karte minus sichtbare Breite; der Abschnitt ist so viel höher (gedehnt, damit es ruhig läuft).
-     Halt an jeder Karte (linke Kante am Rand), damit am Telefon immer eine ganz zu sehen ist; am breiten Bildschirm bleiben nur Anfang und Ende */
-  const size = () => {
-    const last = cards[cards.length - 1], x0 = track.firstElementChild.offsetLeft;
-    travel = Math.max(0, last.offsetLeft + last.offsetWidth - track.clientWidth - x0);
-    stops = [0, ...cards.map(c => Math.min(travel, c.offsetLeft - x0)), travel].filter((v, k, a) => k === 0 || v - a[k - 1] > 24);
-    if (stops.length < 2) stops.push(travel);
-    sec.style.height = `${Math.round(innerHeight + travel * SLOW)}px`;
-  };
-  const ease = t => { t = cl((t - .18) / .64); return t * t * (3 - 2 * t); };
-  const at = pr => { const n = stops.length - 1, g = Math.min(n - .0001, pr * n), k = Math.floor(g); return stops[k] + (stops[k + 1] - stops[k]) * ease(g - k); };
-  size(); addEventListener('resize', size); addEventListener('load', size); if (document.fonts) document.fonts.ready.then(size);
-  let lastCur = -1;
-  loop.add({ tick() {
-    const r = sec.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight), pr = cl(-r.top / span);
-    track.style.transform = `translate3d(${(-at(pr)).toFixed(1)}px,0,0)`;
-    const f = Math.min(2.999, pr * 3), cur = Math.floor(f);
-    if (cur !== lastCur) { lastCur = cur; cards.forEach((c, i) => c.classList.toggle('is-cur', i === cur)); }
-    setBar(bar, cur, TEILE.map(t => cl(f - t.i)), `${SUBS(TEILE[cur]).length} Leistungen`);
-  } });
-}
-
-/* ---------- 04 Reiter ---------- */
-function vR() {
-  const sec = $('[data-shr]'); if (!sec) return;
-  const tabs = $('[data-shr-tabs]', sec), pics = $('[data-shr-pics]', sec), side = $('[data-shr-side]', sec), body = $('[data-shr-body]', sec);
-  tabs.innerHTML = barHtml(true);
-  pics.innerHTML = SL.map((s, i) => media(s.img, 'shr__img is-st', dl(i), `data-i="${i}"`)).join('');
-  const DUR = 3200, imgs = $$('.shr__img', pics);
-  let i = 0, t0 = performance.now(), vis = false, hold = false, raf = 0, teil = -1;
-  /* Füllung des aktuellen Reiters: Anteil der Leistungen, die schon liefen, plus die laufende Zeit */
-  const paint = () => {
-    const s = SL[i], list = SUBS(TEILE[s.teil]), k = list.indexOf(s);
-    const u = reduce || hold ? 1 : cl((performance.now() - t0) / DUR);
-    setBar(tabs, s.teil, TEILE.map(t => t.i < s.teil ? 1 : t.i > s.teil ? 0 : (k + u) / list.length), '');
-  };
-  const show = n => {
-    i = (n + SL.length) % SL.length; t0 = performance.now();
-    const s = SL[i], t = TEILE[s.teil];
-    imgs.forEach((im, k) => im.classList.toggle('is-on', k === i));
-    if (s.teil !== teil) {
-      teil = s.teil;
-      side.innerHTML = `<h3 class="shr__t">${esc(t.name)}</h3>
-        <ul class="shr__subs">${SUBS(t).map(x => `<li><button type="button" data-i="${SL.indexOf(x)}">${esc(x.name)}</button></li>`).join('')}</ul>
-        <p class="shr__p" data-shr-p></p><a class="sh-link info" href="leistungen.html">Alle Services</a>`;
-      side.classList.remove('is-in'); void side.offsetWidth; side.classList.add('is-in');
-    }
-    $$('button[data-i]', side).forEach(b => b.classList.toggle('is-on', +b.dataset.i === i));
-    $('[data-shr-p]', side).textContent = s.txt;
-    paint(); syncV();
-  };
-  const tick = () => { raf = 0; if (!vis) return; paint(); if (!reduce && !hold && performance.now() - t0 >= DUR) show(i + 1); raf = requestAnimationFrame(tick); };
-  const wake = () => { if (!raf && vis) raf = requestAnimationFrame(tick); };
-  new IntersectionObserver(es => { vis = es.some(e => e.isIntersecting); if (vis) { t0 = performance.now(); wake(); } }, { threshold: .3 }).observe(body);
-  side.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) show(+b.dataset.i); });
-  $$('.sh-bar__p', tabs).forEach(p => p.addEventListener('click', () => show(SL.findIndex(s => s.teil === +p.dataset.p))));
-  /* Darüberfahren hält an (Lesen), Wegfahren läuft weiter */
-  body.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hold = true; paint(); } });
-  body.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hold = false; t0 = performance.now(); wake(); } });
-  show(0);
-}
-
-/* ---------- 05 Geteilt ---------- */
-function vG() {
-  const sec = $('[data-shg]'); if (!sec) return;
-  const ts = $('[data-shg-ts]', sec), subs = $('[data-shg-subs]', sec), num = $('[data-shg-n]', sec), bar = $('[data-shg-bar]', sec), panesEl = $('[data-shg-panes]', sec);
-  ts.innerHTML = titlesHtml('shg__t');
-  bar.innerHTML = barHtml(false);
-  panesEl.innerHTML = TEILE.map(t => `<figure class="shg__pane" data-p="${t.i}">
-      <a class="shg__pic" data-par="y" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(media(t.hoch, '', `object-position:${t.pos};${dl(t.i)}`))}</a>
-      <figcaption class="shg__cap"><ul class="shg__pl">${subsLi(t)}</ul></figcaption>
-    </figure>`).join('') + '<a class="sh-link info shg__end" href="leistungen.html">Alle Services</a>';
-  const panes = $$('.shg__pane', panesEl);
+  const cards = $$('.shl__c', cols);
   let last = -1;
   loop.add({ tick() {
-    const mid = innerHeight * .5;
-    const fills = panes.map(p => { const r = p.getBoundingClientRect(); return cl((mid - r.top) / r.height); });
-    let cur = 0; panes.forEach((p, k) => { if (p.getBoundingClientRect().top < mid) cur = k; });
+    /* wie 02: jedes Kapitel bekommt ein Drittel, darin wandert die Leiste durch seine Leistungen */
+    const pr = prOf(sec), f = Math.min(2.999, pr * 3), cur = Math.floor(f), list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor((f - cur) * list.length));
     if (cur !== last) {
-      last = cur; num.textContent = TEILE[cur].n;
-      $$('[data-t]', ts).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur));
-      panes.forEach((p, k) => p.classList.toggle('is-cur', k === cur));
-      subs.innerHTML = subsLi(TEILE[cur]); subs.classList.remove('is-in'); void subs.offsetWidth; subs.classList.add('is-in');
+      last = cur;
+      cards.forEach((c, k) => {
+        c.classList.toggle('is-cur', k === cur); c.classList.toggle('is-done', k < cur);
+        $('video', c).classList.toggle('is-on', k === cur);
+        if (k !== cur) $$('li', c).forEach(li => li.classList.remove('is-on'));
+      });
     }
-    setBar(bar, cur, fills, '');
+    $$('li', cards[cur]).forEach((li, i) => li.classList.toggle('is-on', i <= si));
+    setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
   } });
 }
 
-/* ---------- 06 Fächer ---------- */
-/* Bilder je Teil: Planen quer (das hohe Bild ist im breiten Fächer zu nah), Bauen und Leben hoch */
-const FAN = [['machbarkeit', '66% 50%'], ['hoch-bau', '50% 4%'], ['hoch-betrieb', '50% 20%']];
-function vF() {
-  const sec = $('[data-shf]'); if (!sec) return;
-  const row = $('[data-shf-row]', sec);
-  row.innerHTML = TEILE.map(t => `<div class="shf__p" data-p="${t.i}" role="button" tabindex="0" aria-expanded="false" aria-label="${esc(t.name)}">
-      ${media(FAN[t.i][0], '', `object-position:${FAN[t.i][1]};${dl(t.i)}`)}
-      <div class="shf__c">
-        <span class="shf__line" aria-hidden="true"><i></i></span>
-        <p class="info shf__n">${esc(t.n)}</p>
-        <h3 class="shf__h">${esc(t.name)}</h3>
-        <div class="shf__more"><div class="shf__mi"><ul class="shf__subs">${subsLi(t)}</ul><a class="sh-link info" href="leistungen.html" tabindex="-1">Alle Services</a></div></div>
-      </div>
-    </div>`).join('');
-  const ps = $$('.shf__p', row), fine = matchMedia('(hover:hover) and (pointer:fine)'), DUR = 5200;
-  let cur = -1, auto = !reduce, vis = false, timer = 0;
-  /* Selbstlauf: die Linie oben im offenen Bild läuft 5,2 s, dann öffnet sich das nächste; jede Wahl beendet ihn */
-  const arm = () => {
-    clearTimeout(timer); ps.forEach(p => p.classList.remove('is-run'));
-    if (!auto || !vis || cur < 0) return;
-    void row.offsetWidth; ps[cur].classList.add('is-run');
-    timer = setTimeout(() => act((cur + 1) % ps.length), DUR);
-  };
-  const act = i => {
-    if (i !== cur) { cur = i; ps.forEach((p, k) => { const on = k === i; p.classList.toggle('is-act', on); p.setAttribute('aria-expanded', on ? 'true' : 'false'); $('a', p).tabIndex = on ? 0 : -1; }); }
-    arm();
-  };
-  const stop = () => { if (!auto) return; auto = false; sec.classList.remove('is-auto'); arm(); };
-  sec.classList.toggle('is-auto', auto);
-  ps.forEach((p, i) => {
-    p.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && fine.matches) { stop(); act(i); } });
-    p.addEventListener('click', e => { if (e.target.closest('a')) return; stop(); if (cur === i && fine.matches) { location.href = 'leistungen.html'; return; } act(i); });
-    p.addEventListener('keydown', e => { if (e.target === p && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); stop(); act(i); } });
-  });
-  new IntersectionObserver(es => { vis = es.some(e => e.isIntersecting); arm(); }, { threshold: .4 }).observe(row);
-  act(0);
-}
-
-/* ---------- 07 Vollbild ---------- */
-function vV() {
-  const sec = $('[data-shv]'); if (!sec) return;
-  const ts = $('[data-shv-ts]', sec), pics = $('[data-shv-pics]', sec), subs = $('[data-shv-subs]', sec), num = $('[data-shv-n]', sec), bar = $('[data-shv-bar]', sec);
-  ts.innerHTML = titlesHtml('shv__t');
-  pics.innerHTML = SL.map((s, i) => media(s.img, 'shv__img is-st', dl(i), `data-i="${i}"`)).join('');
+/* ---------- 06 Mitte ---------- */
+function vM() {
+  const sec = $('[data-shm]'); if (!sec) return;
+  const wa = $('[data-shm-a]', sec), wb = $('[data-shm-b]', sec), pics = $('[data-shm-pics]', sec), subs = $('[data-shm-subs]', sec), num = $('[data-shm-n]', sec), bar = $('[data-shm-bar]', sec);
+  wa.textContent = split(TEILE[0].name)[0];
+  wb.innerHTML = TEILE.map(t => `<p class="shm__t" data-t="${t.i}">${esc(split(t.name)[1])}</p>`).join('');
+  pics.innerHTML = TEILE.map(t => hochM(t, 'shm__img is-st', `data-t="${t.i}"`)).join('');
   bar.innerHTML = barHtml(false);
-  const imgs = $$('.shv__img', pics), wide = matchMedia('(min-width:900px)');
-  let last = -1, lastI = -1;
+  let last = -1;
   loop.add({ tick() {
-    const r = sec.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight), pr = cl(-r.top / span);
-    /* die ganze Fläche schwenkt beim Scrollen langsam nach links (nur am breiten Bildschirm, dort füllt sie die Bühne) */
-    pics.style.transform = !reduce && wide.matches ? `translate3d(${((.5 - pr) * 6).toFixed(2)}%,0,0) scale(1.08)` : '';
-    const f = Math.min(2.999, pr * 3), cur = Math.floor(f), inn = f - cur, list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor(inn * list.length));
+    const pr = prOf(sec), d = pr - .5;
+    /* beim Scrollen steigt das Bild, die beiden Wörter gehen langsam auseinander */
+    if (!reduce) {
+      pics.style.transform = `translate3d(0,${(-d * (innerWidth < 900 ? 24 : 70)).toFixed(1)}px,0)`;
+      const wd = innerWidth < 900 ? 16 : 64;
+      wa.style.transform = `translate3d(${(-d * wd).toFixed(1)}px,0,0)`; wb.style.transform = `translate3d(${(d * wd).toFixed(1)}px,0,0)`;
+    }
+    const f = Math.min(2.999, pr * 3), cur = Math.floor(f), list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor((f - cur) * list.length));
     if (cur !== last) {
       last = cur; num.textContent = TEILE[cur].n;
-      $$('[data-t]', ts).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur));
-      subs.innerHTML = list.map((s, i) => `<li data-i="${i}">${esc(s.name)}</li>`).join('');
+      $$('[data-t]', sec).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur));
+      subs.innerHTML = list.map(s => `<li>${esc(s.name)}</li>`).join('');
     }
-    $$('li', subs).forEach((li, i) => { li.classList.toggle('is-on', i <= si); li.classList.toggle('is-cur', i === si); });
-    const gi = SL.indexOf(list[si]);
-    if (gi !== lastI) { lastI = gi; imgs.forEach((im, k) => im.classList.toggle('is-on', k === gi)); }
+    $$('li', subs).forEach((li, i) => li.classList.toggle('is-on', i <= si));
     setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
+  } });
+}
+
+/* ---------- 07 Versetzt ---------- */
+function vX() {
+  const sec = $('[data-shx]'); if (!sec) return;
+  const cols = $('[data-shx-cols]', sec);
+  cols.innerHTML = TEILE.map(t => `<article class="shx__c" data-p="${t.i}">
+      <a class="shx__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${hochM(t)}</a>
+      <h3 class="shx__t">${esc(t.name)}</h3>
+      <p class="info shx__n">${esc(t.n)}</p>
+      <ul class="shx__subs">${subsLi(t)}</ul>
+    </article>`).join('');
+  if (reduce) return;
+  /* jede Spalte läuft mit eigener Geschwindigkeit; in der Mitte des Bildschirms stehen sie auf ihrem Versatz */
+  const cards = $$('.shx__c', cols), wide = matchMedia('(min-width:900px)'), SP = [.04, .12, .2];
+  let on = false;
+  loop.add({ tick() {
+    if (!wide.matches) { if (on) { on = false; cards.forEach(c => { c.style.transform = ''; }); } return; }
+    const r = cols.getBoundingClientRect(), vh = innerHeight; if (r.bottom < -300 || r.top > vh + 300) return;
+    on = true; const d = Math.max(-1.2, Math.min(1.2, (r.top + r.height / 2 - vh / 2) / vh));
+    cards.forEach((c, k) => { c.style.transform = `translate3d(0,${(d * vh * SP[k]).toFixed(1)}px,0)`; });
   } });
 }
 
@@ -309,7 +295,7 @@ function sw() {
 }
 
 run('chrome', initChrome);
-run('v1', v1); run('v2', v2); run('v3', vQ); run('v4', vR); run('v5', vG); run('v6', vF); run('v7', vV); run('vids', vids); run('par', parallax); run('sw', sw);
+run('v1', v1); run('v2', v2); run('v3', vZ); run('v4', vK); run('v5', vL); run('v6', vM); run('v7', vX); run('vids', vids); run('par', parallax); run('sw', sw);
 reveal(document);
 loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());

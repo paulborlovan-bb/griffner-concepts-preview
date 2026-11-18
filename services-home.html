@@ -16,9 +16,10 @@
 </head>
 <body data-page="services-home">
 <!-- Services auf der Startseite. Runde 1 (2026-11-18): fünf Varianten, gewählt wurden 01 Drei Kapitel und 02 Drei Titel.
-     Runde 2 (gleicher Tag): 01 und 02 bleiben zum Vergleich, 03 bis 07 sind neu in ihrem Stil (Überschrift, Bilder und Listen aus 01,
-     stehende schwarze Fläche, große Titel und Leiste aus 02). Jede Variante hat einen sandfarbenen Streifen davor (Nummer, Name, Hinweis).
-     Texte aus data/leistungen.js (FILM), Bilder sind Standbilder aus dem Film der Seite Services (assets/img/sh). Abläufe in
+     Runde 2 (gleicher Tag): 03 Quer, 04 Reiter, 05 Geteilt, 06 Fächer, 07 Vollbild, nicht gewählt und entfernt. Runde 3 und 4: die Bilder
+     bewegen sich, dann Filme statt Bilder. Runde 5 (für den Kunden Runde 3): 01 und 02 bleiben, neu 03 Zeilen, 04 Karten, 05 Folge, 06 Mitte,
+     07 Versetzt, wieder im Stil von 01 und 02. Jede Variante hat einen sandfarbenen Streifen davor (Nummer, Name, Hinweis).
+     Texte aus data/leistungen.js (FILM), Bilder sind kurze Filme aus dem Film der Seite Services (assets/vid/sh). Abläufe in
      js/services-home.js, Gestaltung in css/services-home.css. -->
 <div class="site">
   <div class="bgl" data-bgl aria-hidden="true"></div>
@@ -31,17 +32,17 @@
     <!-- EINSTIEG -->
     <section id="sh-start" class="shi" data-room="sh-start">
       <div class="shi__in">
-        <p class="info" data-reveal>Startseite / Services / Runde 2</p>
+        <p class="info" data-reveal>Startseite / Services / Runde 3</p>
         <h1 class="shi__h" data-reveal="80">Services auf der Startseite.</h1>
-        <p class="shi__txt" data-reveal="160">01 und 02 aus der ersten Runde bleiben zum Vergleich. 03 bis 07 sind neu und verbinden beides: Überschrift, Bilder und Listen aus 01, die stehende Fläche, die großen Titel und die Leiste aus 02. Alle Bilder sind kurze Ausschnitte aus dem Film der Seite Services und bewegen sich.</p>
+        <p class="shi__txt" data-reveal="160">01 und 02 bleiben zum Vergleich. 03 bis 07 sind neu, wieder im Stil von 01 und 02: große Titel, Nummern, Listen der Leistungen, die Leiste und kurze Ausschnitte aus dem Film der Seite Services. Die Varianten der zweiten Runde sind entfernt.</p>
         <ol class="shi__list" data-reveal="240">
           <li><a href="#v1"><span class="info">01</span><span class="shi__n">Drei Kapitel</span></a></li>
           <li><a href="#v2"><span class="info">02</span><span class="shi__n">Drei Titel</span></a></li>
-          <li><a href="#v3"><span class="info">03 Neu</span><span class="shi__n">Quer</span></a></li>
-          <li><a href="#v4"><span class="info">04 Neu</span><span class="shi__n">Reiter</span></a></li>
-          <li><a href="#v5"><span class="info">05 Neu</span><span class="shi__n">Geteilt</span></a></li>
-          <li><a href="#v6"><span class="info">06 Neu</span><span class="shi__n">Fächer</span></a></li>
-          <li><a href="#v7"><span class="info">07 Neu</span><span class="shi__n">Vollbild</span></a></li>
+          <li><a href="#v3"><span class="info">03 Neu</span><span class="shi__n">Zeilen</span></a></li>
+          <li><a href="#v4"><span class="info">04 Neu</span><span class="shi__n">Karten</span></a></li>
+          <li><a href="#v5"><span class="info">05 Neu</span><span class="shi__n">Folge</span></a></li>
+          <li><a href="#v6"><span class="info">06 Neu</span><span class="shi__n">Mitte</span></a></li>
+          <li><a href="#v7"><span class="info">07 Neu</span><span class="shi__n">Versetzt</span></a></li>
         </ol>
       </div>
     </section>
@@ -73,69 +74,66 @@
       </div>
     </section>
 
-    <!-- 03 QUER: die drei Kapitel aus 01 ziehen in der stehenden Fläche aus 02 quer vorbei, vorneweg die Überschrift; die Leiste läuft mit -->
-    <div class="sht" data-room="tag" id="v3"><p class="info">Variante 03</p><p class="sht__n">Quer</p><p class="sht__x">Neu. Die drei Kapitel aus 01 ziehen beim Scrollen quer vorbei, die Fläche steht wie in 02 und die Leiste läuft mit.</p></div>
-    <section class="shq" data-room="v3" data-shq data-pin aria-label="Services, quer">
-      <div class="shq__stage">
-        <div class="shq__track" data-shq-track></div>
-        <div class="sh-bar shq__bar" data-shq-bar></div>
-      </div>
-    </section>
-
-    <!-- 04 REITER: Überschrift aus 01, die drei Teile als Reiter mit der Leiste aus 02. Das Bild läuft durch die Leistungen des Teils, rechts Liste und Satz -->
-    <div class="sht" data-room="tag" id="v4"><p class="info">Variante 04</p><p class="sht__n">Reiter</p><p class="sht__x">Neu. Überschrift wie 01, darunter die drei Teile als Reiter mit der Leiste aus 02. Das Bild läuft von selbst durch die Leistungen, ein Klick wählt Teil oder Leistung.</p></div>
-    <section class="shr" data-room="v4" data-shr aria-labelledby="shr-h">
+    <!-- 03 ZEILEN (Runde 5): Überschrift aus 01, die drei Titel als große Zeilen mit ihren Leistungen. Am Rechner folgt das Bild der Maus, sonst steht es in der Zeile -->
+    <div class="sht" data-room="tag" id="v3"><p class="info">Variante 03</p><p class="sht__n">Zeilen</p><p class="sht__x">Neu. Überschrift wie 01, darunter die drei Titel als große Zeilen mit ihren Leistungen. Am Rechner folgt das Bild der Maus, am Telefon steht es in der Zeile.</p></div>
+    <section class="shz" data-room="v3" data-shz aria-labelledby="shz-h">
       <div class="sh-head">
-        <h2 class="sh-h" id="shr-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
+        <h2 class="sh-h" id="shz-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
         <p class="sh-lead" data-reveal="120">Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.</p>
       </div>
-      <div class="sh-bar sh-bar--ink shr__tabs" data-shr-tabs></div>
-      <div class="shr__body" data-shr-body>
-        <div class="shr__stage" data-shr-pics aria-hidden="true"></div>
-        <div class="shr__side" data-shr-side aria-live="polite"></div>
-      </div>
+      <!-- das Bild am Zeiger steht vor den Zeilen im Markup: beide ohne eigene Ebene, so liegen die Zeilen darüber und kehren sich dort um -->
+      <div class="shz__float" data-shz-float aria-hidden="true"><div class="shz__fi" data-shz-fi></div></div>
+      <div class="shz__rows" data-shz-rows></div>
+      <div class="sh-foot"><p class="info sh-foot__l">Services</p><a class="sh-link info" href="leistungen.html">Alle Services</a></div>
     </section>
 
-    <!-- 05 GETEILT: links stehen Nummer, Titel, Leistungen und Leiste (wie 02), rechts ziehen die drei Bilder aus 01 vorbei -->
-    <div class="sht" data-room="tag" id="v5"><p class="info">Variante 05</p><p class="sht__n">Geteilt</p><p class="sht__x">Neu. Links stehen Titel und Leistungen und wechseln wie in 02, rechts ziehen die drei Bilder aus 01 vorbei.</p></div>
-    <section class="shg" data-room="v5" data-shg aria-label="Services, geteilt">
-      <div class="shg__side">
-        <div class="shg__in">
-          <p class="info shg__k">Services</p>
-          <p class="info shg__n" data-shg-n>01 / 03</p>
-          <div class="shg__ts" data-shg-ts></div>
-          <ul class="shg__subs" data-shg-subs></ul>
-          <div class="sh-bar shg__bar" data-shg-bar></div>
-          <a class="sh-link info shg__link" href="leistungen.html">Alle Services</a>
-        </div>
-      </div>
-      <div class="shg__panes" data-shg-panes></div>
-    </section>
-
-    <!-- 06 FÄCHER: Überschrift aus 01, darunter drei Bilder nebeneinander; das aktive öffnet sich mit seinen Leistungen. Läuft von selbst, bis jemand wählt -->
-    <div class="sht" data-room="tag" id="v6"><p class="info">Variante 06</p><p class="sht__n">Fächer</p><p class="sht__x">Neu. Überschrift wie 01, darunter drei Bilder nebeneinander. Das aktive öffnet sich und zeigt seine Leistungen. Darüberfahren oder Tippen wählt einen Teil.</p></div>
-    <section class="shf" data-room="v6" data-shf aria-labelledby="shf-h">
+    <!-- 04 KARTEN (Runde 5): drei schwarze Karten im Aufbau von 02 legen sich beim Scrollen übereinander, ihre Streifen bleiben oben stehen -->
+    <div class="sht" data-room="tag" id="v4"><p class="info">Variante 04</p><p class="sht__n">Karten</p><p class="sht__x">Neu. Drei schwarze Karten im Stil von 02 legen sich beim Scrollen übereinander. Oben bleiben ihre Streifen mit Nummer und Titel stehen.</p></div>
+    <section class="shk" data-room="v4" data-shk data-pin aria-labelledby="shk-h">
       <div class="sh-head">
-        <h2 class="sh-h" id="shf-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
+        <h2 class="sh-h" id="shk-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
         <p class="sh-lead" data-reveal="120">Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.</p>
       </div>
-      <div class="shf__row" data-shf-row></div>
+      <div class="shk__cards" data-shk-cards></div>
     </section>
 
-    <!-- 07 VOLLBILD: wie 02, aber das Bild füllt die ganze Fläche und läuft durch alle dreizehn Leistungen -->
-    <div class="sht" data-room="tag" id="v7"><p class="info">Variante 07</p><p class="sht__n">Vollbild</p><p class="sht__x">Neu. Wie 02, aber das Bild füllt die ganze Fläche und läuft durch alle dreizehn Leistungen. Am nächsten am Film.</p></div>
-    <section class="shv" data-room="v7" data-shv data-pin aria-label="Services, Vollbild">
-      <div class="shv__stage">
-        <div class="shv__pics" data-shv-pics aria-hidden="true"></div>
-        <div class="shv__txt">
-          <p class="info shv__k">Services</p>
-          <p class="info shv__n" data-shv-n>01 / 03</p>
-          <div class="shv__ts" data-shv-ts></div>
-          <ul class="shv__subs" data-shv-subs></ul>
-          <a class="sh-link info" href="leistungen.html">Alle Services</a>
+    <!-- 05 FOLGE (Runde 5): 01 als stehende Fläche. Beim Scrollen ist ein Kapitel nach dem anderen dran, seine Leistungen leuchten auf, die Leiste aus 02 läuft mit -->
+    <div class="sht" data-room="tag" id="v5"><p class="info">Variante 05</p><p class="sht__n">Folge</p><p class="sht__x">Neu. 01 als stehende Fläche: beim Scrollen ist ein Kapitel nach dem anderen dran, seine Leistungen leuchten auf und die Leiste aus 02 läuft mit.</p></div>
+    <section class="shl" data-room="v5" data-shl data-pin aria-labelledby="shl-h">
+      <div class="shl__stage">
+        <div class="sh-head shl__head">
+          <h2 class="sh-h" id="shl-h">Hausbau ist komplex. Wir nehmen dir das ab.</h2>
+          <p class="sh-lead">Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.</p>
         </div>
-        <div class="sh-bar shv__bar" data-shv-bar></div>
+        <div class="shl__cols" data-shl-cols></div>
+        <div class="sh-bar sh-bar--ink shl__bar" data-shl-bar></div>
       </div>
+    </section>
+
+    <!-- 06 MITTE (Runde 5): wie 02, das Bild steht in der Mitte. Links bleibt Besser, rechts wechselt das Wort, die Leiste füllt sich -->
+    <div class="sht" data-room="tag" id="v6"><p class="info">Variante 06</p><p class="sht__n">Mitte</p><p class="sht__x">Neu. Wie 02, aber das Bild steht in der Mitte. Links bleibt Besser, rechts wechseln planen, bauen, leben. Die Leiste unten füllt sich.</p></div>
+    <section class="shm" data-room="v6" data-shm data-pin aria-label="Services, Mitte">
+      <div class="shm__stage">
+        <div class="shm__top"><p class="info shm__k">Services</p><p class="info shm__n" data-shm-n>01 / 03</p><a class="sh-link info" href="leistungen.html">Alle Services</a></div>
+        <div class="shm__mid">
+          <p class="shm__a" data-shm-a>Besser</p>
+          <div class="shm__pics" data-shm-pics aria-hidden="true"></div>
+          <div class="shm__b" data-shm-b></div>
+        </div>
+        <ul class="shm__subs" data-shm-subs></ul>
+        <div class="sh-bar shm__bar" data-shm-bar></div>
+      </div>
+    </section>
+
+    <!-- 07 VERSETZT (Runde 5): die drei Kapitel aus 01 versetzt und verschieden groß, die Spalten laufen beim Scrollen verschieden schnell, der Titel liegt halb im Bild -->
+    <div class="sht" data-room="tag" id="v7"><p class="info">Variante 07</p><p class="sht__n">Versetzt</p><p class="sht__x">Neu. Die drei Kapitel aus 01, versetzt und verschieden groß. Beim Scrollen laufen sie verschieden schnell, der Titel liegt halb im Bild.</p></div>
+    <section class="shx" data-room="v7" data-shx aria-labelledby="shx-h">
+      <div class="sh-head">
+        <h2 class="sh-h" id="shx-h" data-reveal>Hausbau ist komplex. Wir nehmen dir das ab.</h2>
+        <p class="sh-lead" data-reveal="120">Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.</p>
+      </div>
+      <div class="shx__cols" data-shx-cols></div>
+      <div class="sh-foot"><p class="info sh-foot__l">Services</p><a class="sh-link info" href="leistungen.html">Alle Services</a></div>
     </section>
   </main>
 
