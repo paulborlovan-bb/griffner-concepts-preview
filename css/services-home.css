@@ -2,6 +2,7 @@
    Runde 1: 01 Drei Kapitel und 02 Drei Titel (gewählt). Runde 2 (Quer, Reiter, Geteilt, Fächer, Vollbild) nicht gewählt, entfernt.
    Runde 3: die Bilder bewegen sich (Treiben und Parallaxe). Runde 4: Filme aus dem Services-Film statt Standbildern, Parallaxe 9 %.
    Runde 5: 03 Zeilen, 04 Karten, 05 Folge, 06 Mitte, 07 Versetzt, wieder im Stil von 01 und 02.
+   Runde 6: neuer Text, je Kapitel ein Satz statt der Liste der Leistungen, Knopf Services entdecken (.sh-btn, wie der Knopf der Seite Services).
    Wie griffner.com: Schwarz, Weiß, Sand für die Hinweisstreifen, Gelb nur als Akzent, Ofelia, Versalien für Überschriften.
    Keine Rundungen, keine Schatten. Überschriften in der Größe der Startseite (Different Ideas of Living). */
 :root{
@@ -20,7 +21,7 @@
   --sh-rule-d:rgba(0,0,0,.14);
   --sh-rule-l:rgba(255,255,255,.18);
 }
-.sh-link,.sh-bar__p,.shz__r{-webkit-tap-highlight-color:transparent}
+.sh-link,.sh-btn,.sh-bar__p,.shz__r{-webkit-tap-highlight-color:transparent}
 @keyframes sh-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* ---------- Einstieg ---------- */
@@ -54,7 +55,15 @@
 @media (hover:hover){.sh-link:hover{gap:16px}}
 .sh-foot{display:flex;align-items:center;gap:28px;padding:0 var(--sh-m);margin-top:clamp(40px,6vh,64px)}
 .sh-foot__l{margin:0;flex:1;padding-top:18px;border-top:1px solid currentColor;opacity:.9}
-.sh-foot .sh-link{margin-top:18px}
+.sh-foot .sh-link,.sh-foot .sh-btn{margin-top:18px}
+/* Knopf wie auf der Seite Services (Projektcheck anfragen): Fläche, Pfeil; auf Weiß schwarz, auf Schwarz weiß */
+.sh-btn{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 26px;box-sizing:border-box;background:var(--griffner-schwarz);color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;text-decoration:none;white-space:nowrap;transition:gap 300ms var(--ease),background-color 300ms}
+.sh-btn::after{content:'→';font-size:1.15em;line-height:1}
+@media (hover:hover){.sh-btn:hover{gap:18px;background:#222221}}
+.sh-btn:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:3px}
+.sh2 .sh-btn,.shk .sh-btn,.shm .sh-btn{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+@media (hover:hover){.sh2 .sh-btn:hover,.shk .sh-btn:hover,.shm .sh-btn:hover{background:#e6e4df}}
+.sh-head .sh-side{grid-column:9 / -1;display:flex;flex-direction:column;align-items:flex-start;gap:clamp(18px,3vh,28px)}
 
 /* Leiste wie im Film: drei Teile, Nummer und Name, Balken, darunter die Leistung */
 .sh-bar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(16px,2vw,32px);color:var(--griffner-weiss)}
@@ -85,26 +94,26 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 @media (hover:hover){.sh1__c:hover .sh1__pic .sh-m{transform:scale(1.045)}}
 .sh1__n{margin-top:22px;opacity:.5}
 .sh1__t{margin-top:10px;font-family:var(--font-display);font-weight:300;font-size:clamp(26px,2.3vw,40px);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0}
-.sh1__subs{list-style:none;padding:0;margin:18px 0 0;border-top:1px solid var(--sh-rule-d)}
-.sh1__subs li{padding:7px 0 6px;border-bottom:1px solid var(--sh-rule-d);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.sh1__c .sh1__x{margin-top:14px;max-width:24em;font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.8;text-wrap:pretty}
 
 /* ---------- 02 Drei Titel (Schwarz, Bühne steht, Runde 1) ---------- */
-.sh2{background:var(--griffner-schwarz);color:var(--griffner-weiss);height:300vh;height:300svh;position:relative}
+.sh2{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding-top:var(--sh-pad)}
+.sh2__run{height:300vh;height:300svh;position:relative}
 .sh2__stage{position:sticky;top:0;height:100vh;height:100svh;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr) auto;column-gap:var(--grid-gutter);padding:clamp(100px,14vh,140px) var(--sh-m) clamp(24px,4vh,40px);box-sizing:border-box;overflow:hidden}
-.sh2__txt{grid-column:1 / span 6;grid-row:1;align-self:center;display:flex;flex-direction:column;align-items:flex-start}
+.sh2__txt{position:relative;z-index:1;grid-column:1 / span 6;grid-row:1;align-self:center;display:flex;flex-direction:column;align-items:flex-start}
 .sh2__txt>*{margin:0}
 .sh2__k{opacity:.5;margin-bottom:clamp(28px,5vh,56px)}
 .sh2__n{opacity:.8;margin-bottom:18px}
 .sh2__ts{display:grid}
 .sh2__t{grid-area:1 / 1;margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(48px,6.2vw,116px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
 .sh2__t.is-on{opacity:1;transform:none}
-.sh2__subs{list-style:none;padding:0;margin:clamp(24px,4vh,40px) 0 clamp(28px,5vh,48px);display:flex;flex-wrap:wrap;gap:8px 22px;max-width:34em;min-height:2.6em}
-.sh2__subs li{font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.28;transition:opacity 500ms}
-.sh2__subs li.is-on{opacity:1}
+.sh2__xs{display:grid;margin:clamp(22px,3.6vh,36px) 0 clamp(28px,5vh,44px);max-width:27em}
+.sh2__x{grid-area:1 / 1;margin:0;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:pretty;opacity:0;transform:translateY(12px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
+.sh2__x.is-on{opacity:.85;transform:none}
 .sh2__pics{grid-column:8 / -1;grid-row:1;align-self:center;justify-self:end;display:grid;width:100%;max-width:min(560px,58vh);aspect-ratio:4/5}
 .sh2__img{grid-area:1 / 1;width:100%;height:100%;object-fit:cover;object-position:50% 22%;opacity:0;transform:scale(1.04);transition:opacity 900ms var(--ease),transform 1600ms var(--ease)}
 .sh2__img.is-on{opacity:1;transform:none}
-.sh2__bar{grid-column:1 / -1;grid-row:2}
+.sh2__bar{grid-column:1 / -1;grid-row:2;position:relative;z-index:1}
 
 /* ---------- 03 Zeilen (Weiß, Runde 5): große Titel als Zeilen, am Rechner folgt das Bild der Maus ---------- */
 .shz{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--sh-pad) 0}
@@ -114,8 +123,7 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shz__n{grid-column:1 / span 2;opacity:.5}
 .shz__t{grid-column:3 / span 6;font-family:var(--font-display);font-weight:300;font-size:clamp(44px,5.6vw,104px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;transition:transform 700ms var(--ease)}
 .shz__pic{display:none}
-.shz__subs{grid-column:9 / -1;list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 18px}
-.shz__subs li{font-family:var(--font-text);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.shz__x{grid-column:9 / -1;max-width:24em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:pretty}
 .shz__rows.is-hov .shz__r{opacity:.22}
 .shz__rows.is-hov .shz__r.is-cur{opacity:1}
 .shz__r.is-cur .shz__t{transform:translateX(clamp(12px,1.4vw,24px))}
@@ -133,7 +141,7 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
   .shz__t{grid-row:1;grid-column:3 / -1}
   .shz__pic{display:block;grid-row:2;grid-column:3 / -1;aspect-ratio:16/9;overflow:hidden;background:#0b0b0b}
   .shz__pic .sh-m{width:100%;height:100%;object-fit:cover}
-  .shz__subs{grid-row:3;grid-column:3 / -1}
+  .shz__x{grid-row:3;grid-column:3 / -1}
 }
 
 /* ---------- 04 Karten (Schwarz, Runde 5): drei Karten im Aufbau von 02 legen sich übereinander, oben bleiben ihre Streifen ---------- */
@@ -144,22 +152,21 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shk__strip>*{margin:0}
 .shk__n{grid-column:1 / span 2;opacity:.6}
 .shk__sn{grid-column:3 / span 6;font-family:var(--font-text);font-weight:600;font-size:var(--t-hs,1.0625rem);letter-spacing:.06em;text-transform:uppercase}
-.shk__cnt{grid-column:9 / -1;justify-self:end;opacity:.6}
 .shk__body{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);min-height:0;transform-origin:50% 0;opacity:calc(1 - var(--u,0) * .75);transform:scale(calc(1 - var(--u,0) * .06))}
 .shk__pic{grid-column:1 / span 7;position:relative;overflow:hidden;background:#0b0b0b;min-height:0}
 .shk__pic .sh-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .shk__txt{grid-column:9 / -1;align-self:end;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .shk__txt>*{margin:0}
 .shk__t{font-family:var(--font-display);font-weight:300;font-size:clamp(44px,5vw,92px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0}
-.shk__subs{list-style:none;padding:0;margin:clamp(20px,3.4vh,36px) 0!important;width:100%;border-top:1px solid var(--sh-rule-l)}
-.shk__subs li{padding:7px 0 6px;border-bottom:1px solid var(--sh-rule-l);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.shk__x{margin:clamp(18px,3vh,28px) 0 clamp(26px,4.4vh,40px)!important;max-width:24em;font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.85;text-wrap:pretty}
 
 /* ---------- 05 Folge (Weiß, Runde 5): 01 als stehende Fläche, ein Kapitel nach dem anderen, Leiste aus 02 ---------- */
 .shl{background:var(--griffner-weiss);color:var(--griffner-schwarz);height:280vh;height:280svh;position:relative}
 .shl__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:clamp(24px,4vh,44px);padding:clamp(96px,13vh,132px) 0 clamp(24px,4vh,40px);overflow:hidden}
 .shl__head{align-items:end}
-.shl__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--grid-gutter);padding:0 var(--sh-m);min-height:0}
-.shl__c{display:flex;flex-direction:column;min-height:0;opacity:.3;transition:opacity 700ms var(--ease)}
+/* die drei Karten teilen sich die Zeilen (subgrid): Bilder gleich hoch, auch wenn ein Satz eine Zeile mehr braucht */
+.shl__cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr) auto auto auto;column-gap:var(--grid-gutter);padding:0 var(--sh-m);min-height:0}
+.shl__c{display:grid;grid-row:span 4;grid-template-rows:subgrid;min-height:0;opacity:.3;transition:opacity 700ms var(--ease)}
 .shl__c.is-done{opacity:.55}
 .shl__c.is-cur{opacity:1}
 .shl__c>*{margin:0}
@@ -167,19 +174,18 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shl__pic .sh-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .shl__n{margin-top:18px!important;opacity:.5}
 .shl__t{margin-top:8px!important;font-family:var(--font-display);font-weight:300;font-size:clamp(26px,2.3vw,40px);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0}
-.shl__subs{list-style:none;padding:0;margin:14px 0 0!important;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px 18px;min-height:3.8em}
-.shl__subs li{font-family:var(--font-text);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.3;transition:opacity 500ms}
-.shl__subs li.is-on,.shl__c.is-done .shl__subs li{opacity:1}
+.shl__x{margin:12px 0 0!important;max-width:25em;font-size:var(--t-body);line-height:var(--lh-body);text-wrap:pretty}
 .shl__bar{padding:0 var(--sh-m)}
 
 /* ---------- 06 Mitte (Schwarz, Runde 5): wie 02, das Bild in der Mitte zwischen Besser und dem wechselnden Wort ---------- */
-.shm{background:var(--griffner-schwarz);color:var(--griffner-weiss);height:300vh;height:300svh;position:relative}
+.shm{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding-top:var(--sh-pad)}
+.shm__run{height:300vh;height:300svh;position:relative}
 .shm__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;row-gap:clamp(16px,2.6vh,28px);padding:clamp(96px,13vh,132px) var(--sh-m) clamp(24px,4vh,40px);overflow:hidden}
 .shm__top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
 .shm__top>*{margin:0}
 .shm__k{opacity:.5}
 .shm__n{opacity:.8}
-.shm__top .sh-link{justify-self:end}
+.shm__top .sh-btn{justify-self:end}
 .shm__mid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-items:center;column-gap:clamp(20px,2.6vw,44px);min-height:0}
 .shm__a,.shm__t{margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(44px,6vw,120px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;white-space:nowrap}
 .shm__a,.shm__b{position:relative;z-index:1}
@@ -190,9 +196,9 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shm__pics{display:grid;height:100%;max-height:min(56vh,560px);aspect-ratio:4/5;align-self:center;overflow:hidden;background:#0b0b0b}
 .shm__img{grid-area:1 / 1;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 900ms var(--ease)}
 .shm__img.is-on{opacity:1}
-.shm__subs{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;min-height:1.4em}
-.shm__subs li{font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.28;transition:opacity 500ms}
-.shm__subs li.is-on{opacity:1}
+.shm__xs{display:grid;justify-items:center;text-align:center}
+.shm__x{grid-area:1 / 1;margin:0;max-width:30em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
+.shm__x.is-on{opacity:.85;transform:none}
 
 /* ---------- 07 Versetzt (Weiß, Runde 5): 01 versetzt und verschieden groß, Spalten laufen verschieden schnell, Titel halb im Bild ---------- */
 .shx{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--sh-pad) 0}
@@ -207,8 +213,7 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 /* Titel halb im Bild: Weiß mit Differenz, auf dem Bild hell, auf dem Weiß schwarz (die Karte ist weiß, damit das auch dort stimmt) */
 .shx__t{position:relative;z-index:1;margin:-.56em 0 0 -.03em!important;font-family:var(--font-display);font-weight:300;font-size:clamp(40px,4.2vw,76px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;color:#fff;mix-blend-mode:difference;text-wrap:balance}
 .shx__n{margin-top:18px!important;opacity:.5}
-.shx__subs{list-style:none;padding:0;margin:14px 0 0!important;border-top:1px solid var(--sh-rule-d)}
-.shx__subs li{padding:7px 0 6px;border-bottom:1px solid var(--sh-rule-d);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.shx__x{margin-top:12px!important;max-width:24em;font-size:var(--t-body);line-height:var(--lh-body);opacity:.8;text-wrap:pretty}
 
 /* ---------- Bewegung in den Bildern (Runde 3): langsames Treiben (Zoom und Schwenk), Parallaxe-Ebene für 01, 03, 05 ---------- */
 @keyframes sh-drift{from{scale:1.06;translate:-2% -1.2%}to{scale:1.13;translate:2% 1.2%}}
@@ -239,7 +244,8 @@ video.sh-m{display:block;background:#0b0b0b}
   .sht{grid-template-columns:auto minmax(0,1fr);row-gap:8px;padding:16px var(--sh-m)}
   .sht__x{grid-column:1 / -1}
   .sh-head{grid-template-columns:minmax(0,1fr);row-gap:20px}
-  .sh-head .sh-h,.sh-head .sh-lead{grid-column:1 / -1}
+  .sh-head .sh-h,.sh-head .sh-lead,.sh-head .sh-side{grid-column:1 / -1}
+  .sh-btn{min-height:48px;padding:0 22px;font-size:14px}
   /* Leiste: der aktuelle Teil bekommt Platz für seinen Namen */
   .sh-bar{column-gap:14px;grid-template-columns:3fr 1fr 1fr}
   .sh-bar[data-cur="1"]{grid-template-columns:1fr 3fr 1fr}
@@ -261,55 +267,51 @@ video.sh-m{display:block;background:#0b0b0b}
   .sh2__k{display:none}
   .sh2__n{margin-bottom:10px}
   .sh2__t{font-size:clamp(40px,12vw,64px)}
-  .sh2__subs{margin:14px 0 0;gap:6px 14px;min-height:0}
-  .sh2__subs li{font-size:11px}
-  .sh2__txt .sh-link{display:none}
+  .sh2__xs{margin:12px 0 16px}
+  .sh2__x{font-size:var(--t-body)}
+  .sh2__txt .sh-btn{min-height:44px}
   .sh2__pics{grid-column:1;grid-row:2;justify-self:center;align-self:stretch;max-width:none;width:auto;height:100%;max-height:100%;aspect-ratio:4/5;min-height:0}
   .sh2__bar{grid-row:3}
   /* 03 Zeilen: Nummer über dem Titel, Bild und Leistungen darunter */
   .shz__rows{margin-top:36px}
   .shz__r{grid-template-columns:minmax(0,1fr);row-gap:14px;padding:22px 0 24px}
-  .shz__n,.shz__t,.shz__pic,.shz__subs{grid-column:1}
+  .shz__n,.shz__t,.shz__pic,.shz__x{grid-column:1}
   .shz__n{grid-row:1;padding-top:0}
   .shz__t{grid-row:2;font-size:clamp(36px,10.5vw,52px)}
   .shz__pic{grid-row:3}
-  .shz__subs{grid-row:4;gap:6px 14px}
-  .shz__subs li{font-size:11px}
+  .shz__x{grid-row:4;font-size:var(--t-body)}
   /* 04 Karten: Streifen schmaler, Bild oben, Text darunter */
   .shk{--k-top:60px;--k-s:50px}
   .shk__cards{margin-top:36px}
-  .shk__strip{grid-template-columns:auto minmax(0,1fr) auto;column-gap:14px}
+  .shk__strip{grid-template-columns:auto minmax(0,1fr);column-gap:14px}
   .shk__n{grid-column:1}
   .shk__sn{grid-column:2;font-size:var(--t-hxs,.875rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .shk__cnt{grid-column:3}
   .shk__body{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:18px}
   .shk__pic,.shk__txt{grid-column:1}
   .shk__txt{align-self:start}
   .shk__t{font-size:clamp(34px,10vw,48px)}
-  .shk__subs{display:flex;flex-wrap:wrap;gap:6px 14px;border-top:0;margin:12px 0 14px!important}
-  .shk__subs li{padding:0;border:0;font-size:11px}
+  .shk__x{margin:10px 0 16px!important;font-size:var(--t-body)}
   /* 05 Folge: immer ein Kapitel auf einmal */
   .shl__stage{padding:84px 0 20px;row-gap:18px}
   .shl__head .sh-lead{display:none}
   .shl__head .sh-h{font-size:clamp(30px,8.6vw,40px)}
-  .shl__cols{grid-template-columns:minmax(0,1fr)}
-  .shl__c{grid-area:1 / 1}
+  .shl__cols{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  .shl__c{grid-area:1 / 1;display:flex;flex-direction:column}
   .shl__c,.shl__c.is-done{opacity:0}
   .shl__c.is-cur{opacity:1}
-  .shl__subs{min-height:0}
-  .shl__subs li{font-size:11px}
+  .shl__x{min-height:0}
   /* 06 Mitte: Besser oben, Bild, das Wort unten rechts */
   .shm__stage{padding:84px var(--sh-m) 20px;row-gap:14px}
   .shm__top{grid-template-columns:1fr auto}
-  .shm__top .sh-link{display:none}
-  .shm__n{justify-self:end}
+  .shm__k{display:none}
+  .shm__n{justify-self:start}
+  .shm__top .sh-btn{min-height:42px;padding:0 18px}
   .shm__mid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:10px}
   .shm__a{justify-self:start}
   .shm__pics{justify-self:stretch;width:100%;height:100%;max-height:none;aspect-ratio:auto}
   .shm__b{justify-self:end}
   .shm__a,.shm__t{font-size:clamp(40px,13vw,64px)}
-  .shm__subs{gap:6px 14px;min-height:0}
-  .shm__subs li{font-size:11px}
+  .shm__x{font-size:var(--t-body)}
   /* 07 Versetzt: zum Wischen wie 01, leicht versetzt */
   .shx__cols{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 var(--sh-m);scrollbar-width:none;margin-top:36px;align-items:flex-start;padding-bottom:8px}
   .shx__cols::-webkit-scrollbar{display:none}
@@ -319,6 +321,6 @@ video.sh-m{display:block;background:#0b0b0b}
   .shx__t{font-size:clamp(34px,10vw,48px)}
 }
 @media (prefers-reduced-motion:reduce){
-  .sh2__t,.sh2__img,.shz__r,.shz__t,.shz__fi,.shz__img,.shl__c,.shl__subs li,.shm__t,.shm__img,.shm__subs li{transition:none}
+  .sh2__t,.sh2__x,.sh2__img,.shz__r,.shz__t,.shz__fi,.shz__img,.shl__c,.shm__t,.shm__x,.shm__img{transition:none}
   .sh-m{animation:none}
 }

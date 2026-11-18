@@ -13,6 +13,8 @@
    07 Versetzt      01 versetzt und verschieden groß, die Spalten laufen verschieden schnell, der Titel liegt halb im Bild
    Runde 3: alle Bilder treiben langsam (Zoom und Schwenk); 01, 03, 05 mit Parallaxe, 02 steigt und 07 schwenkt beim Scrollen.
    Runde 4: statt der Standbilder dieselben Stellen als Film (Kamera fährt, Haus entsteht, Jahreszeiten), Parallaxe und Schwenk stärker.
+   Runde 6: neuer Text vom Kunden. Überschrift, ein Satz darunter, je Teil ein Satz (SATZ) statt der Liste der Leistungen, Knopf Services entdecken;
+   02 und 06 haben die Überschrift jetzt über der stehenden Bühne, die Leiste zeigt keine Leistung mehr.
    Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Treiben, keine Parallaxe, die Filme bleiben beim Poster, alles bleibt bedienbar. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
@@ -30,30 +32,23 @@ const media = (n, cls = '', style = '', attrs = '') => `<video class="sh-m${cls 
 const dl = k => `animation-delay:-${((k * 4.7) % 12).toFixed(1)}s`;
 const par = html => `<span class="sh-par">${html}</span>`;
 
-/* Die drei Teile und ihre Leistungen (Namen wie in der Leiste des Films), dazu Überschrift, Satz und Bild jeder Leistung */
-const K = Object.fromEntries(FILM.kapitel.map(k => [k.id, k]));
-const ART = { Architekturkonzept: ['konzept', FILM.konzept.h, FILM.konzept.txt], Machbarkeit: ['machbarkeit', K.machbarkeit], Budgetanalyse: ['budget', K.budget],
-  Entwurfsplanung: ['entwurf', K.entwurf], Innenarchitektur: ['innen', K.innenarchitektur], Gesamtinvestition: ['gesamt', K.gesamt],
-  Projektsteuerung: ['steuerung', K.steuerung], Baumanagement: ['bau', K.baumanagement], Projektmanager: ['pm', K.pm],
-  Bausystem: ['bausystem', K.bausystem], Innenausstattung: ['ausstattung', K.ausstattung], Betriebskosten: ['betrieb', K.betrieb], Kundenservice: ['service', K.kundendienst] };
+/* Die drei Teile (Namen wie in der Leiste des Films). Runde 6: je Teil ein Satz statt der Liste der Leistungen (Text vom Kunden, 2026-11-18) */
+const SATZ = [
+  'Bevor gebaut wird, weißt du, was möglich ist und was dein Projekt kostet.',
+  'Wir steuern dein Projekt und die Baustelle, mit einem persönlichen Ansprechpartner an deiner Seite.',
+  'Ein Zuhause, das sich jeden Tag gut anfühlt, und ein Service, der auch nach dem Einzug bleibt.'];
 /* hohe Bilder je Teil; pos = Ausschnitt, damit Kran und Haus im Bild bleiben */
 const HOCH = [['hoch-machbarkeit', '50% 16%'], ['hoch-bau', '50% 4%'], ['hoch-betrieb', '50% 20%']];
-const TEILE = FILM.leiste.map((L, i) => ({ i, name: L.name, n: FILM.pausen[i].n, hoch: HOCH[i][0], pos: HOCH[i][1], subs: L.sub.map(s => s[1]) }));
-const SL = [];
-TEILE.forEach(t => t.subs.forEach(name => { const a = ART[name]; if (!a) return; const k = a[1];
-  const h = typeof k === 'string' ? k : k.h, txt = a[2] || (k.txt || k.nach || '');
-  SL.push({ name, teil: t.i, img: a[0], h, txt }); }));
-const SUBS = t => SL.filter(s => s.teil === t.i);
-const LEAD = 'Nicht nur für dein Haus. Sondern für dein ganzes Projekt. Mit GRIFFNER Services planst, baust und lebst du besser.';
-const subsLi = t => SUBS(t).map(s => `<li>${esc(s.name)}</li>`).join('');
+const TEILE = FILM.leiste.map((L, i) => ({ i, name: L.name, n: FILM.pausen[i].n, hoch: HOCH[i][0], pos: HOCH[i][1], txt: SATZ[i] }));
 
-/* Leiste wie im Film: drei Teile, Nummer, Name, Balken, darunter die aktuelle Leistung */
-const barHtml = (btn) => TEILE.map(t => `<${btn ? 'button type="button"' : 'div'} class="sh-bar__p" data-p="${t.i}"><span class="sh-bar__top"><span class="sh-bar__no">${pad2(t.i + 1)}</span><span class="sh-bar__n">${esc(t.name)}</span></span><span class="sh-bar__line"><i data-f></i></span><span class="sh-bar__sub" data-sub></span></${btn ? 'button' : 'div'}>`).join('');
-const setBar = (root, cur, fills, sub) => { if (root.dataset.cur !== String(cur)) root.dataset.cur = cur; $$('.sh-bar__p', root).forEach((p, i) => {
+/* Leiste wie im Film: drei Teile, Nummer, Name, Balken (Runde 6: ohne die Leistung darunter) */
+const barHtml = (btn) => TEILE.map(t => `<${btn ? 'button type="button"' : 'div'} class="sh-bar__p" data-p="${t.i}"><span class="sh-bar__top"><span class="sh-bar__no">${pad2(t.i + 1)}</span><span class="sh-bar__n">${esc(t.name)}</span></span><span class="sh-bar__line"><i data-f></i></span></${btn ? 'button' : 'div'}>`).join('');
+const setBar = (root, cur, fills) => { if (root.dataset.cur !== String(cur)) root.dataset.cur = cur; $$('.sh-bar__p', root).forEach((p, i) => {
   p.classList.toggle('is-cur', i === cur);
   $('[data-f]', p).style.transform = `scaleX(${cl(fills[i]).toFixed(4)})`;
-  const sb = $('[data-sub]', p), lab = i === cur ? sub : ''; if (sb.textContent !== lab) sb.textContent = lab;
 }); };
+/* Sätze, die sich mit dem Titel überblenden (02, 06): je Teil ein <p data-t> im selben Rasterfeld */
+const satzHtml = cls => TEILE.map(t => `<p class="${cls}" data-t="${t.i}">${esc(t.txt)}</p>`).join('');
 
 /* Titel, die sich überblenden (02, 05, 07): je Teil ein <p data-t> im selben Rasterfeld */
 const titlesHtml = cls => TEILE.map(t => `<p class="${cls}" data-t="${t.i}">${esc(t.name)}</p>`).join('');
@@ -65,31 +60,31 @@ function v1() {
     <a class="sh1__pic" data-par="y" href="leistungen.html" tabindex="-1" aria-hidden="true">${par(media(t.hoch, '', dl(t.i)))}</a>
     <p class="info sh1__n">${esc(t.n)}</p>
     <h3 class="sh1__t">${esc(t.name)}</h3>
-    <ul class="sh1__subs">${subsLi(t)}</ul>
+    <p class="sh1__x">${esc(t.txt)}</p>
   </article>`).join('');
 }
 
 /* ---------- 02 Drei Titel ---------- */
 function v2() {
   const sec = $('[data-sh2]'); if (!sec) return;
-  const ts = $('[data-sh2-ts]', sec), pics = $('[data-sh2-pics]', sec), subs = $('[data-sh2-subs]', sec), num = $('[data-sh2-n]', sec), bar = $('[data-sh2-bar]', sec);
+  /* Runde 6: Überschrift über der Bühne, der Fortschritt zählt nur im stehenden Teil (data-sh2-run) */
+  const run = $('[data-sh2-run]', sec), ts = $('[data-sh2-ts]', sec), xs = $('[data-sh2-xs]', sec), pics = $('[data-sh2-pics]', sec), num = $('[data-sh2-n]', sec), bar = $('[data-sh2-bar]', sec);
   ts.innerHTML = titlesHtml('sh2__t');
+  xs.innerHTML = satzHtml('sh2__x');
   pics.innerHTML = TEILE.map(t => media(t.hoch, 'sh2__img is-st', dl(t.i), `data-t="${t.i}"`)).join('');
   bar.innerHTML = barHtml(false);
   let last = -1;
   loop.add({ tick() {
-    const r = sec.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight), pr = cl(-r.top / span);
+    const pr = prOf(run);
     /* das Bild steigt beim Scrollen langsam (über den ganzen Abschnitt, damit es an den Wechseln nicht springt) */
-    if (!reduce) pics.style.transform = `translate3d(0,${((.5 - pr) * 120).toFixed(1)}px,0)`;
-    /* jeder Teil bekommt ein Drittel; im Teil wandert die Leiste durch seine Leistungen */
-    const f = Math.min(2.999, pr * 3), cur = Math.floor(f), inn = f - cur, list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor(inn * list.length));
+    if (!reduce) pics.style.transform = `translate3d(0,${((.5 - pr) * (innerWidth < 900 ? 28 : 120)).toFixed(1)}px,0)`;
+    /* jeder Teil bekommt ein Drittel, die Leiste füllt sich mit */
+    const f = Math.min(2.999, pr * 3), cur = Math.floor(f);
     if (cur !== last) {
       last = cur; num.textContent = TEILE[cur].n;
       $$('[data-t]', sec).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur));
-      subs.innerHTML = list.map((s, i) => `<li data-i="${i}">${esc(s.name)}</li>`).join('');
     }
-    $$('li', subs).forEach((li, i) => li.classList.toggle('is-on', i <= si));
-    setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
+    setBar(bar, cur, TEILE.map(t => cl(f - t.i)));
   } });
 }
 
@@ -109,7 +104,7 @@ function vZ() {
       <span class="info shz__n">${esc(t.n)}</span>
       <span class="shz__t">${esc(t.name)}</span>
       <span class="shz__pic" aria-hidden="true">${wideM(t)}</span>
-      <ul class="shz__subs">${subsLi(t)}</ul>
+      <span class="shz__x">${esc(t.txt)}</span>
     </a>`).join('');
   fi.innerHTML = TEILE.map(t => hochM(t, 'shz__img is-st', `data-p="${t.i}"`)).join('');
   const rows = $$('.shz__r', rowsEl), vs = $$('video', fi);
@@ -145,13 +140,13 @@ function vK() {
   const sec = $('[data-shk]'); if (!sec) return;
   const box = $('[data-shk-cards]', sec);
   box.innerHTML = TEILE.map(t => `<article class="shk__c" data-p="${t.i}" style="--i:${t.i}">
-      <div class="shk__strip"><p class="info shk__n">${esc(t.n)}</p><p class="shk__sn">${esc(t.name)}</p><p class="info shk__cnt">${SUBS(t).length} Leistungen</p></div>
+      <div class="shk__strip"><p class="info shk__n">${esc(t.n)}</p><p class="shk__sn">${esc(t.name)}</p></div>
       <div class="shk__body">
         <a class="shk__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${wideM(t, 'is-st')}</a>
         <div class="shk__txt">
           <h3 class="shk__t">${esc(t.name)}</h3>
-          <ul class="shk__subs">${subsLi(t)}</ul>
-          <a class="sh-link info" href="leistungen.html">Alle Services</a>
+          <p class="shk__x">${esc(t.txt)}</p>
+          <a class="sh-btn" href="leistungen.html">Services entdecken</a>
         </div>
       </div>
     </article>`).join('');
@@ -178,52 +173,50 @@ function vL() {
       <a class="shl__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${wideM(t, 'is-st')}</a>
       <p class="info shl__n">${esc(t.n)}</p>
       <h3 class="shl__t">${esc(t.name)}</h3>
-      <ul class="shl__subs">${subsLi(t)}</ul>
+      <p class="shl__x">${esc(t.txt)}</p>
     </article>`).join('');
   bar.innerHTML = barHtml(false);
   const cards = $$('.shl__c', cols);
   let last = -1;
   loop.add({ tick() {
-    /* wie 02: jedes Kapitel bekommt ein Drittel, darin wandert die Leiste durch seine Leistungen */
-    const pr = prOf(sec), f = Math.min(2.999, pr * 3), cur = Math.floor(f), list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor((f - cur) * list.length));
+    /* wie 02: jedes Kapitel bekommt ein Drittel, die Leiste füllt sich mit */
+    const pr = prOf(sec), f = Math.min(2.999, pr * 3), cur = Math.floor(f);
     if (cur !== last) {
       last = cur;
       cards.forEach((c, k) => {
         c.classList.toggle('is-cur', k === cur); c.classList.toggle('is-done', k < cur);
         $('video', c).classList.toggle('is-on', k === cur);
-        if (k !== cur) $$('li', c).forEach(li => li.classList.remove('is-on'));
       });
     }
-    $$('li', cards[cur]).forEach((li, i) => li.classList.toggle('is-on', i <= si));
-    setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
+    setBar(bar, cur, TEILE.map(t => cl(f - t.i)));
   } });
 }
 
 /* ---------- 06 Mitte ---------- */
 function vM() {
   const sec = $('[data-shm]'); if (!sec) return;
-  const wa = $('[data-shm-a]', sec), wb = $('[data-shm-b]', sec), pics = $('[data-shm-pics]', sec), subs = $('[data-shm-subs]', sec), num = $('[data-shm-n]', sec), bar = $('[data-shm-bar]', sec);
+  /* Runde 6: Überschrift über der Bühne, der Fortschritt zählt nur im stehenden Teil (data-shm-run) */
+  const run = $('[data-shm-run]', sec), wa = $('[data-shm-a]', sec), wb = $('[data-shm-b]', sec), pics = $('[data-shm-pics]', sec), xs = $('[data-shm-xs]', sec), num = $('[data-shm-n]', sec), bar = $('[data-shm-bar]', sec);
   wa.textContent = split(TEILE[0].name)[0];
   wb.innerHTML = TEILE.map(t => `<p class="shm__t" data-t="${t.i}">${esc(split(t.name)[1])}</p>`).join('');
+  xs.innerHTML = satzHtml('shm__x');
   pics.innerHTML = TEILE.map(t => hochM(t, 'shm__img is-st', `data-t="${t.i}"`)).join('');
   bar.innerHTML = barHtml(false);
   let last = -1;
   loop.add({ tick() {
-    const pr = prOf(sec), d = pr - .5;
+    const pr = prOf(run), d = pr - .5;
     /* beim Scrollen steigt das Bild, die beiden Wörter gehen langsam auseinander */
     if (!reduce) {
       pics.style.transform = `translate3d(0,${(-d * (innerWidth < 900 ? 24 : 70)).toFixed(1)}px,0)`;
       const wd = innerWidth < 900 ? 16 : 64;
       wa.style.transform = `translate3d(${(-d * wd).toFixed(1)}px,0,0)`; wb.style.transform = `translate3d(${(d * wd).toFixed(1)}px,0,0)`;
     }
-    const f = Math.min(2.999, pr * 3), cur = Math.floor(f), list = SUBS(TEILE[cur]), si = Math.min(list.length - 1, Math.floor((f - cur) * list.length));
+    const f = Math.min(2.999, pr * 3), cur = Math.floor(f);
     if (cur !== last) {
       last = cur; num.textContent = TEILE[cur].n;
       $$('[data-t]', sec).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur));
-      subs.innerHTML = list.map(s => `<li>${esc(s.name)}</li>`).join('');
     }
-    $$('li', subs).forEach((li, i) => li.classList.toggle('is-on', i <= si));
-    setBar(bar, cur, TEILE.map(t => cl(f - t.i)), list[si].name);
+    setBar(bar, cur, TEILE.map(t => cl(f - t.i)));
   } });
 }
 
@@ -235,7 +228,7 @@ function vX() {
       <a class="shx__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${hochM(t)}</a>
       <h3 class="shx__t">${esc(t.name)}</h3>
       <p class="info shx__n">${esc(t.n)}</p>
-      <ul class="shx__subs">${subsLi(t)}</ul>
+      <p class="shx__x">${esc(t.txt)}</p>
     </article>`).join('');
   if (reduce) return;
   /* jede Spalte läuft mit eigener Geschwindigkeit; in der Mitte des Bildschirms stehen sie auf ihrem Versatz */
