@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Fünf Vorschläge</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<style>
+.x{padding:clamp(140px,22vh,220px) var(--page-margin) clamp(80px,12vh,140px);display:grid;gap:22px}
+.x__h{max-width:14em}
+.x__list{list-style:none;margin:clamp(40px,8vh,80px) 0 0;padding:0;border-top:1px solid var(--rule)}
+.x__i a{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr) minmax(0,5fr) auto;gap:12px 24px;align-items:baseline;padding:28px 0;border-bottom:1px solid var(--rule);transition:opacity var(--dur) var(--ease)}
+.x__i a:hover{opacity:1}
+.x__i a:hover .x__go{background:var(--gelb);color:#000}
+.x__go{padding:10px 14px;border:1px solid currentColor;white-space:nowrap;transition:background-color 300ms var(--ease),color 300ms var(--ease)}
+.x__nr{opacity:.6}
+.x__note{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:clamp(40px,8vh,80px);max-width:64rem}
+.x__note p{margin:0;font-size:.9375rem;line-height:1.5;opacity:.75}
+.x__note .info{opacity:1;margin-bottom:10px}
+@media (max-width:809px){.x__i a{grid-template-columns:auto 1fr;}.x__i .txt{grid-column:1 / -1}.x__go{grid-column:1 / -1;justify-self:start}.x__note{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="x">
+  <p class="info">Journey · Vorschläge</p>
+  <h1 class="h-xl x__h">Fünf Wege durch deine Journey.</h1>
+  <p class="lead" style="max-width:24em">Vierzehn Schritte vom ersten Gespräch bis zum Schlüssel, fünfmal anders erzählt. Zum Vergleichen am Computer und am Telefon.</p>
+  <ol class="x__list" data-list></ol>
+  <div class="x__note">
+    <div><p class="info">Texte</p><p>Schritte 01 bis 03 von der Concepts Seite (Dein Weg), 04 bis 14 aus dem Services Entwurf (Besser bauen, Monat 0 bis 10). Die Reihe der vierzehn Schritte ist ein Vorschlag und noch nicht freigegeben.</p></div>
+    <div><p class="info">Figur</p><p>Die Figur in Vorschlag 1 ist die aus dem Concepts Hero, mit dem GRIFFNER Polo. Die Silhouette in Vorschlag 2 ist neu gezeichnet. Beide sind in Code gebaut, ohne fremde Modelle.</p></div>
+  </div>
+</main>
+<script type="module">
+import { PROPOSALS, chrome } from './jr.js';
+const P = PROPOSALS;
+document.querySelector('[data-list]').innerHTML = P.map((p, i) => `<li class="x__i"><a href="${p.file}"><span class="info x__nr">0${i + 1}</span><h2 class="h-l">${p.name}</h2><p class="txt">${p.idea}</p><span class="info x__go">Ansehen</span></a></li>`).join('');
+/* Nur die Kopfzeile, ohne die Leiste der Vorschläge */
+chrome(1); document.querySelector('.jb').remove();
+</script>
+</body>
+</html>

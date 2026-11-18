@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Vorschlag 5 · Plan</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<style>
+/* Vorschlag 5, Plan: der Weg als Ablaufplan. Bahnen für die Phasen, Spalten für die Monate.
+   Gezeichnet wie der Auftakt der Startseite („Der Plan“): blasse Hilfslinien, punktierte Mitte, Kanten, die über die Ecken laufen.
+   Die Verbindung zeichnet sich von Feld zu Feld, das aktuelle Feld ist gelb. */
+.p{position:relative}
+.p__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.p__lanes{position:absolute;inset:0;pointer-events:none}
+.p__lane{position:absolute;left:0;right:0;border-top:1px solid rgba(255,255,255,.16)}
+.p__lane:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
+.p__world{position:absolute;left:0;top:0;height:100%;will-change:transform}
+.p__mask{position:absolute;inset:0}
+.p__svg{position:absolute;left:0;top:0;overflow:visible}
+.p__col{position:absolute;top:0;white-space:nowrap;transform:translateX(-50%);opacity:.5;transition:opacity 500ms var(--ease)}
+.p__col.is-on{opacity:1}
+.p__n{position:absolute;left:0;top:0;display:grid;align-content:space-between;padding:10px 12px;background:#000;color:rgba(255,255,255,.4);transition:color 500ms var(--ease)}
+.p__n i{position:absolute;background:rgba(255,255,255,.32);transition:background-color 500ms var(--ease)}
+.p__n i:nth-child(1),.p__n i:nth-child(2){height:1px;left:-9px;right:-9px}
+.p__n i:nth-child(1){top:0}.p__n i:nth-child(2){bottom:0}
+.p__n i:nth-child(3),.p__n i:nth-child(4){width:1px;top:-9px;bottom:-9px}
+.p__n i:nth-child(3){left:0}.p__n i:nth-child(4){right:0}
+.p__fill{position:absolute;inset:0;background:var(--gelb);transform:scale(.001);opacity:0;transition:transform 600ms var(--ease),opacity 300ms var(--ease)}
+.p__n b{position:relative;font-weight:500}
+.p__n .p__t{position:relative;font-family:var(--font-display);font-weight:300;font-size:1.0625rem;line-height:1.05;text-transform:uppercase;font-feature-settings:'liga' 0}
+.p__n.is-past{color:#fff}
+.p__n.is-past i{background:var(--kalk)}
+.p__n.is-now{color:#000}
+.p__n.is-now i{background:var(--kalk)}
+.p__n.is-now .p__fill{transform:none;opacity:1}
+.p__labs{position:absolute;left:0;top:0;bottom:0;z-index:2;pointer-events:none}
+.p__lab{position:absolute;left:var(--page-margin);padding:6px 10px 6px 0;background:#000;opacity:.6;transition:opacity 500ms var(--ease)}
+.p__lab.is-on{opacity:1}
+.p__lab.is-on::before{content:'';display:inline-block;width:10px;height:8px;background:var(--gelb);margin-right:10px}
+.p__panel{position:absolute;left:var(--page-margin);bottom:clamp(28px,6vh,64px);width:min(40rem,calc(100% - 2 * var(--page-margin)));z-index:3}
+.p__steps{list-style:none;margin:0;padding:0;position:relative}
+.p__s{position:absolute;left:0;bottom:0;width:100%;display:grid;gap:12px;opacity:0;transform:translateY(18px);transition:opacity 500ms var(--ease),transform 800ms var(--ease)}
+.p__s.is-on{opacity:1;transform:none;transition-delay:120ms}
+.p__s .info{display:flex;gap:16px;opacity:.75}
+.p__s .info b{font-weight:500;color:var(--gelb)}
+.p__intro{position:absolute;inset:0;z-index:4;pointer-events:none;background:#000}
+.p__intro .ji{min-height:100%;height:100%}
+.p__info{position:absolute;right:var(--page-margin);bottom:clamp(28px,6vh,64px);z-index:3;opacity:.5}
+@media (max-width:809px){
+  .p__n{padding:7px 8px}
+  .p__n .p__t{font-size:.8125rem}
+  .p__s .h-l{font-size:1.5rem}
+  .p__info{display:none}
+}
+.is-static .p{display:none}
+.p__static{display:none}
+.is-static .p__static{display:block}
+</style>
+</head>
+<body>
+<main>
+  <div class="p__static" data-static></div>
+  <section class="p" id="p" aria-label="Deine Journey in 14 Schritten">
+    <div class="p__stage" data-stage>
+      <div class="p__lanes" data-lanes aria-hidden="true"></div>
+      <div class="p__mask" data-mask><div class="p__world" data-world aria-hidden="true"></div></div>
+      <div class="p__labs" data-labs aria-hidden="true"></div>
+      <div class="p__panel"><ol class="p__steps" data-steps></ol></div>
+      <p class="info p__info" aria-hidden="true">Griffen / AT / 46.70 N / 14.73 E</p>
+      <div class="p__intro" data-intro></div>
+    </div>
+  </section>
+  <div data-outro></div>
+</main>
+<script type="module">
+import { STEPS, PHASES, chrome, introHTML, outroHTML, listHTML, reduce, clamp, lerp, E, prog, ticker } from './jr.js';
+chrome(5);
+const $ = (s, r = document) => r.querySelector(s);
+const el = $('#p'), stage = $('[data-stage]'), world = $('[data-world]'), N = STEPS.length, NS = 'http://www.w3.org/2000/svg';
+$('[data-intro]').innerHTML = introHTML();
+$('[data-outro]').innerHTML = outroHTML();
+if (reduce) { document.documentElement.classList.add('is-static'); $('[data-static]').innerHTML = introHTML() + listHTML(); }
+$('[data-steps]').innerHTML = STEPS.map(s => `<li class="p__s"><p class="info"><span><b>${s.nr}</b> / ${N}</span><span>${s.m}</span><span>${PHASES[s.ph]}</span></p><h2 class="h-l">${s.t}</h2><p class="txt">${s.d}</p></li>`).join('');
+const LIS = [...el.querySelectorAll('.p__s')];
+
+const L0 = .6, MOVE = .5, U = L0 + N - 1 + 1.1, VH_PER_U = 44;
+if (!reduce) el.style.height = `calc(${(U * VH_PER_U).toFixed(1)}vh + 100vh)`;
+
+let G = {};
+function layout() {
+  const W = stage.clientWidth, H = stage.clientHeight, narrow = W < 810, pm = narrow ? 24 : clamp(W * .055, 24, 80);
+  const topY = narrow ? 92 : 112, panelH = narrow ? 210 : clamp(H * .26, 190, 250);
+  const laneTop = topY + 34, laneBot = H - panelH - 20, laneH = (laneBot - laneTop) / PHASES.length;
+  const colW = narrow ? 128 : clamp(W * .14, 180, 250), nW = colW * (narrow ? .84 : .8), nH = Math.min(laneH * .7, narrow ? 62 : 86);
+  const X0 = pm + (narrow ? 104 : 170);
+  const C = STEPS.map((s, i) => ({ x: X0 + colW * (i + .5), y: laneTop + laneH * (s.ph + .5) }));
+  const WW = X0 + colW * N + W * .55;
+  G = { W, H, narrow, colW, C, WW, X0 };
+  /* Links blendet der Plan unter den Namen der Bahnen aus */
+  { const mk = $('[data-mask]'), g = `linear-gradient(90deg,transparent 0,transparent ${(X0 - colW * (narrow ? .3 : .2)).toFixed(0)}px,#000 ${(X0 + colW * (narrow ? .2 : .25)).toFixed(0)}px)`; mk.style.webkitMaskImage = g; mk.style.maskImage = g; }
+  world.style.width = WW + 'px';
+  /* Bahnen und ihre Namen */
+  $('[data-lanes]').innerHTML = PHASES.map((_, k) => `<div class="p__lane" style="top:${(laneTop + laneH * k).toFixed(1)}px;height:${laneH.toFixed(1)}px"></div>`).join('');
+  $('[data-labs]').innerHTML = PHASES.map((p, k) => `<p class="info p__lab" style="top:${(laneTop + laneH * k + (narrow ? 6 : laneH / 2 - 12)).toFixed(1)}px">${p}</p>`).join('');
+  /* Verbindung: rechtwinklig, durch die Mitte der Felder. Die Längen bis zu jedem Feld merken. */
+  let d = `M${(C[0].x - colW).toFixed(1)} ${C[0].y.toFixed(1)} L${C[0].x.toFixed(1)} ${C[0].y.toFixed(1)}`;
+  const LEN = [colW]; let acc = colW;
+  for (let i = 1; i < N; i++) {
+    const a = C[i - 1], b = C[i], mx = (a.x + b.x) / 2;
+    d += ` L${mx.toFixed(1)} ${a.y.toFixed(1)} L${mx.toFixed(1)} ${b.y.toFixed(1)} L${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+    acc += (b.x - a.x) + Math.abs(b.y - a.y); LEN.push(acc);
+  }
+  d += ` L${(C[N - 1].x + colW * 1.2).toFixed(1)} ${C[N - 1].y.toFixed(1)}`;
+  const TOT = acc + colW * 1.2;
+  G.LEN = LEN; G.TOT = TOT;
+  const cols = STEPS.map((s, i) => `<line x1="${C[i].x.toFixed(1)}" y1="${topY + 22}" x2="${C[i].x.toFixed(1)}" y2="${laneBot.toFixed(1)}" stroke="#fff" stroke-opacity=".14" stroke-dasharray="2 6"/>`).join('');
+  world.innerHTML = `<svg class="p__svg" width="${WW}" height="${H}">${cols}
+      <path d="${d}" fill="none" stroke="#fff" stroke-opacity=".32" stroke-dasharray="2 5"/>
+      <path data-flow d="${d}" fill="none" stroke="#fff" stroke-width="1.4" stroke-dasharray="${TOT} ${TOT}" stroke-dashoffset="${TOT}"/>
+    </svg>` +
+    STEPS.map((s, i) => s.mo < 0 && i ? '' : `<p class="info p__col" data-c="${i}" style="left:${(s.mo < 0 ? C[1].x : C[i].x).toFixed(1)}px;top:${topY}px">${s.mo < 0 ? 'Vorab' : s.m}</p>`).join('') +
+    STEPS.map((s, i) => `<div class="p__n" style="transform:translate(${(C[i].x - nW / 2).toFixed(1)}px,${(C[i].y - nH / 2).toFixed(1)}px);width:${nW.toFixed(1)}px;height:${nH.toFixed(1)}px"><i></i><i></i><i></i><i></i><span class="p__fill"></span><b class="info">${s.nr}</b><span class="p__t">${s.t}</span></div>`).join('') +
+    `<i data-run style="position:absolute;left:0;top:0;width:15px;height:12px;background:var(--gelb);margin:-6px 0 0 -7.5px;will-change:transform"></i>`;
+  G.flow = world.querySelector('[data-flow]'); G.run = world.querySelector('[data-run]');
+  G.nodes = [...world.querySelectorAll('.p__n')]; G.cols = [...world.querySelectorAll('.p__col')]; G.labs = [...document.querySelectorAll('.p__lab')];
+  last = -2; cam = null; tk.poke();
+}
+
+const sm = x => x * x * (3 - 2 * x);
+function idxAt(u) {
+  if (u < L0) return -.35 * (1 - u / L0);
+  const b = Math.floor(u - L0), f = u - L0 - b;
+  if (b >= N - 1) return N - 1;
+  return f < 1 - MOVE ? b : b + sm((f - (1 - MOVE)) / MOVE);
+}
+let sp = null, lt = 0, last = -2, cam = null;
+function frame(u, dt) {
+  const x = idxAt(u), C = G.C;
+  /* Gezogene Länge der Verbindung */
+  const i0 = Math.max(0, Math.floor(x)), i1 = Math.min(N - 1, i0 + 1), f = x - i0;
+  const L = x < 0 ? G.LEN[0] * (1 + x) : lerp(G.LEN[i0], G.LEN[i1], i1 === i0 ? 0 : f);
+  G.flow.setAttribute('stroke-dashoffset', (G.TOT - L).toFixed(1));
+  const pt = G.flow.getPointAtLength(Math.max(0, L));
+  const moving = x > 0 && Math.abs(f) > .02 && Math.abs(f) < .98;
+  G.run.style.transform = `translate3d(${pt.x.toFixed(1)}px,${pt.y.toFixed(1)}px,0)`;
+  G.run.style.opacity = moving || x < 0 ? 1 : 0;
+  /* Kamera: das aktuelle Feld etwas links der Mitte */
+  const tx = clamp(pt.x - G.W * (G.narrow ? .56 : .5), 0, G.WW - G.W);
+  cam = cam === null ? tx : lerp(cam, tx, 1 - Math.exp(-dt * 8));
+  world.style.transform = `translate3d(${(-cam).toFixed(1)}px,0,0)`;
+  const cur = u < L0 * .5 ? -1 : Math.round(Math.max(0, x));
+  if (cur !== last) {
+    last = cur;
+    G.nodes.forEach((n, i) => { n.classList.toggle('is-now', i === cur); n.classList.toggle('is-past', i < cur); });
+    G.cols.forEach(c => { const i = +c.dataset.c; c.classList.toggle('is-on', i === 0 ? cur >= 0 && cur < 3 : i === cur); });
+    G.labs.forEach((l, k) => l.classList.toggle('is-on', cur >= 0 && STEPS[cur].ph === k));
+    LIS.forEach((li, i) => li.classList.toggle('is-on', i === cur));
+  }
+  $('[data-intro]').style.opacity = (1 - E(u, .05, .45)).toFixed(3);
+  return Math.abs(cam - tx) > .3;
+}
+const tk = ticker(now => {
+  if (!G.flow) return false;
+  const pr = prog(el); if (!pr.on) { sp = null; return false; }
+  const dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
+  if (sp === null || Math.abs(pr.p - sp) > .25) sp = pr.p; else sp += (pr.p - sp) * (1 - Math.exp(-dt * 6));
+  const more = frame(sp * U, dt);
+  return more || Math.abs(pr.p - sp) > 1e-4;
+});
+layout();
+let rt = 0; new ResizeObserver(() => { cancelAnimationFrame(rt); rt = requestAnimationFrame(layout); }).observe(stage);
+if (document.fonts) document.fonts.ready.then(() => tk.poke());
+addEventListener('scroll', () => tk.poke(), { passive: true });
+</script>
+</body>
+</html>

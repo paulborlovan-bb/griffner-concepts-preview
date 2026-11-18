@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Vorschlag 2 · Skizze</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<style>
+/* Vorschlag 2, Skizze: nach der Stimmung „skizze“ aus der Bildwelt. Salbei, eine gezeichnete Linie den Hang hinauf,
+   eine Silhouette geht sie entlang, jeder Pflock ist ein Schritt. Hinten zeichnet sich die Hausskizze aus dem Markensystem. */
+:root{--bg:var(--salbei);--ink:#000;--rule:rgba(0,0,0,.25)}
+.k{position:relative}
+.k__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.k__haus{position:absolute;right:var(--page-margin);top:13%;width:min(44vw,640px);transform-origin:70% 80%;will-change:transform}
+.k__haus svg{display:block;width:100%;height:auto;overflow:visible}
+.k__world{position:absolute;left:0;top:0;height:100%;will-change:transform}
+.k__svg{position:absolute;left:0;top:0;overflow:visible}
+.k__st{position:absolute;left:0;top:0;width:0;height:100%}
+.k__pole{position:absolute;left:0;width:1px;background:#000;transform-origin:50% 100%;transform:scaleY(0);transition:transform 900ms var(--ease)}
+.k__field{position:absolute;left:-7px;width:15px;height:12px;border:1px solid #000;background:transparent;transition:background-color 400ms var(--ease),border-color 400ms var(--ease)}
+.k__lab{position:absolute;left:16px;bottom:0;width:min(22rem,66vw);display:grid;gap:10px;opacity:0;transform:translateY(16px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
+.k__lab .txt{max-width:17em}
+.k__m{display:flex;gap:14px}
+.k__st.is-on .k__pole{transform:none}
+.k__st.is-on .k__field{background:var(--gelb);border-color:var(--gelb)}
+.k__st.is-on .k__lab{opacity:1;transform:none;transition-delay:250ms}
+.k__st.is-past .k__lab{opacity:.45}
+.k__intro{position:absolute;left:0;top:0;right:0;z-index:3;pointer-events:none}
+.k__intro .ji{min-height:auto;padding-top:clamp(120px,20vh,200px);gap:18px}
+.k__intro .ji__h{font-size:var(--t-l)}
+.k__intro .lead{font-size:1.5rem}
+.k__count{position:absolute;left:var(--page-margin);bottom:clamp(24px,5vh,48px);z-index:3;display:flex;gap:16px;align-items:baseline}
+.k__count b{font-family:var(--font-display);font-weight:300;font-size:var(--t-m);letter-spacing:0;line-height:1}
+.k-out{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,5vw,96px);align-items:end;padding:clamp(80px,14vh,160px) var(--page-margin) clamp(80px,14vh,160px)}
+.k-out__img{aspect-ratio:2 / 3;overflow:hidden;background:#6f7364}
+.k-out__img img{width:100%;height:100%;object-fit:cover}
+.k-out .jo{padding:0}
+.k-out .btn{background:#000;color:#fff}
+@media (max-width:809px){
+  .k__haus{top:11%;width:62vw;right:16px}
+  .k__lab{width:min(17rem,62vw)}
+  .k__lab .h-l{font-size:1.5rem}
+  .k-out{grid-template-columns:1fr}
+}
+.is-static .k{display:none}
+.k__static{display:none}
+.is-static .k__static{display:block}
+.k__static .jl{padding-top:24px;padding-bottom:24px}
+</style>
+</head>
+<body>
+<main>
+  <div class="k__static" data-static></div>
+  <section class="k" id="k" aria-label="Deine Journey in 14 Schritten">
+    <div class="k__stage" data-stage>
+      <div class="k__haus" data-haus aria-hidden="true"></div>
+      <div class="k__world" data-world></div>
+      <div class="k__intro" data-intro></div>
+      <p class="info k__count" aria-hidden="true"><b data-count>00</b><span>von 14</span></p>
+    </div>
+  </section>
+  <section class="k-out">
+    <figure class="k-out__img" style="margin:0"><img src="img/wald-auffahrt.jpg" alt="Concept Wald in der Abenddämmerung, Zufahrt zwischen Föhren" loading="lazy" decoding="async"></figure>
+    <div data-outro></div>
+  </section>
+</main>
+<script type="module">
+import { STEPS, chrome, introHTML, outroHTML, listHTML, reduce, clamp, lerp, E, prog, ticker } from './jr.js';
+chrome(2);
+const $ = (s, r = document) => r.querySelector(s);
+const el = $('#k'), stage = $('[data-stage]'), world = $('[data-world]'), N = STEPS.length, NS = 'http://www.w3.org/2000/svg';
+$('[data-outro]').innerHTML = outroHTML();
+if (reduce) {
+  document.documentElement.classList.add('is-static');
+  $('[data-static]').innerHTML = introHTML() + listHTML();
+}
+$('[data-intro]').innerHTML = introHTML();
+const L0 = .5, WALK = .5, U = L0 + N + 1.3, VH_PER_U = 55;
+if (!reduce) el.style.height = `calc(${(U * VH_PER_U).toFixed(1)}vh + 100vh)`;
+const arr = i => L0 + i + WALK;
+
+/* Hausskizze aus dem Markensystem (10_Bildwelt/Hausskizze). Ihre Linien zeichnen sich mit den Schritten:
+   Gelände beim Grundstück, Hilfslinien beim Plan, der Körper ab dem Baustart, das gelbe Fenster beim Einzug. */
+const sk = await (await fetch('img/hausskizze.svg')).text();
+$('[data-haus]').innerHTML = sk.replace(/ width="1356" height="896"/, '');
+const LINES = [...$('[data-haus]').querySelectorAll('line')].map(l => {
+  const c = l.getAttribute('stroke').toUpperCase(), op = +(l.getAttribute('stroke-opacity') || 1);
+  const len = Math.hypot(l.x2.baseVal.value - l.x1.baseVal.value, l.y2.baseVal.value - l.y1.baseVal.value);
+  l.style.strokeDasharray = len; l.style.strokeDashoffset = len; l.setAttribute('stroke-width', c === '#FFB200' ? 3 : 1.4);
+  const kind = c === '#FFB200' ? 'gelb' : c === '#444442' ? 'plan' : op < .5 ? 'grund' : 'haus';
+  return { l, len, kind };
+});
+const KINDS = { grund: [arr(1) - .3, arr(1) + .5], plan: [arr(4) - .3, arr(4) + .5], haus: [arr(9) - .3, arr(10) + .45], gelb: [arr(13) - .3, arr(13) + .3] };
+Object.keys(KINDS).forEach(k => { const ls = LINES.filter(x => x.kind === k); ls.forEach((x, i) => { x.a = i / ls.length; x.n = ls.length; }); });
+
+/* Die Silhouette, von der Seite, Blick nach rechts. Füße bei 0, 100 Einheiten hoch. Hinteres Bein und hinterer Arm etwas heller.
+   Weiße Schuhe und das gelbe Feld am Kragen wie bei der Figur im Concepts Hero. */
+function silhouette() {
+  const g = document.createElementNS(NS, 'g');
+  const leg = c => `<g data-hip transform="translate(0,-48)"><line x2="0" y2="23" stroke="${c}" stroke-width="8.6" stroke-linecap="round"/><g data-knee transform="translate(0,23)"><line x2="0" y2="22.4" stroke="${c}" stroke-width="7" stroke-linecap="round"/><g data-foot transform="translate(0,22.4)"><path d="M-3.2 -2.6 L6.2 -2.6 C9.6 -2.4 10.4 .6 9.6 2.6 L-3.6 2.6 Z" fill="#F2F0EC"/></g></g></g>`;
+  const arm = c => `<g data-sh transform="translate(-.5,-76.5)"><line x2="0" y2="16" stroke="${c}" stroke-width="6" stroke-linecap="round"/><g data-el transform="translate(0,16)"><line x2="0" y2="14.5" stroke="${c}" stroke-width="4.8" stroke-linecap="round"/><ellipse cy="17.2" rx="2.6" ry="3.4" fill="${c}"/></g></g>`;
+  g.innerHTML = `<ellipse cx="2" cy="0" rx="14" ry="2" fill="#000" opacity=".12" data-shadow/>
+    <g data-body>
+      <g data-far>${arm('#2a2c25')}${leg('#2a2c25')}</g>
+      <g data-torso>
+        <path d="M-7.6 -50.5 L7.6 -50.5 L7.9 -43.5 L-7.9 -43.5 Z" fill="#000"/>
+        <path d="M-6.4 -79.4 C-9.4 -71 -9.6 -58 -8.6 -46.2 L8.4 -46.2 C9.4 -56 10.4 -67 7.6 -76.4 C6.4 -79.6 3.2 -81.2 .2 -81.2 C-2.8 -81.2 -5.2 -80.6 -6.4 -79.4 Z" fill="#000"/>
+        <rect x="3.4" y="-80.6" width="3.6" height="2.9" fill="#FFB200"/>
+        <rect x="-1.6" y="-85.5" width="4.2" height="6" fill="#000"/>
+        <ellipse cx="1.4" cy="-89.6" rx="6.6" ry="7.6" fill="#000"/>
+        <path d="M7.6 -90.4 L9.6 -88.6 L7.4 -87.6 Z" fill="#000"/>
+      </g>
+      <g data-near>${leg('#000')}${arm('#000')}</g>
+    </g>`;
+  const q = s => [...g.querySelectorAll(s)];
+  const [hipF, hipN] = q('[data-hip]'), [kneeF, kneeN] = q('[data-knee]'), [footF, footN] = q('[data-foot]'), [shF, shN] = q('[data-sh]'), [elF, elN] = q('[data-el]');
+  const body = g.querySelector('[data-body]'), torso = g.querySelector('[data-torso]');
+  const tr = (n, x, y, r) => n.setAttribute('transform', `translate(${x},${y}) rotate(${r.toFixed(2)})`);
+  function pose(ph, env) {
+    const s = Math.sin(ph);
+    const aN = -26 * s * env, aF = 26 * s * env;
+    const kN = 52 * Math.max(0, Math.sin(ph + 1.2)) * env, kF = 52 * Math.max(0, Math.sin(ph + 1.2 + Math.PI)) * env;
+    tr(hipN, 0, -48, aN); tr(hipF, 0, -48, aF); tr(kneeN, 0, 23, kN); tr(kneeF, 0, 23, kF);
+    tr(footN, 0, 22.4, -(aN + kN) * .7); tr(footF, 0, 22.4, -(aF + kF) * .7);
+    const sN = 3 + 22 * s * env, sF = 3 - 22 * s * env;
+    tr(shN, -.5, -76.5, sN); tr(shF, -.5, -76.5, sF);
+    tr(elN, 0, 16, -8 - 24 * Math.max(0, -s) * env); tr(elF, 0, 16, -8 - 24 * Math.max(0, s) * env);
+    body.setAttribute('transform', `translate(0,${((.55 - Math.abs(Math.cos(ph))) * 2.2 * env).toFixed(2)})`);
+    torso.setAttribute('transform', `rotate(${(3 * env).toFixed(2)} 0 -48)`);
+  }
+  pose(0, 0);
+  return { g, pose };
+}
+
+/* Aufbau der Welt, abhängig von der Größe */
+let W, H, X0, SPC, XS, XEND, WW, FH, ANCH, svg, walked, clipR, fig, posts = [];
+const RND = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+const JIT = Array.from({ length: 4000 }, () => RND() - .5);
+function gy(x) { const t = clamp(x / XEND); return H * lerp(.81, .67, t * t * (3 - 2 * t)) + H * .016 * Math.sin(x / 190) + H * .009 * Math.sin(x / 83 + 1.3); }
+function layout() {
+  W = stage.clientWidth; H = stage.clientHeight;
+  const narrow = W < 810;
+  ANCH = narrow ? .14 : .28; FH = clamp(H * .125, 74, 118);
+  SPC = narrow ? Math.max(290, W * .82) : clamp(W * .34, 400, 560);
+  X0 = W * ANCH; XS = STEPS.map((_, i) => X0 + SPC * (i + .9));
+  /* Am Ende bleibt die Kamera beim letzten Pflock stehen, du gehst weiter bis unter das Haus */
+  const camEnd = XS[N - 1] - W * ANCH; WW = camEnd + W; XEND = camEnd + W * (narrow ? .62 : .64);
+  world.style.width = WW + 'px';
+  /* Linie: von Hand gezogen, mit leichtem Zittern und einem zweiten, blassen Strich daneben */
+  const pts = []; for (let x = -20, j = 0; x <= XEND + 2; x += 7, j++) pts.push([x, gy(x) + JIT[j % 4000] * .9]);
+  const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+  const d2 = 'M' + pts.map((p, j) => (p[0] + 1.5).toFixed(1) + ' ' + (p[1] + 2.4 + JIT[(j + 900) % 4000] * 1.6).toFixed(1)).join('L');
+  world.innerHTML = '';
+  svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'k__svg'); svg.setAttribute('width', WW); svg.setAttribute('height', H); svg.setAttribute('aria-hidden', 'true');
+  svg.innerHTML = `<defs><clipPath id="kc"><rect x="-40" y="0" width="0" height="${H}"/></clipPath></defs>
+    <path d="${d}" fill="none" stroke="#000" stroke-width="1.2" stroke-dasharray="2 7" stroke-linecap="round" opacity=".55"/>
+    <g clip-path="url(#kc)"><path d="${d}" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="${d2}" fill="none" stroke="#000" stroke-width=".8" opacity=".35"/></g>`;
+  world.appendChild(svg);
+  clipR = svg.querySelector('#kc rect');
+  fig = silhouette(); svg.appendChild(fig.g);
+  /* Pflöcke mit Feld und Text */
+  const top = H * (narrow ? .47 : .45);
+  posts = STEPS.map((s, i) => {
+    const x = XS[i], y = gy(x), st = document.createElement('div');
+    st.className = 'k__st'; st.style.transform = `translate(${x.toFixed(1)}px,0)`;
+    st.innerHTML = `<i class="k__pole" style="top:${top.toFixed(1)}px;height:${(y - top - 6).toFixed(1)}px"></i><i class="k__field" style="top:${(y - 6).toFixed(1)}px"></i>
+      <div class="k__lab" style="bottom:${(H - top + 14).toFixed(1)}px"><p class="info k__m"><span>${s.nr}</span><span>${s.m}</span></p><h2 class="h-l">${s.t}</h2><p class="txt">${s.d}</p></div>`;
+    world.appendChild(st); return st;
+  });
+  last = -1; poke();
+}
+
+const sm = x => x * x * (3 - 2 * x);
+function xAt(u) {
+  if (u < L0) return X0;
+  const b = Math.floor(u - L0), f = u - L0 - b;
+  if (b >= N) return lerp(XS[N - 1], XEND - FH * .3, sm(clamp((u - L0 - N) / .8)));
+  const x0 = b ? XS[b - 1] : X0;
+  return f < WALK ? lerp(x0, XS[b], sm(f / WALK)) : XS[b];
+}
+
+let sp = null, lt = 0, xPrev = null, ph = 0, env = 0, dir = 1, idle = 0, last = -1, cam = 0;
+function frame(u, dt, still) {
+  const x = xAt(u), dx = xPrev === null ? 0 : x - xPrev; xPrev = x;
+  env += (clamp(Math.abs(dx) / Math.max(dt, 1e-3) / (FH * 1.5)) - env) * (still ? 1 : 1 - Math.exp(-dt * 8));
+  ph += Math.abs(dx) / (FH * 1.3) * Math.PI * 2;
+  if (dx > .05) { dir = 1; idle = 0; } else if (dx < -.05) { dir = -1; idle = 0; } else idle += dt;
+  if (idle > .8) dir = 1;
+  const y = gy(x), k = FH / 100;
+  fig.g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${(dir * k).toFixed(4)},${k.toFixed(4)})`);
+  fig.pose(ph, env);
+  clipR.setAttribute('width', (x + 60).toFixed(1));
+  /* Kamera folgt der Figur, am Ende bleibt sie stehen */
+  const tc = clamp(x - W * ANCH, 0, WW - W);
+  cam = still ? tc : tc;
+  world.style.transform = `translate3d(${(-cam).toFixed(1)}px,0,0)`;
+  /* Hinten das Haus: wandert langsam mit und kommt näher */
+  const pr = clamp(u / U);
+  $('[data-haus]').style.transform = `translate3d(${(-pr * W * .06).toFixed(1)}px,${(pr * H * .03).toFixed(1)}px,0) scale(${lerp(.82, 1.04, pr).toFixed(4)})`;
+  LINES.forEach(o => {
+    const [a, b] = KINDS[o.kind], span = b - a, s0 = a + span * o.a * .7, kk = clamp((u - s0) / (span * .3 + span / o.n));
+    o.l.style.strokeDashoffset = (o.len * (1 - kk)).toFixed(1);
+  });
+  /* Stationen */
+  let cur = -1; for (let i = 0; i < N; i++) if (u >= arr(i) - WALK * .15) cur = i;
+  if (cur !== last) {
+    last = cur;
+    posts.forEach((p, i) => { p.classList.toggle('is-on', i <= cur); p.classList.toggle('is-past', i < cur); });
+    $('[data-count]').textContent = cur < 0 ? '00' : STEPS[cur].nr;
+  }
+  $('[data-intro]').style.opacity = (1 - E(u, .1, .45)).toFixed(3);
+}
+
+const tk = ticker(now => {
+  const pr = prog(el); if (!pr.on) { sp = null; return false; }
+  const dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
+  if (sp === null || Math.abs(pr.p - sp) > .25) sp = pr.p; else sp += (pr.p - sp) * (1 - Math.exp(-dt * 5));
+  frame(sp * U, dt, false);
+  return Math.abs(pr.p - sp) > 1e-4 || env > .01;
+});
+function poke() { tk.poke(); }
+layout();
+let rt = 0; new ResizeObserver(() => { cancelAnimationFrame(rt); rt = requestAnimationFrame(layout); }).observe(stage);
+if (!reduce) addEventListener('scroll', poke, { passive: true });
+</script>
+</body>
+</html>

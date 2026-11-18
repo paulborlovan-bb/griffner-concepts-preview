@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Vorschlag 4 · Rad</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<style>
+/* Vorschlag 4, Rad: ein Messrad mit Teilstrichen wie ein Werkzeug, es dreht sich beim Scrollen.
+   Am gelben Zeiger steht der Schritt, der gerade dran ist. Nur Linien und Strich, kein Kreismuster. */
+.r{position:relative}
+.r__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.r__svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.r__lab{font-family:var(--font-display);font-weight:300;text-transform:uppercase;fill:#fff;font-feature-settings:'liga' 0}
+.r__nr{font-family:var(--font-text);font-weight:500;letter-spacing:.2em;fill:#fff}
+.r__panel{position:absolute;z-index:2}
+.r__steps{list-style:none;margin:0;padding:0;position:relative;height:100%}
+.r__s{position:absolute;left:0;top:50%;width:100%;display:grid;gap:18px;opacity:0;transform:translateY(calc(-50% + 22px));transition:opacity 500ms var(--ease),transform 800ms var(--ease)}
+.r__s.is-on{opacity:1;transform:translateY(-50%);transition-delay:100ms}
+.r__s .info{display:flex;gap:16px;opacity:.75}
+.r__s .info b{font-weight:500;color:var(--gelb)}
+.r__s .txt{max-width:22em}
+.r__intro{position:absolute;inset:0;z-index:3;pointer-events:none;background:#000;transition:opacity 600ms var(--ease)}
+.r__intro .ji{min-height:100%;height:100%}
+@media (max-width:809px){
+  .r__s .h-xl{font-size:var(--t-l)}
+}
+.is-static .r{display:none}
+.r__static{display:none}
+.is-static .r__static{display:block}
+</style>
+</head>
+<body>
+<main>
+  <div class="r__static" data-static></div>
+  <section class="r" id="r" aria-label="Deine Journey in 14 Schritten">
+    <div class="r__stage" data-stage>
+      <svg class="r__svg" data-svg aria-hidden="true"></svg>
+      <div class="r__panel" data-panel><ol class="r__steps" data-steps></ol></div>
+      <div class="r__intro" data-intro></div>
+    </div>
+  </section>
+  <div data-outro></div>
+</main>
+<script type="module">
+import { STEPS, PHASES, chrome, introHTML, outroHTML, listHTML, reduce, clamp, lerp, E, prog, ticker } from './jr.js';
+chrome(4);
+const $ = (s, r = document) => r.querySelector(s);
+const el = $('#r'), stage = $('[data-stage]'), svg = $('[data-svg]'), panel = $('[data-panel]'), N = STEPS.length, NS = 'http://www.w3.org/2000/svg';
+$('[data-intro]').innerHTML = introHTML();
+$('[data-outro]').innerHTML = outroHTML();
+if (reduce) { document.documentElement.classList.add('is-static'); $('[data-static]').innerHTML = introHTML() + listHTML(); }
+$('[data-steps]').innerHTML = STEPS.map((s, i) => `<li class="r__s"><p class="info"><span><b>${s.nr}</b> / ${N}</span><span>${s.m}</span><span>${PHASES[s.ph]}</span></p><h2 class="h-xl">${s.t}</h2><p class="txt">${s.d}</p></li>`).join('');
+const LIS = [...el.querySelectorAll('.r__s')];
+
+/* Einheiten: Auftakt, dann je Schritt drehen und halten, am Ende ein kurzer Halt */
+const L0 = .6, MOVE = .45, U = L0 + N - 1 + 1.1, VH_PER_U = 48, DEG = 19;
+if (!reduce) el.style.height = `calc(${(U * VH_PER_U).toFixed(1)}vh + 100vh)`;
+
+let G = {};
+function layout() {
+  const W = stage.clientWidth, H = stage.clientHeight, narrow = W < 810;
+  /* Breit: Mitte links außerhalb, Zeiger auf 3 Uhr, Text rechts daneben. Schmal: Mitte unter dem Bildschirm, Zeiger oben, Text darüber. */
+  const R = narrow ? W * 1.02 : Math.min(H * .66, W * .42);
+  const cx = narrow ? W / 2 : W * .02 - R * .12, cy = narrow ? H + R * .42 : H * .52;
+  const A = narrow ? -90 : 0;
+  const px = cx + Math.cos(A * Math.PI / 180) * R, py = cy + Math.sin(A * Math.PI / 180) * R;
+  G = { W, H, R, cx, cy, A, narrow, px, py };
+  if (narrow) Object.assign(panel.style, { left: 'var(--page-margin)', right: 'var(--page-margin)', top: '96px', bottom: `${(H - py + 70).toFixed(0)}px`, width: 'auto' });
+  else Object.assign(panel.style, { left: `${(px + 70).toFixed(0)}px`, right: 'var(--page-margin)', top: '0', bottom: '0', width: 'auto' });
+  const tick = (a, r0, r1, w, o) => { const c = Math.cos(a), s = Math.sin(a); return `<line x1="${(r0 * c).toFixed(2)}" y1="${(r0 * s).toFixed(2)}" x2="${(r1 * c).toFixed(2)}" y2="${(r1 * s).toFixed(2)}" stroke="#fff" stroke-width="${w}" stroke-opacity="${o}"/>`; };
+  let ring = '';
+  /* Teilung: je Schritt ein langer Strich, dazwischen vier kurze. Davor und danach läuft die Teilung leise aus. */
+  for (let k = -12; k <= (N - 1) * 5 + 12; k++) {
+    const a = k * DEG / 5 * Math.PI / 180, major = k % 5 === 0 && k >= 0 && k <= (N - 1) * 5, out = k < 0 || k > (N - 1) * 5;
+    ring += tick(a, R - (major ? 30 : 12), R, major ? 1.2 : 1, out ? .14 : major ? .9 : .38);
+  }
+  const labs = STEPS.map((s, i) => {
+    const a = i * DEG;
+    const nr = narrow ? `<text class="r__nr" x="0" y="0" dy=".35em" text-anchor="middle" font-size="10" transform="rotate(${a}) translate(${(R - 46).toFixed(1)},0) rotate(90)">${s.nr}</text>`
+      : `<text class="r__nr" x="${(R - 44).toFixed(1)}" y="0" dy=".35em" text-anchor="end" font-size="11" transform="rotate(${a})">${s.nr}</text>`;
+    const t = narrow ? '' : `<text class="r__lab" x="${(R + 26).toFixed(1)}" y="0" dy=".36em" font-size="${clamp(H * .024, 16, 24).toFixed(1)}" transform="rotate(${a})">${s.t}</text>`;
+    return `<g data-l="${i}">${nr}${t}</g>`;
+  }).join('');
+  svg.innerHTML = `
+    <g stroke="rgba(255,255,255,.2)" stroke-width="1" fill="none">
+      <line x1="0" y1="${cy.toFixed(1)}" x2="${W}" y2="${cy.toFixed(1)}" stroke-dasharray="2 6" ${narrow ? 'opacity="0"' : ''}/>
+      <line x1="${cx.toFixed(1)}" y1="0" x2="${cx.toFixed(1)}" y2="${H}" ${narrow ? 'stroke-dasharray="2 6"' : 'opacity="0"'}/>
+    </g>
+    <g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)})">
+      <circle r="${R.toFixed(1)}" fill="none" stroke="#fff" stroke-opacity=".5"/>
+      <circle r="${(R * .78).toFixed(1)}" fill="none" stroke="#fff" stroke-opacity=".14" stroke-dasharray="2 6"/>
+      <g data-rot>${ring}${labs}</g>
+      <g transform="rotate(${A})">
+        <line x1="${(R + 8).toFixed(1)}" y1="0" x2="${(narrow ? R + 40 : R + 56).toFixed(1)}" y2="0" stroke="#fff" stroke-width="1"/>
+        <rect x="${(R - 6).toFixed(1)}" y="-7" width="15" height="12" fill="#FFB200" transform="translate(-1,1)"/>
+      </g>
+    </g>`;
+  G.rot = svg.querySelector('[data-rot]'); G.labs = [...svg.querySelectorAll('[data-l]')];
+  last = -2; tk.poke();
+}
+
+const sm = x => x * x * (3 - 2 * x);
+function idxAt(u) {
+  if (u < L0) return 0;
+  const b = Math.floor(u - L0), f = u - L0 - b;
+  if (b >= N - 1) return N - 1;
+  return f < 1 - MOVE ? b : b + sm((f - (1 - MOVE)) / MOVE);
+}
+let sp = null, lt = 0, last = -2;
+function frame(u) {
+  const x = idxAt(u);
+  G.rot.setAttribute('transform', `rotate(${(G.A - x * DEG).toFixed(3)})`);
+  G.labs.forEach((g, i) => {
+    const d = Math.abs(i - x);
+    g.setAttribute('opacity', (d < .5 ? 1 - d * .9 : clamp(.62 - d * .1, .08, .55)).toFixed(3));
+    /* Der aktuelle Name steht groß im Text, am Rad wird er leiser */
+    const lab = g.querySelector('.r__lab'); if (lab) lab.setAttribute('opacity', (clamp((d - .75) * 2.2, 0, 1)).toFixed(3));
+  });
+  const cur = u < L0 * .6 ? -1 : Math.round(x);
+  if (cur !== last) { last = cur; LIS.forEach((li, i) => li.classList.toggle('is-on', i === cur)); }
+  $('[data-intro]').style.opacity = (1 - E(u, .05, .45)).toFixed(3);
+}
+const tk = ticker(now => {
+  if (!G.rot) return false;
+  const pr = prog(el); if (!pr.on) { sp = null; return false; }
+  const dt = Math.min(.1, (now - lt) / 1000 || .016); lt = now;
+  if (sp === null || Math.abs(pr.p - sp) > .25) sp = pr.p; else sp += (pr.p - sp) * (1 - Math.exp(-dt * 6));
+  frame(sp * U);
+  return Math.abs(pr.p - sp) > 1e-4;
+});
+layout();
+let rt = 0; new ResizeObserver(() => { cancelAnimationFrame(rt); rt = requestAnimationFrame(layout); }).observe(stage);
+if (document.fonts) document.fonts.ready.then(() => tk.poke());
+addEventListener('scroll', () => tk.poke(), { passive: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Vorschlag 3 · Linie</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<style>
+/* Vorschlag 3, Linie: heller Klang. Eine senkrechte Haarlinie, das gelbe Feld läuft mit, die große Zahl zählt mit.
+   Ruhig, gut lesbar, in Framer leicht nachzubauen. */
+:root{--bg:#fff;--ink:#000;--rule:rgba(0,0,0,.14)}
+.l{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:0 clamp(24px,4vw,64px);padding:0 var(--page-margin) clamp(80px,14vh,160px)}
+.l__side{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;gap:22px;padding-top:40px}
+.l__num{display:flex;align-items:flex-start;gap:.06em;font-family:var(--font-display);font-weight:300;font-size:clamp(140px,19vw,330px);line-height:.8;letter-spacing:-.02em;font-feature-settings:'liga' 0,'tnum' 1}
+.l__dig{display:block;height:.8em;overflow:hidden}
+.l__strip{display:grid;transition:transform 900ms var(--ease)}
+.l__strip span{display:block;height:.8em;line-height:.8}
+.l__of{font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;padding-top:.6em;opacity:.6}
+.l__meta{display:flex;gap:18px;align-items:baseline}
+.l__mo{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;width:min(100%,380px)}
+.l__mo i{display:block;height:12px;border-bottom:1px solid rgba(0,0,0,.3);position:relative}
+.l__mo i::after{content:'';position:absolute;left:0;bottom:-1px;width:100%;height:1px;background:#000;transform:scaleX(0);transform-origin:left;transition:transform 600ms var(--ease)}
+.l__mo i.is-past::after{transform:none}
+.l__mo i.is-now{background:var(--gelb);border-bottom-color:var(--gelb)}
+.l__mo i.is-now::after{transform:none;background:var(--gelb)}
+.l__moL{display:flex;justify-content:space-between;width:min(100%,380px);opacity:.55}
+.l__track{position:relative;padding:22vh 0 30vh}
+.l__line{position:absolute;left:7px;top:0;bottom:0;width:1px;background:var(--rule)}
+.l__fill{position:absolute;left:7px;top:0;width:1px;height:0;background:#000}
+.l__dot{position:absolute;left:0;top:0;width:15px;height:12px;background:var(--gelb);transform:translateY(-6px);will-change:transform}
+.l__list{list-style:none;margin:0;padding:0}
+.l__i{position:relative;display:grid;gap:14px;padding:0 0 clamp(120px,22vh,240px) clamp(44px,5vw,88px);color:rgba(0,0,0,.22);transition:color 700ms var(--ease)}
+.l__i::before{content:'';position:absolute;left:3px;top:.55em;width:9px;height:1px;background:currentColor}
+.l__i .info{display:flex;gap:16px}
+.l__i h2{transform:translateX(-10px);transition:transform 900ms var(--ease)}
+.l__i .txt{max-width:24em}
+.l__i.is-on{color:#000}
+.l__i.is-on h2{transform:none}
+.l__i.is-now .info span:first-child{color:#000;background:var(--gelb);padding:3px 6px;margin:-3px 0 -3px -6px}
+.l-out{border-top:1px solid var(--rule)}
+.l-out .btn{background:#000;color:#fff}
+@media (max-width:809px){
+  .l{grid-template-columns:1fr}
+  .l__side{position:sticky;top:0;height:auto;z-index:5;background:#fff;padding:64px 0 12px;gap:8px;align-content:start;border-bottom:1px solid var(--rule)}
+  .l__num{font-size:64px}
+  .l__mo,.l__moL{width:100%}
+  .l__track{padding-top:10vh}
+  .l__i{padding-left:40px;padding-bottom:16vh}
+  .l__i .h-xl{font-size:var(--t-l)}
+}
+@media (prefers-reduced-motion:reduce){.l__strip,.l__i,.l__i h2,.l__mo i::after{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div data-intro></div>
+  <section class="l" id="l" aria-label="Deine Journey in 14 Schritten">
+    <aside class="l__side" aria-hidden="true">
+      <div class="l__num"><span class="l__dig"><span class="l__strip" data-d0></span></span><span class="l__dig"><span class="l__strip" data-d1></span></span><span class="l__of">von 14</span></div>
+      <p class="info l__meta"><span data-meta>Vorab</span><span data-ph>Kennenlernen</span></p>
+      <div class="l__mo" data-mo></div>
+      <p class="info l__moL"><span>Monat 0</span><span>Monat 10</span></p>
+    </aside>
+    <div class="l__track">
+      <div class="l__line"></div><div class="l__fill" data-fill></div><i class="l__dot" data-dot aria-hidden="true"></i>
+      <ol class="l__list" data-list></ol>
+    </div>
+  </section>
+  <div class="l-out" data-outro></div>
+</main>
+<script type="module">
+import { STEPS, PHASES, chrome, introHTML, outroHTML, reduce, clamp } from './jr.js';
+chrome(3);
+const $ = (s, r = document) => r.querySelector(s);
+$('[data-intro]').innerHTML = introHTML();
+$('[data-outro]').innerHTML = outroHTML();
+$('[data-list]').innerHTML = STEPS.map(s => `<li class="l__i"><p class="info"><span>${s.nr}</span><span>${s.m}</span><span>${PHASES[s.ph]}</span></p><h2 class="h-xl">${s.t}</h2><p class="txt">${s.d}</p></li>`).join('');
+$('[data-d0]').innerHTML = [0, 1].map(d => `<span>${d}</span>`).join('');
+$('[data-d1]').innerHTML = [...Array(10)].map((_, d) => `<span>${d}</span>`).join('');
+$('[data-mo]').innerHTML = [...Array(11)].map(() => '<i></i>').join('');
+const LI = [...document.querySelectorAll('.l__i')], MO = [...document.querySelectorAll('.l__mo i')];
+const track = $('.l__track'), fill = $('[data-fill]'), dot = $('[data-dot]');
+let cur = -2, raf = 0;
+function update() {
+  raf = 0;
+  const mid = innerHeight * (innerWidth < 810 ? .62 : .55), tr = track.getBoundingClientRect();
+  /* Punkt und Linie folgen der Bildschirmmitte, aber nur zwischen erstem und letztem Schritt */
+  const first = LI[0].getBoundingClientRect().top - tr.top, last = LI[LI.length - 1].getBoundingClientRect().top - tr.top;
+  const y = clamp(mid - tr.top, first, last);
+  fill.style.height = (y + 9).toFixed(1) + 'px';
+  dot.style.transform = `translate3d(0,${(y - 6 + 9).toFixed(1)}px,0)`;
+  let c = -1; LI.forEach((li, i) => { if (li.getBoundingClientRect().top - tr.top <= y + 2) c = i; });
+  if (c !== cur) {
+    cur = c;
+    LI.forEach((li, i) => { li.classList.toggle('is-on', i <= c); li.classList.toggle('is-now', i === c); });
+    const n = Math.max(1, c + 1), s = STEPS[Math.max(0, c)];
+    $('[data-d0]').style.transform = `translateY(${-Math.floor(n / 10) * .8}em)`;
+    $('[data-d1]').style.transform = `translateY(${-(n % 10) * .8}em)`;
+    $('[data-meta]').textContent = s.m; $('[data-ph]').textContent = PHASES[s.ph];
+    MO.forEach((m, i) => { m.classList.toggle('is-past', i < s.mo); m.classList.toggle('is-now', i === s.mo); });
+  }
+}
+const poke = () => { if (!raf) raf = requestAnimationFrame(update); };
+addEventListener('scroll', poke, { passive: true }); addEventListener('resize', poke); poke();
+if (document.fonts) document.fonts.ready.then(poke);
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+/* GRIFFNER Journey, gemeinsame Grundlage der fünf Vorschläge.
+   Farben, Schrift und Ränder aus dem GRIFFNER Design System und den Web-Stilen von griffner.com.
+   Ofelia kommt als woff2 von griffner.com (Framer), keine Schriftdateien in diesem Ordner. */
+@font-face{font-family:"Ofelia Display";src:url("https://framerusercontent.com/assets/pvfPivjIrdt8tu9p7EHXE3Y.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"Ofelia Display";src:url("https://framerusercontent.com/assets/G1C12Uf2g2THxCfbjczrRTrhJc.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:"Ofelia Text";src:url("https://framerusercontent.com/assets/yOxv1P33k9x3ue2EWzm4JZ40JA.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"Ofelia Text";src:url("https://framerusercontent.com/assets/Q4vZdey99kLNgQDJCUVHlth04I.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+
+:root{
+  --gelb:#FFB200; --schwarz:#000; --weiss:#FFF; --anthrazit:#444442; --sand:#CFC3B3; --salbei:#8B907C; --kalk:#CACACA;
+  --font-display:"Ofelia Display","Helvetica Neue",Arial,sans-serif;
+  --font-text:"Ofelia Text","Helvetica Neue",Arial,sans-serif;
+  --t-xl:4.625rem; --t-l:3rem; --t-m:2.25rem; --t-einl:2.125rem; --t-body:1.125rem; --t-info:.6875rem; --t-zahl:5rem;
+  --lh-d:1.02; --lh-body:1.45;
+  --page-margin:clamp(24px,5.5vw,80px);
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --dur:750ms;
+  --bg:var(--schwarz); --ink:var(--weiss); --dim:rgba(255,255,255,.4); --rule:rgba(255,255,255,.2);
+}
+@media (max-width:1199px){:root{--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-einl:1.75rem;--t-body:1.0625rem;--t-zahl:3.75rem;--page-margin:44px}}
+@media (max-width:809px){:root{--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-einl:1.5rem;--t-body:1rem;--t-info:.625rem;--t-zahl:3.25rem;--page-margin:24px}}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+@media (min-width:1200px){html{font-size:calc(16px + (100vw - 1200px) * 4 / 720)}}
+@media (min-width:1920px){html{font-size:20px}}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--font-text);font-weight:400;font-size:var(--t-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.64}
+:focus-visible{outline:1px solid currentColor;outline-offset:4px}
+img{display:block;max-width:100%}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Typo-Rollen wie im Concepts Prototyp */
+.info{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;line-height:1.2}
+.h-xl{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.h-l{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-m);line-height:1;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.lead{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-einl);line-height:1.15;text-wrap:pretty}
+.txt{margin:0;font-size:var(--t-body);line-height:var(--lh-body);max-width:30em;text-wrap:pretty}
+.wrap{padding-left:var(--page-margin);padding-right:var(--page-margin)}
+
+/* Kopfzeile */
+.jh{position:fixed;inset:0 0 auto 0;height:0;z-index:50;color:var(--ink)}
+.wm{display:block;width:90px;aspect-ratio:1000 / 127.11;background:currentColor;-webkit-mask:url(wortmarke.svg) center / contain no-repeat;mask:url(wortmarke.svg) center / contain no-repeat}
+.jh__logo{position:fixed;left:50%;top:14px;width:72px;transform:translateX(-50%);display:grid;gap:7px;transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.jh__logo:hover{opacity:1}
+.jh__field{display:block;width:72px;height:58px;background:var(--gelb)}
+.jh__logo .wm{width:72px}
+.jh__marke{position:fixed;left:var(--page-margin);top:34px;opacity:0;pointer-events:none;transition:opacity var(--dur) var(--ease)}
+.jh__marke .wm{width:78px}
+.jh.is-compact .jh__logo{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
+.jh.is-compact .jh__marke{opacity:1;pointer-events:auto}
+@media (max-width:809px){.jh__logo{width:56px;top:12px}.jh__field{width:56px;height:45px}.jh__logo .wm{width:56px}.jh__marke{top:22px}.jh__marke .wm{width:63px}}
+
+/* Leiste der Vorschläge, oben rechts */
+.jb{position:fixed;right:var(--page-margin);top:28px;display:flex;align-items:center;gap:14px;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;line-height:1}
+.jb__a{display:grid;place-items:center;width:22px;height:22px;font-size:15px;letter-spacing:0;border:1px solid currentColor}
+.jb__n{opacity:.6}
+.jb__all{padding-bottom:4px;border-bottom:1px solid currentColor}
+@media (max-width:809px){.jb{top:18px;gap:8px}.jb__name{display:none}}
+
+/* Auftakt */
+.ji{display:grid;align-content:end;gap:22px;min-height:100svh;padding:140px var(--page-margin) clamp(48px,9vh,96px)}
+.ji__h{max-width:13em}
+.ji__lead{max-width:22em}
+.ji__hint{opacity:.6;margin-top:10px}
+
+/* Schluss */
+.jo{display:grid;gap:22px;justify-items:start;padding:clamp(120px,18vh,220px) var(--page-margin)}
+.jo__h{max-width:12em}
+.jo__lead{max-width:22em}
+.btn{display:inline-flex;align-items:center;gap:14px;margin-top:14px;padding:16px 22px;background:var(--ink);color:var(--bg);font-family:var(--font-text);font-weight:500;font-size:.8125rem;letter-spacing:.12em;text-transform:uppercase;line-height:1;transition:opacity var(--dur) var(--ease)}
+
+/* Lesefassung, für reduzierte Bewegung */
+.jl{list-style:none;margin:0;padding:0 var(--page-margin);display:grid;gap:0}
+.jl__i{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,5fr) minmax(0,4fr);gap:8px 24px;align-items:baseline;padding:28px 0;border-top:1px solid var(--rule)}
+.jl__i:last-child{border-bottom:1px solid var(--rule)}
+.jl__m{opacity:.7}
+@media (max-width:809px){.jl__i{grid-template-columns:1fr}}
