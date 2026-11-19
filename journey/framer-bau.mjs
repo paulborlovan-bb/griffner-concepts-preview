@@ -1,15 +1,34 @@
-// Baut die Framer Code-Komponente JourneyGehen aus der Szene des Vorschlags 1 (Gehen).
+// Baut die Framer Code-Komponenten JourneyGehen, JourneyGehen2 und JourneyGehen3 aus der Szene des Vorschlags 1 (Gehen).
 // Aufruf: cd griffner-konzepte/journey && node framer-bau.mjs
-// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure) und familie-toy.js (Familie, in Code gebaut).
-// Runde 7: wieder die Spielfiguren (familie-toy.js), keine Modell-Datei und keine fremde Lizenz mehr.
-// Ziel:   griffner/framer-code/JourneyGehen.tsx (erzeugt, nicht von Hand ändern).
+// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure) und je Variante die Familie:
+//   JourneyGehen  (Seite /journey):   familie-toy.js, Spielfiguren in Code gebaut (Runde 7).
+//   JourneyGehen2 (Seite /journey-2): familie3d.js, Quaternius Körper und Gang (CC0), Modell-Datei familie.bin.gz bei Framer (Runde 3, erster Versuch).
+//   JourneyGehen3 (Seite /journey-3): familie-echt.js + gang-daten.js, Microsoft Rocketbox (MIT), Modell-Datei familie-echt.bin.gz bei Framer (Runde 6).
+// Nach neuem Bau einer Modell-Datei (familie-bau.mjs, familie-echt-bau.mjs): neu hochladen und die URL unten eintragen.
+// Ziel:   griffner/framer-code/JourneyGehen*.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
 
 const here = new URL('.', import.meta.url).pathname;
-const OUT = new URL('../../griffner/framer-code/JourneyGehen.tsx', import.meta.url).pathname;
+const OUTDIR = new URL('../../griffner/framer-code/', import.meta.url).pathname;
 const src = f => readFileSync(here + f, 'utf8');
 const noExport = s => s.replace(/^export (async function|const|let|function|class) /gm, '$1 ');
+const sect = f => `/* ---------- ${f} ---------- */\n${noExport(src(f)).replace(/^import .*$/gm, '')}\n`;
+const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
+const URL2 = 'https://framerusercontent.com/assets/rry7ninQx3XVQFHjtejrj6OSGE.gz'; // familie.bin.gz (Quaternius) bei Framer, hochgeladen 2026-11-19 (Runde 3)
+const URL3 = 'https://framerusercontent.com/assets/kN5ihfOtDgvXa294N5bDfKx2g.gz'; // familie-echt.bin.gz (Rocketbox) bei Framer, hochgeladen 2026-11-19 (Runde 6)
+const VARIANTS = [
+  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['familie-toy.js'],
+    head: '// Familie: weiche Spielfiguren, in Code gebaut (eigener Entwurf).\n',
+    family: 'Promise.resolve(toyFamily(T))' },
+  { name: 'JourneyGehen2', title: 'Journey Gehen 2', files: ['familie3d.js'], url: URL2,
+    head: '// Variante 2 (Seite /journey-2): Familie aus Quaternius Universal Base Characters und Universal Animation Library, CC0 1.0 (gemeinfrei).\n',
+    family: 'loadFamily(T, FAMILIE_URL)' },
+  { name: 'JourneyGehen3', title: 'Journey Gehen 3', files: ['gang-daten.js', 'familie-echt.js'], url: URL3,
+    head: '// Variante 3 (Seite /journey-3): echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
+      + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
+    family: 'loadEchteFamilie(T, FAMILIE_URL)' },
+];
 const css = src('gehen-szene.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '').replace(/\s{2,}/g, ' ');
 
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
@@ -35,12 +54,13 @@ const controls = {
 };
 const ctl = JSON.stringify(controls, null, 4).replace(/"(ControlType\.\w+)"/g, '$1');
 
+for (const v of VARIANTS) {
+const all = ['gehen-szene.js', 'gehen-szene.css', 'haus3d.js', 'figur3d.js', ...v.files];
 const tsx = `// @ts-nocheck
 // GRIFFNER Journey, Vorschlag 1 Gehen: eine Familie geht in 3D auf ihr Haus zu (Haus Concept Wald), über jedem Schritt ein Linienbild.
-// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js und familie-toy.js.
+// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus ${all.slice(0, -1).join(', ')} und ${all[all.length - 1]}.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte und die Bilder je Schritt sind Eingabefelder (rechts in Framer).
-// Familie: weiche Spielfiguren, in Code gebaut (eigener Entwurf).
-import { useEffect, useRef } from "react"
+${v.head}import { useEffect, useRef } from "react"
 import { RenderTarget, addPropertyControls, ControlType } from "framer"
 import { store, registerDock } from "./GriffnerStore.tsx"
 
@@ -50,9 +70,7 @@ const CSS = ${JSON.stringify(css)}
 ${noExport(src('haus3d.js'))}
 /* ---------- figur3d.js ---------- */
 ${noExport(src('figur3d.js'))}
-/* ---------- familie-toy.js ---------- */
-${noExport(src('familie-toy.js'))}
-/* ---------- gehen-szene.js ---------- */
+${v.files.map(sect).join('')}${v.url ? `const FAMILIE_URL = ${JSON.stringify(v.url)}\n` : ''}/* ---------- gehen-szene.js ---------- */
 ${noExport(src('gehen-szene.js'))}
 /* ---------- Framer ---------- */
 let threeP: Promise<any> | null = null
@@ -73,7 +91,7 @@ function cfgOf(p: any) {
  * @framerSupportedLayoutHeight auto
  * @framerIntrinsicWidth 1200
  */
-export default function JourneyGehen(props: any) {
+export default function ${v.name}(props: any) {
     const ref = useRef<HTMLDivElement>(null)
     const cfg = cfgOf(props)
     const html = markup(cfg)
@@ -85,7 +103,7 @@ export default function JourneyGehen(props: any) {
         let dock: any = null, offDock: any = null, zone: any = null
         const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
-            family: (T: any) => Promise.resolve(toyFamily(T)),
+            family: (T: any) => ${v.family},
             onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
         })
         if (!still && !reduce) {
@@ -106,12 +124,13 @@ export default function JourneyGehen(props: any) {
     return (
         <div style={{ width: "100%" }}>
             <style data-jg-css="1" dangerouslySetInnerHTML={{ __html: CSS }} />
-            <div ref={ref} className="jg" data-jg="JourneyGehen" dangerouslySetInnerHTML={{ __html: html }} />
+            <div ref={ref} className="jg" data-jg="${v.name}" dangerouslySetInnerHTML={{ __html: html }} />
         </div>
     )
 }
-JourneyGehen.displayName = "Journey Gehen"
-addPropertyControls(JourneyGehen, ${ctl})
+${v.name}.displayName = "${v.title}"
+addPropertyControls(${v.name}, ${ctl})
 `;
-writeFileSync(OUT, tsx);
-console.log('geschrieben', OUT, (tsx.length / 1024).toFixed(1) + ' KB');
+writeFileSync(OUTDIR + v.name + '.tsx', tsx);
+console.log('geschrieben', OUTDIR + v.name + '.tsx', (tsx.length / 1024).toFixed(1) + ' KB');
+}

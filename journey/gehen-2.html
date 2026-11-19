@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Vorschlag 1 · Gehen · Variante 2</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="jr.css">
+<link rel="stylesheet" href="gehen-szene.css">
+</head>
+<body>
+<!-- Variante 2 (wie /journey-2): Familie aus Quaternius Körpern und Gang (CC0, familie3d.js). Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
+<main><div class="jg" data-jg></div></main>
+<script type="module">
+import { chrome, reduce } from './jr.js';
+import { DEF, markup, mount } from './gehen-szene.js';
+import { makeHaus } from './haus3d.js';
+import { figure } from './figur3d.js';
+import { loadFamily } from './familie3d.js';
+chrome(1);
+const root = document.querySelector('[data-jg]');
+root.innerHTML = markup(DEF);
+mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, family: T => loadFamily(T, './familie.bin.gz'), reduce });
+</script>
+</body>
+</html>
