@@ -74,15 +74,16 @@ export default function JourneyGehen(props: any) {
         const root = ref.current
         if (!root) return
         const still = RenderTarget.current() === RenderTarget.canvas, reduce = reduceMotion()
-        /* Das gelbe Feld der Website ist die Marke an der Schrittleiste: es gleitet von Schritt zu Schritt (wie die Andockpunkte der anderen Seiten) */
+        /* Das gelbe Feld der Website ist die Marke an der Schrittleiste: es gleitet von Schritt zu Schritt und bleibt rechts an der Leiste */
         let dock: any = null, offDock: any = null, zone: any = null
         const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
-            onStep(i: number, api: any) { if (dock && i >= 0) dock.el = api.rail[i] || dock.el },
+            onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
         })
         if (!still && !reduce) {
             root.classList.add("has-dock")
-            dock = { el: h.rail[0], kind: "box", id: "jg-schritt", solid: true, key: () => String(h.active()), when: () => h.active() >= 0 }
+            /* Immer an der Leiste rechts, auch zwischen den Stationen, im Auftakt und am Schluss (nie zurück ins Logo) */
+            dock = { el: h.rail[h.railAt()], kind: "box", id: "jg-schritt", solid: true, key: () => String(h.railAt()) }
             offDock = registerDock(dock)
             zone = { el: h.stage, on: () => true }
             store.darkZones.add(zone)

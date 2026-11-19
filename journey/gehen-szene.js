@@ -80,8 +80,8 @@ export function mount(root, c0, deps) {
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
   const el = $('.g'), stage = $('.g__stage');
   const LIS = $$('.g__s'), RAIL = $$('.g__rail i'), TAGS = $$('.g__tag'), INTRO = $('.g__intro'), END = $('.g__end');
-  let alive = true, S = null, tk = null, offScroll = null, active = -2;
-  const handle = { root, stage, rail: RAIL, active: () => active, dispose };
+  let alive = true, S = null, tk = null, offScroll = null, active = -2, railAt = -1;
+  const handle = { root, stage, rail: RAIL, active: () => active, railAt: () => Math.max(0, railAt), dispose };
 
   const staticMode = deps.reduce || deps.still;
   if (staticMode) {
@@ -244,15 +244,18 @@ export function mount(root, c0, deps) {
       });
 
       /* Text der Station: kurz bevor du ankommst, bis zur Hälfte des Wegs zur nächsten */
-      let a = -1;
+      /* Marke an der Leiste: die zuletzt erreichte Station, vor der ersten die erste. Sie bleibt immer an der Leiste
+         (Kundenwunsch 2026-11-19: das gelbe Feld springt nicht zwischendurch nach oben ins Logo, es bleibt rechts). */
+      let a = -1, r = 0;
       for (let i = 0; i < N; i++) {
         const nx = i < N - 1 ? (ST[i] + ST[i + 1]) / 2 : Infinity;
         if (s >= ST[i] - 1.1 && s < nx && u < L0 + N + .7) a = i;
+        if (s >= ST[i] - 1.1) r = i;
       }
-      if (a !== active) {
-        active = a;
-        LIS.forEach((li, i) => li.classList.toggle('is-on', i === a));
-        RAIL.forEach((r, i) => { r.classList.toggle('is-now', i === a); r.classList.toggle('is-past', i < a || (a < 0 && u > L0 + N)); });
+      if (a !== active || r !== railAt) {
+        if (a !== active) LIS.forEach((li, i) => li.classList.toggle('is-on', i === a));
+        if (r !== railAt) RAIL.forEach((x, i) => { x.classList.toggle('is-now', i === r); x.classList.toggle('is-past', i < r); });
+        active = a; railAt = r;
         deps.onStep && deps.onStep(a, handle);
       }
       INTRO.style.opacity = (1 - E(u, .1, .45)).toFixed(3);
