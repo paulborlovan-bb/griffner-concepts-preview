@@ -1,13 +1,14 @@
 /* Journey: Kopie von js/house3d.js (Stand 2026-11-18), damit die Journey-Vorschläge eigenständig bleiben. */
 /* GRIFFNER Concepts, Arbeitsmodelle in three.js. Kopie aus dem Handoff (site/concepts-3d.js), erweitert um
    Summer (Vordach ov), Fassadenton (tone: 0 dunkler Rahmen, .55 helles Holz, 1 hell verputzt) und lift (Obergeschoß abheben, in m). */
-const T = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+/* Als Fabrik: three.js kommt von außen (Seite: dynamischer Import, Framer: Code-Komponente). */
+export function makeHaus(T) {
 const cl = x => Math.max(0, Math.min(1, x));
 const seg = (t, a, b) => cl((t - a) / (b - a));
 const eo = x => 1 - Math.pow(1 - x, 3);
 const lerp = (a, b, t) => a + (b - a) * t;
 
-export const CONCEPTS = {
+const CONCEPTS = {
   block: { L0: 14, D: 9, H1: 5.6, L1: 14, H2: 0, sx: 0, up: 0, R: 0, gl: 0, gu: 0, ge: 0, slope: 0, ov: 0, tone: 1, lg: 0 },
   wald: { L0: 17, D: 9, H1: 3.1, L1: 15, H2: 3.1, sx: -2.4, up: 1, R: 0, gl: .86, gu: .55, ge: 0, slope: 0 },
   duene: { L0: 22, D: 8, H1: 3.2, L1: 22, H2: 0, sx: 0, up: 0, R: 4.4, gl: .5, gu: 0, ge: 1, slope: 0 },
@@ -25,8 +26,8 @@ const toneAt = (list, t, c) => {
   const k = b[0] === a[0] ? 0 : (t - a[0]) / (b[0] - a[0]);
   return c.setHex(a[1]).lerp(new T.Color(b[1]), Math.max(0, Math.min(1, k)));
 };
-export const KEYS = Object.keys(CONCEPTS.block);
-export const mix = (a, b, t) => { const o = {}; KEYS.forEach(k => o[k] = lerp(a[k] ?? 0, b[k] ?? 0, t)); return o; };
+const KEYS = Object.keys(CONCEPTS.block);
+const mix = (a, b, t) => { const o = {}; KEYS.forEach(k => o[k] = lerp(a[k] ?? 0, b[k] ?? 0, t)); return o; };
 
 const BOX = new T.BoxGeometry(1, 1, 1);
 const EDGE = new T.EdgesGeometry(BOX);
@@ -37,7 +38,7 @@ const PRISM = (() => {
 })();
 const PRISM_EDGE = new T.EdgesGeometry(PRISM);
 
-export class House {
+class House {
   constructor(stage, opt = {}) {
     this.g = new T.Group(); stage.scene.add(this.g);
     this.mat = new T.MeshStandardMaterial({ color: opt.color ?? 0xFFFFFF, roughness: .9, metalness: 0, transparent: true });
@@ -155,7 +156,7 @@ const bx = (cx, cy, cz, sx, sy, sz, rx = 0) => {
   return { V, F: BOXF };
 };
 const pr = (x0, x1, y0, R, hz) => ({ V: [[x0, y0, -hz], [x0, y0, hz], [x1, y0, hz], [x1, y0, -hz], [x0, y0 + R, 0], [x1, y0 + R, 0]], F: PRISMF });
-export function shape(P0) {
+function shape(P0) {
   const P = { ...CONCEPTS.block, ...P0 };
   const ext = P.slope * 1.86, H0 = P.H1 + ext, H2 = P.H2 * P.up, lg = (P.lg || 0) * P.up, hz = P.D / 2;
   const solids = [], glass = [], G = (a, b) => glass.push([a, b]);
@@ -208,7 +209,7 @@ export function shape(P0) {
    build 0 bis 1: erst die Pflöcke, dann die Bretter, dann laufen die Schnüre, zuletzt die Eckpflöcke. Gleiche Felder wie House
    (x, z, build, p, update), damit die Sammlung beide gleich behandelt. */
 const STAKE = { o: 1.9, a: 1.1, t: .25, bh: .26, bt: .07, ph: 1.25, pw: .13, sy: 1.08 };
-export class Stake {
+class Stake {
   constructor(stage, opt = {}) {
     this.g = new T.Group(); stage.scene.add(this.g);
     this.mat = new T.MeshStandardMaterial({ color: opt.color ?? 0xF2F0EC, roughness: .9, metalness: 0 });
@@ -252,7 +253,7 @@ export class Stake {
   }
 }
 
-export function createStage(host, opt = {}) {
+function createStage(host, opt = {}) {
   const r = new T.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
   r.setPixelRatio(Math.min(1.6, devicePixelRatio || 1));
   r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap;
@@ -292,4 +293,5 @@ export function createStage(host, opt = {}) {
   S.ro = new ResizeObserver(() => { S.fit(); S.onResize && S.onResize(); }); S.ro.observe(host); S.fit();
   return S;
 }
-export { T, cl, seg, eo, lerp };
+return { T, CONCEPTS, KEYS, mix, House, Stake, shape, createStage, cl, seg, eo, lerp };
+}

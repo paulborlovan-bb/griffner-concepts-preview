@@ -1,0 +1,91 @@
+/* GRIFFNER Journey, Vorschlag 1 Gehen: Stile der Szene, alles unter .jg, damit sie in Framer neben der Website stehen kann.
+   Schrift: Ofelia als woff2 von griffner.com (Framer), eigene Familiennamen, damit nichts mit den Framer-Stilen kollidiert.
+   Größen und Ränder wie die Web-Stile von griffner.com (Desktop, Tablet bis 1199 px, Telefon bis 809 px). */
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/pvfPivjIrdt8tu9p7EHXE3Y.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/G1C12Uf2g2THxCfbjczrRTrhJc.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/yOxv1P33k9x3ue2EWzm4JZ40JA.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/Q4vZdey99kLNgQDJCUVHlth04I.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+
+.jg{
+  --gelb:#FFB200; --kalk:#CACACA;
+  --font-display:"JG Display","Helvetica Neue",Arial,sans-serif;
+  --font-text:"JG Text","Helvetica Neue",Arial,sans-serif;
+  --t-xl:4.625rem; --t-l:3rem; --t-m:2.25rem; --t-einl:2.125rem; --t-body:1.125rem; --t-info:.6875rem;
+  --lh-d:1.02; --lh-body:1.45;
+  --page-margin:clamp(24px,5.5vw,80px);
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --rule:rgba(255,255,255,.2);
+  position:relative;width:100%;background:#000;color:#fff;
+  font-family:var(--font-text);font-weight:400;font-size:var(--t-body);line-height:var(--lh-body);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+@media (max-width:1199px){.jg{--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-einl:1.75rem;--t-body:1.0625rem;--page-margin:44px}}
+@media (max-width:809px){.jg{--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-einl:1.5rem;--t-body:1rem;--t-info:.625rem;--page-margin:24px}}
+.jg *,.jg *::before,.jg *::after{box-sizing:border-box}
+.jg a{color:inherit;text-decoration:none}
+
+/* Typo-Rollen */
+.jg .info{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;line-height:1.2}
+.jg .h-xl{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .h-l{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-m);line-height:1;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .lead{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-einl);line-height:1.15;text-wrap:pretty}
+.jg .txt{margin:0;font-size:var(--t-body);line-height:var(--lh-body);max-width:30em;text-wrap:pretty}
+.jg .btn{display:inline-flex;align-items:center;gap:14px;margin-top:14px;padding:16px 22px;background:#fff;color:#000;font-family:var(--font-text);font-weight:500;font-size:.8125rem;letter-spacing:.12em;text-transform:uppercase;line-height:1;transition:opacity 300ms var(--ease)}
+.jg .btn:hover{opacity:.72}
+
+/* Auftakt und Schluss */
+.jg .ji{display:grid;align-content:end;gap:22px;height:100%;padding:140px var(--page-margin) clamp(48px,9vh,96px)}
+.jg .ji__h{max-width:13em}
+.jg .ji__lead{max-width:22em}
+.jg .ji__hint{opacity:.6;margin-top:10px}
+.jg .jo{display:grid;gap:22px;justify-items:start;padding:0 var(--page-margin) clamp(40px,9vh,96px)}
+.jg .jo__h{max-width:12em;font-size:var(--t-l)}
+.jg .jo__lead{max-width:22em;font-size:1.5rem}
+
+/* Die Szene: hohe Sektion, darin eine klebende Bühne */
+.jg .g{position:relative}
+.jg .g__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
+.jg .g__gl{position:absolute;inset:0}
+.jg .g__gl canvas{display:block;width:100%;height:100%}
+.jg .g__stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 58%,rgba(0,0,0,.6) 100%);z-index:1}
+.jg .g__tags{position:absolute;inset:0;pointer-events:none;z-index:2}
+.jg .g__tag{position:absolute;left:0;top:0;display:flex;align-items:baseline;gap:10px;white-space:nowrap;opacity:0;will-change:transform,opacity;transform-origin:left bottom}
+.jg .g__tag b{font-weight:500}
+.jg .g__tag span{font-family:var(--font-display);font-weight:300;font-size:1.0625rem;letter-spacing:.02em;text-transform:uppercase;opacity:0;transition:opacity 500ms var(--ease)}
+.jg .g__tag.is-on span{opacity:1}
+.jg .g__intro{position:absolute;inset:0;z-index:3;pointer-events:none}
+.jg .g__steps{list-style:none;margin:0;padding:0;position:absolute;left:var(--page-margin);bottom:clamp(40px,9vh,96px);width:min(36rem,calc(100% - 2 * var(--page-margin)));z-index:3;pointer-events:none}
+.jg .g__s{position:absolute;left:0;bottom:0;width:100%;display:grid;gap:16px;opacity:0;transform:translateY(20px);transition:opacity 700ms var(--ease),transform 1000ms var(--ease)}
+.jg .g__s.is-on{opacity:1;transform:none;transition-delay:80ms}
+.jg .g__m{display:flex;gap:14px;opacity:.75}
+.jg .g__m em{font-style:normal;color:var(--gelb)}
+.jg .g__rail{position:absolute;right:var(--page-margin);top:50%;transform:translateY(-50%);display:grid;gap:9px;z-index:3}
+.jg .g__rail i{display:block;width:14px;height:1px;background:rgba(255,255,255,.35);transition:background-color 400ms var(--ease),width 400ms var(--ease),height 400ms var(--ease)}
+.jg .g__rail i.is-past{background:#fff}
+.jg .g__rail i.is-now{width:15px;height:12px;background:var(--gelb)}
+/* Auf der Website ist das gelbe Feld der Seite die Marke an der Leiste (es gleitet von Schritt zu Schritt) */
+.jg.has-dock .g__rail i.is-now{background:transparent}
+.jg .g__end{position:absolute;inset:auto 0 0 0;z-index:4;opacity:0;pointer-events:none;transition:opacity 800ms var(--ease)}
+.jg .g__end.is-on{opacity:1;pointer-events:auto}
+.jg .g__list{display:none}
+@media (max-width:809px){
+  .jg .g__s .h-xl{font-size:var(--t-l)}
+  .jg .g__rail{top:auto;bottom:calc(14px + env(safe-area-inset-bottom));right:auto;left:var(--page-margin);transform:none;display:flex;gap:5px;align-items:center}
+  .jg .g__steps{bottom:calc(48px + env(safe-area-inset-bottom))}
+  .jg .g__rail i{width:12px}
+  .jg .g__rail i.is-now{width:15px;height:12px}
+  .jg .g__tag span{display:none}
+}
+
+/* Ruhige Fassung (reduzierte Bewegung, Framer Canvas): Bild vom Ende mit dem Auftakt, darunter alle Schritte und der Schluss */
+.jg.is-static .g{height:auto!important}
+.jg.is-static .g__stage{position:relative;height:100vh;height:100svh;min-height:560px}
+.jg.is-static .g__steps,.jg.is-static .g__rail,.jg.is-static .g__tags{display:none}
+.jg.is-static .g__end{position:static;opacity:1;pointer-events:auto;padding-top:clamp(80px,14vh,160px)}
+.jg.is-static .g__list{display:block;padding-top:clamp(48px,8vh,96px)}
+.jg .jl{list-style:none;margin:0;padding:0 var(--page-margin);display:grid;gap:0}
+.jg .jl__i{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,5fr) minmax(0,4fr);gap:8px 24px;align-items:baseline;padding:28px 0;border-top:1px solid var(--rule)}
+.jg .jl__i:last-child{border-bottom:1px solid var(--rule)}
+.jg .jl__m{opacity:.7}
+@media (max-width:809px){.jg .jl__i{grid-template-columns:1fr}}
+.jg.is-canvas .g__stage{height:720px;min-height:0}
