@@ -15,7 +15,9 @@
      (familie-mensch.js), bewegt von einem echten aufgenommenen Gang (gang-daten.js, CC0). Sie halten sich an den Händen;
      an jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero.
    Runde 5 (2026-11-19, Kundenwunsch: „eine andere Art Menschen“, gewählt: echte Menschen): die Familie sind echte Menschen-Modelle
-     (familie-echt.js, Microsoft Rocketbox, MIT), gleiche Schnittstelle, gleicher Gang, Händehalten und Winken. */
+     (familie-echt.js, Microsoft Rocketbox, MIT), gleiche Schnittstelle, gleicher Gang, Händehalten und Winken.
+   Runde 7 (2026-11-19, Kundenwunsch: „die animierten zurück, die echten sehen zu seltsam aus“): wieder die Spielfiguren aus Runde 3
+     (familie-toy.js), kleiner und enger, in GRIFFNER Farben, mit Blinzeln, Blicken und Winken mit dem äußeren Arm. Ohne Händehalten. */
 
 export const DEF = {
   intro: { info: 'Journey', h: 'Vom ersten Gespräch bis zum Schlüssel.', lead: 'Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.', hint: 'Scrollen' },
@@ -109,7 +111,7 @@ export function markup(c0) {
 }
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
-   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-echt.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
+   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-toy.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
 export function mount(root, c0, deps) {
   const c = clean(c0), N = c.steps.length, { L0, WALK, SP } = TIMING, U = units(N);
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
