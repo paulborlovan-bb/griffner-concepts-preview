@@ -7,11 +7,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
 
 const here = new URL('.', import.meta.url).pathname;
-const FAMILIE_URL = process.env.FAMILIE_URL || 'FAMILIE_URL_FEHLT';
+const FAMILIE_URL = process.env.FAMILIE_URL || 'https://framerusercontent.com/assets/twl47Ldi3vRkoY7CDhYhCYgV1D0.gz'; // familie-echt.bin.gz bei Framer (hochgeladen 2026-11-19)
 const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
 const OUT = new URL('../../griffner/framer-code/JourneyGehen.tsx', import.meta.url).pathname;
 const src = f => readFileSync(here + f, 'utf8');
-const noExport = s => s.replace(/^export (const|let|function|class) /gm, '$1 ');
+const noExport = s => s.replace(/^export (async function|const|let|function|class) /gm, '$1 ');
 const css = src('gehen-szene.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '').replace(/\s{2,}/g, ' ');
 
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
