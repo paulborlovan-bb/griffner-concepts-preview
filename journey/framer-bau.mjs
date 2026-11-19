@@ -1,6 +1,6 @@
 // Baut die Framer Code-Komponente JourneyGehen aus der Szene des Vorschlags 1 (Gehen).
 // Aufruf: cd griffner-konzepte/journey && node framer-bau.mjs
-// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure), familie-toy.js (Familie, in Code gebaut).
+// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure), gang-daten.js (Gang, CC0) und familie-mensch.js (Familie, in Code gebaut).
 // Ziel:   griffner/framer-code/JourneyGehen.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
@@ -36,9 +36,9 @@ const ctl = JSON.stringify(controls, null, 4).replace(/"(ControlType\.\w+)"/g, '
 
 const tsx = `// @ts-nocheck
 // GRIFFNER Journey, Vorschlag 1 Gehen: eine Familie geht in 3D auf ihr Haus zu (Haus Concept Wald), über jedem Schritt ein Linienbild.
-// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js und familie-toy.js.
+// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js, gang-daten.js und familie-mensch.js.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte und die Bilder je Schritt sind Eingabefelder (rechts in Framer).
-// Familie: eigener Entwurf in Code (weiche Spielfiguren, gedämpfte Farben), keine fremden Dateien.
+// Familie: eigener Entwurf in Code (menschliche Proportionen, gedämpfte Farben). Gang: Quaternius Universal Animation Library, CC0 1.0.
 import { useEffect, useRef } from "react"
 import { RenderTarget, addPropertyControls, ControlType } from "framer"
 import { store, registerDock } from "./GriffnerStore.tsx"
@@ -49,8 +49,10 @@ const CSS = ${JSON.stringify(css)}
 ${noExport(src('haus3d.js'))}
 /* ---------- figur3d.js ---------- */
 ${noExport(src('figur3d.js'))}
-/* ---------- familie-toy.js ---------- */
-${noExport(src('familie-toy.js'))}
+/* ---------- gang-daten.js ---------- */
+${noExport(src('gang-daten.js'))}
+/* ---------- familie-mensch.js ---------- */
+${noExport(src('familie-mensch.js')).replace(/^import .*$/gm, '')}
 /* ---------- gehen-szene.js ---------- */
 ${noExport(src('gehen-szene.js'))}
 /* ---------- Framer ---------- */
@@ -84,7 +86,7 @@ export default function JourneyGehen(props: any) {
         let dock: any = null, offDock: any = null, zone: any = null
         const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
-            family: (T: any) => Promise.resolve(toyFamily(T)),
+            family: (T: any) => Promise.resolve(humanFamily(T)),
             onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
         })
         if (!still && !reduce) {

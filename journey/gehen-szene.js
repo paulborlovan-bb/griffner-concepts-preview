@@ -11,8 +11,9 @@
 
    Runde 3 (2026-11-19, Kundenwunsch: „eine Illustration je Schritt, dezent und verständlich, über dem Feld; menschlicher; Familie“):
    - Über jedem gelben Feld ein Linienbild zum Schritt (ICONS, weiße Linien als SVG-Bild, kein Canvas). Es wird hell, wenn die Familie kommt.
-   - Statt der einen Figur geht eine Familie (Vater, Mutter, Tochter, Sohn) als weiche Spielfiguren in gedämpften Farben (familie-toy.js, eigener Entwurf).
-     An jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero. */
+   - Statt der einen Figur geht eine Familie (Vater, Mutter, Tochter, Sohn): eigene Figuren mit menschlichen Proportionen in gedämpften Farben
+     (familie-mensch.js), bewegt von einem echten aufgenommenen Gang (gang-daten.js, CC0). Sie halten sich an den Händen;
+     an jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero. */
 
 export const DEF = {
   intro: { info: 'Journey', h: 'Vom ersten Gespräch bis zum Schlüssel.', lead: 'Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.', hint: 'Scrollen' },
@@ -106,7 +107,7 @@ export function markup(c0) {
 }
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
-   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-toy.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
+   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-mensch.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
 export function mount(root, c0, deps) {
   const c = clean(c0), N = c.steps.length, { L0, WALK, SP } = TIMING, U = units(N);
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
@@ -161,7 +162,7 @@ export function mount(root, c0, deps) {
     const yel = new T.MeshBasicMaterial({ color: 0xFFB200, transparent: true });
     /* Das Feld liegt 1,4 m vor dem Haltepunkt: beim Halten steht es vorne rechts im Bild, mit dem Bild darüber */
     const PL = ST.map(s0 => {
-      const s = Math.min(LEN, s0 + 1.4), p = at(s), [dx, dz] = tan(s), rx = -dz, rz = dx, x = p.x + rx * 2.05, z = p.z + rz * 2.05;
+      const s = Math.min(LEN, s0 + 1.4), p = at(s), [dx, dz] = tan(s), rx = -dz, rz = dx, x = p.x + rx * 1.8, z = p.z + rz * 1.8;
       const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = Math.atan2(-dx, -dz); sc.add(g);
       const fill = new T.Mesh(new T.BoxGeometry(1, .03, .8), yel.clone()); fill.position.y = .02; fill.material.opacity = 0; g.add(fill);
       const edge = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1, .03, .8)), new T.LineBasicMaterial({ color: 0xCACACA, transparent: true, opacity: .7 })); edge.position.y = .02; g.add(edge);
@@ -250,19 +251,21 @@ export function mount(root, c0, deps) {
       /* Familie: jede und jeder auf dem eigenen Platz am Weg (seitlich, vorne), vor der Tür hintereinander.
          Die Phase hängt am gegangenen Weg (nichts rutscht); Kinder machen kürzere, schnellere Schritte. */
       if (FAM) FAM.members.forEach(m => {
-        const si = clamp(s + m.fwd, 0, LEN), q = at(si), [mx, mz] = tan(si), lk = m.lat * (innerWidth / innerHeight < .85 ? .74 : 1) * (1 - E(si, SEND - 7.5, SEND - 2.4));
+        const si = clamp(s + m.fwd, 0, LEN), q = at(si), [mx, mz] = tan(si), lk = m.lat * (innerWidth / innerHeight < .85 ? .85 : 1) * (1 - E(si, SEND - 7.5, SEND - 2.4));
         m.g.position.set(q.x - mz * lk, 0, q.z + mx * lk);
         let ym = Math.atan2(-mx, -mz) + (dir < 0 ? Math.PI : 0);
         /* An der Station dreht sich ein Kind zu dir um und winkt (abwechselnd Tochter und Sohn) */
         const wt = !still && cam && m.kid && dir > 0 && (nearest(s) % 2 ? m.key === 'sohn' : m.key === 'tochter') ? (1 - env) * (1 - clamp(nd / 1.1)) : 0;
         m.turn += (wt - m.turn) * (1 - Math.exp(-dt * 2.6));
-        if (m.turn > .001) ym = angTo(ym, Math.atan2(-(cam.c[0] - m.g.position.x), -(cam.c[2] - m.g.position.z)), m.turn * .92);
+        if (m.turn > .001) ym = angTo(ym, Math.atan2(-(cam.c[0] - m.g.position.x), -(cam.c[2] - m.g.position.z)), m.turn * .82);
         m.yaw = still || m.yaw == null ? ym : angTo(m.yaw, ym, 1 - Math.exp(-dt * 5));
         m.g.rotation.y = m.yaw;
         m.ph += Math.abs(ds) / Math.max(FAM.stride(m), speed / m.cad) * Math.PI * 2;
         FAM.pose(m, m.ph, env, now / 1000, m.turn > .01 ? look * (1 - m.turn) : look, still, { wave: clamp((m.turn - .35) / .55) });
         FAM.fade(m, 1 - E(si, SEND - 1.1, SEND - .2));
       });
+      /* Hände halten (eine Hand je Paar; wer sich umdreht und winkt, lässt los) */
+      if (FAM && FAM.hands) FAM.hands(still);
 
       /* Kamera: schräg hinter dir, Blick den Weg entlang. Am Ende weit zurück, das ganze Haus. */
       const vw = innerWidth, vh = innerHeight, narrow = vw / vh < .85;
@@ -351,7 +354,7 @@ export function mount(root, c0, deps) {
       const draw = () => {
         sPrev = ST[N - 1]; frame(U, .016, 0, true);
         if (F) { F.fade(1); F.man.position.set(DX - .4, 0, HZ + 8); F.man.rotation.y = .15; F.pose(0, 0, 0, 0, true); }
-        if (FAM) FAM.members.forEach(m => { FAM.fade(m, 1); m.g.position.set(DX - .4 + m.lat * 1.2, 0, HZ + 8 - m.fwd * .7); m.g.rotation.y = .15; FAM.pose(m, 0, 0, 0, 0, true); });
+        if (FAM) FAM.members.forEach(m => { FAM.fade(m, 1); m.g.position.set(DX - .4 + m.lat * 1.2, 0, HZ + 8 - m.fwd * .7); m.g.rotation.y = .15; FAM.pose(m, 0, 0, 0, 0, true); }); if (FAM && FAM.hands) FAM.hands(true);
         INTRO.style.opacity = '1'; S.render();
       };
       redraw = draw; S.onResize = draw; draw();
