@@ -1,11 +1,14 @@
 // Baut die Framer Code-Komponente JourneyGehen aus der Szene des Vorschlags 1 (Gehen).
 // Aufruf: cd griffner-konzepte/journey && node framer-bau.mjs
-// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure), gang-daten.js (Gang, CC0) und familie-mensch.js (Familie, in Code gebaut).
+// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure), gang-daten.js (Gang, CC0) und familie-echt.js (Familie, Microsoft Rocketbox, MIT).
+// Die Modelle (familie-echt.bin.gz) liegen als Datei bei Framer: FAMILIE_URL unten (nach neuem Bau von familie-echt-bau.mjs neu hochladen).
 // Ziel:   griffner/framer-code/JourneyGehen.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
 
 const here = new URL('.', import.meta.url).pathname;
+const FAMILIE_URL = process.env.FAMILIE_URL || 'FAMILIE_URL_FEHLT';
+const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
 const OUT = new URL('../../griffner/framer-code/JourneyGehen.tsx', import.meta.url).pathname;
 const src = f => readFileSync(here + f, 'utf8');
 const noExport = s => s.replace(/^export (const|let|function|class) /gm, '$1 ');
@@ -36,9 +39,10 @@ const ctl = JSON.stringify(controls, null, 4).replace(/"(ControlType\.\w+)"/g, '
 
 const tsx = `// @ts-nocheck
 // GRIFFNER Journey, Vorschlag 1 Gehen: eine Familie geht in 3D auf ihr Haus zu (Haus Concept Wald), über jedem Schritt ein Linienbild.
-// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js, gang-daten.js und familie-mensch.js.
+// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js, gang-daten.js und familie-echt.js.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte und die Bilder je Schritt sind Eingabefelder (rechts in Framer).
-// Familie: eigener Entwurf in Code (menschliche Proportionen, gedämpfte Farben). Gang: Quaternius Universal Animation Library, CC0 1.0.
+// Familie: echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.
+${LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n')}
 import { useEffect, useRef } from "react"
 import { RenderTarget, addPropertyControls, ControlType } from "framer"
 import { store, registerDock } from "./GriffnerStore.tsx"
@@ -51,8 +55,9 @@ ${noExport(src('haus3d.js'))}
 ${noExport(src('figur3d.js'))}
 /* ---------- gang-daten.js ---------- */
 ${noExport(src('gang-daten.js'))}
-/* ---------- familie-mensch.js ---------- */
-${noExport(src('familie-mensch.js')).replace(/^import .*$/gm, '')}
+/* ---------- familie-echt.js ---------- */
+${noExport(src('familie-echt.js')).replace(/^import .*$/gm, '')}
+const FAMILIE_URL = ${JSON.stringify(FAMILIE_URL)}
 /* ---------- gehen-szene.js ---------- */
 ${noExport(src('gehen-szene.js'))}
 /* ---------- Framer ---------- */
@@ -86,7 +91,7 @@ export default function JourneyGehen(props: any) {
         let dock: any = null, offDock: any = null, zone: any = null
         const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
-            family: (T: any) => Promise.resolve(humanFamily(T)),
+            family: (T: any) => loadEchteFamilie(T, FAMILIE_URL),
             onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
         })
         if (!still && !reduce) {

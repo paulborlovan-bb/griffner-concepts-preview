@@ -13,7 +13,9 @@
    - Über jedem gelben Feld ein Linienbild zum Schritt (ICONS, weiße Linien als SVG-Bild, kein Canvas). Es wird hell, wenn die Familie kommt.
    - Statt der einen Figur geht eine Familie (Vater, Mutter, Tochter, Sohn): eigene Figuren mit menschlichen Proportionen in gedämpften Farben
      (familie-mensch.js), bewegt von einem echten aufgenommenen Gang (gang-daten.js, CC0). Sie halten sich an den Händen;
-     an jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero. */
+     an jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero.
+   Runde 5 (2026-11-19, Kundenwunsch: „eine andere Art Menschen“, gewählt: echte Menschen): die Familie sind echte Menschen-Modelle
+     (familie-echt.js, Microsoft Rocketbox, MIT), gleiche Schnittstelle, gleicher Gang, Händehalten und Winken. */
 
 export const DEF = {
   intro: { info: 'Journey', h: 'Vom ersten Gespräch bis zum Schlüssel.', lead: 'Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.', hint: 'Scrollen' },
@@ -107,7 +109,7 @@ export function markup(c0) {
 }
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
-   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-mensch.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
+   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-echt.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
 export function mount(root, c0, deps) {
   const c = clean(c0), N = c.steps.length, { L0, WALK, SP } = TIMING, U = units(N);
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
