@@ -1,26 +1,33 @@
 /* GRIFFNER Journey: die Familie (Vater, Mutter, Tochter, Sohn) als echte Menschen.
    Kundenwunsch 2026-11-19: „eine andere Art Menschen“, gewählt: echte Menschen. Modelle: Microsoft Rocketbox Avatar Library,
    MIT License, Copyright (c) 2020 Microsoft (github.com/microsoft/Microsoft-Rocketbox). Eingedampft von familie-echt-bau.mjs zu familie-echt.bin:
-   je Figur Körper (ca. 7000 Dreiecke), Skelett (Bip01), zwei Texturen; Kleidung ruhig umgefärbt (Vater Jeansjacke und weißes Shirt,
-   Mutter weißes Shirt und Jeans, Tochter gedämpftes Gelb, Sohn Salbei).
+   je Figur Körper (ca. 7000 Dreiecke), Skelett (Bip01, mit Gesichtsknochen), zwei Texturen; Kleidung umgefärbt (siehe familie-echt-bau.mjs).
    Der Gang ist eine echte Bewegungsaufnahme (gang-daten.js, Quaternius Universal Animation Library, CC0): je Bild die Richtungen
    von Oberschenkel, Unterschenkel, Fuß, Oberarm, Unterarm und die Lage von Becken und Brust. Hier dreht jeder Knochen des Skeletts
    von seiner Ruhelage auf diese Richtung (kleinste Drehung, die Kette entlang); der tiefste Punkt der Schuhe steht auf dem Boden.
-   Die Familie hält sich an den Händen (Tochter, Mutter, Vater, Sohn); ein Kind, das sich umdreht und winkt, lässt los.
+   Die Familie hält sich an den Händen (Tochter, Mutter, Vater, Sohn), immer mit der Hand auf der Seite des anderen; beim Umdrehen lassen alle
+   kurz los. Ein Kind, das sich umdreht und winkt, lässt los und hüpft. Runde 6 (2026-11-19): Lächeln, Blinzeln, Blicke zueinander, Kopf aufrecht;
+   Kleidung in GRIFFNER Farben (Vater Jacke Sand und Hose Anthrazit, Mutter Weiß und Anthrazit, Tochter Gelb, Sohn Salbei).
    Blick in Richtung −z, rechts = +x. API wie die Familie der Runde 4: { members, pose(m, ph, env, t, look, still, extra), hands(still), fade(m, o), stride(m) }. */
 import { GANG } from './gang-daten.js';
 
-/* H Körpergröße (m, vor dem Maßstab FS), lat seitlich vom Weg (+ rechts), fwd vor (+) oder hinter, cad höchstens Doppelschritte je s, wave: Hand zum Winken */
+/* H Körpergröße (m, vor dem Maßstab FS), lat seitlich vom Weg (+ rechts), fwd vor (+) oder hinter, cad höchstens Doppelschritte je s, wave: Hand zum Winken (+1 rechts, die äußere, wenn sich das Kind zu dir umdreht) */
 export const ECHT_WHO = [
   { key: 'vater', kid: false, H: 1.82, lat: .3, fwd: 0, cad: 1.9 },
   { key: 'mutter', kid: false, H: 1.69, lat: -.3, fwd: .04, cad: 1.9 },
-  { key: 'tochter', kid: true, H: 1.3, lat: -.8, fwd: .12, cad: 2.4, wave: -1 },
-  { key: 'sohn', kid: true, H: 1.38, lat: .8, fwd: .1, cad: 2.4, wave: 1 }
+  { key: 'tochter', kid: true, H: 1.3, lat: -.8, fwd: .12, cad: 2.4, wave: 1 },
+  { key: 'sohn', kid: true, H: 1.38, lat: .8, fwd: .1, cad: 2.4, wave: -1 }
 ];
 /* Wer hält wen: [links, rechts]. Die rechte Hand der linken Figur nimmt die linke Hand der rechten. */
 const HOLD = [['tochter', 'mutter'], ['mutter', 'vater'], ['vater', 'sohn']];
 /* Die Familie ist etwas kleiner als echt (Kundenwunsch: kleiner im Bild) */
 const FS = .84;
+/* Gesicht (Kundenwunsch 2026-11-19: „sie schauen traurig“): freundliches Lächeln über die Gesichtsknochen.
+   Verschiebung in cm am Modell (y oben, z nach vorn, +x links der Figur), für rechts gespiegelt, bei Kindern nach Gesichtsbreite kleiner */
+const SMILE = (typeof window !== 'undefined' && window.__smile) || {
+  MouthCorner: [.6, 1.25, -.4], Upperlip: [.2, .4, -.06], MouthBottom: [.25, .45, -.1], Cheek: [.15, .75, .2],
+  OuterEyebrow: [0, .15, 0], InnerEyebrow: [0, -.18, 0], MiddleEyebrow: [0, -.08, 0], EyeBlinkBottom: [0, .28, .04]
+};
 /* Beugeachse der Finger im Knochen (Biped: x entlang des Glieds) */
 const CURL = (typeof window !== 'undefined' && window.__curl) || [0, 0, 1];
 
@@ -149,20 +156,52 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     });
     /* Finger locker gekrümmt (die Modelle haben gestreckte, gespreizte Finger): je Glied eine kleine Drehung um die Beugeachse */
     const curl = P.bones.map(nm => { const f = /_Finger(\d)(\d?)$/.exec(nm); if (!f) return null; const th = f[1] === '0', a = th ? .18 : f[2] ? .42 : .3; return new T.Quaternion().setFromAxisAngle(V(...CURL), a * (th ? .6 : 1)); });
+    /* Gesichtsknochen: Ruhelage und Verschiebung je Einheit Lächeln (sm) und Blinzeln (bl), im Raum des Elternknochens */
+    const fw = B.LMouthCorner !== undefined ? Math.abs(P.t[B.LMouthCorner][0]) / 2.77 : 1;
+    const inParent = (b, v) => v.applyQuaternion(new T.Quaternion(...P.r[P.parents[b]]).invert()).divide(V(...P.s[P.parents[b]]));
+    const face = [];
+    Object.entries(SMILE).forEach(([k, [x, y, z]]) => ['L', 'R', 'M'].forEach(sd => {
+      const b = B[sd + k]; if (b === undefined) return;
+      face.push({ b, p0: bones[b].position.clone(), sm: inParent(b, V(sd === 'R' ? -x : x, y, z).multiplyScalar(fw)), bl: V() });
+    }));
+    ['L', 'R'].forEach(sd => {
+      const tp = B[sd + 'EyeBlinkTop'], bt = B[sd + 'EyeBlinkBottom']; if (tp === undefined || bt === undefined) return;
+      const gap = V(...P.t[bt]).sub(V(...P.t[tp]));
+      face.push({ b: tp, p0: bones[tp].position.clone(), sm: V(), bl: inParent(tp, gap.clone().multiplyScalar(.82)) });
+      const f = face.find(x => x.b === bt); if (f) f.bl = inParent(bt, gap.clone().multiplyScalar(-.12));
+    });
     const L = { ua: len('L_UpperArm', 'L_Forearm'), fa: len('L_Forearm', 'L_Hand'), leg: len('L_Thigh', 'L_Calf') + len('L_Calf', 'L_Foot') };
     L.hand = len('L_Hand', P.bones.includes('L_Finger2') ? 'L_Finger2' : 'L_Finger1') * 1.6;
     return {
-      ...w, g, body, nrm, mesh, mats, bones, B, RQ, RP, order, curl, parents: P.parents, sole, L, Bp0, Bc0,
+      ...w, g, body, nrm, mesh, mats, bones, B, RQ, RP, order, curl, parents: P.parents, sole, L, Bp0, Bc0, face,
       D: Array.from({ length: NB }, () => new T.Quaternion()), MP: Array.from({ length: NB }, () => V()),
-      d: Object.fromEntries(KEYS.map(k => [k, V()])), J: { shL: V(), shR: V(), wrL: V(), wrR: V() }, link: { L: 0, R: 0 },
+      d: Object.fromEntries(KEYS.map(k => [k, V()])), J: { shL: V(), shR: V(), wrL: V(), wrR: V() }, nb: [], used: {},
       ph: 0, yaw: null, turn: 0
     };
   }
   const members = who.map(build);
+  const byKey = Object.fromEntries(members.map(m => [m.key, m]));
+  /* Nachbarn an der Hand (für die Blicke) */
+  HOLD.forEach(([a, b]) => { if (byKey[a] && byKey[b]) { byKey[a].nb.push(byKey[b]); byKey[b].nb.push(byKey[a]); } });
 
   /* ---------- Haltung ---------- */
   const _q = new T.Quaternion(), _q2 = new T.Quaternion(), _e = new T.Euler(0, 0, 0, 'YXZ'), _v = V(), _w = V(), _u = V();
-  const Dp = new T.Quaternion(), Dc = new T.Quaternion(), QL = new T.Quaternion();
+  const Dp = new T.Quaternion(), Dc = new T.Quaternion(), QL = new T.Quaternion(), _e2 = new T.Euler(0, 0, 0, 'YXZ');
+  const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+  /* Blinzeln: je Figur alle 3,6 bis 4,7 s, 0,17 s lang */
+  function blink(m, t) { const per = 3.6 + m.fwd * 9, x = ((t + m.fwd * 13) % per + per) % per; return x < .17 ? Math.sin(x / .17 * Math.PI) : 0; }
+  /* Blick zu einem Nachbarn an der Hand: alle 6 bis 8 s für 2 s, abwechselnd links und rechts. Gibt Gewicht, Drehung (+ links) und Neigen (+ hoch). */
+  const GL = { w: 0, y: 0, p: 0 };
+  function glance(m, t) {
+    GL.w = 0; if (!m.nb.length) return GL;
+    const per = 6.2 + m.fwd * 14, tt = t + 2.5 + m.fwd * 23, x = ((tt % per) + per) % per, o = m.nb[Math.floor(tt / per) % m.nb.length];
+    GL.w = x < .45 ? smooth(x / .45) : x < 1.6 ? 1 : smooth((2.05 - x) / .45);
+    if (GL.w <= 0) return GL;
+    const yw = m.g.rotation.y, vx = o.g.position.x - m.g.position.x, vz = o.g.position.z - m.g.position.z;
+    GL.y = clamp(Math.atan2(-vx * Math.cos(yw) + vz * Math.sin(yw), -vx * Math.sin(yw) - vz * Math.cos(yw)), -1.15, 1.15);
+    GL.p = clamp(Math.atan2((o.H - m.H) * FS * .9, Math.max(.35, Math.hypot(vx, vz))), -.38, .38);
+    return GL;
+  }
   /* Knochen b (Elternteil p) dreht so, dass seine Richtung (Ruhe: von b zu Kind c) auf target zeigt: kleinste Drehung nach der Drehung des Elternteils */
   function aim(m, b, c, target) {
     const p = m.parents[b];
@@ -201,13 +240,20 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     basis(d.pr, d.pu, Dp).multiply(m.Bp0); basis(d.cr, d.cu, Dc).multiply(m.Bc0);
     /* Stehen: leichtes Gewicht verlagern */
     const st = (1 - env) * (still ? 0 : 1);
-    if (st > 0) Dp.premultiply(_q.setFromAxisAngle(_u.set(0, 0, 1), Math.sin(tt * .8 + m.fwd * 5) * .02 * st));
+    if (st > 0) {
+      Dp.premultiply(_q.setFromAxisAngle(_u.set(0, 0, 1), Math.sin(tt * .8 + m.fwd * 5) * .032 * st));
+      /* Atmen: die Brust hebt sich ein wenig */
+      Dc.premultiply(_q.setFromAxisAngle(_u.set(1, 0, 0), Math.sin(tt * 1.7 + m.fwd * 9) * .014 * st));
+    }
     D[B.Pelvis].copy(Dp); D[B.Spine].copy(Dp);
     D[B.Spine1].copy(Dp).slerp(Dc, .5); D[B.Spine2].copy(Dc); D[B.Neck].copy(Dc);
     /* Kopf: Richtung aus dem Gang, dazu Blick (look, + links) und Neigen */
     _v.subVectors(m.RP[B.Head], m.RP[B.Neck]).normalize().applyQuaternion(Dc);
     QL.setFromUnitVectors(_v, d.hd);
-    _e.set(-.04 - .03 * env + Math.sin(ph * 2) * .015 * env, look, (still ? .04 : Math.sin(tt * .7 + m.fwd * 2) * .05) * (1 - env) * (m.kid ? 1.3 : .8) + wv * .1);
+    /* Kopf aufrecht (leicht hoch), dazu ab und zu ein Blick zum Nachbarn an der Hand (nicht an den Stationen, nicht beim Winken) */
+    const gl = still ? (GL.w = 0, GL) : glance(m, tt), gw = gl.w * (1 - clamp(Math.abs(look) / .3)) * (1 - clamp(wv * 2));
+    const hy = look * (1 - gw) + gl.y * .8 * gw, hp = .035 - .04 * env + Math.sin(ph * 2) * .015 * env + gl.p * .75 * gw + wv * .08;
+    _e.set(hp, hy, (still ? .04 : Math.sin(tt * .7 + m.fwd * 2) * .05) * (1 - env) * (m.kid ? 1.3 : .8) + wv * .1);
     D[B.Head].setFromEuler(_e).multiply(QL).multiply(Dc);
     /* Beine */
     ['L', 'R'].forEach(sd => {
@@ -219,6 +265,8 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     });
     /* Kinder der geführten Knochen (Zehen, Schlüsselbeine, Finger, Gesicht) folgen */
     m.order.forEach(b => { if (!DRIVEN.includes(m.bones[b].name) && m.parents[b] >= 0) D[b].copy(D[m.parents[b]]); });
+    /* Augen gehen dem Blick etwas voraus */
+    ['LEye', 'REye'].forEach(k => { if (B[k] !== undefined) D[B[k]].premultiply(_q.setFromEuler(_e2.set(clamp(gl.p * gw * .45 + wv * .1, -.2, .2), clamp(hy * .3, -.3, .3), 0))); });
     arm(m, 'L', d.uaL, d.faL); arm(m, 'R', d.uaR, d.faR);
     ['L', 'R'].forEach(sd => { ['_Hand'].forEach(k => D[B[sd + k]].copy(D[B[sd + '_Forearm']])); });
     m.order.forEach(b => { const p = m.parents[b]; if (p >= 0 && !DRIVEN.includes(m.bones[b].name) && /Finger|Hand/.test(m.bones[b].name)) D[b].copy(D[p]); });
@@ -229,15 +277,18 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
       const F = B[sd + '_Foot'], Z = B[sd + '_Toe0'];
       low = Math.min(low, _u.copy(m.sole[sd].heel).applyQuaternion(D[F]).add(m.MP[F]).y, _u.copy(m.sole[sd].tip).applyQuaternion(D[Z]).add(m.MP[Z]).y);
     });
-    m.body.position.y = -low;
+    /* Das winkende Kind hüpft ein wenig */
+    m.body.position.y = -low + (m.kid && wv > 0 && !still ? Math.abs(Math.sin(tt * 6.4)) * .04 * wv : 0);
     m.order.forEach(b => local(m, b));
+    /* Gesicht: Lächeln (beim Winken mehr) und Blinzeln */
+    const sm = extra.smile ?? (m.kid ? 1 : .92) + wv * .25, bl = extra.blink ?? (still ? 0 : blink(m, tt));
+    m.face.forEach(f => m.bones[f.b].position.copy(f.p0).addScaledVector(f.sm, sm).addScaledVector(f.bl, bl));
     m.J.shL.copy(m.MP[B.L_UpperArm]); m.J.shR.copy(m.MP[B.R_UpperArm]);
     m.J.wrL.copy(m.MP[B.L_Hand]); m.J.wrR.copy(m.MP[B.R_Hand]);
   }
 
   /* ---------- Hände halten: zwei Arme treffen sich zwischen den beiden (Zwei-Gelenk-Lösung), Ellbogen nach außen ---------- */
-  const byKey = Object.fromEntries(members.map(m => [m.key, m]));
-  const _s = V(), _tg = V(), _el = V(), _ax = V(), _pp = V(), _wA = V(), _wB = V(), _mid = V(), _ua = V(), _fa = V();
+  const _s = V(), _tg = V(), _el = V(), _ax = V(), _pp = V(), _wA = V(), _wB = V(), _mid = V(), _ua = V(), _fa = V(), _rt = V(), _ab = V(), _sA = V(), _sB = V();
   /* Arm von m (Seite sd) zur Hand am Punkt target (Körperraum), Anteil k */
   function reach(m, sd, target, k) {
     const B = m.B, sh = m.MP[B[sd + '_UpperArm']], l1 = m.L.ua, l2 = m.L.fa + m.L.hand * .45;
@@ -261,24 +312,37 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     D[B[sd + '_Hand']].premultiply(_q.setFromAxisAngle(_fa, (sd === 'L' ? 1 : -1) * .5 * k));
     [sd + '_UpperArm', sd + '_Forearm', sd + '_Hand'].forEach(nm => local(m, B[nm]));
   }
+  /* Wo steht o von m aus: + rechts, − links (1 = genau daneben, 0 = vor oder hinter m) */
+  function side(m, o) {
+    m.body.localToWorld(_rt.copy(m.J.shR)); m.body.localToWorld(_ab.copy(m.J.shL)); _rt.sub(_ab); _rt.y = 0; _rt.normalize();
+    _ab.subVectors(o.g.position, m.g.position); _ab.y = 0; const dd = _ab.length();
+    return dd > 1e-4 ? _rt.dot(_ab) / dd : 0;
+  }
+  /* Je Paar: welche Hände (hA, hB) und wie fest (k). Die Hände folgen der Seite, auf der der andere steht: dreht sich die Familie um
+     (zurück scrollen), lassen alle los, solange sie nicht nebeneinander stehen, und greifen dann mit den anderen Händen neu. */
+  const pairs = HOLD.map(([a, b]) => ({ A: byKey[a], B: byKey[b], hA: 'R', hB: 'L', k: 0 })).filter(P => P.A && P.B);
   function hands(still = false) {
-    members.forEach(m => m.g.updateMatrixWorld(true));
-    HOLD.forEach(([a, b]) => {
-      const A = byKey[a], Bm = byKey[b];
-      if (!A || !Bm) return;
-      A.body.localToWorld(_wA.copy(A.J.wrR)); Bm.body.localToWorld(_wB.copy(Bm.J.wrL));
+    members.forEach(m => { m.g.updateMatrixWorld(true); m.used.L = m.used.R = 0; });
+    pairs.forEach(P => {
+      const A = P.A, Bm = P.B, cA = side(A, Bm), cB = side(Bm, A), hA = cA >= 0 ? 'R' : 'L', hB = cB >= 0 ? 'R' : 'L';
+      /* nebeneinander? dazu loslassen, wenn ein Kind sich umdreht und winkt */
+      let want = clamp((Math.min(Math.abs(cA), Math.abs(cB)) - .6) / .25) * (1 - clamp(A.turn * 3)) * (1 - clamp(Bm.turn * 3));
+      if (hA !== P.hA || hB !== P.hB) { if (still || P.k < .02) { P.hA = hA; P.hB = hB; } else want = 0; }
+      if (A.used[P.hA] || Bm.used[P.hB]) want = 0;
+      const jA = A.J['wr' + P.hA], jB = Bm.J['wr' + P.hB];
+      A.body.localToWorld(_wA.copy(jA)); Bm.body.localToWorld(_wB.copy(jB));
       /* Treffpunkt: in der Mitte, auf der Höhe der tieferen Hand (der Größere greift nach unten, das Kind hebt den Arm nicht) */
       _mid.copy(_wA).add(_wB).multiplyScalar(.5); _mid.y = Math.min(_wA.y, _wB.y) + .03;
-      const sA = A.body.localToWorld(A.J.shR.clone()), sB = Bm.body.localToWorld(Bm.J.shL.clone());
+      A.body.localToWorld(_sA.copy(A.J['sh' + P.hA])); Bm.body.localToWorld(_sB.copy(Bm.J['sh' + P.hB]));
       const rA = (A.L.ua + A.L.fa + A.L.hand * .45) * .96, rB = (Bm.L.ua + Bm.L.fa + Bm.L.hand * .45) * .96;
-      for (let i = 0; i < 6; i++) [[sA, rA], [sB, rB]].forEach(([sh, r]) => { const dd = _mid.distanceTo(sh); if (dd > r) _mid.sub(sh).multiplyScalar(r / dd).add(sh); });
-      const over = Math.max(sA.distanceTo(_mid) / rA, sB.distanceTo(_mid) / rB);
-      /* loslassen: zu weit auseinander oder ein Kind dreht sich um und winkt */
-      const k = clamp((1.06 - over) / .06) * (1 - clamp(A.turn * 3)) * (1 - clamp(Bm.turn * 3));
-      A.link.R = still ? k : lerp(A.link.R, k, .25); Bm.link.L = A.link.R;
-      if (A.link.R < .01) return;
-      reach(A, 'R', A.body.worldToLocal(_mid.clone()), A.link.R);
-      reach(Bm, 'L', Bm.body.worldToLocal(_mid.clone()), A.link.R);
+      for (let i = 0; i < 6; i++) [[_sA, rA], [_sB, rB]].forEach(([sh, r]) => { const dd = _mid.distanceTo(sh); if (dd > r) _mid.sub(sh).multiplyScalar(r / dd).add(sh); });
+      const over = Math.max(_sA.distanceTo(_mid) / rA, _sB.distanceTo(_mid) / rB);
+      const k = want * clamp((1.06 - over) / .06);
+      P.k = still ? k : lerp(P.k, k, k < P.k ? .35 : .2);
+      if (P.k < .01) return;
+      A.used[P.hA] = Bm.used[P.hB] = 1;
+      reach(A, P.hA, A.body.worldToLocal(_tg.copy(_mid)).clone(), P.k);
+      reach(Bm, P.hB, Bm.body.worldToLocal(_tg.copy(_mid)).clone(), P.k);
     });
   }
   function fade(m, o) { m.mats.forEach(x => { x.opacity = o; const tr = o < .999; if (x.transparent !== tr) { x.transparent = tr; x.needsUpdate = true; } x.depthWrite = o > .5; }); m.g.visible = o > .002; }

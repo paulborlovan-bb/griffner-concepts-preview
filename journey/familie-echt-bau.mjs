@@ -18,25 +18,41 @@ const DL = process.argv[2];
 if (!DL) { console.error('Aufruf: node familie-echt-bau.mjs <Ordner mit den Rocketbox-Dateien>'); process.exit(1); }
 const here = new URL('.', import.meta.url).pathname;
 
-/* Wer: Datei, Texturkürzel, Umfärben (Farbton-Bereich in Grad, Mindestsättigung, Zielfarbe, Bereich in UV 0..1 [x0,y0,x1,y1] oder null = überall,
+/* Wer: Datei, Texturkürzel, Umfärben (hue: Farbton-Bereich in Grad, sat: Mindestsättigung oder chroma: [ab, voll] in 0..255, maxL: hellere Punkte nicht,
+   to: Zielfarbe, area: Bereich in UV 0..1 [x0,y0,x1,y1] (ohne hue und sat: alles im Bereich), lr: feste Bezugshelligkeit statt Median,
    k: wie stark die Helligkeitsunterschiede bleiben (Falten, Aufdruck)) */
 const PEOPLE = [
-  { key: 'vater', file: 'Male_Adult_12', tex: 'm007', recolor: [] },
+  /* GRIFFNER Farben: Sand #CFC3B3, Anthrazit #444442, Gelb #FFB200, Salbei #8B907C, Weiß */
+  { key: 'vater', file: 'Male_Adult_12', tex: 'm007', recolor: [
+    /* Jacke → Sand: nach UV-Bereich (Rücken mit Passe, Vorderteil, Ärmel, Kragen), eine Bezugshelligkeit für alle Teile;
+       wo Schuhe und Jacke dieselben Felder teilen, nur farbige, nicht helle Punkte (Schuhe sind grau und hell) */
+    ...[[.3, .1, .7, .6], [.44, .6, .57, .94], [.3, .94, .7, 1], [0, .42, .23, .82], [.23, .42, .3, .6], [.77, .42, 1, .82], [.7, .42, .77, .6]]
+      .map(area => ({ to: [207, 195, 179], k: .38, lr: .22, area })),
+    ...[[.23, .6, .44, .94], [.57, .6, .77, .94]].map(area => ({ to: [207, 195, 179], k: .38, lr: .22, area, chroma: [3, 6], maxL: 125 })),
+    /* Hose → Anthrazit */
+    ...[[0, 0, .3, .42], [.7, 0, 1, .42]].map(area => ({ to: [74, 74, 72], k: .35, area }))
+  ] },
   { key: 'mutter', file: 'Female_Adult_17', tex: 'f006', recolor: [
-    { hue: [95, 185], sat: .14, to: [232, 226, 214], k: .75 }
+    { hue: [95, 185], sat: .14, to: [236, 232, 224], k: .75 },
+    /* Jeans → Anthrazit */
+    ...[[0, .55, .34, 1], [.66, .55, 1, 1]].map(area => ({ to: [70, 70, 68], k: .35, area }))
   ], opacity: true },
   { key: 'tochter', file: 'Female_Child_01', tex: 'cf001', recolor: [
-    { hue: [265, 345], sat: .22, to: [222, 196, 128], k: .7, area: [.28, 0, .72, .8] },
+    /* Shirt → GRIFFNER Gelb */
+    { hue: [265, 345], sat: .22, to: [255, 180, 24], k: .6, area: [.28, 0, .72, .8] },
     { hue: [265, 345], sat: .22, to: [214, 210, 202], k: .6 }
   ] },
   { key: 'sohn', file: 'Male_Child_01', tex: 'cm001', recolor: [
-    { hue: [150, 235], sat: .42, to: [150, 160, 132], k: .45, area: [.3, 0, .7, 1] },
-    { hue: [150, 235], sat: .42, to: [150, 160, 132], k: .45, area: [0, .22, 1, .88] },
-    { hue: [0, 360], sat: -1, to: [150, 160, 132], k: .12, area: [.405, .52, .595, .7] }
+    /* Pulli → Salbei, Bündchen und Aufdruck mit */
+    { hue: [150, 235], sat: .42, to: [139, 144, 124], k: .45, area: [.3, 0, .7, 1] },
+    { hue: [150, 235], sat: .42, to: [139, 144, 124], k: .45, area: [0, .22, 1, .88] },
+    { hue: [0, 360], sat: -1, to: [139, 144, 124], k: .12, area: [.405, .52, .595, .7] }
   ] }
 ];
 
 const LIZENZ = readFileSync(here + 'familie-echt-LIZENZ.txt', 'utf8');
+/* Probe: REC_<key>='[...]' ersetzt die Umfärbe-Regeln einer Figur (zum Ausprobieren von Bereichen) */
+PEOPLE.forEach(P => { const e = process.env['REC_' + P.key]; if (e) P.recolor = JSON.parse(e); });
 const PAGE = `<!doctype html><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as T from 'three';
@@ -63,15 +79,20 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
       const i = y * size + x, R = p[i * 4] / 255, G = p[i * 4 + 1] / 255, B = p[i * 4 + 2] / 255;
       if (r.area) { const u = x / size, v = y / size; if (u < r.area[0] || u > r.area[2] || v < r.area[1] || v > r.area[3]) continue; }
       const mx = Math.max(R, G, B), mn = Math.min(R, G, B), s = mx ? (mx - mn) / mx : 0;
-      if (mx - mn < 1e-3) continue;
-      let h = mx === R ? (G - B) / (mx - mn) : mx === G ? 2 + (B - R) / (mx - mn) : 4 + (R - G) / (mx - mn); h = (h * 60 + 360) % 360;
-      if (h < r.hue[0] || h > r.hue[1]) continue;
-      const k = Math.min(1, Math.max(0, (s - r.sat) / .08));
+      if (r.maxL && mx * 255 > r.maxL) continue;
+      let k = 1;
+      if (r.hue) {
+        if (mx - mn < 1e-3) continue;
+        let h = mx === R ? (G - B) / (mx - mn) : mx === G ? 2 + (B - R) / (mx - mn) : 4 + (R - G) / (mx - mn); h = (h * 60 + 360) % 360;
+        if (h < r.hue[0] || h > r.hue[1]) continue;
+      } else if (mx < 8 / 255) continue;
+      if (r.chroma) k = Math.min(1, Math.max(0, ((mx - mn) * 255 - r.chroma[0]) / (r.chroma[1] - r.chroma[0])));
+      else if (r.sat !== undefined) k = Math.min(1, Math.max(0, (s - r.sat) / .08));
       if (k <= 0) continue;
       m[i] = k; L.push(.299 * R + .587 * G + .114 * B);
     }
     if (!L.length) continue;
-    L.sort((a, b) => a - b); const Lr = L[Math.floor(L.length / 2)];
+    L.sort((a, b) => a - b); const Lr = r.lr || L[Math.floor(L.length / 2)];
     for (let i = 0; i < size * size; i++) if (m[i] > 0) {
       const R = p[i * 4] / 255, G = p[i * 4 + 1] / 255, B = p[i * 4 + 2] / 255, l = .299 * R + .587 * G + .114 * B;
       const f = (Lr + (l - Lr) * r.k) / Lr;
