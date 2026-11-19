@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
 
 const here = new URL('.', import.meta.url).pathname;
-const FAMILIE_URL = process.env.FAMILIE_URL || 'https://framerusercontent.com/assets/twl47Ldi3vRkoY7CDhYhCYgV1D0.gz'; // familie-echt.bin.gz bei Framer (hochgeladen 2026-11-19)
+const FAMILIE_URL = process.env.FAMILIE_URL || 'https://framerusercontent.com/assets/kN5ihfOtDgvXa294N5bDfKx2g.gz'; // familie-echt.bin.gz bei Framer (Runde 6, hochgeladen 2026-11-19)
 const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
 const OUT = new URL('../../griffner/framer-code/JourneyGehen.tsx', import.meta.url).pathname;
 const src = f => readFileSync(here + f, 'utf8');
