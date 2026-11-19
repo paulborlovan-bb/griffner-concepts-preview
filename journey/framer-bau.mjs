@@ -1,9 +1,9 @@
 // Baut die Framer Code-Komponente JourneyGehen aus der Szene des Vorschlags 1 (Gehen).
 // Aufruf: cd griffner-konzepte/journey && node framer-bau.mjs
-// Quelle: gehen-szene.js (Szene, Texte, Zeitplan), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure).
+// Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure), familie-toy.js (Familie, in Code gebaut).
 // Ziel:   griffner/framer-code/JourneyGehen.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
-import { DEF } from './gehen-szene.js';
+import { DEF, ICONS } from './gehen-szene.js';
 
 const here = new URL('.', import.meta.url).pathname;
 const OUT = new URL('../../griffner/framer-code/JourneyGehen.tsx', import.meta.url).pathname;
@@ -19,8 +19,11 @@ const controls = {
   introHinweis: S('Auftakt Hinweis', DEF.intro.hint),
   schritte: {
     type: 'ControlType.Array', title: 'Schritte', maxCount: 24,
-    control: { type: 'ControlType.Object', controls: { titel: S('Titel', ''), text: S('Text', '', { displayTextArea: true }), zeit: S('Zeit', '') } },
-    defaultValue: DEF.steps.map(s => ({ titel: s.t, text: s.d, zeit: s.m }))
+    control: { type: 'ControlType.Object', controls: {
+      titel: S('Titel', ''), text: S('Text', '', { displayTextArea: true }), zeit: S('Zeit', ''),
+      bild: { type: 'ControlType.Enum', title: 'Bild', defaultValue: 'auto', options: ['auto', ...Object.keys(ICONS), 'keins'], optionTitles: ['Automatisch (nach Titel)', ...Object.values(ICONS).map(x => x[0]), 'Kein Bild'] }
+    } },
+    defaultValue: DEF.steps.map(s => ({ titel: s.t, text: s.d, zeit: s.m, bild: s.b }))
   },
   schlussInfo: S('Schluss Zeile', DEF.outro.info),
   schlussTitel: S('Schluss Titel', DEF.outro.h, { displayTextArea: true }),
@@ -32,9 +35,10 @@ const controls = {
 const ctl = JSON.stringify(controls, null, 4).replace(/"(ControlType\.\w+)"/g, '$1');
 
 const tsx = `// @ts-nocheck
-// GRIFFNER Journey, Vorschlag 1 Gehen: du gehst in 3D auf dein Haus zu (Figur aus dem Concepts Hero, Haus Concept Wald).
-// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js und figur3d.js.
-// Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte sind Eingabefelder (rechts in Framer).
+// GRIFFNER Journey, Vorschlag 1 Gehen: eine Familie geht in 3D auf ihr Haus zu (Haus Concept Wald), über jedem Schritt ein Linienbild.
+// ERZEUGT von griffner-konzepte/journey/framer-bau.mjs aus gehen-szene.js, gehen-szene.css, haus3d.js, figur3d.js und familie-toy.js.
+// Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte und die Bilder je Schritt sind Eingabefelder (rechts in Framer).
+// Familie: eigener Entwurf in Code (weiche Spielfiguren, gedämpfte Farben), keine fremden Dateien.
 import { useEffect, useRef } from "react"
 import { RenderTarget, addPropertyControls, ControlType } from "framer"
 import { store, registerDock } from "./GriffnerStore.tsx"
@@ -45,6 +49,8 @@ const CSS = ${JSON.stringify(css)}
 ${noExport(src('haus3d.js'))}
 /* ---------- figur3d.js ---------- */
 ${noExport(src('figur3d.js'))}
+/* ---------- familie-toy.js ---------- */
+${noExport(src('familie-toy.js'))}
 /* ---------- gehen-szene.js ---------- */
 ${noExport(src('gehen-szene.js'))}
 /* ---------- Framer ---------- */
@@ -55,7 +61,7 @@ const reduceMotion = () => typeof window !== "undefined" && window.matchMedia("(
 function cfgOf(p: any) {
     return {
         intro: { info: p.introInfo, h: p.introTitel, lead: p.introText, hint: p.introHinweis },
-        steps: (p.schritte || []).map((s: any) => ({ t: s?.titel, d: s?.text, m: s?.zeit })),
+        steps: (p.schritte || []).map((s: any) => ({ t: s?.titel, d: s?.text, m: s?.zeit, b: s?.bild })),
         outro: { info: p.schlussInfo, h: p.schlussTitel, lead: p.schlussText, cta: p.knopf, href: p.knopfLink },
         label: p.bereich || "",
     }
@@ -78,6 +84,7 @@ export default function JourneyGehen(props: any) {
         let dock: any = null, offDock: any = null, zone: any = null
         const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
+            family: (T: any) => Promise.resolve(toyFamily(T)),
             onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
         })
         if (!still && !reduce) {

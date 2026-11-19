@@ -17,10 +17,11 @@ import { chrome, reduce } from './jr.js';
 import { DEF, markup, mount } from './gehen-szene.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
+import { toyFamily } from './familie-toy.js';
 chrome(1);
 const root = document.querySelector('[data-jg]');
 root.innerHTML = markup(DEF);
-mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, reduce });
+mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, family: T => Promise.resolve(toyFamily(T)), reduce });
 </script>
 </body>
 </html>

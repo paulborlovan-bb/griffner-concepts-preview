@@ -51,6 +51,7 @@
 .jg .g__tags{position:absolute;inset:0;pointer-events:none;z-index:2}
 .jg .g__tag{position:absolute;left:0;top:0;display:flex;align-items:baseline;gap:10px;white-space:nowrap;opacity:0;will-change:transform,opacity;transform-origin:left bottom}
 .jg .g__tag b{font-weight:500}
+.jg .g__tag.is-flip{transform-origin:right bottom;flex-direction:row-reverse}
 .jg .g__tag span{font-family:var(--font-display);font-weight:300;font-size:1.0625rem;letter-spacing:.02em;text-transform:uppercase;opacity:0;transition:opacity 500ms var(--ease)}
 .jg .g__tag.is-on span{opacity:1}
 .jg .g__intro{position:absolute;inset:0;z-index:3;pointer-events:none}
@@ -87,5 +88,7 @@
 .jg .jl__i{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,5fr) minmax(0,4fr);gap:8px 24px;align-items:baseline;padding:28px 0;border-top:1px solid var(--rule)}
 .jg .jl__i:last-child{border-bottom:1px solid var(--rule)}
 .jg .jl__m{opacity:.7}
+.jg .jl__k{display:grid;gap:14px;align-content:start;justify-items:start}
+.jg .jl__b{display:block;width:44px;height:44px;color:#fff;opacity:.9}
 @media (max-width:809px){.jg .jl__i{grid-template-columns:1fr}}
 .jg.is-canvas .g__stage{height:720px;min-height:0}

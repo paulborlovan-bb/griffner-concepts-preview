@@ -7,28 +7,52 @@
    - Gehen 80 % der Station, Stehen 20 % (vorher 55 / 45): kürzerer Halt.
    - Gehen mit sanftem Anlauf und Auslaufen und gleichmäßigem Tempo dazwischen (statt Smoothstep mit Spitze in der Mitte).
    - Der Scrollwert läuft über eine kritisch gedämpfte Feder: kein Ruck beim Anfahren oder Anhalten.
-   - Schrittfrequenz höchstens 1,8 Doppelschritte je Sekunde: bei schnellem Scrollen werden die Schritte länger, nie hektisch. */
+   - Schrittfrequenz höchstens 1,8 Doppelschritte je Sekunde: bei schnellem Scrollen werden die Schritte länger, nie hektisch.
+
+   Runde 3 (2026-11-19, Kundenwunsch: „eine Illustration je Schritt, dezent und verständlich, über dem Feld; menschlicher; Familie“):
+   - Über jedem gelben Feld ein Linienbild zum Schritt (ICONS, weiße Linien als SVG-Bild, kein Canvas). Es wird hell, wenn die Familie kommt.
+   - Statt der einen Figur geht eine Familie (Vater, Mutter, Tochter, Sohn) als weiche Spielfiguren in gedämpften Farben (familie-toy.js, eigener Entwurf).
+     An jeder Station dreht sich ein Kind zu dir um und winkt. Fehlt die Familie, geht wie bisher die Figur aus dem Concepts Hero. */
 
 export const DEF = {
   intro: { info: 'Journey', h: 'Vom ersten Gespräch bis zum Schlüssel.', lead: 'Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.', hint: 'Scrollen' },
   steps: [
-    { t: 'Kennenlernen', d: 'Wir hören zu, bevor wir zeichnen.', m: 'Vorab' },
-    { t: 'Grundstück', d: 'Wir lesen deinen Ort. Gelände, Bäume, Sonne.', m: 'Vorab' },
-    { t: 'Inspiration', d: 'Vier Concepts zum Weiterdenken.', m: 'Vorab' },
-    { t: 'Vertrag', d: 'Persönlicher Projektmanager ab dem ersten Tag.', m: 'Monat 0' },
-    { t: 'Dein Plan', d: 'Grundriss, Ansichten, Lage stehen fest.', m: 'Monat 1' },
-    { t: 'Eingereicht', d: 'Unterlagen vollständig, wir liefern jedes Dokument.', m: 'Monat 2' },
-    { t: 'Bemusterung', d: 'Besuch in Griffen, Ausstattung festlegen.', m: 'Monat 3' },
-    { t: 'Baubescheid', d: 'Die Gemeinde gibt grünes Licht.', m: 'Monat 4' },
-    { t: 'Planung fixiert', d: 'Geht in Fertigung, ab hier ändert sich nichts mehr.', m: 'Monat 5' },
-    { t: 'Baustart', d: 'Das Fundament entsteht.', m: 'Monat 6' },
-    { t: 'Dein Haus entsteht', d: 'Eine Woche Manufaktur in Griffen, dann steht es mit Dach und Fenstern.', m: 'Monat 7' },
-    { t: 'Haustechnik', d: 'Heizung, Lüftung, Strom, Wasser.', m: 'Monat 8' },
-    { t: 'Innenausbau', d: 'Türen, Böden, Bäder. Jetzt wird es deins.', m: 'Monat 9' },
-    { t: 'Einzug', d: 'Wir gehen ein letztes Mal gemeinsam durch dein Haus. Dann schließt du selbst auf.', m: 'Monat 10' }
+    { t: 'Kennenlernen', d: 'Wir hören zu, bevor wir zeichnen.', m: 'Vorab', b: 'gespraech' },
+    { t: 'Grundstück', d: 'Wir lesen deinen Ort. Gelände, Bäume, Sonne.', m: 'Vorab', b: 'grundstueck' },
+    { t: 'Inspiration', d: 'Vier Concepts zum Weiterdenken.', m: 'Vorab', b: 'inspiration' },
+    { t: 'Vertrag', d: 'Persönlicher Projektmanager ab dem ersten Tag.', m: 'Monat 0', b: 'vertrag' },
+    { t: 'Dein Plan', d: 'Grundriss, Ansichten, Lage stehen fest.', m: 'Monat 1', b: 'plan' },
+    { t: 'Eingereicht', d: 'Unterlagen vollständig, wir liefern jedes Dokument.', m: 'Monat 2', b: 'eingereicht' },
+    { t: 'Bemusterung', d: 'Besuch in Griffen, Ausstattung festlegen.', m: 'Monat 3', b: 'bemusterung' },
+    { t: 'Baubescheid', d: 'Die Gemeinde gibt grünes Licht.', m: 'Monat 4', b: 'bescheid' },
+    { t: 'Planung fixiert', d: 'Geht in Fertigung, ab hier ändert sich nichts mehr.', m: 'Monat 5', b: 'fixiert' },
+    { t: 'Baustart', d: 'Das Fundament entsteht.', m: 'Monat 6', b: 'baustart' },
+    { t: 'Dein Haus entsteht', d: 'Eine Woche Manufaktur in Griffen, dann steht es mit Dach und Fenstern.', m: 'Monat 7', b: 'haus' },
+    { t: 'Haustechnik', d: 'Heizung, Lüftung, Strom, Wasser.', m: 'Monat 8', b: 'technik' },
+    { t: 'Innenausbau', d: 'Türen, Böden, Bäder. Jetzt wird es deins.', m: 'Monat 9', b: 'ausbau' },
+    { t: 'Einzug', d: 'Wir gehen ein letztes Mal gemeinsam durch dein Haus. Dann schließt du selbst auf.', m: 'Monat 10', b: 'schluessel' }
   ],
   outro: { info: 'Dein Haus', h: '10 Monate. Dein Traumhaus ist bezugsfertig.', lead: 'Während andere noch planen, lebst du schon.', cta: 'Kontakt aufnehmen', href: 'https://griffner.com/contact#contact-form' }
 };
+
+/* Bilder zu den Schritten: Linien auf 48 × 48, weiß, ohne Füllung (Punkte gefüllt). Titel für die Auswahl in Framer. */
+export const ICONS = {
+  gespraech: ['Gespräch', '<path d="M9 9h20a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H18l-6 5v-5H9a4 4 0 0 1-4-4v-9a4 4 0 0 1 4-4z"/><path d="M37 17h2a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4h-1v5l-6-5h-8a4 4 0 0 1-4-3"/><circle cx="13" cy="17.5" r="1.4" class="f"/><circle cx="19" cy="17.5" r="1.4" class="f"/><circle cx="25" cy="17.5" r="1.4" class="f"/>'],
+  grundstueck: ['Grundstück', '<path d="M3 40l12-10h30L33 40z"/><path d="M29 35V23"/><path d="M29 23c-5 0-7-3-7-6s3-7 7-7 7 3 7 7-2 6-7 6z"/><circle cx="12" cy="12" r="3.5"/><path d="M12 4.5v2M12 17.5v2M4.5 12h2M17.5 12h2"/>'],
+  inspiration: ['Vier Häuser', '<path d="M6 21v-8l7-6 7 6v8z"/><path d="M28 21v-8l7-6 7 6v8z"/><path d="M6 42v-8l7-6 7 6v8z"/><path d="M28 42v-8l7-6 7 6v8z"/>'],
+  vertrag: ['Vertrag', '<path d="M11 4h19l8 8v32H11z"/><path d="M30 4v8h8"/><path d="M16 17h15M16 22h15M16 27h9"/><path d="M16 37c2-4 4-4 5 0s3 3 5-1 3-2 5 1"/>'],
+  plan: ['Grundriss', '<path d="M5 7h38v34H5z"/><path d="M5 24h14M25 24h18M29 7v10M29 30v11"/><path d="M19 24v-6"/><path d="M19 18a6 6 0 0 1 6 6"/>'],
+  eingereicht: ['Einreichen', '<path d="M4 14h14l4 5h22v23H4z"/><path d="M24 36V24M19 29l5-5 5 5"/>'],
+  bemusterung: ['Muster', '<path d="M23 43L9 17l7-4 11 27"/><path d="M24 42V8h8v34"/><path d="M27 42L39 15l7 3-14 26"/><circle cx="26.5" cy="39" r="1.3" class="f"/>'],
+  bescheid: ['Bescheid', '<path d="M10 4h22l6 6v34H10z"/><path d="M32 4v6h6"/><path d="M17 27l5 5 10-11"/>'],
+  fixiert: ['Schloss', '<path d="M13 22h22v20H13z"/><path d="M17 22v-6a7 7 0 0 1 14 0v6"/><path d="M24 30v5"/>'],
+  baustart: ['Spaten', '<path d="M3 42h42"/><path d="M8 42c4-7 10-9 15-9s11 2 15 9"/><path d="M30 5v19"/><path d="M26 5h8"/><path d="M26 24h8v7l-4 5-4-5z"/>'],
+  haus: ['Haus mit Kran', '<path d="M5 43V29l11-9 11 9v14z"/><path d="M13 43v-8h6v8"/><path d="M37 43V7"/><path d="M26 7h19"/><path d="M30 7v9"/><path d="M28 18a2 2 0 1 0 2-2"/><path d="M37 13l-7-6M37 13l7-6"/>'],
+  technik: ['Haustechnik', '<path d="M16 5l-7 15h7l-4 13 12-17h-7l4-11z"/><path d="M35 9c4 6 7 10 7 14a7 7 0 0 1-14 0c0-4 3-8 7-14z"/><path d="M5 40c3-2 5-2 8 0s5 2 8 0 5-2 8 0 5 2 8 0 5-2 7 0"/>'],
+  ausbau: ['Farbrolle', '<path d="M7 7h26v9H7z"/><path d="M33 11h5v10H21v6"/><path d="M19 27h4v15h-4z"/>'],
+  schluessel: ['Schlüssel', '<circle cx="14" cy="24" r="8"/><circle cx="14" cy="24" r="2.5"/><path d="M22 24h22"/><path d="M38 24v7M43 24v5"/>']
+};
+const icon = (k, cls = '') => ICONS[k] ? `<svg class="${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k][1].replace(/class="f"/g, 'fill="currentColor" stroke="none"')}</svg>` : '';
 
 /* Zeitplan in Einheiten: Anlauf L0, dann je Station gehen (WALK) und kurz stehen, zuletzt zur Tür und hinein */
 export const TIMING = { L0: .6, WALK: .8, END: 1.9, VH: 75, SP: 5.5 };
@@ -54,8 +78,16 @@ const walkEase = f => {
 /* Texte bereinigen: leere Schritte fallen weg, fehlende Felder bleiben leer */
 export function clean(c = {}) {
   const pick = (o, d) => ({ ...d, ...Object.fromEntries(Object.entries(o || {}).filter(([, v]) => v != null)) });
+  /* Bild: gewählt (b), „keins“ = ohne; nicht gesetzt = wie der gleichnamige Schritt im Entwurf, sonst wie der an derselben Stelle */
+  const pickB = (s, i, t) => {
+    const b = s?.b == null ? '' : String(s.b);
+    if (b === 'keins') return '';
+    if (ICONS[b]) return b;
+    const same = DEF.steps.find(x => x.t.toLowerCase() === t.toLowerCase());
+    return same ? same.b : (DEF.steps[i]?.b || '');
+  };
   const steps = (Array.isArray(c.steps) && c.steps.length ? c.steps : DEF.steps)
-    .map(s => ({ t: String(s?.t ?? '').trim(), d: String(s?.d ?? '').trim(), m: String(s?.m ?? '').trim() }))
+    .map((s, i) => { const t = String(s?.t ?? '').trim(); return { t, d: String(s?.d ?? '').trim(), m: String(s?.m ?? '').trim(), b: pickB(s, i, t) }; })
     .filter(s => s.t || s.d);
   return { intro: pick(c.intro, DEF.intro), outro: pick(c.outro, DEF.outro), steps: steps.length ? steps : DEF.steps, label: c.label };
 }
@@ -67,14 +99,14 @@ export function markup(c0) {
   const outro = `<div class="jo">${O.info ? `<p class="info">${esc(O.info)}</p>` : ''}<h2 class="h-xl jo__h">${esc(O.h)}</h2>${O.lead ? `<p class="lead jo__lead">${esc(O.lead)}</p>` : ''}${O.cta ? `<a class="btn" href="${esc(O.href || '#')}">${esc(O.cta)}<span aria-hidden="true">→</span></a>` : ''}</div>`;
   const lis = S.map((s, i) => `<li class="g__s"><p class="info g__m"><span><em>${nr(i)}</em> / ${String(N).padStart(2, '0')}</span>${s.m ? `<span>${esc(s.m)}</span>` : ''}</p><h2 class="h-xl">${esc(s.t)}</h2>${s.d ? `<p class="txt">${esc(s.d)}</p>` : ''}</li>`).join('');
   const tags = S.map((s, i) => `<div class="g__tag info"><b>${nr(i)}</b><span>${esc(s.t)}</span></div>`).join('');
-  const list = `<ol class="jl">${S.map((s, i) => `<li class="jl__i"><span class="info jl__m">${nr(i)}${s.m ? ` · ${esc(s.m)}` : ''}</span><h3 class="h-l">${esc(s.t)}</h3><p class="txt">${esc(s.d)}</p></li>`).join('')}</ol>`;
+  const list = `<ol class="jl">${S.map((s, i) => `<li class="jl__i"><div class="jl__k">${icon(s.b, 'jl__b')}<span class="info jl__m">${nr(i)}${s.m ? ` · ${esc(s.m)}` : ''}</span></div><h3 class="h-l">${esc(s.t)}</h3><p class="txt">${esc(s.d)}</p></li>`).join('')}</ol>`;
   return `<section class="g" aria-label="${esc(c.label || `Deine Journey in ${N} Schritten`)}" style="height:${sectionHeight(N)}">
 <div class="g__stage"><div class="g__gl" aria-hidden="true"></div><div class="g__tags" aria-hidden="true">${tags}</div><div class="g__intro">${intro}</div><ol class="g__steps">${lis}</ol><div class="g__rail" aria-hidden="true">${S.map(() => '<i></i>').join('')}</div><div class="g__end">${outro}</div></div>
 </section><div class="g__list">${list}</div>`;
 }
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
-   deps: { three: () => Promise<THREE>, makeHaus, figure, reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
+   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-toy.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
 export function mount(root, c0, deps) {
   const c = clean(c0), N = c.steps.length, { L0, WALK, SP } = TIMING, U = units(N);
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
@@ -125,15 +157,33 @@ export function mount(root, c0, deps) {
     const done = new T.Line(new T.BufferGeometry().setFromPoints(lp.map(p => p.clone().setY(.016))), new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9 }));
     sc.add(done);
 
-    /* Stationen: ein gelbes Feld (5:4) neben dem Weg und ein dünner Pflock. Leer als Umriss, erreicht gefüllt. */
+    /* Stationen: ein gelbes Feld (5:4) neben dem Weg und ein dünner Pflock an der Wegseite. Leer als Umriss, erreicht gefüllt. */
     const yel = new T.MeshBasicMaterial({ color: 0xFFB200, transparent: true });
-    const PL = ST.map(s => {
-      const p = at(s), [dx, dz] = tan(s), rx = -dz, rz = dx, x = p.x + rx * 1.45, z = p.z + rz * 1.45;
+    /* Das Feld liegt 1,4 m vor dem Haltepunkt: beim Halten steht es vorne rechts im Bild, mit dem Bild darüber */
+    const PL = ST.map(s0 => {
+      const s = Math.min(LEN, s0 + 1.4), p = at(s), [dx, dz] = tan(s), rx = -dz, rz = dx, x = p.x + rx * 2.05, z = p.z + rz * 2.05;
       const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = Math.atan2(-dx, -dz); sc.add(g);
       const fill = new T.Mesh(new T.BoxGeometry(1, .03, .8), yel.clone()); fill.position.y = .02; fill.material.opacity = 0; g.add(fill);
       const edge = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(1, .03, .8)), new T.LineBasicMaterial({ color: 0xCACACA, transparent: true, opacity: .7 })); edge.position.y = .02; g.add(edge);
-      const post = new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(.5, 0, 0), new T.Vector3(.5, 1.5, 0)]), new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .5 })); g.add(post);
-      return { g, fill, edge, tip: new T.Vector3(.5, 1.5, 0) };
+      const post = new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(-.5, 0, 0), new T.Vector3(-.5, 2.45, 0)]), new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .5 })); g.add(post);
+      return { g, fill, edge, tip: new T.Vector3(-.5, 2.45, 0) };
+    });
+
+    /* Bilder über den Feldern: weiße Linien als SVG-Bild (kein Canvas, Safari 26), immer zur Kamera gedreht, dezent bis die Familie kommt.
+       In 1,8 m Höhe, über den Köpfen der Familie (sonst steht der Vater beim Halten davor); Pflock und Nummer darüber. */
+    const iconTex = k => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="-6 -6 60 60" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[k][1].replace(/class="f"/g, 'fill="#ffffff" stroke="none"')}</svg>`;
+      const img = new Image(), t = new T.Texture(img);
+      t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+      img.onload = () => { t.needsUpdate = true; tk && tk.poke(); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      return t;
+    };
+    const ICO = c.steps.map((st, i) => {
+      if (!ICONS[st.b]) return null;
+      const sp = new T.Sprite(new T.SpriteMaterial({ map: iconTex(st.b), transparent: true, depthWrite: false, opacity: 0 }));
+      sp.scale.set(.8, .8, 1); sp.position.set(0, 1.8, 0); PL[i].g.add(sp);
+      return sp;
     });
 
     /* Das Haus am Ende des Wegs: Concept Wald. Erst als Plan in Linien, dann Schnurgerüst, Bodenplatte, Haus, Licht. */
@@ -157,8 +207,15 @@ export function mount(root, c0, deps) {
     })();
     const lamp = new T.PointLight(0xFFD2A0, 0, 16, 1.4); lamp.position.set(DX, 1.8, HZ + C.D / 2 + 1.4); sc.add(lamp);
 
-    /* Du */
-    const F = deps.figure(T); sc.add(F.man);
+    /* Die Familie. Lädt sie nicht (oder fehlt sie), geht die Figur aus dem Concepts Hero. */
+    let F = null, FAM = null, redraw = null;
+    const useFigure = () => { if (!alive || F) return; F = deps.figure(T); sc.add(F.man); tk && tk.poke(); redraw && redraw(); };
+    if (deps.family) deps.family(T).then(f => {
+      if (!alive) return;
+      FAM = f; f.members.forEach(m => { m.ph = m.fwd * 2.3; m.yaw = null; sc.add(m.g); });
+      tk && tk.poke(); redraw && redraw();
+    }).catch(e => { console.warn('[Journey Gehen] Familie', e); useFigure(); });
+    else useFigure();
 
     function sAt(u) {
       if (u < L0) return 0;
@@ -185,17 +242,31 @@ export function mount(root, c0, deps) {
       const p = at(s), [dx, dz] = tan(s);
       const yt = Math.atan2(-dx, -dz) + (dir < 0 ? Math.PI : 0);
       yaw = still ? yt : angTo(yaw, yt, 1 - Math.exp(-dt * 5));
-      F.man.position.set(p.x, 0, p.z); F.man.rotation.y = yaw;
-      /* An der Station schaut die Figur zum gelben Feld rechts */
+      /* An der Station schauen alle zum gelben Feld rechts */
       let nd = 1e9; ST.forEach(q => { nd = Math.min(nd, Math.abs(q - s)); });
       const lt2 = dir > 0 ? -.55 * (1 - clamp(nd / 1.6)) * (1 - env) : 0;
       look += (lt2 - look) * (still ? 1 : 1 - Math.exp(-dt * 3.5));
-      F.pose(ph, env, now / 1000, look, still);
-      F.fade(1 - E(s, SEND - 1.1, SEND - .2));
+      if (F) { F.man.position.set(p.x, 0, p.z); F.man.rotation.y = yaw; F.pose(ph, env, now / 1000, look, still); F.fade(1 - E(s, SEND - 1.1, SEND - .2)); }
+      /* Familie: jede und jeder auf dem eigenen Platz am Weg (seitlich, vorne), vor der Tür hintereinander.
+         Die Phase hängt am gegangenen Weg (nichts rutscht); Kinder machen kürzere, schnellere Schritte. */
+      if (FAM) FAM.members.forEach(m => {
+        const si = clamp(s + m.fwd, 0, LEN), q = at(si), [mx, mz] = tan(si), lk = m.lat * (innerWidth / innerHeight < .85 ? .74 : 1) * (1 - E(si, SEND - 7.5, SEND - 2.4));
+        m.g.position.set(q.x - mz * lk, 0, q.z + mx * lk);
+        let ym = Math.atan2(-mx, -mz) + (dir < 0 ? Math.PI : 0);
+        /* An der Station dreht sich ein Kind zu dir um und winkt (abwechselnd Tochter und Sohn) */
+        const wt = !still && cam && m.kid && dir > 0 && (nearest(s) % 2 ? m.key === 'sohn' : m.key === 'tochter') ? (1 - env) * (1 - clamp(nd / 1.1)) : 0;
+        m.turn += (wt - m.turn) * (1 - Math.exp(-dt * 2.6));
+        if (m.turn > .001) ym = angTo(ym, Math.atan2(-(cam.c[0] - m.g.position.x), -(cam.c[2] - m.g.position.z)), m.turn * .92);
+        m.yaw = still || m.yaw == null ? ym : angTo(m.yaw, ym, 1 - Math.exp(-dt * 5));
+        m.g.rotation.y = m.yaw;
+        m.ph += Math.abs(ds) / Math.max(FAM.stride(m), speed / m.cad) * Math.PI * 2;
+        FAM.pose(m, m.ph, env, now / 1000, m.turn > .01 ? look * (1 - m.turn) : look, still, { wave: clamp((m.turn - .35) / .55) });
+        FAM.fade(m, 1 - E(si, SEND - 1.1, SEND - .2));
+      });
 
       /* Kamera: schräg hinter dir, Blick den Weg entlang. Am Ende weit zurück, das ganze Haus. */
       const vw = innerWidth, vh = innerHeight, narrow = vw / vh < .85;
-      const ox = narrow ? -1.5 : -2.5, oy = narrow ? 3.7 : 2.7, oz = narrow ? 11 : 7.4, ah = narrow ? 5 : 6.5;
+      const ox = narrow ? -1.4 : -2.5, oy = narrow ? 4 : 2.7, oz = narrow ? 12.2 : 7.4, ah = narrow ? 5 : 6.5;
       const rx = -dz, rz = dx;
       const c1 = [p.x + rx * ox - dx * oz, oy, p.z + rz * ox - dz * oz], l1 = [p.x + dx * ah + rx * .7, narrow ? 1.25 : 1.05, p.z + dz * ah + rz * .7];
       const wide = narrow ? [HX - 8, 14, HZ + 74] : [HX - 19, 7, HZ + 40], wl = narrow ? [HX - 1.5, -4, HZ] : [HX - 3.5, 2.7, HZ + 2];
@@ -216,6 +287,13 @@ export function mount(root, c0, deps) {
         const r = E(s, ST[i] - 1.2, ST[i] - .1);
         q.fill.material.opacity = r; q.edge.material.opacity = lerp(.7, 0, r);
         q.g.scale.setScalar(1 + .22 * Math.sin(Math.PI * clamp((s - ST[i] + 1.2) / 1.6)) * (1 - E(nd, .5, 2)) * (i === ni ? 1 : 0));
+        /* Bild: von weitem leise, an der Station hell und etwas höher, danach wieder zurück */
+        const sp = ICO[i];
+        if (sp) {
+          const d = s - ST[i], near = 1 - E(Math.abs(d), .8, 5.5);
+          sp.material.opacity = (.26 + .74 * near) * (d > 1 ? lerp(1, .6, E(d, 1, 4)) : 1) * (1 - kw);
+          sp.position.y = 1.8 + .12 * near;
+        }
       });
 
       /* Das Haus entsteht mit den Schritten */
@@ -239,7 +317,13 @@ export function mount(root, c0, deps) {
         const d = S.cam.position.distanceTo(tmp), pr2 = S.project(tmp.x, tmp.y, tmp.z), t = TAGS[i];
         const o = pr2.z < 1 && pr2.x > -40 && pr2.x < W + 40 ? clamp((42 - d) / 14) * (1 - kw * .6) : 0;
         t.style.opacity = o.toFixed(3);
-        if (o > 0) t.style.transform = `translate3d(${(pr2.x + 8).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) scale(${clamp(9 / d, .6, 1.15).toFixed(3)})`;
+        /* Nahe am rechten Rand (Leiste) steht die Marke links vom Pflock */
+        const flip = pr2.x > W * .74, sc = clamp(9 / d, .6, 1.15).toFixed(3);
+        if (o > 0) t.style.transform = flip ? `translate3d(${Math.min(pr2.x - 8, W - 20).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) translateX(-100%) scale(${sc})` : `translate3d(${(pr2.x + 8).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) scale(${sc})`;
+        t.classList.toggle('is-flip', flip);
+        /* Bild nahe am rechten Rand: wächst nach links, damit es nicht an die Leiste stößt (gilt ab dem nächsten Bild) */
+        const sp = ICO[i];
+        if (sp && sp.material.opacity > 0) { tmp.setFromMatrixPosition(sp.matrixWorld); const ps = S.project(tmp.x, tmp.y, tmp.z); sp.center.x = lerp(.5, 1.05, E(ps.x, W * .6, W * .86)); }
         t.classList.toggle('is-on', i === active);
       });
 
@@ -264,8 +348,13 @@ export function mount(root, c0, deps) {
 
     if (staticMode) {
       /* Ruhiges Bild: du stehst vor deinem fertigen Haus, die Tür ist offen */
-      const draw = () => { sPrev = ST[N - 1]; frame(U, .016, 0, true); F.fade(1); F.man.position.set(DX - .4, 0, HZ + 8); F.man.rotation.y = .15; F.pose(0, 0, 0, 0, true); INTRO.style.opacity = '1'; S.render(); };
-      S.onResize = draw; draw();
+      const draw = () => {
+        sPrev = ST[N - 1]; frame(U, .016, 0, true);
+        if (F) { F.fade(1); F.man.position.set(DX - .4, 0, HZ + 8); F.man.rotation.y = .15; F.pose(0, 0, 0, 0, true); }
+        if (FAM) FAM.members.forEach(m => { FAM.fade(m, 1); m.g.position.set(DX - .4 + m.lat * 1.2, 0, HZ + 8 - m.fwd * .7); m.g.rotation.y = .15; FAM.pose(m, 0, 0, 0, 0, true); });
+        INTRO.style.opacity = '1'; S.render();
+      };
+      redraw = draw; S.onResize = draw; draw();
       return;
     }
 
