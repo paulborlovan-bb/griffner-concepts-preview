@@ -1,9 +1,9 @@
 // Baut die Framer Code-Komponenten JourneyGehen, JourneyGehen2 und JourneyGehen3 aus der Szene des Vorschlags 1 (Gehen).
 // Aufruf: cd griffner-konzepte/journey && node framer-bau.mjs
 // Quelle: gehen-szene.js (Szene, Texte, Zeitplan, Bilder), gehen-szene.css, haus3d.js (makeHaus), figur3d.js (figure) und je Variante die Familie:
-//   JourneyGehen  (Seite /journey):   familie-toy.js, Spielfiguren in Code gebaut (Runde 7).
+//   JourneyGehen  (Seite /journey):   seit 2026-11-20 wie JourneyGehen3, das Paar (familie-echt.js + gang-daten.js, Rocketbox MIT). Bis dahin familie-toy.js (Runde 7).
 //   JourneyGehen2 (Seite /journey-2): familie3d.js, Quaternius Körper und Gang (CC0), Modell-Datei familie.bin.gz bei Framer (Runde 3, erster Versuch).
-//   JourneyGehen3 (Seite /journey-3): familie-echt.js + gang-daten.js, Microsoft Rocketbox (MIT), Modell-Datei familie-echt.bin.gz bei Framer (Runde 6).
+//   JourneyGehen3 (Seite /journey-3): familie-echt.js + gang-daten.js, Microsoft Rocketbox (MIT), Modell-Datei familie-echt.bin.gz bei Framer (Runde 8: das Paar Hand in Hand).
 // Nach neuem Bau einer Modell-Datei (familie-bau.mjs, familie-echt-bau.mjs): neu hochladen und die URL unten eintragen.
 // Ziel:   griffner/framer-code/JourneyGehen*.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -16,16 +16,18 @@ const noExport = s => s.replace(/^export (async function|const|let|function|clas
 const sect = f => `/* ---------- ${f} ---------- */\n${noExport(src(f)).replace(/^import .*$/gm, '')}\n`;
 const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
 const URL2 = 'https://framerusercontent.com/assets/rry7ninQx3XVQFHjtejrj6OSGE.gz'; // familie.bin.gz (Quaternius) bei Framer, hochgeladen 2026-11-19 (Runde 3)
-const URL3 = 'https://framerusercontent.com/assets/kN5ihfOtDgvXa294N5bDfKx2g.gz'; // familie-echt.bin.gz (Rocketbox) bei Framer, hochgeladen 2026-11-19 (Runde 6)
+const URL3 = 'https://framerusercontent.com/assets/G7T4eIBkSTcYA8sJjSUy8vWgsU.gz'; // familie-echt.bin.gz (Rocketbox, das Paar) bei Framer, hochgeladen 2026-11-20 (Runde 8; Runde 6 mit Kindern: kN5ihfOtDgvXa294N5bDfKx2g.gz)
 const VARIANTS = [
-  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['familie-toy.js'],
-    head: '// Familie: weiche Spielfiguren, in Code gebaut (eigener Entwurf).\n',
-    family: 'Promise.resolve(toyFamily(T))' },
+  /* Seite /journey: seit 2026-11-20 das Paar aus Variante 3 (Kundenwunsch „Yes, on /journey“). Die Spielfiguren (familie-toy.js, Runde 7) liegen noch im Ordner. */
+  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['gang-daten.js', 'familie-echt.js'], url: URL3,
+    head: '// Seite /journey: das Paar Hand in Hand, echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
+      + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
+    family: 'loadEchteFamilie(T, FAMILIE_URL)' },
   { name: 'JourneyGehen2', title: 'Journey Gehen 2', files: ['familie3d.js'], url: URL2,
     head: '// Variante 2 (Seite /journey-2): Familie aus Quaternius Universal Base Characters und Universal Animation Library, CC0 1.0 (gemeinfrei).\n',
     family: 'loadFamily(T, FAMILIE_URL)' },
   { name: 'JourneyGehen3', title: 'Journey Gehen 3', files: ['gang-daten.js', 'familie-echt.js'], url: URL3,
-    head: '// Variante 3 (Seite /journey-3): echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
+    head: '// Variante 3 (Seite /journey-3): das Paar Hand in Hand, echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
       + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
     family: 'loadEchteFamilie(T, FAMILIE_URL)' },
 ];

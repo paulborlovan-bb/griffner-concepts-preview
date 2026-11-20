@@ -10,18 +10,18 @@
 <link rel="stylesheet" href="gehen-szene.css">
 </head>
 <body>
-<!-- Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
+<!-- Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Seit 2026-11-20 das Paar Hand in Hand (familie-echt.js, Rocketbox MIT), wie gehen-3.html. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
 <main><div class="jg" data-jg></div></main>
 <script type="module">
 import { chrome, reduce } from './jr.js';
 import { DEF, markup, mount } from './gehen-szene.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
-import { toyFamily } from './familie-toy.js';
+import { loadEchteFamilie } from './familie-echt.js';
 chrome(1);
 const root = document.querySelector('[data-jg]');
 root.innerHTML = markup(DEF);
-mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, family: T => Promise.resolve(toyFamily(T)), reduce });
+mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, family: T => loadEchteFamilie(T, './familie-echt.bin.gz'), reduce });
 </script>
 </body>
 </html>
