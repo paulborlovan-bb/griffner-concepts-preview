@@ -5,6 +5,8 @@
 //   JourneyGehen2 (Seite /journey-2): familie3d.js, Quaternius Körper und Gang (CC0), Modell-Datei familie.bin.gz bei Framer (Runde 3, erster Versuch).
 //   JourneyGehen3 (Seite /journey-3): familie-echt.js + gang-daten.js, Microsoft Rocketbox (MIT), Modell-Datei familie-echt.bin.gz bei Framer (Runde 8: das Paar Hand in Hand).
 // Nach neuem Bau einer Modell-Datei (familie-bau.mjs, familie-echt-bau.mjs): neu hochladen und die URL unten eintragen.
+// Runde 9 (2026-11-20, schnell am Telefon): zwei Modell-Dateien für das Paar (URL3 Desktop/Tablet, URL3S Telefon), Download startet beim Einbinden
+//   (prefetchEchteFamilie), die Szene wird bei fehlendem WebGL zur ruhigen Fassung (onStatic: das gelbe Feld kehrt ins Logo zurück).
 // Ziel:   griffner/framer-code/JourneyGehen*.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { DEF, ICONS } from './gehen-szene.js';
@@ -16,20 +18,22 @@ const noExport = s => s.replace(/^export (async function|const|let|function|clas
 const sect = f => `/* ---------- ${f} ---------- */\n${noExport(src(f)).replace(/^import .*$/gm, '')}\n`;
 const LIZENZ = readFileSync(new URL('./familie-echt-LIZENZ.txt', import.meta.url), 'utf8');
 const URL2 = 'https://framerusercontent.com/assets/rry7ninQx3XVQFHjtejrj6OSGE.gz'; // familie.bin.gz (Quaternius) bei Framer, hochgeladen 2026-11-19 (Runde 3)
-const URL3 = 'https://framerusercontent.com/assets/G7T4eIBkSTcYA8sJjSUy8vWgsU.gz'; // familie-echt.bin.gz (Rocketbox, das Paar) bei Framer, hochgeladen 2026-11-20 (Runde 8; Runde 6 mit Kindern: kN5ihfOtDgvXa294N5bDfKx2g.gz)
+const URL3 = 'https://framerusercontent.com/assets/ttpcYC8BdRagbY1NydB6vu9Z4s.gz'; // familie-echt.bin.gz (Rocketbox, das Paar, WebP 512) bei Framer, hochgeladen 2026-11-20 (Runde 9; Runde 8 JPEG: G7T4eIBkSTcYA8sJjSUy8vWgsU.gz, Runde 6 mit Kindern: kN5ihfOtDgvXa294N5bDfKx2g.gz)
+const URL3S = 'https://framerusercontent.com/assets/7wb8HI39JrQuLr6s7fcBUJPY97I.gz'; // familie-echt-s.bin.gz (das Paar für Telefone, WebP 256) bei Framer, hochgeladen 2026-11-20 (Runde 9)
+const ECHT = 'family: (T: any) => loadEchteFamilie(T, famUrl), prefetch: () => prefetchEchteFamilie(famUrl),';
 const VARIANTS = [
   /* Seite /journey: seit 2026-11-20 das Paar aus Variante 3 (Kundenwunsch „Yes, on /journey“). Die Spielfiguren (familie-toy.js, Runde 7) liegen noch im Ordner. */
-  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['gang-daten.js', 'familie-echt.js'], url: URL3,
+  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['gang-daten.js', 'familie-echt.js'], url: URL3, urlS: URL3S,
     head: '// Seite /journey: das Paar Hand in Hand, echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
       + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
-    family: 'loadEchteFamilie(T, FAMILIE_URL)' },
+    deps: ECHT },
   { name: 'JourneyGehen2', title: 'Journey Gehen 2', files: ['familie3d.js'], url: URL2,
     head: '// Variante 2 (Seite /journey-2): Familie aus Quaternius Universal Base Characters und Universal Animation Library, CC0 1.0 (gemeinfrei).\n',
-    family: 'loadFamily(T, FAMILIE_URL)' },
-  { name: 'JourneyGehen3', title: 'Journey Gehen 3', files: ['gang-daten.js', 'familie-echt.js'], url: URL3,
+    deps: 'family: (T: any) => loadFamily(T, FAMILIE_URL),' },
+  { name: 'JourneyGehen3', title: 'Journey Gehen 3', files: ['gang-daten.js', 'familie-echt.js'], url: URL3, urlS: URL3S,
     head: '// Variante 3 (Seite /journey-3): das Paar Hand in Hand, echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
       + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
-    family: 'loadEchteFamilie(T, FAMILIE_URL)' },
+    deps: ECHT },
 ];
 const css = src('gehen-szene.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '').replace(/\s{2,}/g, ' ');
 
@@ -72,7 +76,7 @@ const CSS = ${JSON.stringify(css)}
 ${noExport(src('haus3d.js'))}
 /* ---------- figur3d.js ---------- */
 ${noExport(src('figur3d.js'))}
-${v.files.map(sect).join('')}${v.url ? `const FAMILIE_URL = ${JSON.stringify(v.url)}\n` : ''}/* ---------- gehen-szene.js ---------- */
+${v.files.map(sect).join('')}${v.url ? `const FAMILIE_URL = ${JSON.stringify(v.url)}\n` : ''}${v.urlS ? `const FAMILIE_URL_S = ${JSON.stringify(v.urlS)} // Telefon (bis 809 px): halbe Texturgröße\n` : ''}/* ---------- gehen-szene.js ---------- */
 ${noExport(src('gehen-szene.js'))}
 /* ---------- Framer ---------- */
 let threeP: Promise<any> | null = null
@@ -103,10 +107,12 @@ export default function ${v.name}(props: any) {
         const still = RenderTarget.current() === RenderTarget.canvas, reduce = reduceMotion()
         /* Das gelbe Feld der Website ist die Marke an der Schrittleiste: es gleitet von Schritt zu Schritt und bleibt rechts an der Leiste */
         let dock: any = null, offDock: any = null, zone: any = null
-        const h = mount(root, cfg, {
+        ${v.urlS ? 'const famUrl = familieUrl(FAMILIE_URL, FAMILIE_URL_S)\n        ' : ''}const h = mount(root, cfg, {
             three, makeHaus, figure, reduce, still,
-            family: (T: any) => ${v.family},
+            ${v.deps}
             onStep(i: number, api: any) { if (dock) dock.el = api.rail[api.railAt()] || dock.el },
+            /* Ohne 3D (kein WebGL): ruhige Fassung, das gelbe Feld gehört wieder dem Logo */
+            onStatic() { offDock && offDock(); offDock = null; zone && store.darkZones.delete(zone); zone = null; root.classList.remove("has-dock") },
         })
         if (!still && !reduce) {
             root.classList.add("has-dock")
