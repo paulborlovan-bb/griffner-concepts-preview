@@ -10,18 +10,21 @@
 <link rel="stylesheet" href="gehen-szene.css">
 </head>
 <body>
-<!-- Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Seit 2026-11-20 das Paar Hand in Hand (familie-echt.js, Rocketbox MIT), wie gehen-3.html. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
+<!-- Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Seit 2026-11-20 das Paar Hand in Hand (familie-echt.js, Rocketbox MIT), wie gehen-3.html. Runde 9: schnell am Telefon. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
 <main><div class="jg" data-jg></div></main>
 <script type="module">
 import { chrome, reduce } from './jr.js';
 import { DEF, markup, mount } from './gehen-szene.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
-import { loadEchteFamilie } from './familie-echt.js';
+import { loadEchteFamilie, prefetchEchteFamilie, familieUrl } from './familie-echt.js';
 chrome(1);
 const root = document.querySelector('[data-jg]');
 root.innerHTML = markup(DEF);
-mount(root, DEF, { three: () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'), makeHaus, figure, family: T => loadEchteFamilie(T, './familie-echt.bin.gz'), reduce });
+/* Runde 9: Telefon lädt die kleine Datei, der Download startet sofort (parallel zu three.js). ?big / ?small erzwingt eine Datei, ?nogl testet die ruhige Fassung ohne 3D. */
+const q = new URLSearchParams(location.search), FAM = q.has('big') ? './familie-echt.bin.gz' : q.has('small') ? './familie-echt-s.bin.gz' : familieUrl('./familie-echt.bin.gz', './familie-echt-s.bin.gz');
+const three = q.has('nogl') ? () => Promise.reject(new Error('Test: ohne WebGL')) : () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+window.__jgh = mount(root, DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce });
 </script>
 </body>
 </html>

@@ -253,9 +253,11 @@ class Stake {
   }
 }
 
+/* opt.dpr: Bildpunkte je CSS-Pixel (sonst bis 1,6), opt.shadowSize: Schattenkarte (sonst 2048), opt.preserve: Bild für Screenshots behalten
+   (sonst ja; die Journey Gehen schaltet es aus, das spart am Telefon eine Kopie je Bild) */
 function createStage(host, opt = {}) {
-  const r = new T.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
-  r.setPixelRatio(Math.min(1.6, devicePixelRatio || 1));
+  const r = new T.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: opt.preserve ?? true });
+  r.setPixelRatio(opt.dpr ?? Math.min(1.6, devicePixelRatio || 1));
   r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap;
   r.outputColorSpace = T.SRGBColorSpace;
   r.domElement.style.cssText = 'display:block;width:100%;height:100%';
@@ -267,7 +269,7 @@ function createStage(host, opt = {}) {
   const cam = new T.PerspectiveCamera(opt.fov ?? 30, 16 / 9, .5, 800);
   const hemi = new T.HemisphereLight(0xdfe4ea, 0x1a1a1a, opt.hemi ?? .7); scene.add(hemi);
   const key = new T.DirectionalLight(0xffffff, opt.key ?? 2.2);
-  key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+  key.castShadow = true; key.shadow.mapSize.set(opt.shadowSize ?? 2048, opt.shadowSize ?? 2048);
   Object.assign(key.shadow.camera, { left: -70, right: 70, top: 50, bottom: -50, near: 1, far: 260 });
   key.shadow.bias = -.0005; key.shadow.normalBias = .03; key.shadow.radius = 4;
   scene.add(key, key.target);
@@ -287,6 +289,9 @@ function createStage(host, opt = {}) {
     setBg(hex) { bg.set(hex); scene.fog.color.set(hex); },
     project(x, y, z) { const v = new T.Vector3(x, y, z).project(cam); return { x: (v.x + 1) / 2 * host.clientWidth, y: (1 - v.y) / 2 * host.clientHeight, z: v.z }; },
     fit() { const w = host.clientWidth || 1, h = host.clientHeight || 1; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); },
+    /* Qualität im Lauf ändern (Telefon, das nicht mitkommt): Bildpunkte und Schattenkarte */
+    setDpr(d) { if (Math.abs(r.getPixelRatio() - d) < .01) return; r.setPixelRatio(d); S.fit(); },
+    setShadowSize(n) { if (key.shadow.mapSize.x === n) return; key.shadow.mapSize.set(n, n); if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; } },
     render() { S.houses.forEach(h => h.update()); r.render(scene, cam); },
     dispose() { S.ro && S.ro.disconnect(); r.dispose(); r.domElement.remove(); }
   };

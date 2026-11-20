@@ -32,11 +32,24 @@ const SMILE = (typeof window !== 'undefined' && window.__smile) || {
 /* Beugeachse der Finger im Knochen (Biped: x entlang des Glieds) */
 const CURL = (typeof window !== 'undefined' && window.__curl) || [0, 0, 1];
 
-/* url: familie-echt.bin oder .bin.gz (gzip, wird hier entpackt; auf griffner.com liegt die gepackte Datei bei Framer) */
+/* url: familie-echt.bin oder .bin.gz (gzip, wird hier entpackt; auf griffner.com liegt die gepackte Datei bei Framer).
+   Runde 9 (2026-11-20): zwei Dateien, familie-echt.bin.gz (Desktop, Tablet) und familie-echt-s.bin.gz (Telefon, halbe Texturgröße), Texturen als WebP.
+   prefetchEchteFamilie(url) startet den Download sofort beim Einbinden der Szene, parallel zu three.js; loadEchteFamilie nimmt dann denselben Download. */
+const PF = new Map();
+const famBuf = url => {
+  let p = PF.get(url);
+  if (!p) {
+    p = fetch(url).then(r => { if (!r.ok) throw new Error('familie-echt.bin ' + r.status); return r.arrayBuffer(); });
+    PF.set(url, p); p.catch(() => PF.delete(url));
+  }
+  return p;
+};
+export function prefetchEchteFamilie(url) { famBuf(url).catch(() => { }); }
+/* Telefon (schmal): die kleine Datei. big = Desktop und Tablet, small = Telefon */
+export const familieUrl = (big, small) => (small && typeof matchMedia !== 'undefined' && matchMedia('(max-width: 809px)').matches) ? small : big;
+
 export async function loadEchteFamilie(T, url, who = ECHT_WHO) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('familie-echt.bin ' + r.status);
-  let buf = await r.arrayBuffer();
+  let buf = await famBuf(url);
   const u8 = new Uint8Array(buf, 0, 2);
   if (u8[0] === 0x1f && u8[1] === 0x8b) {
     if (typeof DecompressionStream === 'undefined') throw new Error('DecompressionStream fehlt');

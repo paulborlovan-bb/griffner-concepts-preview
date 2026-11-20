@@ -17,7 +17,15 @@
    Runde 5 (2026-11-19, Kundenwunsch: „eine andere Art Menschen“, gewählt: echte Menschen): die Familie sind echte Menschen-Modelle
      (familie-echt.js, Microsoft Rocketbox, MIT), gleiche Schnittstelle, gleicher Gang, Händehalten und Winken.
    Runde 7 (2026-11-19, Kundenwunsch: „die animierten zurück, die echten sehen zu seltsam aus“): wieder die Spielfiguren aus Runde 3
-     (familie-toy.js), kleiner und enger, in GRIFFNER Farben, mit Blinzeln, Blicken und Winken mit dem äußeren Arm. Ohne Händehalten. */
+     (familie-toy.js), kleiner und enger, in GRIFFNER Farben, mit Blinzeln, Blicken und Winken mit dem äußeren Arm. Ohne Händehalten.
+   Runde 9 (2026-11-20, Kundenwunsch: „für das Telefon fertig, schnell laden, leicht und ohne Ruckeln scrollen“):
+   - Das Paar lädt sofort beim Einbinden, parallel zu three.js (deps.prefetch); das Telefon nimmt die kleine Datei (familie-echt-s.bin.gz).
+   - Das 3D-Bild erscheint erst, wenn das Paar da ist (höchstens 2,5 s warten), und blendet weich ein: niemand springt ins Bild.
+   - Telefon und Tablet: höchstens 1,5 Bildpunkte je CSS-Pixel, Schattenkarte 1024, kein Puffer für Screenshots.
+     Kommt ein Gerät nicht mit (deutlich langsamer als sein Bildschirmtakt), wird die Szene in bis zu zwei Stufen leichter.
+   - Steht alles still, zeichnet die Szene nur rund 30 Bilder je Sekunde (Blinzeln, Atmen): spart Akku und Wärme, das Telefon bleibt schnell.
+   - Texte und Marken werden nur geschrieben, wenn sie sich ändern.
+   - Ohne WebGL (oder bei einem Fehler im 3D): die ruhige Fassung mit allen Schritten als Liste, statt einer schwarzen Fläche. */
 
 export const DEF = {
   intro: { info: 'Journey', h: 'Vom ersten Gespräch bis zum Schlüssel.', lead: 'Ein Projektmanager an deiner Seite. Und der Schlüssel in zehn Monaten.', hint: 'Scrollen' },
@@ -111,7 +119,8 @@ export function markup(c0) {
 }
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
-   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-toy.js), reduce, still (Framer Canvas: ohne 3D), onStep(i, els) } */
+   deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-echt.js), prefetch?: () => void (Familie früh laden),
+           reduce, still (Framer Canvas: ohne 3D), onStep(i, els), onStatic?: () => void (3D fällt aus, ruhige Fassung) } */
 export function mount(root, c0, deps) {
   const c = clean(c0), N = c.steps.length, { L0, WALK, SP } = TIMING, U = units(N);
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
@@ -127,6 +136,23 @@ export function mount(root, c0, deps) {
   } else el.style.height = sectionHeight(N);
   if (deps.still) return handle;
 
+  /* Das Paar sofort laden (parallel zu three.js) */
+  deps.prefetch && deps.prefetch();
+  /* Telefon und Tablet: weniger Bildpunkte und eine kleinere Schattenkarte */
+  const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse), (max-width: 809px)').matches;
+  const DPR0 = Math.min(coarse ? 1.5 : 1.6, devicePixelRatio || 1), SH0 = coarse ? 1024 : 2048;
+  /* Bildschirmtakt messen, solange die Szene lädt (Median von 30 Bildern): Maßstab, ob ein Gerät später mit der Szene mitkommt */
+  let base = 0;
+  { const iv = []; let l0 = 0; const tick = t => { if (!alive) return; if (l0) iv.push(t - l0); l0 = t; if (iv.length < 30) requestAnimationFrame(tick); else { iv.sort((a, b) => a - b); base = clamp(iv[iv.length >> 1], 6, 40); } }; requestAnimationFrame(tick); }
+  /* Ohne WebGL oder bei einem Fehler im 3D: die ruhige Fassung (alle Schritte als Liste), nie eine schwarze Fläche zum Durchscrollen */
+  const fallback = e => {
+    console.warn('[Journey Gehen] ohne 3D', e);
+    if (!alive || root.classList.contains('is-static')) return;
+    tk && tk.stop(); offScroll && offScroll();
+    root.classList.add('is-static'); el.style.height = ''; el.parentNode.appendChild(END); INTRO.style.opacity = '1';
+    deps.onStatic && deps.onStatic(handle);
+  };
+
   const arr = i => L0 + i + WALK;
   /* Haus-Stufen an den Schritten. Bei 14 Schritten wie im Entwurf (05 Plan, 09 Schnurgerüst, 10 Platte, 11 Haus, 12 und 13 Licht, 14 Tür),
      bei einer anderen Zahl verteilt auf dieselben Anteile des Wegs. */
@@ -135,9 +161,9 @@ export function mount(root, c0, deps) {
   deps.three().then(T => {
     if (!alive) return;
     const H3 = deps.makeHaus(T);
-    S = H3.createStage($('.g__gl'), { bg: 0x000000, fov: 32, shadow: .55, key: 2.2, hemi: .6, fogNear: 50, fogFar: 170 });
+    S = H3.createStage($('.g__gl'), { bg: 0x000000, fov: 32, shadow: .55, key: 2.2, hemi: .6, fogNear: 50, fogFar: 170, dpr: DPR0, shadowSize: SH0, preserve: false });
     build(T, H3);
-  }).catch(e => console.error('[Journey Gehen]', e));
+  }).catch(fallback);
 
   function build(T, H3) {
     const sc = S.scene;
@@ -212,15 +238,20 @@ export function mount(root, c0, deps) {
     })();
     const lamp = new T.PointLight(0xFFD2A0, 0, 16, 1.4); lamp.position.set(DX, 1.8, HZ + C.D / 2 + 1.4); sc.add(lamp);
 
-    /* Die Familie. Lädt sie nicht (oder fehlt sie), geht die Figur aus dem Concepts Hero. */
-    let F = null, FAM = null, redraw = null;
+    /* Die Familie. Lädt sie nicht (oder fehlt sie), geht die Figur aus dem Concepts Hero.
+       Das Bild startet erst, wenn sie da ist (ready), höchstens 2,5 s warten; dann blendet die Bühne ein (.g__gl.is-on). */
+    let F = null, FAM = null, redraw = null, ready = !deps.family, shown = false;
+    const GL = $('.g__gl');
+    const go = () => { if (ready || !alive) return; ready = true; tk && tk.poke(); redraw && redraw(); };
     const useFigure = () => { if (!alive || F) return; F = deps.figure(T); sc.add(F.man); tk && tk.poke(); redraw && redraw(); };
-    if (deps.family) deps.family(T).then(f => {
-      if (!alive) return;
-      FAM = f; f.members.forEach(m => { m.ph = m.fwd * 2.3; m.yaw = null; sc.add(m.g); });
-      tk && tk.poke(); redraw && redraw();
-    }).catch(e => { console.warn('[Journey Gehen] Familie', e); useFigure(); });
-    else useFigure();
+    if (deps.family) {
+      deps.family(T).then(f => {
+        if (!alive) return;
+        FAM = f; f.members.forEach(m => { m.ph = m.fwd * 2.3; m.yaw = null; sc.add(m.g); });
+        tk && tk.poke(); redraw && redraw(); go();
+      }).catch(e => { console.warn('[Journey Gehen] Familie', e); useFigure(); go(); });
+      setTimeout(go, 2500);
+    } else useFigure();
 
     function sAt(u) {
       if (u < L0) return 0;
@@ -234,6 +265,9 @@ export function mount(root, c0, deps) {
     const kPlan = at14(4), kStake = at14(8), kSlab = at14(9), kHouse = at14(10), kN1 = at14(11), kN2 = at14(12), kDoor = N - 1;
     let vk = '', sPrev = 0, ph = 0, env = 0, yaw = 0, dir = 1, idle = 0, look = 0, cam = null;
     const tmp = new T.Vector3(), lookV = new T.Vector3();
+    /* zuletzt geschriebene Werte: Marken, Auftakt und Schluss nur anfassen, wenn sich etwas ändert */
+    const TS = TAGS.map(() => ({ o: '', t: '', f: null, on: null }));
+    let introO = '', endOn = null;
     const angTo = (a, b, k) => { const d = ((b - a + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; return a + d * k; };
 
     function frame(u, dt, now, still) {
@@ -246,11 +280,13 @@ export function mount(root, c0, deps) {
       if (idle > .8) dir = 1;
       const p = at(s), [dx, dz] = tan(s);
       const yt = Math.atan2(-dx, -dz) + (dir < 0 ? Math.PI : 0);
-      yaw = still ? yt : angTo(yaw, yt, 1 - Math.exp(-dt * 5));
+      yaw = still || !cam ? yt : angTo(yaw, yt, 1 - Math.exp(-dt * 5));
+      let busy = env > .002 || Math.abs(angTo(yaw, yt, 1) - yaw) > 1e-3;
       /* An der Station schauen alle zum gelben Feld rechts */
       let nd = 1e9; ST.forEach(q => { nd = Math.min(nd, Math.abs(q - s)); });
       const lt2 = dir > 0 ? -.55 * (1 - clamp(nd / 1.6)) * (1 - env) : 0;
       look += (lt2 - look) * (still ? 1 : 1 - Math.exp(-dt * 3.5));
+      if (Math.abs(lt2 - look) > 1e-3) busy = true;
       if (F) { F.man.position.set(p.x, 0, p.z); F.man.rotation.y = yaw; F.pose(ph, env, now / 1000, look, still); F.fade(1 - E(s, SEND - 1.1, SEND - .2)); }
       /* Familie: jede und jeder auf dem eigenen Platz am Weg (seitlich, vorne), vor der Tür hintereinander.
          Die Phase hängt am gegangenen Weg (nichts rutscht); Kinder machen kürzere, schnellere Schritte. */
@@ -281,6 +317,7 @@ export function mount(root, c0, deps) {
       const tc = c1.map((v, i) => lerp(v, wide[i], kw)), tl = l1.map((v, i) => lerp(v, wl[i], kw));
       if (!cam || still) cam = { c: tc, l: tl };
       else { const k = 1 - Math.exp(-dt * 4); cam.c = cam.c.map((v, i) => lerp(v, tc[i], k)); cam.l = cam.l.map((v, i) => lerp(v, tl[i], k)); }
+      if (cam.c.some((v, i) => Math.abs(v - tc[i]) > 2e-3) || cam.l.some((v, i) => Math.abs(v - tl[i]) > 2e-3)) busy = true;
       S.cam.position.set(...cam.c); lookV.set(...cam.l); S.cam.lookAt(lookV);
       /* Breit: das Bild rückt nach rechts, links bleibt Platz für den Text */
       const cw = S.r.domElement.clientWidth, ch = S.r.domElement.clientHeight, vo = narrow ? 0 : -cw * .17, key = cw + ',' + ch + ',' + vo;
@@ -316,22 +353,26 @@ export function mount(root, c0, deps) {
       const dusk = Math.max(.45 * E(u, arr(kN1) - .2, arr(kN2) + .2), E(u, arr(kDoor) - .2, L0 + N + .9));
       S.hemi.intensity = lerp(.6, .16, dusk); S.key.intensity = lerp(2.2, .45, dusk); S.fill.intensity = lerp(.5, .15, dusk);
       S.render();
+      if (!shown) { shown = true; GL.classList.add('is-on'); }
 
       /* Nummern an den Pflöcken */
       const W = S.r.domElement.clientWidth;
       PL.forEach((q, i) => {
         tmp.copy(q.tip).applyMatrix4(q.g.matrixWorld);
-        const d = S.cam.position.distanceTo(tmp), pr2 = S.project(tmp.x, tmp.y, tmp.z), t = TAGS[i];
+        const d = S.cam.position.distanceTo(tmp), pr2 = S.project(tmp.x, tmp.y, tmp.z), t = TAGS[i], ts = TS[i];
         const o = pr2.z < 1 && pr2.x > -40 && pr2.x < W + 40 ? clamp((42 - d) / 14) * (1 - kw * .6) : 0;
-        t.style.opacity = o.toFixed(3);
+        const os = o.toFixed(3); if (ts.o !== os) { ts.o = os; t.style.opacity = os; }
         /* Nahe am rechten Rand (Leiste) steht die Marke links vom Pflock */
         const flip = pr2.x > W * .74, sc = clamp(9 / d, .6, 1.15).toFixed(3);
-        if (o > 0) t.style.transform = flip ? `translate3d(${Math.min(pr2.x - 8, W - 20).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) translateX(-100%) scale(${sc})` : `translate3d(${(pr2.x + 8).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) scale(${sc})`;
-        t.classList.toggle('is-flip', flip);
+        if (o > 0) {
+          const tr = flip ? `translate3d(${Math.min(pr2.x - 8, W - 20).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) translateX(-100%) scale(${sc})` : `translate3d(${(pr2.x + 8).toFixed(1)}px,${(pr2.y - 14).toFixed(1)}px,0) scale(${sc})`;
+          if (ts.t !== tr) { ts.t = tr; t.style.transform = tr; }
+        }
+        if (ts.f !== flip) { ts.f = flip; t.classList.toggle('is-flip', flip); }
         /* Bild nahe am rechten Rand: wächst nach links, damit es nicht an die Leiste stößt (gilt ab dem nächsten Bild) */
         const sp = ICO[i];
         if (sp && sp.material.opacity > 0) { tmp.setFromMatrixPosition(sp.matrixWorld); const ps = S.project(tmp.x, tmp.y, tmp.z); sp.center.x = lerp(.5, 1.05, E(ps.x, W * .6, W * .86)); }
-        t.classList.toggle('is-on', i === active);
+        const on = i === active; if (ts.on !== on) { ts.on = on; t.classList.toggle('is-on', on); }
       });
 
       /* Text der Station: kurz bevor du ankommst, bis zur Hälfte des Wegs zur nächsten */
@@ -349,8 +390,10 @@ export function mount(root, c0, deps) {
         active = a; railAt = r;
         deps.onStep && deps.onStep(a, handle);
       }
-      INTRO.style.opacity = (1 - E(u, .1, .45)).toFixed(3);
-      END.classList.toggle('is-on', u > L0 + N + .75);
+      const io = (1 - E(u, .1, .45)).toFixed(3); if (io !== introO) { introO = io; INTRO.style.opacity = io; }
+      const eo = u > L0 + N + .75; if (eo !== endOn) { endOn = eo; END.classList.toggle('is-on', eo); }
+      /* busy: etwas gleitet noch nach (Tempo, Blick, Drehung, Kamera); sonst darf die Szene langsamer zeichnen */
+      return busy;
     }
 
     if (staticMode) {
@@ -359,21 +402,39 @@ export function mount(root, c0, deps) {
         sPrev = ST[N - 1]; frame(U, .016, 0, true);
         if (F) { F.fade(1); F.man.position.set(DX - .4, 0, HZ + 8); F.man.rotation.y = .15; F.pose(0, 0, 0, 0, true); }
         if (FAM) FAM.members.forEach(m => { FAM.fade(m, 1); m.g.position.set(DX - .4 + m.lat * 1.2, 0, HZ + 8 - m.fwd * .7); m.g.rotation.y = .15; FAM.pose(m, 0, 0, 0, 0, true); }); if (FAM && FAM.hands) FAM.hands(true);
-        INTRO.style.opacity = '1'; S.render();
+        INTRO.style.opacity = '1'; introO = '1'; S.render();
       };
-      redraw = draw; S.onResize = draw; draw();
+      redraw = () => ready && draw(); S.onResize = redraw; redraw();
       return;
     }
 
     /* Scrollwert über eine kritisch gedämpfte Feder: weich anfahren, weich anhalten. Große Sprünge (Anker, Zurück) springen mit. */
-    let x = null, v = 0, lt = 0;
+    let x = null, v = 0, lt = 0, calm = false;
     const W0 = 6.5;
+    /* Kommt das Gerät nicht mit? Mittel von 40 vollen Bildern (nach den ersten 90), zweimal hintereinander deutlich langsamer als der
+       Bildschirmtakt (1,45 fach, mindestens 21 ms): eine Stufe leichter. Stufe 1: 75 % der Bildpunkte, Schatten 1024. Stufe 2: 1 Bildpunkt, Schatten 512. */
+    const AQ = { lvl: 0, n: 0, sum: 0, wait: 90, bad: 0 };
+    const adapt = dt => {
+      if (!base || AQ.lvl >= 2) return;
+      if (AQ.wait > 0) { AQ.wait--; return; }
+      AQ.sum += dt; if (++AQ.n < 40) return;
+      const mean = AQ.sum / AQ.n * 1000; AQ.n = 0; AQ.sum = 0;
+      AQ.bad = mean > Math.max(base * 1.45, 21) ? AQ.bad + 1 : 0;
+      if (AQ.bad < 2) return;
+      AQ.lvl++; AQ.bad = 0; AQ.wait = 45;
+      if (AQ.lvl === 1) { S.setDpr(Math.max(1, DPR0 * .75)); S.setShadowSize(Math.min(SH0, 1024)); }
+      else { S.setDpr(Math.min(1, DPR0)); S.setShadowSize(512); }
+      root.dataset.jgq = AQ.lvl;
+    };
     const prog = () => { const r = el.getBoundingClientRect(), span = Math.max(1, r.height - innerHeight); return { p: clamp(-r.top / span), on: r.top < innerHeight * 1.5 && r.bottom > -innerHeight * .5 }; };
     let raf = 0;
     const run = now => {
-      raf = 0; if (!alive) return;
+      raf = 0; if (!alive || !ready) return;
       const pr = prog();
       if (!pr.on) { x = null; v = 0; lt = 0; return; }
+      /* Alles ruhig (niemand scrollt, nichts gleitet nach): nur rund 30 Bilder je Sekunde */
+      if (calm && lt && now - lt < 30) { raf = requestAnimationFrame(run); return; }
+      const full = lt && !calm;
       const dt = Math.min(.1, lt ? (now - lt) / 1000 : .016); lt = now;
       const tgt = pr.p * U;
       if (x === null || Math.abs(tgt - x) > 3) { x = tgt; v = 0; }
@@ -381,13 +442,15 @@ export function mount(root, c0, deps) {
         const n = Math.ceil(dt / .008), h = dt / n;
         for (let i = 0; i < n; i++) { v += (W0 * W0 * (tgt - x) - 2 * W0 * v) * h; x += v * h; }
       }
-      frame(x, dt, now, false);
-      const moving = Math.abs(tgt - x) > 1e-4 || Math.abs(v) > 1e-4 || env > .002 || Math.abs(look) > 1e-3;
+      const busy = frame(x, dt, now, false);
+      if (full) adapt(dt);
+      const moving = Math.abs(tgt - x) > 1e-4 || Math.abs(v) > 1e-4 || busy;
+      calm = !moving;
       if (moving || pr.p > 0 && pr.p < 1) raf = requestAnimationFrame(run);
       else lt = 0;
     };
     tk = { poke() { if (!raf && alive) raf = requestAnimationFrame(run); }, stop() { raf && cancelAnimationFrame(raf); raf = 0; } };
-    const onScroll = () => tk.poke();
+    const onScroll = () => { calm = false; tk.poke(); };
     addEventListener('scroll', onScroll, { passive: true });
     offScroll = () => removeEventListener('scroll', onScroll);
     S.onResize = () => tk.poke();

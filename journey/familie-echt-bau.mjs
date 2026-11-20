@@ -5,6 +5,10 @@
 // Runde 8 (2026-11-20, Kundenwunsch): ohne Kinder, zwei weiße Erwachsene, die sich an der Hand halten.
 // Haare: Farbe und Deckkraft aus *_opacity_color.tga (RGBA), nicht mehr aus der Kopf-Textur.
 // Aufruf: node familie-echt-bau.mjs <Ordner>   (im Ordner je Figur ein Unterordner <Name>/ mit <Name>.fbx und den *_color.tga)
+//   Runde 9 (2026-11-20, schnell laden auf dem Telefon): Texturen als WebP. Zwei Dateien:
+//   SIZE=512 OUT=familie-echt   node familie-echt-bau.mjs <Ordner>   (Desktop und Tablet)
+//   SIZE=256 OUT=familie-echt-s node familie-echt-bau.mjs <Ordner>   (Telefon: das Paar ist dort kleiner im Bild, halbe Texturgröße reicht)
+//   Umgefärbt wird immer auf 512 px, erst die Ausgabe wird verkleinert (gleiche Farben in beiden Dateien).
 // Läuft in Chrome (playwright): FBX lesen (three FBXLoader), Punkte zusammenfassen und packen, Texturen verkleinern, umfärben, als JPEG/PNG.
 // Die Lizenz (familie-echt-LIZENZ.txt, MIT) steht im Kopf der Datei (license).
 // Format GJR1: 'GJR1', u32 Länge JSON, JSON, dann Binärblöcke (4-Byte ausgerichtet). Siehe familie-echt.js.
@@ -17,6 +21,7 @@ const { chromium } = require('playwright');
 const DL = process.argv[2];
 if (!DL) { console.error('Aufruf: node familie-echt-bau.mjs <Ordner mit den Rocketbox-Dateien>'); process.exit(1); }
 const here = new URL('.', import.meta.url).pathname;
+const SIZE = +(process.env.SIZE || 512), OUT = process.env.OUT || 'familie-echt', MIME = process.env.MIME || 'image/webp', QUAL = +(process.env.QUAL || .85);
 
 /* Wer: Datei, Texturkürzel, Umfärben (hue: Farbton-Bereich in Grad, sat: Mindestsättigung oder chroma: [ab, voll] in 0..255, maxL: hellere Punkte nicht,
    to: Zielfarbe, area: Bereich in UV 0..1 [x0,y0,x1,y1] (ohne hue und sat: alles im Bereich), lr: feste Bezugshelligkeit statt Median,
@@ -56,6 +61,9 @@ const mgr = new T.LoadingManager(); mgr.setURLModifier(u => /\\.(tga|png|jpg)$/i
 const chunks = []; let off = 0;
 const put = (u8) => { const o = off; chunks.push(u8); off += u8.byteLength; const pad = (4 - off % 4) % 4; if (pad) { chunks.push(new Uint8Array(pad)); off += pad; } return o; };
 const tga = new TGALoader();
+const OUTSZ = ${SIZE}, MIME = ${JSON.stringify(MIME)}, QL = ${QUAL};
+/* Ausgabe: auf OUTSZ verkleinern (hohe Glättung) und als MIME kodieren (WebP: rund ein Drittel kleiner als JPEG bei gleichem Bild) */
+const enc = async cv => { let c = cv; if (c.width > OUTSZ) { const d = document.createElement('canvas'); d.width = d.height = OUTSZ; const x = d.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, OUTSZ, OUTSZ); c = d; } return new Uint8Array(await (await new Promise(res => c.toBlob(res, MIME, QL))).arrayBuffer()); };
 
 /* Textur: TGA lesen, auf size verkleinern (zweistufig, weich), umfärben, als JPEG (oder PNG mit Alpha) */
 async function texture(url, size, recolor = [], alphaUrl = null) {
@@ -106,7 +114,7 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
       p[i * 4] = p[i * 4] * a + mr * (1 - a); p[i * 4 + 1] = p[i * 4 + 1] * a + mg * (1 - a); p[i * 4 + 2] = p[i * 4 + 2] * a + mb * (1 - a); p[i * 4 + 3] = 255;
       A[i * 4] = A[i * 4 + 1] = A[i * 4 + 2] = a * 255; A[i * 4 + 3] = 255;
     }
-    const jpg = async im => { const c2 = document.createElement('canvas'); c2.width = c2.height = size; c2.getContext('2d').putImageData(im, 0, 0); return new Uint8Array(await (await new Promise(res => c2.toBlob(res, 'image/jpeg', .86))).arrayBuffer()); };
+    const jpg = async im => { const c2 = document.createElement('canvas'); c2.width = c2.height = size; c2.getContext('2d').putImageData(im, 0, 0); return enc(c2); };
     return { color: await jpg(img), alpha: await jpg(new ImageData(A, size, size)) };
   } else if (alphaUrl) {
     const a = await tga.loadAsync(alphaUrl), ad = a.image.data, aw = a.image.width;
@@ -117,7 +125,8 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
   }
   ctx.putImageData(img, 0, 0);
   const out = document.createElement('canvas'); out.width = out.height = size; out.getContext('2d').drawImage(src, 0, 0);
-  const blob = await new Promise(res => out.toBlob(res, alphaUrl ? 'image/png' : 'image/jpeg', .86));
+  if (!alphaUrl) return enc(out);
+  const blob = await new Promise(res => out.toBlob(res, 'image/png'));
   return new Uint8Array(await blob.arrayBuffer());
 }
 
@@ -164,13 +173,13 @@ for (const P of PEOPLE) {
   const texIdx = [];
   for (const part of ['body', 'head']) {
     const u8 = await texture('http://rb.local/dl/' + P.file + '/' + P.tex + '_' + part + '_color.tga', part === 'body' ? 512 : 512, part === 'body' ? P.recolor : []);
-    texIdx.push(head.tex.length); head.tex.push({ off: put(u8), len: u8.byteLength, type: 'image/jpeg' });
+    texIdx.push(head.tex.length); head.tex.push({ off: put(u8), len: u8.byteLength, type: MIME });
   }
   if (P.opacity) {
     /* Haare, Wimpern, Brauen: Farbe und Deckkraft aus der eigenen RGBA-Textur */
     const { color, alpha } = await texture('http://rb.local/dl/' + P.file + '/' + P.tex + '_opacity_color.tga', 512, [], 'self');
-    texIdx.push(head.tex.length); head.tex.push({ off: put(color), len: color.byteLength, type: 'image/jpeg' });
-    texIdx.push(head.tex.length); head.tex.push({ off: put(alpha), len: alpha.byteLength, type: 'image/jpeg', linear: true });
+    texIdx.push(head.tex.length); head.tex.push({ off: put(color), len: color.byteLength, type: MIME });
+    texIdx.push(head.tex.length); head.tex.push({ off: put(alpha), len: alpha.byteLength, type: MIME, linear: true });
   }
   const matInfo = mats.map(m => ({ name: m.name, tex: /head/.test(m.name) ? texIdx[1] : /opacity/.test(m.name) ? texIdx[2] : texIdx[0], alpha: /opacity/.test(m.name), ...(/opacity/.test(m.name) ? { amap: texIdx[3] } : {}) }));
   console.log(P.key, 'Punkte', n, 'Dreiecke', idx.length / 3, 'Knochen', NB, 'Bindung', dev.toFixed(4), 'Materialien', JSON.stringify(matInfo), 'Maßstab', JSON.stringify([...new Set(s.flat().map(x=>x.toFixed(2)))]), 'Netz', JSON.stringify(meshM.map(x => +x.toFixed(3))), 'Bind', JSON.stringify(bindM.map(x => +x.toFixed(3))));
@@ -198,8 +207,8 @@ await p.route('http://rb.local/**', async r => {
 await p.goto('http://rb.local/bau.html');
 await p.waitForFunction(() => window.__done, null, { timeout: 300000 });
 await b.close();
-writeFileSync(here + 'familie-echt.bin', bin);
+writeFileSync(here + OUT + '.bin', bin);
 /* DUMP=<Ordner>: Texturen zum Ansehen ablegen */
-if (process.env.DUMP) { const dv = new DataView(bin.buffer, bin.byteOffset), jl = dv.getUint32(4, true), H = JSON.parse(bin.subarray(8, 8 + jl).toString()); H.tex.forEach((t, i) => writeFileSync(process.env.DUMP + '/tex' + i + (t.linear ? 'a' : '') + (t.type === 'image/png' ? '.png' : '.jpg'), bin.subarray(8 + jl + t.off, 8 + jl + t.off + t.len))); }
-const gz = gzipSync(bin, { level: 9 }); writeFileSync(here + 'familie-echt.bin.gz', gz);
-console.log('geschrieben familie-echt.bin', (bin.length / 1024).toFixed(0), 'KB, gepackt', (gz.length / 1024).toFixed(0), 'KB');
+if (process.env.DUMP) { const dv = new DataView(bin.buffer, bin.byteOffset), jl = dv.getUint32(4, true), H = JSON.parse(bin.subarray(8, 8 + jl).toString()); H.tex.forEach((t, i) => writeFileSync(process.env.DUMP + '/tex' + i + (t.linear ? 'a' : '') + ('.' + t.type.split('/')[1].replace('jpeg', 'jpg')), bin.subarray(8 + jl + t.off, 8 + jl + t.off + t.len))); }
+const gz = gzipSync(bin, { level: 9 }); writeFileSync(here + OUT + '.bin.gz', gz);
+console.log('geschrieben ' + OUT + '.bin', (bin.length / 1024).toFixed(0), 'KB, gepackt', (gz.length / 1024).toFixed(0), 'KB');

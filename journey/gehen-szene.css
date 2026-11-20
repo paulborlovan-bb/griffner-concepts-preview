@@ -45,7 +45,9 @@
 /* Die Szene: hohe Sektion, darin eine klebende Bühne */
 .jg .g{position:relative}
 .jg .g__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
-.jg .g__gl{position:absolute;inset:0}
+.jg .g__gl{position:absolute;inset:0;opacity:0;transition:opacity 900ms var(--ease)}
+/* Die Bühne blendet ein, sobald das erste Bild mit dem Paar steht (gehen-szene.js, Runde 9) */
+.jg .g__gl.is-on{opacity:1}
 .jg .g__gl canvas{display:block;width:100%;height:100%}
 .jg .g__stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 58%,rgba(0,0,0,.6) 100%);z-index:1}
 .jg .g__tags{position:absolute;inset:0;pointer-events:none;z-index:2}
