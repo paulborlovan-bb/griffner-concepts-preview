@@ -1,6 +1,6 @@
-Familie in Journey „Gehen“ (familie-echt.bin): Modelle und Texturen aus der Microsoft Rocketbox Avatar Library
-(github.com/microsoft/Microsoft-Rocketbox): Adults/Male_Adult_12, Adults/Female_Adult_17, Children/Female_Child_01,
-Children/Male_Child_01. Verkleinert, Kleidung umgefärbt. Gang: Quaternius Universal Animation Library, CC0 1.0.
+Paar in Journey „Gehen“ (familie-echt.bin): Modelle und Texturen aus der Microsoft Rocketbox Avatar Library
+(github.com/microsoft/Microsoft-Rocketbox): Adults/Male_Adult_08, Adults/Female_Adult_17.
+Verkleinert, Kleidung umgefärbt. Gang: Quaternius Universal Animation Library, CC0 1.0.
 
 MIT License
 

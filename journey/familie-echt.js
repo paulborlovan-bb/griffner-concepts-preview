@@ -1,25 +1,26 @@
-/* GRIFFNER Journey: die Familie (Vater, Mutter, Tochter, Sohn) als echte Menschen.
-   Kundenwunsch 2026-11-19: „eine andere Art Menschen“, gewählt: echte Menschen. Modelle: Microsoft Rocketbox Avatar Library,
-   MIT License, Copyright (c) 2020 Microsoft (github.com/microsoft/Microsoft-Rocketbox). Eingedampft von familie-echt-bau.mjs zu familie-echt.bin:
-   je Figur Körper (ca. 7000 Dreiecke), Skelett (Bip01, mit Gesichtsknochen), zwei Texturen; Kleidung umgefärbt (siehe familie-echt-bau.mjs).
+/* GRIFFNER Journey: das Paar (Mann und Frau) als echte Menschen, Hand in Hand.
+   Modelle: Microsoft Rocketbox Avatar Library, MIT License, Copyright (c) 2020 Microsoft (github.com/microsoft/Microsoft-Rocketbox).
+   Eingedampft von familie-echt-bau.mjs zu familie-echt.bin: je Figur Körper (ca. 8000 Dreiecke), Skelett (Bip01, mit Gesichtsknochen),
+   Texturen (Körper, Kopf, Haare mit eigener Deckkraft); Kleidung umgefärbt (siehe familie-echt-bau.mjs).
    Der Gang ist eine echte Bewegungsaufnahme (gang-daten.js, Quaternius Universal Animation Library, CC0): je Bild die Richtungen
    von Oberschenkel, Unterschenkel, Fuß, Oberarm, Unterarm und die Lage von Becken und Brust. Hier dreht jeder Knochen des Skeletts
    von seiner Ruhelage auf diese Richtung (kleinste Drehung, die Kette entlang); der tiefste Punkt der Schuhe steht auf dem Boden.
-   Die Familie hält sich an den Händen (Tochter, Mutter, Vater, Sohn), immer mit der Hand auf der Seite des anderen; beim Umdrehen lassen alle
-   kurz los. Ein Kind, das sich umdreht und winkt, lässt los und hüpft. Runde 6 (2026-11-19): Lächeln, Blinzeln, Blicke zueinander, Kopf aufrecht;
-   Kleidung in GRIFFNER Farben (Vater Jacke Sand und Hose Anthrazit, Mutter Weiß und Anthrazit, Tochter Gelb, Sohn Salbei).
-   Blick in Richtung −z, rechts = +x. API wie die Familie der Runde 4: { members, pose(m, ph, env, t, look, still, extra), hands(still), fade(m, o), stride(m) }. */
+   Runde 6 (2026-11-19): Lächeln, Blinzeln, Blicke, Kopf aufrecht, Kleidung in GRIFFNER Farben.
+   Runde 8 (2026-11-20, Kundenwunsch „ohne Kinder, beide weiß, Hände halten natürlich“): nur das Paar (Male_Adult_08, Female_Adult_17).
+   Beide gehen im gleichen Takt, Schritt gegengleich, so schwingen die gehaltenen Arme miteinander. Die Hände greifen richtig:
+   seine Hand vorn (Handfläche nach hinten), ihre dahinter (Handfläche nach vorn), Finger um die andere Hand gelegt; die Drehung
+   von Hand und Unterarm teilt sich auf beide (kein verdrehtes Handgelenk). Ab und zu schauen sich beide an und lächeln.
+   Blick in Richtung −z, rechts = +x. API: { members, pose(m, ph, env, t, look, still, extra), hands(still), fade(m, o), stride(m) }. */
 import { GANG } from './gang-daten.js';
 
-/* H Körpergröße (m, vor dem Maßstab FS), lat seitlich vom Weg (+ rechts), fwd vor (+) oder hinter, cad höchstens Doppelschritte je s, wave: Hand zum Winken (+1 rechts, die äußere, wenn sich das Kind zu dir umdreht) */
+/* H Körpergröße (m, vor dem Maßstab FS), lat seitlich vom Weg (+ rechts), fwd vor (+) oder hinter, cad höchstens Doppelschritte je s,
+   ph0 Versatz im Schritt (π: gegengleich), seed für Blinzeln, gl Versatz der Blicke (s) */
 export const ECHT_WHO = [
-  { key: 'vater', kid: false, H: 1.82, lat: .3, fwd: 0, cad: 1.9 },
-  { key: 'mutter', kid: false, H: 1.69, lat: -.3, fwd: .04, cad: 1.9 },
-  { key: 'tochter', kid: true, H: 1.3, lat: -.8, fwd: .12, cad: 2.4, wave: 1 },
-  { key: 'sohn', kid: true, H: 1.38, lat: .8, fwd: .1, cad: 2.4, wave: -1 }
+  { key: 'vater', kid: false, H: 1.82, lat: .265, fwd: 0, cad: 1.9, ph0: 0, seed: 0, gl: .55 },
+  { key: 'mutter', kid: false, H: 1.69, lat: -.265, fwd: 0, cad: 1.9, ph0: Math.PI, seed: 1, gl: 0 }
 ];
-/* Wer hält wen: [links, rechts]. Die rechte Hand der linken Figur nimmt die linke Hand der rechten. */
-const HOLD = [['tochter', 'mutter'], ['mutter', 'vater'], ['vater', 'sohn']];
+/* Wer hält wen: [links, rechts, wessen Hand vorn liegt]. Die rechte Hand der linken Figur nimmt die linke Hand der rechten. */
+const HOLD = [['mutter', 'vater', 'vater']];
 /* Die Familie ist etwas kleiner als echt (Kundenwunsch: kleiner im Bild) */
 const FS = .84;
 /* Gesicht (Kundenwunsch 2026-11-19: „sie schauen traurig“): freundliches Lächeln über die Gesichtsknochen.
@@ -56,7 +57,7 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     const url = URL.createObjectURL(new Blob([new Uint8Array(buf, base + t.off, t.len)], { type: t.type }));
     const img = new Image(); img.src = url;
     try { await img.decode(); } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
-    const x = new T.Texture(img); x.colorSpace = T.SRGBColorSpace; x.anisotropy = 4; x.needsUpdate = true;
+    const x = new T.Texture(img); x.colorSpace = t.linear ? T.NoColorSpace : T.SRGBColorSpace; x.anisotropy = 4; x.needsUpdate = true;
     return x;
   }));
 
@@ -69,7 +70,7 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
   /* Arme im Stehen locker neben dem Körper, leicht gebeugt */
   STAND.uaL.set(-.12, -1, .03).normalize(); STAND.uaR.set(.12, -1, .03).normalize();
   STAND.faL.set(-.06, -1, -.14).normalize(); STAND.faR.set(.06, -1, -.14).normalize();
-  const FT0 = { L: STAND.ftL.clone(), R: STAND.ftR.clone() };
+  const FT0 = { L: STAND.ftL.clone(), R: STAND.ftR.clone() }, HD0 = STAND.hd.clone().lerp(UP, .7).normalize();
   const _a = V(), _b = V();
   function gait(ph, env, d) {
     const fl = ((ph / (2 * Math.PI)) % 1 + 1) % 1 * G.F, f0 = Math.floor(fl) % G.F, f1 = (f0 + 1) % G.F, k = fl - Math.floor(fl);
@@ -106,9 +107,11 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     geo.setIndex(new T.BufferAttribute(P.i32 ? new Uint32Array(buf, base + P.idx, P.tri * 3) : new Uint16Array(buf, base + P.idx, P.tri * 3), 1));
     P.groups.forEach(([s, c, mi]) => geo.addGroup(s, c, mi));
     geo.computeBoundingSphere();
-    const mats = P.mats.map(m => new T.MeshStandardMaterial({
-      map: tex[m.tex], roughness: .82, metalness: 0, transparent: false, opacity: 1,
-      ...(m.alpha ? { alphaTest: .5, side: T.DoubleSide } : {})
+    /* Matt (Lambert, kein Glanz): sonst glänzen Haarkarten und Kopfhaut bei flachem Licht grau (Runde 8); auch günstiger auf Telefonen */
+    const mats = P.mats.map(m => new T.MeshLambertMaterial({
+      map: tex[m.tex], transparent: false, opacity: 1,
+      /* Haare: Deckkraft aus der eigenen Maske, weich über die Kantenglättung (alphaToCoverage), sonst würden dünne Strähnen in der Ferne verschwinden */
+      ...(m.alpha ? { alphaMap: m.amap !== undefined ? tex[m.amap] : null, alphaTest: .12, alphaToCoverage: true, side: T.DoubleSide } : {})
     }));
 
     /* Skelett: Welt-Lagen der Bindungspose → lokale Lagen */
@@ -154,8 +157,13 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
       const F = RP[B[sd + '_Foot']], Z = RP[B[sd + '_Toe0']], fl = Math.hypot(Z.x - F.x, Z.z - F.z);
       sole[sd] = { heel: V(F.x, 0, F.z + fl * .3).sub(F), tip: V(Z.x, 0, Z.z - fl * .55).sub(Z) };
     });
-    /* Finger locker gekrümmt (die Modelle haben gestreckte, gespreizte Finger): je Glied eine kleine Drehung um die Beugeachse */
-    const curl = P.bones.map(nm => { const f = /_Finger(\d)(\d?)$/.exec(nm); if (!f) return null; const th = f[1] === '0', a = th ? .18 : f[2] ? .42 : .3; return new T.Quaternion().setFromAxisAngle(V(...CURL), a * (th ? .6 : 1)); });
+    /* Finger locker gekrümmt (die Modelle haben gestreckte, gespreizte Finger): je Glied eine kleine Drehung um die Beugeachse;
+       beim Halten (grip) greifen sie um die andere Hand */
+    const curl = P.bones.map(nm => {
+      const f = /^([LR])_Finger(\d)(\d?)$/.exec(nm); if (!f) return null;
+      const th = f[2] === '0', a = th ? .11 : f[3] ? .42 : .3, g = th ? (f[3] ? .35 : .25) : f[3] === '2' ? .75 : f[3] ? 1.05 : .95;
+      return { sd: f[1], lo: new T.Quaternion().setFromAxisAngle(V(...CURL), a), gr: new T.Quaternion().setFromAxisAngle(V(...CURL), g) };
+    });
     /* Gesichtsknochen: Ruhelage und Verschiebung je Einheit Lächeln (sm) und Blinzeln (bl), im Raum des Elternknochens */
     const fw = B.LMouthCorner !== undefined ? Math.abs(P.t[B.LMouthCorner][0]) / 2.77 : 1;
     const inParent = (b, v) => v.applyQuaternion(new T.Quaternion(...P.r[P.parents[b]]).invert()).divide(V(...P.s[P.parents[b]]));
@@ -171,9 +179,16 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
       const f = face.find(x => x.b === bt); if (f) f.bl = inParent(bt, gap.clone().multiplyScalar(-.12));
     });
     const L = { ua: len('L_UpperArm', 'L_Forearm'), fa: len('L_Forearm', 'L_Hand'), leg: len('L_Thigh', 'L_Calf') + len('L_Calf', 'L_Foot') };
+    /* Hand in Ruhe: Fingerrichtung (zum Mittelfinger), Handflächen-Normale (Handfläche zeigt in der Ruhelage nach unten) */
+    const HF = {};
+    ['L', 'R'].forEach(sd => {
+      const f = dir(sd + '_Hand', sd + '_Finger2'), a = dir(sd + '_Finger4', sd + '_Finger1'), n = V().crossVectors(f, a).normalize();
+      if (n.y > 0) n.negate();
+      HF[sd] = { f, n: n.sub(f.clone().multiplyScalar(n.dot(f))).normalize() };
+    });
     L.hand = len('L_Hand', P.bones.includes('L_Finger2') ? 'L_Finger2' : 'L_Finger1') * 1.6;
     return {
-      ...w, g, body, nrm, mesh, mats, bones, B, RQ, RP, order, curl, parents: P.parents, sole, L, Bp0, Bc0, face,
+      ...w, g, body, nrm, mesh, mats, bones, B, RQ, RP, order, curl, parents: P.parents, sole, L, Bp0, Bc0, face, HF, grip: { L: 0, R: 0 },
       D: Array.from({ length: NB }, () => new T.Quaternion()), MP: Array.from({ length: NB }, () => V()),
       d: Object.fromEntries(KEYS.map(k => [k, V()])), J: { shL: V(), shR: V(), wrL: V(), wrR: V() }, nb: [], used: {},
       ph: 0, yaw: null, turn: 0
@@ -189,12 +204,12 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
   const Dp = new T.Quaternion(), Dc = new T.Quaternion(), QL = new T.Quaternion(), _e2 = new T.Euler(0, 0, 0, 'YXZ');
   const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
   /* Blinzeln: je Figur alle 3,6 bis 4,7 s, 0,17 s lang */
-  function blink(m, t) { const per = 3.6 + m.fwd * 9, x = ((t + m.fwd * 13) % per + per) % per; return x < .17 ? Math.sin(x / .17 * Math.PI) : 0; }
-  /* Blick zu einem Nachbarn an der Hand: alle 6 bis 8 s für 2 s, abwechselnd links und rechts. Gibt Gewicht, Drehung (+ links) und Neigen (+ hoch). */
+  function blink(m, t) { const per = 3.6 + m.seed * .55, x = ((t + m.seed * 1.7) % per + per) % per; return x < .17 ? Math.sin(x / .17 * Math.PI) : 0; }
+  /* Blick zum anderen: alle 8 s für 2 s, er einen Moment nach ihr, so treffen sich die Blicke. Gibt Gewicht, Drehung (+ links) und Neigen (+ hoch). */
   const GL = { w: 0, y: 0, p: 0 };
   function glance(m, t) {
     GL.w = 0; if (!m.nb.length) return GL;
-    const per = 6.2 + m.fwd * 14, tt = t + 2.5 + m.fwd * 23, x = ((tt % per) + per) % per, o = m.nb[Math.floor(tt / per) % m.nb.length];
+    const per = 8, tt = t + 2.5 - (m.gl || 0), x = ((tt % per) + per) % per, o = m.nb[Math.floor(tt / per) % m.nb.length];
     GL.w = x < .45 ? smooth(x / .45) : x < 1.6 ? 1 : smooth((2.05 - x) / .45);
     if (GL.w <= 0) return GL;
     const yw = m.g.rotation.y, vx = o.g.position.x - m.g.position.x, vz = o.g.position.z - m.g.position.z;
@@ -213,7 +228,8 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     const p = m.parents[b];
     if (p >= 0) _q.copy(m.D[p]).multiply(m.RQ[p]).invert(); else _q.copy(QN).invert();
     m.bones[b].quaternion.copy(_q).multiply(_q2.copy(m.D[b]).multiply(m.RQ[b]));
-    if (m.curl[b]) m.bones[b].quaternion.multiply(m.curl[b]);
+    const c = m.curl[b];
+    if (c) m.bones[b].quaternion.multiply(_q2.copy(c.lo).slerp(c.gr, m.grip[c.sd]));
   }
   /* Positionen im Körperraum aus den Drehungen (Knochenlängen der Ruhelage) */
   function positions(m) {
@@ -228,6 +244,8 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
   }
   function pose(m, ph, env, t, look = 0, still = false, extra = {}) {
     const d = m.d, B = m.B, D = m.D, tt = still ? 0 : t, wv = extra.wave || 0;
+    ph += m.ph0 || 0;
+    m.grip.L = m.grip.R = 0;
     gait(ph, env, d);
     /* Winken: der freie Arm geht hoch, die Hand winkt */
     if (wv > 0 && m.wave) {
@@ -241,20 +259,21 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     /* Stehen: leichtes Gewicht verlagern */
     const st = (1 - env) * (still ? 0 : 1);
     if (st > 0) {
-      Dp.premultiply(_q.setFromAxisAngle(_u.set(0, 0, 1), Math.sin(tt * .8 + m.fwd * 5) * .032 * st));
+      Dp.premultiply(_q.setFromAxisAngle(_u.set(0, 0, 1), Math.sin(tt * .8 + m.seed * 2.1) * .032 * st));
       /* Atmen: die Brust hebt sich ein wenig */
-      Dc.premultiply(_q.setFromAxisAngle(_u.set(1, 0, 0), Math.sin(tt * 1.7 + m.fwd * 9) * .014 * st));
+      Dc.premultiply(_q.setFromAxisAngle(_u.set(1, 0, 0), Math.sin(tt * 1.7 + m.seed * 1.3) * .014 * st));
     }
     D[B.Pelvis].copy(Dp); D[B.Spine].copy(Dp);
     D[B.Spine1].copy(Dp).slerp(Dc, .5); D[B.Spine2].copy(Dc); D[B.Neck].copy(Dc);
-    /* Kopf: Richtung aus dem Gang, dazu Blick (look, + links) und Neigen */
-    _v.subVectors(m.RP[B.Head], m.RP[B.Neck]).normalize().applyQuaternion(Dc);
-    QL.setFromUnitVectors(_v, d.hd);
+    /* Kopf: in seiner natürlichen Haltung (Ruhelage, unabhängig von der Brust, wie ein Mensch den Kopf ruhig hält), dazu nur die Änderung
+       der Kopfrichtung im Gang gegenüber dem Stehen, Blick (look, + links) und Neigen. Runde 8: nicht mehr den Hals senkrecht stellen,
+       sonst schaut ein Modell mit vorgeneigtem Hals nach oben. */
+    QL.setFromUnitVectors(HD0, d.hd);
     /* Kopf aufrecht (leicht hoch), dazu ab und zu ein Blick zum Nachbarn an der Hand (nicht an den Stationen, nicht beim Winken) */
     const gl = still ? (GL.w = 0, GL) : glance(m, tt), gw = gl.w * (1 - clamp(Math.abs(look) / .3)) * (1 - clamp(wv * 2));
-    const hy = look * (1 - gw) + gl.y * .8 * gw, hp = .035 - .04 * env + Math.sin(ph * 2) * .015 * env + gl.p * .75 * gw + wv * .08;
-    _e.set(hp, hy, (still ? .04 : Math.sin(tt * .7 + m.fwd * 2) * .05) * (1 - env) * (m.kid ? 1.3 : .8) + wv * .1);
-    D[B.Head].setFromEuler(_e).multiply(QL).multiply(Dc);
+    const hy = look * (1 - gw) + gl.y * .8 * gw, hp = .02 - .02 * env + Math.sin(ph * 2) * .012 * env + gl.p * .75 * gw + wv * .08;
+    _e.set(hp, hy, (still ? .04 : Math.sin(tt * .7 + m.seed * .9) * .05) * (1 - env) * (m.kid ? 1.3 : .8) + wv * .1);
+    D[B.Head].setFromEuler(_e).multiply(QL);
     /* Beine */
     ['L', 'R'].forEach(sd => {
       aim(m, B[sd + '_Thigh'], B[sd + '_Calf'], d['th' + sd]);
@@ -281,36 +300,52 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     m.body.position.y = -low + (m.kid && wv > 0 && !still ? Math.abs(Math.sin(tt * 6.4)) * .04 * wv : 0);
     m.order.forEach(b => local(m, b));
     /* Gesicht: Lächeln (beim Winken mehr) und Blinzeln */
-    const sm = extra.smile ?? (m.kid ? 1 : .92) + wv * .25, bl = extra.blink ?? (still ? 0 : blink(m, tt));
+    const sm = extra.smile ?? (m.kid ? 1 : .92) + wv * .25 + gw * .22, bl = extra.blink ?? (still ? 0 : blink(m, tt));
     m.face.forEach(f => m.bones[f.b].position.copy(f.p0).addScaledVector(f.sm, sm).addScaledVector(f.bl, bl));
     m.J.shL.copy(m.MP[B.L_UpperArm]); m.J.shR.copy(m.MP[B.R_UpperArm]);
     m.J.wrL.copy(m.MP[B.L_Hand]); m.J.wrR.copy(m.MP[B.R_Hand]);
   }
 
-  /* ---------- Hände halten: zwei Arme treffen sich zwischen den beiden (Zwei-Gelenk-Lösung), Ellbogen nach außen ---------- */
+  /* ---------- Hände halten: zwei Arme treffen sich zwischen den beiden (Zwei-Gelenk-Lösung), Ellbogen nach hinten ---------- */
   const _s = V(), _tg = V(), _el = V(), _ax = V(), _pp = V(), _wA = V(), _wB = V(), _mid = V(), _ua = V(), _fa = V(), _rt = V(), _ab = V(), _sA = V(), _sB = V();
-  /* Arm von m (Seite sd) zur Hand am Punkt target (Körperraum), Anteil k */
-  function reach(m, sd, target, k) {
-    const B = m.B, sh = m.MP[B[sd + '_UpperArm']], l1 = m.L.ua, l2 = m.L.fa + m.L.hand * .45;
+  const _fw = V(), _sm = V(), _fc = V(), _nc = V(), _ft = V(), _nt = V(), _m1 = new T.Matrix4(), _m2 = new T.Matrix4(), _qh = new T.Quaternion(), _qt = new T.Quaternion(), _qi = new T.Quaternion();
+  /* Arm von m (Seite sd): Handfläche zum Punkt target (Körperraum), Handfläche zeigt nach palm (Körperraum), Anteil k */
+  function reach(m, sd, target, palm, k) {
+    const B = m.B, D = m.D, sh = m.MP[B[sd + '_UpperArm']], l1 = m.L.ua, l2 = m.L.fa + m.L.hand * .45;
     _tg.copy(target).sub(sh); let dd = _tg.length(); const dmax = (l1 + l2) * .995;
     if (dd < 1e-4) return;
     if (dd > dmax) { _tg.multiplyScalar(dmax / dd); dd = dmax; }
     _ax.copy(_tg).divideScalar(dd);
     const a = (l1 * l1 - l2 * l2 + dd * dd) / (2 * dd), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-    /* Ellbogen nach hinten und unten (etwas nach außen), nie nach oben */
-    _pp.set(sd === 'L' ? -.3 : .3, -.8, .55); _pp.addScaledVector(_ax, -_pp.dot(_ax)).normalize();
+    /* Ellbogen nach hinten (etwas nach außen und unten), nie nach oben */
+    _pp.set(sd === 'L' ? -.18 : .18, -.35, 1); _pp.addScaledVector(_ax, -_pp.dot(_ax)).normalize();
     _el.copy(sh).addScaledVector(_ax, a).addScaledVector(_pp, h);
     _s.copy(sh).add(_tg);
     /* neue Richtungen, mit dem natürlichen Arm gemischt */
-    const D = m.D;
     _ua.subVectors(m.MP[B[sd + '_Forearm']], sh).normalize().lerp(_el.clone().sub(sh).normalize(), k).normalize();
     const elb = V().copy(sh).addScaledVector(_ua, l1);
     _fa.subVectors(m.MP[B[sd + '_Hand']], m.MP[B[sd + '_Forearm']]).normalize().lerp(_s.clone().sub(elb).normalize(), k).normalize();
     arm(m, sd, _ua, _fa);
-    D[B[sd + '_Hand']].copy(D[B[sd + '_Forearm']]);
-    /* Hand leicht zum anderen hin drehen (Handfläche zur Hand des anderen) */
-    D[B[sd + '_Hand']].premultiply(_q.setFromAxisAngle(_fa, (sd === 'L' ? 1 : -1) * .5 * k));
-    [sd + '_UpperArm', sd + '_Forearm', sd + '_Hand'].forEach(nm => local(m, B[nm]));
+    const hb = B[sd + '_Hand'], fb = B[sd + '_Forearm'];
+    D[hb].copy(D[fb]);
+    /* Hand drehen: Finger weiter in Richtung des Unterarms (etwas mehr nach unten), Handfläche nach palm.
+       Die Drehung um die Unterarm-Achse (Ein- und Auswärtsdrehen) teilt sich auf Unterarm und Hand, sonst verdreht sich das Handgelenk. */
+    _fc.copy(m.HF[sd].f).applyQuaternion(D[hb]); _nc.copy(m.HF[sd].n).applyQuaternion(D[hb]);
+    _ft.copy(_fc).addScaledVector(UP, -.25).normalize();
+    _nt.copy(palm).addScaledVector(_ft, -palm.dot(_ft)).normalize();
+    _m1.makeBasis(_fc, _nc, _sm.crossVectors(_fc, _nc)); _m2.makeBasis(_ft, _nt, _rt.crossVectors(_ft, _nt));
+    _qh.setFromRotationMatrix(_m2.multiply(_m1.transpose()));
+    _qh.slerp(_qi.identity(), 1 - k);
+    /* Anteil um die Unterarm-Achse (twist) */
+    const ax = _fa, pr = _qh.x * ax.x + _qh.y * ax.y + _qh.z * ax.z;
+    _qt.set(ax.x * pr, ax.y * pr, ax.z * pr, _qh.w); if (_qt.lengthSq() < 1e-8) _qt.identity(); else _qt.normalize();
+    _qt.slerp(_qi.identity(), .5);
+    D[fb].premultiply(_qt);
+    D[hb].premultiply(_qh);
+    m.grip[sd] = k;
+    /* Finger folgen der Hand (Krümmung kommt in local) */
+    m.order.forEach(b => { const nm = m.bones[b].name; if (nm.startsWith(sd + '_Finger')) D[b].copy(D[m.parents[b]]); });
+    m.order.forEach(b => { const nm = m.bones[b].name; if (nm === sd + '_UpperArm' || nm === sd + '_Forearm' || nm === sd + '_Hand' || nm.startsWith(sd + '_Finger')) local(m, b); });
   }
   /* Wo steht o von m aus: + rechts, − links (1 = genau daneben, 0 = vor oder hinter m) */
   function side(m, o) {
@@ -318,36 +353,53 @@ export async function echteFamilie(T, buf, who = ECHT_WHO) {
     _ab.subVectors(o.g.position, m.g.position); _ab.y = 0; const dd = _ab.length();
     return dd > 1e-4 ? _rt.dot(_ab) / dd : 0;
   }
-  /* Je Paar: welche Hände (hA, hB) und wie fest (k). Die Hände folgen der Seite, auf der der andere steht: dreht sich die Familie um
-     (zurück scrollen), lassen alle los, solange sie nicht nebeneinander stehen, und greifen dann mit den anderen Händen neu. */
-  const pairs = HOLD.map(([a, b]) => ({ A: byKey[a], B: byKey[b], hA: 'R', hB: 'L', k: 0 })).filter(P => P.A && P.B);
+  const _pA = V(), _pB = V(), _nA = V(), _nB = V(), _iq = new T.Quaternion();
+  /* Richtung aus der Welt in den Körperraum von m */
+  const toBody = (m, v, out) => out.copy(v).applyQuaternion(m.body.getWorldQuaternion(_iq).invert());
+  /* Je Paar: welche Hände (hA, hB) und wie fest (k). Die Hände folgen der Seite, auf der der andere steht: dreht sich das Paar um
+     (zurück scrollen), lassen beide los, solange sie nicht nebeneinander stehen, und greifen dann mit den anderen Händen neu. */
+  const pairs = HOLD.map(([a, b, f]) => ({ A: byKey[a], B: byKey[b], F: byKey[f] || byKey[b], hA: 'R', hB: 'L', k: 0 })).filter(P => P.A && P.B);
   function hands(still = false) {
     members.forEach(m => { m.g.updateMatrixWorld(true); m.used.L = m.used.R = 0; });
     pairs.forEach(P => {
       const A = P.A, Bm = P.B, cA = side(A, Bm), cB = side(Bm, A), hA = cA >= 0 ? 'R' : 'L', hB = cB >= 0 ? 'R' : 'L';
-      /* nebeneinander? dazu loslassen, wenn ein Kind sich umdreht und winkt */
+      /* nebeneinander? dazu loslassen, wenn sich jemand umdreht */
       let want = clamp((Math.min(Math.abs(cA), Math.abs(cB)) - .6) / .25) * (1 - clamp(A.turn * 3)) * (1 - clamp(Bm.turn * 3));
       if (hA !== P.hA || hB !== P.hB) { if (still || P.k < .02) { P.hA = hA; P.hB = hB; } else want = 0; }
       if (A.used[P.hA] || Bm.used[P.hB]) want = 0;
-      const jA = A.J['wr' + P.hA], jB = Bm.J['wr' + P.hB];
-      A.body.localToWorld(_wA.copy(jA)); Bm.body.localToWorld(_wB.copy(jB));
-      /* Treffpunkt: in der Mitte, auf der Höhe der tieferen Hand (der Größere greift nach unten, das Kind hebt den Arm nicht) */
-      _mid.copy(_wA).add(_wB).multiplyScalar(.5); _mid.y = Math.min(_wA.y, _wB.y) + .03;
+      A.body.localToWorld(_wA.copy(A.J['wr' + P.hA])); Bm.body.localToWorld(_wB.copy(Bm.J['wr' + P.hB]));
       A.body.localToWorld(_sA.copy(A.J['sh' + P.hA])); Bm.body.localToWorld(_sB.copy(Bm.J['sh' + P.hB]));
+      /* Blickrichtung des Paars (Mittel der beiden), waagrecht */
+      _fw.set(0, 0, -1).applyQuaternion(A.body.getWorldQuaternion(_iq)); _rt.set(0, 0, -1).applyQuaternion(Bm.body.getWorldQuaternion(_iq));
+      _fw.add(_rt); _fw.y = 0; if (_fw.lengthSq() < 1e-6) _fw.set(0, 0, -1); _fw.normalize();
+      /* Treffpunkt: seitlich in der Mitte zwischen den Schultern, etwas vor dem Körper; vor und zurück schwingt er mit den Armen (gedämpft);
+         Höhe: knapp über der tieferen Hand (der Größere beugt den Arm, die Kleinere hebt ihn nicht) */
+      _mid.copy(_sA).add(_sB).multiplyScalar(.5);
+      const sw = (_wA.dot(_fw) + _wB.dot(_fw)) / 2 - _mid.dot(_fw);
+      _mid.addScaledVector(_fw, .035 * FS + sw * .5);
+      _mid.y = Math.min(_wA.y, _wB.y) + .025;
       const rA = (A.L.ua + A.L.fa + A.L.hand * .45) * .96, rB = (Bm.L.ua + Bm.L.fa + Bm.L.hand * .45) * .96;
       for (let i = 0; i < 6; i++) [[_sA, rA], [_sB, rB]].forEach(([sh, r]) => { const dd = _mid.distanceTo(sh); if (dd > r) _mid.sub(sh).multiplyScalar(r / dd).add(sh); });
       const over = Math.max(_sA.distanceTo(_mid) / rA, _sB.distanceTo(_mid) / rB);
       const k = want * clamp((1.06 - over) / .06);
-      P.k = still ? k : lerp(P.k, k, k < P.k ? .35 : .2);
+      /* weich greifen und loslassen; beim ersten Bild gleich fest (oben auf der Seite zeichnet die Szene nur ein, zwei Bilder) */
+      P.k = still || !P.seen ? k : lerp(P.k, k, k < P.k ? .35 : .2); P.seen = 1;
       if (P.k < .01) return;
       A.used[P.hA] = Bm.used[P.hB] = 1;
-      reach(A, P.hA, A.body.worldToLocal(_tg.copy(_mid)).clone(), P.k);
-      reach(Bm, P.hB, Bm.body.worldToLocal(_tg.copy(_mid)).clone(), P.k);
+      /* Handflächen aufeinander: die vordere Hand (F) zeigt mit der Handfläche nach hinten, die andere nach vorn, beide etwas zur eigenen Mitte;
+         jede Handfläche einen Fingerbreit vor oder hinter dem Treffpunkt */
+      const fA = P.F === A ? 1 : -1, th = .011 * FS / .84;
+      _pA.copy(_mid).addScaledVector(_fw, fA * th); _pB.copy(_mid).addScaledVector(_fw, -fA * th);
+      _rt.subVectors(_sB, _sA); _rt.y = 0; _rt.normalize();
+      _nA.copy(_fw).multiplyScalar(-fA).addScaledVector(_rt, -.4).normalize(); _nB.copy(_nA).negate();
+      reach(A, P.hA, A.body.worldToLocal(_tg.copy(_pA)).clone(), toBody(A, _nA, V()), P.k);
+      reach(Bm, P.hB, Bm.body.worldToLocal(_tg.copy(_pB)).clone(), toBody(Bm, _nB, V()), P.k);
     });
   }
   function fade(m, o) { m.mats.forEach(x => { x.opacity = o; const tr = o < .999; if (x.transparent !== tr) { x.transparent = tr; x.needsUpdate = true; } x.depthWrite = o > .5; }); m.g.visible = o > .002; }
-  /* Doppelschritt in m (Weltmaß): aus der Aufnahme, je Beinlänge */
-  const stride = m => G.stride * m.L.leg;
+  /* Doppelschritt (Weltmaß): aus der Aufnahme, je Beinlänge; das Paar geht im gleichen Takt (Mittel der beiden) */
+  const SL = members.reduce((a, m) => a + G.stride * m.L.leg, 0) / members.length;
+  const stride = () => SL;
   members.forEach(m => pose(m, 0, 0, 0, 0, true));
   return { members, pose, hands, fade, stride };
 }

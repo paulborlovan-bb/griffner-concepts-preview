@@ -1,10 +1,10 @@
-// Baut familie-echt.bin (und .gz für Framer): die Familie aus echten Menschen-Modellen.
+// Baut familie-echt.bin (und .gz für Framer): das Paar aus echten Menschen-Modellen.
 // Quelle: Microsoft Rocketbox Avatar Library, MIT License (Copyright (c) 2020 Microsoft), github.com/microsoft/Microsoft-Rocketbox
-//   Vater  Adults/Male_Adult_12   (Jeansjacke, weißes Shirt, Jeans)
-//   Mutter Adults/Female_Adult_17 (Shirt grün → warmes Weiß, Jeans)
-//   Tochter Children/Female_Child_01 (Shirt magenta → gedämpftes Gelb, Schuhe hell)
-//   Sohn   Children/Male_Child_01 (Pulli blau → Salbei, Aufdruck gedämpft)
-// Aufruf: node familie-echt-bau.mjs <Ordner>   (im Ordner je Figur ein Unterordner <Name>/ mit <Name>.fbx und den *_color.tga, heruntergeladen am 2026-11-19)
+//   Mann  Adults/Male_Adult_08   (Hemd hellblau → Sand, Jeans → Anthrazit; heruntergeladen am 2026-11-20)
+//   Frau  Adults/Female_Adult_17 (Shirt grün → warmes Weiß, Jeans → Anthrazit)
+// Runde 8 (2026-11-20, Kundenwunsch): ohne Kinder, zwei weiße Erwachsene, die sich an der Hand halten.
+// Haare: Farbe und Deckkraft aus *_opacity_color.tga (RGBA), nicht mehr aus der Kopf-Textur.
+// Aufruf: node familie-echt-bau.mjs <Ordner>   (im Ordner je Figur ein Unterordner <Name>/ mit <Name>.fbx und den *_color.tga)
 // Läuft in Chrome (playwright): FBX lesen (three FBXLoader), Punkte zusammenfassen und packen, Texturen verkleinern, umfärben, als JPEG/PNG.
 // Die Lizenz (familie-echt-LIZENZ.txt, MIT) steht im Kopf der Datei (license).
 // Format GJR1: 'GJR1', u32 Länge JSON, JSON, dann Binärblöcke (4-Byte ausgerichtet). Siehe familie-echt.js.
@@ -23,31 +23,24 @@ const here = new URL('.', import.meta.url).pathname;
    k: wie stark die Helligkeitsunterschiede bleiben (Falten, Aufdruck)) */
 const PEOPLE = [
   /* GRIFFNER Farben: Sand #CFC3B3, Anthrazit #444442, Gelb #FFB200, Salbei #8B907C, Weiß */
-  { key: 'vater', file: 'Male_Adult_12', tex: 'm007', recolor: [
-    /* Jacke → Sand: nach UV-Bereich (Rücken mit Passe, Vorderteil, Ärmel, Kragen), eine Bezugshelligkeit für alle Teile;
-       wo Schuhe und Jacke dieselben Felder teilen, nur farbige, nicht helle Punkte (Schuhe sind grau und hell) */
-    ...[[.3, .1, .7, .6], [.44, .6, .57, .94], [.3, .94, .7, 1], [0, .42, .23, .82], [.23, .42, .3, .6], [.77, .42, 1, .82], [.7, .42, .77, .6]]
-      .map(area => ({ to: [207, 195, 179], k: .38, lr: .22, area })),
-    ...[[.23, .6, .44, .94], [.57, .6, .77, .94]].map(area => ({ to: [207, 195, 179], k: .38, lr: .22, area, chroma: [3, 6], maxL: 125 })),
-    /* Hose → Anthrazit */
-    ...[[0, 0, .3, .42], [.7, 0, 1, .42]].map(area => ({ to: [74, 74, 72], k: .35, area }))
-  ] },
+  { key: 'vater', file: 'Male_Adult_08', tex: 'm014', recolor: [
+    /* Hemd → Sand: Mittelteil (bis über den Schuhen) und Ärmel, nur bläuliche, nicht ganz dunkle Punkte (Haut, Knöpfe, Schuhe bleiben) */
+    ...[[.3, 0, .7, .86], [0, .43, .3, .74], [.7, .43, 1, .74]].map(area => ({ hue: [170, 250], sat: .05, minL: 40, to: [207, 195, 179], k: .62, area })),
+    /* Kragen (Streifen unten in der Mitte, neben den Schuhen nur die obere Kante) → Sand */
+    ...[[.42, .86, .58, .9], [.32, .84, .42, .905], [.58, .84, .68, .905]].map(area => ({ hue: [170, 250], sat: .05, minL: 40, to: [207, 195, 179], k: .62, lr: .62, area })),
+    /* darunter, im Ausschnitt sichtbar: ein Shirt in warmem Weiß */
+    { to: [236, 232, 224], k: .5, minL: 40, area: [.43, .9, .57, .99] },
+    /* Jeans → Anthrazit */
+    ...[[0, 0, .3, .43], [.7, 0, 1, .43]].map(area => ({ to: [74, 74, 72], k: .35, area }))
+  ], opacity: true },
   { key: 'mutter', file: 'Female_Adult_17', tex: 'f006', recolor: [
     { hue: [95, 185], sat: .14, to: [236, 232, 224], k: .75 },
     /* Jeans → Anthrazit */
-    ...[[0, .55, .34, 1], [.66, .55, 1, 1]].map(area => ({ to: [70, 70, 68], k: .35, area }))
-  ], opacity: true },
-  { key: 'tochter', file: 'Female_Child_01', tex: 'cf001', recolor: [
-    /* Shirt → GRIFFNER Gelb */
-    { hue: [265, 345], sat: .22, to: [255, 180, 24], k: .6, area: [.28, 0, .72, .8] },
-    { hue: [265, 345], sat: .22, to: [214, 210, 202], k: .6 }
-  ] },
-  { key: 'sohn', file: 'Male_Child_01', tex: 'cm001', recolor: [
-    /* Pulli → Salbei, Bündchen und Aufdruck mit */
-    { hue: [150, 235], sat: .42, to: [139, 144, 124], k: .45, area: [.3, 0, .7, 1] },
-    { hue: [150, 235], sat: .42, to: [139, 144, 124], k: .45, area: [0, .22, 1, .88] },
-    { hue: [0, 360], sat: -1, to: [139, 144, 124], k: .12, area: [.405, .52, .595, .7] }
-  ] }
+    ...[[0, .55, .34, 1], [.66, .55, 1, 1]].map(area => ({ to: [70, 70, 68], k: .35, area })),
+    /* Ballerinas: sie sind hautfarben (Ferse und Rist) mit hellem Rand, von hinten sehen die Füße nackt aus. Ferse, Rist und Rand → dunkles Taupe wie die Sohle */
+    ...[[.185, .17, .305, .29], [.695, .17, .815, .29]].map(area => ({ hue: [0, 50], sat: .1, to: [84, 72, 66], k: .35, lr: .62, area })),
+    ...[[.16, 0, .33, .33], [.67, 0, .84, .33]].map(area => ({ maxS: .2, minL: 105, to: [84, 72, 66], k: .3, lr: .78, area }))
+  ], opacity: true }
 ];
 
 const LIZENZ = readFileSync(here + 'familie-echt-LIZENZ.txt', 'utf8');
@@ -80,6 +73,7 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
       if (r.area) { const u = x / size, v = y / size; if (u < r.area[0] || u > r.area[2] || v < r.area[1] || v > r.area[3]) continue; }
       const mx = Math.max(R, G, B), mn = Math.min(R, G, B), s = mx ? (mx - mn) / mx : 0;
       if (r.maxL && mx * 255 > r.maxL) continue;
+      if (r.minL && mx * 255 < r.minL) continue;
       let k = 1;
       if (r.hue) {
         if (mx - mn < 1e-3) continue;
@@ -88,6 +82,7 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
       } else if (mx < 8 / 255) continue;
       if (r.chroma) k = Math.min(1, Math.max(0, ((mx - mn) * 255 - r.chroma[0]) / (r.chroma[1] - r.chroma[0])));
       else if (r.sat !== undefined) k = Math.min(1, Math.max(0, (s - r.sat) / .08));
+      if (r.maxS !== undefined) k = Math.min(k, Math.max(0, (r.maxS - s) / .06));
       if (k <= 0) continue;
       m[i] = k; L.push(.299 * R + .587 * G + .114 * B);
     }
@@ -99,7 +94,21 @@ async function texture(url, size, recolor = [], alphaUrl = null) {
       for (let c2 = 0; c2 < 3; c2++) p[i * 4 + c2] = p[i * 4 + c2] + (Math.min(255, r.to[c2] * f) - p[i * 4 + c2]) * m[i];
     }
   }
-  if (alphaUrl) {
+  if (alphaUrl === 'self') {
+    /* eigene Deckkraft (RGBA-Textur): zwei JPEG, Farbe und Deckkraft (kleiner als ein PNG mit Alpha). Durchsichtige Stellen bekommen
+       die mittlere Haarfarbe (sonst dunkle Ränder an den Strähnen), die Deckkraft wird ein Graubild (familie-echt.js: alphaMap) */
+    let mr = 0, mg = 0, mb = 0, mn = 0;
+    for (let i = 0; i < size * size; i++) if (p[i * 4 + 3] > 200) { mr += p[i * 4]; mg += p[i * 4 + 1]; mb += p[i * 4 + 2]; mn++; }
+    mn = mn || 1; mr /= mn; mg /= mn; mb /= mn;
+    const A = new Uint8ClampedArray(size * size * 4);
+    for (let i = 0; i < size * size; i++) {
+      const a = p[i * 4 + 3] / 255;
+      p[i * 4] = p[i * 4] * a + mr * (1 - a); p[i * 4 + 1] = p[i * 4 + 1] * a + mg * (1 - a); p[i * 4 + 2] = p[i * 4 + 2] * a + mb * (1 - a); p[i * 4 + 3] = 255;
+      A[i * 4] = A[i * 4 + 1] = A[i * 4 + 2] = a * 255; A[i * 4 + 3] = 255;
+    }
+    const jpg = async im => { const c2 = document.createElement('canvas'); c2.width = c2.height = size; c2.getContext('2d').putImageData(im, 0, 0); return new Uint8Array(await (await new Promise(res => c2.toBlob(res, 'image/jpeg', .86))).arrayBuffer()); };
+    return { color: await jpg(img), alpha: await jpg(new ImageData(A, size, size)) };
+  } else if (alphaUrl) {
     const a = await tga.loadAsync(alphaUrl), ad = a.image.data, aw = a.image.width;
     const ac = document.createElement('canvas'); ac.width = ac.height = aw;
     ac.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(ad.buffer, ad.byteOffset, ad.length), aw, aw), 0, 0);
@@ -158,10 +167,12 @@ for (const P of PEOPLE) {
     texIdx.push(head.tex.length); head.tex.push({ off: put(u8), len: u8.byteLength, type: 'image/jpeg' });
   }
   if (P.opacity) {
-    const u8 = await texture('http://rb.local/dl/' + P.file + '/' + P.tex + '_head_color.tga', 512, [], 'http://rb.local/dl/' + P.file + '/' + P.tex + '_opacity_color.tga');
-    texIdx.push(head.tex.length); head.tex.push({ off: put(u8), len: u8.byteLength, type: 'image/png' });
+    /* Haare, Wimpern, Brauen: Farbe und Deckkraft aus der eigenen RGBA-Textur */
+    const { color, alpha } = await texture('http://rb.local/dl/' + P.file + '/' + P.tex + '_opacity_color.tga', 512, [], 'self');
+    texIdx.push(head.tex.length); head.tex.push({ off: put(color), len: color.byteLength, type: 'image/jpeg' });
+    texIdx.push(head.tex.length); head.tex.push({ off: put(alpha), len: alpha.byteLength, type: 'image/jpeg', linear: true });
   }
-  const matInfo = mats.map(m => ({ name: m.name, tex: /head/.test(m.name) ? texIdx[1] : /opacity/.test(m.name) ? texIdx[2] : texIdx[0], alpha: /opacity/.test(m.name) }));
+  const matInfo = mats.map(m => ({ name: m.name, tex: /head/.test(m.name) ? texIdx[1] : /opacity/.test(m.name) ? texIdx[2] : texIdx[0], alpha: /opacity/.test(m.name), ...(/opacity/.test(m.name) ? { amap: texIdx[3] } : {}) }));
   console.log(P.key, 'Punkte', n, 'Dreiecke', idx.length / 3, 'Knochen', NB, 'Bindung', dev.toFixed(4), 'Materialien', JSON.stringify(matInfo), 'Maßstab', JSON.stringify([...new Set(s.flat().map(x=>x.toFixed(2)))]), 'Netz', JSON.stringify(meshM.map(x => +x.toFixed(3))), 'Bind', JSON.stringify(bindM.map(x => +x.toFixed(3))));
   head.people.push({ key: P.key, n, tri: idx.length / 3, lo, sc, ulo, usc, groups, mats: matInfo, bones: bones.map(name), parents, t, r, s, meshM, bindM,
     pos: put(new Uint8Array(QP.buffer)), nor: put(new Uint8Array(QN.buffer)), uv: put(new Uint8Array(QU.buffer)), jnt: put(J), wgt: put(W), idx: put(new Uint8Array(I.buffer)), i32: I.BYTES_PER_ELEMENT === 4, ib: put(new Uint8Array(ib.buffer)) });
@@ -189,6 +200,6 @@ await p.waitForFunction(() => window.__done, null, { timeout: 300000 });
 await b.close();
 writeFileSync(here + 'familie-echt.bin', bin);
 /* DUMP=<Ordner>: Texturen zum Ansehen ablegen */
-if (process.env.DUMP) { const dv = new DataView(bin.buffer, bin.byteOffset), jl = dv.getUint32(4, true), H = JSON.parse(bin.subarray(8, 8 + jl).toString()); H.tex.forEach((t, i) => writeFileSync(process.env.DUMP + '/tex' + i + (t.type === 'image/png' ? '.png' : '.jpg'), bin.subarray(8 + jl + t.off, 8 + jl + t.off + t.len))); }
+if (process.env.DUMP) { const dv = new DataView(bin.buffer, bin.byteOffset), jl = dv.getUint32(4, true), H = JSON.parse(bin.subarray(8, 8 + jl).toString()); H.tex.forEach((t, i) => writeFileSync(process.env.DUMP + '/tex' + i + (t.linear ? 'a' : '') + (t.type === 'image/png' ? '.png' : '.jpg'), bin.subarray(8 + jl + t.off, 8 + jl + t.off + t.len))); }
 const gz = gzipSync(bin, { level: 9 }); writeFileSync(here + 'familie-echt.bin.gz', gz);
 console.log('geschrieben familie-echt.bin', (bin.length / 1024).toFixed(0), 'KB, gepackt', (gz.length / 1024).toFixed(0), 'KB');
