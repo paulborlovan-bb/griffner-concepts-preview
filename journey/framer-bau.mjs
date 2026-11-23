@@ -7,9 +7,12 @@
 // Nach neuem Bau einer Modell-Datei (familie-bau.mjs, familie-echt-bau.mjs): neu hochladen und die URL unten eintragen.
 // Runde 9 (2026-11-20, schnell am Telefon): zwei Modell-Dateien für das Paar (URL3 Desktop/Tablet, URL3S Telefon), Download startet beim Einbinden
 //   (prefetchEchteFamilie), die Szene wird bei fehlendem WebGL zur ruhigen Fassung (onStatic: das gelbe Feld kehrt ins Logo zurück).
+// Runde 10 (2026-11-23, neuer Text, neue Seite /journey): JourneyGehen ist jetzt Szene (gehen-szene.js) und Stapel (stapel.js) in einer
+//   Komponente (beide aus derselben Liste der Tage); dazu JourneyEinstieg (einstieg.js) und JourneyLeben (leben.js). Gebaut von framer-bau-seite.mjs
+//   (dieses Skript ruft es am Ende auf). JourneyGehen2 und JourneyGehen3 bleiben die Fassung aus Runde 9 (gehen-szene-r9.js, -r9.css).
 // Ziel:   griffner/framer-code/JourneyGehen*.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
-import { DEF, ICONS } from './gehen-szene.js';
+import { DEF, ICONS } from './gehen-szene-r9.js';
 
 const here = new URL('.', import.meta.url).pathname;
 const OUTDIR = new URL('../../griffner/framer-code/', import.meta.url).pathname;
@@ -22,11 +25,6 @@ const URL3 = 'https://framerusercontent.com/assets/ttpcYC8BdRagbY1NydB6vu9Z4s.gz
 const URL3S = 'https://framerusercontent.com/assets/7wb8HI39JrQuLr6s7fcBUJPY97I.gz'; // familie-echt-s.bin.gz (das Paar für Telefone, WebP 256) bei Framer, hochgeladen 2026-11-20 (Runde 9)
 const ECHT = 'family: (T: any) => loadEchteFamilie(T, famUrl), prefetch: () => prefetchEchteFamilie(famUrl),';
 const VARIANTS = [
-  /* Seite /journey: seit 2026-11-20 das Paar aus Variante 3 (Kundenwunsch „Yes, on /journey“). Die Spielfiguren (familie-toy.js, Runde 7) liegen noch im Ordner. */
-  { name: 'JourneyGehen', title: 'Journey Gehen', files: ['gang-daten.js', 'familie-echt.js'], url: URL3, urlS: URL3S,
-    head: '// Seite /journey: das Paar Hand in Hand, echte Menschen, Microsoft Rocketbox Avatar Library (Lizenz unten). Gang: Quaternius Universal Animation Library, CC0 1.0.\n'
-      + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
-    deps: ECHT },
   { name: 'JourneyGehen2', title: 'Journey Gehen 2', files: ['familie3d.js'], url: URL2,
     head: '// Variante 2 (Seite /journey-2): Familie aus Quaternius Universal Base Characters und Universal Animation Library, CC0 1.0 (gemeinfrei).\n',
     deps: 'family: (T: any) => loadFamily(T, FAMILIE_URL),' },
@@ -35,7 +33,7 @@ const VARIANTS = [
       + LIZENZ.trim().split('\n').map(l => '// ' + l).join('\n') + '\n',
     deps: ECHT },
 ];
-const css = src('gehen-szene.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '').replace(/\s{2,}/g, ' ');
+const css = src('gehen-szene-r9.css').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, '').replace(/\s{2,}/g, ' ');
 
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
 const controls = {
@@ -77,7 +75,7 @@ ${noExport(src('haus3d.js'))}
 /* ---------- figur3d.js ---------- */
 ${noExport(src('figur3d.js'))}
 ${v.files.map(sect).join('')}${v.url ? `const FAMILIE_URL = ${JSON.stringify(v.url)}\n` : ''}${v.urlS ? `const FAMILIE_URL_S = ${JSON.stringify(v.urlS)} // Telefon (bis 809 px): halbe Texturgröße\n` : ''}/* ---------- gehen-szene.js ---------- */
-${noExport(src('gehen-szene.js'))}
+${noExport(src('gehen-szene-r9.js'))}
 /* ---------- Framer ---------- */
 let threeP: Promise<any> | null = null
 const three = () => threeP || (threeP = import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"))
@@ -142,3 +140,4 @@ addPropertyControls(${v.name}, ${ctl})
 writeFileSync(OUTDIR + v.name + '.tsx', tsx);
 console.log('geschrieben', OUTDIR + v.name + '.tsx', (tsx.length / 1024).toFixed(1) + ' KB');
 }
+await import('./framer-bau-seite.mjs');

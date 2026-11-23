@@ -1,0 +1,66 @@
+/* GRIFFNER Journey, Runde 10: Grundlage aller Sektionen der Seite (alles unter .jg, damit es in Framer neben der Website stehen kann).
+   Schrift: Ofelia als woff2 von griffner.com (Framer), eigene Familiennamen, damit nichts mit den Framer-Stilen kollidiert.
+   Größen in rem wie die Text-Stile der Website (die Website skaliert die Grundgröße mit der Breite), Ränder wie die Seitenränder:
+   Desktop, Tablet bis 1199 px, Telefon bis 809 px. */
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/pvfPivjIrdt8tu9p7EHXE3Y.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/G1C12Uf2g2THxCfbjczrRTrhJc.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/yOxv1P33k9x3ue2EWzm4JZ40JA.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/Q4vZdey99kLNgQDJCUVHlth04I.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+
+.jg{
+  --gelb:#FFB200; --kalk:#CACACA; --grau:rgba(202,202,202,.55);
+  --font-display:"JG Display","Helvetica Neue",Arial,sans-serif;
+  --font-text:"JG Text","Helvetica Neue",Arial,sans-serif;
+  --t-xl:4.625rem; --t-l:3rem; --t-m:2.25rem; --t-einl:2.125rem; --t-body:1.125rem; --t-info:.6875rem;
+  --t-manifest:3.25rem; --t-jahr:6rem; --t-kap:3.25rem;
+  --lh-d:1.02; --lh-body:1.45;
+  --page-margin:clamp(24px,5.5vw,80px);
+  --feld:clamp(56px,6.2vw,120px);
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --rule:rgba(255,255,255,.2);
+  position:relative;width:100%;background:#000;color:#fff;
+  font-family:var(--font-text);font-weight:400;font-size:var(--t-body);line-height:var(--lh-body);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+@media (max-width:1199px){.jg{--t-xl:3.125rem;--t-l:2.25rem;--t-m:1.875rem;--t-einl:1.75rem;--t-body:1.0625rem;--t-manifest:2.375rem;--t-jahr:4.5rem;--t-kap:2.375rem;--page-margin:44px}}
+@media (max-width:809px){.jg{--t-xl:2.5rem;--t-l:1.875rem;--t-m:1.625rem;--t-einl:1.5rem;--t-body:1rem;--t-info:.625rem;--t-manifest:1.875rem;--t-jahr:3.25rem;--t-kap:1.75rem;--page-margin:24px}}
+.jg *,.jg *::before,.jg *::after{box-sizing:border-box}
+.jg a{color:inherit;text-decoration:none}
+.jg button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* Typo-Rollen */
+.jg .info{margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;line-height:1.2}
+.jg .h-xl{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .h-l{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-m);line-height:1;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .h-kap{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-kap);line-height:1.06;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .lead{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-einl);line-height:1.15;text-wrap:pretty}
+.jg .txt{margin:0;font-size:var(--t-body);line-height:var(--lh-body);max-width:30em;text-wrap:pretty}
+.jg .btn{display:inline-flex;align-items:center;gap:14px;padding:16px 22px;background:#fff;color:#000;font-family:var(--font-text);font-weight:500;font-size:.8125rem;letter-spacing:.12em;text-transform:uppercase;line-height:1;transition:opacity 300ms var(--ease)}
+.jg .btn:hover{opacity:.72}
+
+/* Das Feld (5:4): hier dockt auf der Website das gelbe Feld an (dann bleibt es leer, .has-dock); in der Vorschau ist es selbst gelb */
+.jg .jf{display:block;width:var(--feld);aspect-ratio:5/4;background:var(--gelb);transition:opacity 500ms var(--ease)}
+.jg.has-dock .jf{background:transparent}
+
+/* Wörter steigen von unten in ihre Zeile */
+.jg .jw{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+.jg .jw>span{display:inline-block;transform:translate3d(0,160%,0);transition:transform 1100ms var(--ease);transition-delay:calc(var(--i) * 80ms)}
+.jg .is-in .jw>span{transform:none}
+
+/* Schwarzer Bildschirm einer Phase (wie die Titel im Services Film: Besser planen, bauen, leben) */
+.jg .jph{position:absolute;inset:0;background:#000;display:grid;place-items:center;padding:0 var(--page-margin);text-align:center}
+.jg .jph__b{display:grid;justify-items:center;row-gap:clamp(18px,3vh,32px)}
+.jg .jph__i{color:var(--kalk);opacity:0;transition:opacity 900ms var(--ease) 200ms}
+.jg .jph__h{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-jahr);line-height:.9;text-transform:uppercase;max-width:9em;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .jph__l{max-width:20em;color:var(--kalk);opacity:0;transform:translate3d(0,14px,0);transition:opacity 900ms var(--ease) 500ms,transform 1100ms var(--ease) 500ms}
+.jg .jph__f{opacity:0}
+.jg .jph.is-in .jph__i,.jg .jph.is-in .jph__f{opacity:1}
+.jg .jph.is-in .jph__l{opacity:1;transform:none}
+
+/* Stichwort: kleines Feld mit gelber Marke (Szene und Stapel) */
+.jg .jk{position:absolute;left:0;top:0;display:block;will-change:transform}
+.jg .jk__f{display:block}
+.jg .jk__i{display:flex;align-items:baseline;gap:9px;max-width:15.5rem;padding:7px 12px 8px 10px;border:1px solid rgba(255,255,255,.3);background:rgba(8,8,8,.72);color:#fff;font-family:var(--font-text);font-weight:400;font-size:.8125rem;line-height:1.25;letter-spacing:.01em;white-space:normal}
+.jg .jk__i i{flex:none;display:block;width:8px;height:6.4px;background:var(--gelb);transform:translateY(-1px)}
+@media (max-width:809px){.jg .jk__i{font-size:.75rem;gap:7px;padding:6px 10px 7px 8px;max-width:14rem}.jg .jk__i i{width:7px;height:5.6px}}
+@media (prefers-reduced-motion:reduce){.jg .jw>span,.jg .jph__l{transition:none}}

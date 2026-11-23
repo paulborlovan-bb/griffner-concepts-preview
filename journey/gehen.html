@@ -4,27 +4,47 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Journey · Vorschlag 1 · Gehen</title>
+<title>Journey · Gehen</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="jr.css">
+<link rel="stylesheet" href="basis.css">
+<link rel="stylesheet" href="einstieg.css">
 <link rel="stylesheet" href="gehen-szene.css">
+<link rel="stylesheet" href="stapel.css">
+<link rel="stylesheet" href="leben.css">
 </head>
 <body>
-<!-- Vorschlag 1, Gehen: du gehst in 3D auf dein Haus zu. Seit 2026-11-20 das Paar Hand in Hand (familie-echt.js, Rocketbox MIT), wie gehen-3.html. Runde 9: schnell am Telefon. Szene, Texte und Zeitplan in gehen-szene.js (dieselbe Szene läuft als Framer Komponente JourneyGehen). -->
-<main><div class="jg" data-jg></div></main>
+<!-- Die Seite /journey (Runde 10, 2026-11-23, neuer Text): Einstieg (wie Über uns), die 14 Tage mit dem Paar (gehen-szene.js),
+     der Stapel, Ab Tag 15 mit vier Kapiteln und der Abschluss. Texte in inhalt.js. Dieselben Teile laufen als Framer Komponenten
+     JourneyEinstieg, JourneyGehen, JourneyStapel und JourneyLeben (framer-bau.mjs). Die Fassung bis Runde 9: gehen-3.html. -->
+<main>
+<div class="jg" data-je></div>
+<div class="jg" data-jg></div>
+<div class="jg" data-js></div>
+<div class="jg" data-jl></div>
+</main>
 <script type="module">
 import { chrome, reduce } from './jr.js';
-import { DEF, markup, mount } from './gehen-szene.js';
+import * as Einstieg from './einstieg.js';
+import * as Szene from './gehen-szene.js';
+import * as Stapel from './stapel.js';
+import * as Leben from './leben.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
 import { loadEchteFamilie, prefetchEchteFamilie, familieUrl } from './familie-echt.js';
 chrome(1);
-const root = document.querySelector('[data-jg]');
-root.innerHTML = markup(DEF);
-/* Runde 9: Telefon lädt die kleine Datei, der Download startet sofort (parallel zu three.js). ?big / ?small erzwingt eine Datei, ?nogl testet die ruhige Fassung ohne 3D. */
+const el = s => document.querySelector(s);
+/* ?big / ?small erzwingt eine Datei des Paars, ?nogl testet die ruhige Fassung ohne 3D */
 const q = new URLSearchParams(location.search), FAM = q.has('big') ? './familie-echt.bin.gz' : q.has('small') ? './familie-echt-s.bin.gz' : familieUrl('./familie-echt.bin.gz', './familie-echt-s.bin.gz');
 const three = q.has('nogl') ? () => Promise.reject(new Error('Test: ohne WebGL')) : () => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
-window.__jgh = mount(root, DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce });
+el('[data-je]').innerHTML = Einstieg.markup(Einstieg.DEF);
+el('[data-jg]').innerHTML = Szene.markup(Szene.DEF);
+el('[data-js]').innerHTML = Stapel.markup(Stapel.DEF);
+el('[data-jl]').innerHTML = Leben.markup(Leben.DEF);
+window.__je = Einstieg.mount(el('[data-je]'), Einstieg.DEF, { reduce });
+window.__jgh = Szene.mount(el('[data-jg]'), Szene.DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce });
+window.__js = Stapel.mount(el('[data-js]'), Stapel.DEF, { reduce });
+window.__jl = Leben.mount(el('[data-jl]'), Leben.DEF, { reduce });
 </script>
 </body>
 </html>

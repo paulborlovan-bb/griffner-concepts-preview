@@ -1,0 +1,123 @@
+/* GRIFFNER Journey, Ab Tag 15 (Runde 10): Phase „Besser leben.“, fünf Kapitel zum Umschalten, Abschluss mit Knopf. */
+.jg .lb{position:relative;background:#000}
+.jg .lb__ph{height:170vh}
+.jg .lb__phs{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+
+/* Kapitel */
+.jg .lb__k{padding:clamp(96px,14vh,168px) var(--page-margin) clamp(64px,10vh,120px)}
+.jg .lb__tabs{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:0 18px}
+.jg .lb__tab{display:grid;gap:12px;align-content:start;text-align:left;padding:16px 0 4px;border-top:1px solid rgba(255,255,255,.22);color:var(--kalk);opacity:.6;transition:opacity 400ms var(--ease),border-color 400ms var(--ease)}
+.jg .lb__tab:hover{opacity:1}
+.jg .lb__tab.is-on{opacity:1;color:#fff;border-top-color:#fff}
+.jg .lb__tab:focus-visible{outline:1px solid var(--gelb);outline-offset:4px}
+.jg .lb__tn{display:flex;align-items:center;gap:10px;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em}
+.jg .lb__tf{display:block;width:15px;height:12px;background:var(--gelb);transform:scale(0);transform-origin:left center;transition:transform 500ms var(--ease)}
+.jg .lb__tab.is-on .lb__tf{transform:none}
+.jg.has-dock .lb__tf{background:transparent}
+.jg .lb__tl{font-family:var(--font-text);font-weight:500;font-size:.9375rem;letter-spacing:.04em;line-height:1.25;text-transform:uppercase;text-wrap:balance}
+.jg .lb__st{display:grid;margin-top:clamp(36px,6vh,72px)}
+.jg .lb__sl{grid-area:1/1;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:0 clamp(32px,5vw,96px);align-items:center;opacity:0;visibility:hidden;transition:opacity 500ms var(--ease),visibility 0s linear 500ms}
+.jg .lb__sl.is-on{opacity:1;visibility:visible;transition:opacity 700ms var(--ease) 80ms,visibility 0s}
+.jg .lb__tx{display:grid;align-content:center;order:1}
+.jg .lb__m{order:2}
+.jg .lb__p{margin-top:22px;font-size:var(--t-body)}
+.jg .lb__pk{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:22px 28px}
+.jg .lb__pk li{border-top:1px solid var(--rule);padding-top:14px;opacity:0;transform:translate3d(0,10px,0);transition:opacity 600ms var(--ease),transform 800ms var(--ease)}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__pk li{opacity:1;transform:none}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__pk li:nth-child(2){transition-delay:120ms}.jg .lb__k.is-vis .lb__sl.is-on .lb__pk li:nth-child(3){transition-delay:240ms}.jg .lb__k.is-vis .lb__sl.is-on .lb__pk li:nth-child(4){transition-delay:360ms}
+.jg .lb__pt{margin:0 0 6px;font-family:var(--font-text);font-weight:500;font-size:.8125rem;letter-spacing:.06em;text-transform:uppercase}
+.jg .lb__px{margin:0;font-size:.9375rem;line-height:1.45;color:rgba(255,255,255,.78);text-wrap:pretty}
+.jg .lb__pk--u{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0}
+
+/* Bild */
+.jg .lb__m{position:relative;aspect-ratio:4/3;max-height:66vh;width:100%;overflow:hidden;background:#0c0c0c}
+.jg .lb__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.jg .lb__img.is-dim{opacity:.42}
+.jg .lb__img.is-dim2{opacity:.5}
+.jg .lb__img.is-kb{transform:scale(1.07);transition:transform 9s cubic-bezier(.2,.6,.3,1)}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__img.is-kb{transform:none}
+
+/* Alles in einem Plan: fünf Ebenen übereinander, dann fallen sie zu einem Plan zusammen (das oberste wird das gelbe Feld) */
+.jg .lb__sch{position:absolute;inset:0;--w:clamp(120px,16vw,240px)}
+.jg .lb__e{--o:calc(var(--j) - (var(--n) - 1) / 2);position:absolute;left:44%;top:50%;width:0;height:0;opacity:0;transform:translate3d(0,calc(var(--o) * 13%),0)}
+.jg .lb__pl{position:absolute;left:0;top:0;width:var(--w);aspect-ratio:5/4;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.45);transform:translate(-50%,-50%) rotateX(60deg) rotateZ(-42deg)}
+.jg .lb__e span{position:absolute;left:calc(var(--w) * .66 + 14px);top:0;transform:translateY(-50%);white-space:nowrap;color:#fff}
+@keyframes jgEbene{0%{opacity:0;transform:translate3d(0,calc(var(--o) * var(--w) * .3 + 20px),0)}14%,52%{opacity:1;transform:translate3d(0,calc(var(--o) * var(--w) * .3),0)}82%,100%{opacity:1;transform:translate3d(0,calc(var(--o) * 3px),0)}}
+@keyframes jgEtikett{0%,58%{opacity:1}76%,100%{opacity:0}}
+@keyframes jgPlan{0%,74%{background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.8)}90%,100%{background:var(--gelb);border-color:var(--gelb)}}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__e{animation:jgEbene 5.2s var(--ease) calc(var(--j) * 90ms) forwards}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__e span{animation:jgEtikett 5.2s linear forwards}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__e:first-child .lb__pl{animation:jgPlan 5.2s linear forwards}
+
+/* Ein Auftrag. Ein Partner.: alle Gewerke laufen in einem Feld zusammen */
+.jg .lb__pa{position:absolute;inset:6% 4%;width:92%;height:88%;overflow:visible}
+.jg .lb__ln{fill:none;stroke:rgba(255,255,255,.75);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
+.jg .lb__sq{fill:rgba(0,0,0,.5);stroke:#fff;stroke-width:1.2;vector-effect:non-scaling-stroke;opacity:0}
+.jg .lb__ce{fill:var(--gelb);opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.4)}
+@keyframes jgZeichnen{to{stroke-dashoffset:0}}
+@keyframes jgDa{to{opacity:1;transform:none}}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__sq{animation:jgDa 600ms var(--ease) calc(200ms + var(--j) * 110ms) forwards}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__ln{animation:jgZeichnen 1100ms var(--ease) calc(700ms + var(--j) * 140ms) forwards}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__ce{animation:jgDa 800ms var(--ease) 1900ms forwards}
+
+/* Jede Woche: das Update baut sich Zeile für Zeile auf */
+.jg .lb__up{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:min(78%,400px);padding:6px 22px;background:rgba(10,10,10,.88);border:1px solid rgba(255,255,255,.22)}
+.jg .lb__ur{display:grid;grid-template-columns:12px 1fr;gap:14px;padding:15px 0;border-top:1px solid var(--rule);opacity:0;transform:translate3d(0,8px,0)}
+.jg .lb__ur:first-child{border-top:0}
+.jg .lb__ur i{display:block;width:11px;height:8.8px;margin-top:3px;border:1px solid rgba(255,255,255,.7)}
+.jg .lb__ur i.is-done{background:var(--gelb);border-color:var(--gelb)}
+.jg .lb__ut{margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+.jg .lb__ux{margin:0;font-size:.875rem;line-height:1.4;color:rgba(255,255,255,.75)}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__ur{animation:jgDa 700ms var(--ease) calc(300ms + var(--j) * 420ms) forwards}
+
+/* Zweimal Griffen: zwei Bilder */
+.jg .lb__sl--griffen .lb__m{background:none;overflow:visible}
+.jg .lb__g1,.jg .lb__g2{position:absolute;margin:0;overflow:hidden;background:#0c0c0c}
+.jg .lb__g1{left:0;top:0;width:76%;height:80%}
+.jg .lb__g2{right:0;bottom:0;width:44%;height:54%;outline:6px solid #000;opacity:0;transform:translate3d(0,24px,0);transition:opacity 700ms var(--ease) 250ms,transform 1000ms var(--ease) 250ms}
+.jg .lb__k.is-vis .lb__sl.is-on .lb__g2{opacity:1;transform:none}
+.jg .lb__g1 figcaption{top:12px;bottom:auto!important}
+.jg .lb__g1 figcaption,.jg .lb__g2 figcaption{position:absolute;left:14px;bottom:12px;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+
+.jg .lb__nav{display:flex;align-items:center;gap:18px;margin-top:clamp(28px,4vh,44px)}
+.jg .lb__ar{display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(255,255,255,.35);font-size:1.0625rem;transition:border-color 300ms var(--ease)}
+.jg .lb__ar:hover{border-color:#fff}
+.jg .lb__cnt em{font-style:normal;color:var(--gelb)}
+
+/* Abschluss */
+.jg .lb__cta{display:flex;flex-direction:column;align-items:center;gap:clamp(28px,4.5vh,44px);text-align:center;padding:clamp(120px,22vh,240px) var(--page-margin) clamp(120px,20vh,220px)}
+.jg .lb__ch{max-width:12em}
+.jg .lb__cta .btn{margin-top:6px}
+.jg .lb__f{opacity:0;transition:opacity 600ms var(--ease)}
+.jg .lb__cta.is-in .lb__f{opacity:1}
+
+@media (max-width:1199px){.jg .lb__tl{font-size:.8125rem}.jg .lb__sl{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}.jg .lb__pk{grid-template-columns:1fr}}
+@media (max-width:809px){
+  .jg .lb__k{padding-top:88px;display:flex;flex-direction:column}
+  .jg .lb__tabs{order:1}.jg .lb__nav{order:2;margin-top:20px;justify-content:flex-end}.jg .lb__st{order:3;margin-top:22px}
+  .jg .lb__sl{display:none}
+  .jg .lb__sl.is-on{display:grid}
+  .jg .lb__tx{align-content:start}
+  .jg .lb__sl--update .lb__m{aspect-ratio:4/5}
+  .jg .lb__g2{width:54%;height:50%}
+  .jg .lb__g1 figcaption,.jg .lb__g2 figcaption{left:10px;bottom:9px;font-size:.5625rem;letter-spacing:.14em}
+  .jg .lb__g1 figcaption{top:9px}
+  .jg .lb__tabs{display:flex;overflow-x:auto;gap:16px;margin:0 calc(-1 * var(--page-margin));padding:0 var(--page-margin);scroll-padding-inline:var(--page-margin);scrollbar-width:none;scroll-snap-type:x proximity}
+  .jg .lb__tabs::-webkit-scrollbar{display:none}
+  .jg .lb__tab{flex:0 0 auto;max-width:62vw;scroll-snap-align:start}
+  .jg .lb__tl{font-size:.75rem;white-space:nowrap}
+  .jg .lb__sl{grid-template-columns:1fr;gap:26px;align-items:start}
+  .jg .lb__tx{order:2}
+  .jg .lb__m{order:1;max-height:none}
+  .jg .lb__pk{grid-template-columns:1fr;gap:16px}
+  .jg .lb__sch{--w:108px}
+  .jg .lb__e{left:34%}
+  .jg .lb__e span{font-size:.5625rem;letter-spacing:.14em}
+  .jg .lb__up{right:4%;width:86%;padding:2px 14px}
+  .jg .lb__ur{padding:9px 0;gap:10px}
+  .jg .lb__ux{font-size:.75rem}
+  .jg .lb__ut{font-size:.6875rem}
+}
+@media (prefers-reduced-motion:reduce){.jg .lb__e,.jg .lb__e span,.jg .lb__pl,.jg .lb__ln,.jg .lb__sq,.jg .lb__ce,.jg .lb__ur{animation-duration:1ms!important;animation-delay:0s!important}}
+.jg.is-static .lb__ph{height:auto}
+.jg.is-static .lb__phs{position:relative}

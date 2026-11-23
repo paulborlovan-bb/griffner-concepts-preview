@@ -1,0 +1,31 @@
+/* GRIFFNER Journey, Der Stapel (Runde 10): Raster der 14 Tage, das aufbricht; die Stichworte fallen zu einem Stapel. Lage setzt stapel.js. */
+.jg .st{position:relative;background:#000}
+.jg .st__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.jg .st__grid{position:absolute;left:var(--page-margin);right:var(--page-margin);top:50%;transform:translateY(-50%);display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.jg .st__ph{--k:1;grid-column:1/-1;color:var(--kalk);margin:18px 0 2px;opacity:0;transition:opacity 900ms var(--ease)}
+.jg .st__grid.is-in .st__ph{opacity:var(--k);transition:none}
+.jg .st__ph:first-child{margin-top:0}
+.jg .st__box{--k:1;position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:clamp(104px,15vh,148px);padding:14px 14px 16px;border:1px solid rgba(255,255,255,calc(.32 * var(--k)));background:rgba(255,255,255,calc(.03 * var(--k)));opacity:0;transition:opacity 700ms var(--ease)}
+.jg .st__box>*{opacity:var(--k)}
+.jg .st__n em{font-style:normal;color:var(--gelb)}
+.jg .st__t{margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(.875rem,1.15vw,1.1875rem);line-height:1.08;text-transform:uppercase;letter-spacing:.01em;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;font-feature-settings:'liga' 0}
+.jg .st__grid.is-in .st__box{opacity:1}
+.jg .st__grid.is-in .st__box{transition-delay:calc(var(--i) * 45ms)}
+.jg .st__ks{position:absolute;inset:0;pointer-events:none}
+.jg .st__k{opacity:0;transform-origin:50% 50%}
+.jg .st__kopf{position:absolute;left:var(--page-margin);right:var(--page-margin);top:84px;bottom:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(22px,3.4vh,40px);text-align:center;pointer-events:none}
+.jg .st__h{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-xl);line-height:var(--lh-d);text-transform:uppercase;max-width:12em;text-wrap:balance;font-feature-settings:'liga' 0}
+.jg .st__f{opacity:0}
+.jg .st__kopf.is-in .st__f{opacity:1}
+@media (max-width:1199px){.jg .st__grid{gap:8px}.jg .st__box{padding:12px 10px 13px}}
+@media (max-width:809px){
+  .jg .st__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .jg .st__ph{margin:10px 0 0}
+  .jg .st__box{min-height:0;flex-direction:row;align-items:baseline;justify-content:flex-start;gap:10px;padding:9px 10px 10px}
+  .jg .st__t{font-size:.875rem}
+}
+.jg.is-static .st{height:auto!important}
+.jg.is-static .st__stage{position:relative;height:auto;padding:clamp(80px,14vh,160px) 0;display:grid;gap:clamp(56px,9vh,112px)}
+.jg.is-static .st__grid{position:relative;inset:auto;transform:none;order:2}
+.jg.is-static .st__ks{display:none}
+.jg.is-static .st__kopf{position:relative;inset:auto;order:1}
