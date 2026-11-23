@@ -60,7 +60,7 @@
 /* Stichwort: kleines Feld mit gelber Marke (Szene und Stapel) */
 .jg .jk{position:absolute;left:0;top:0;display:block;will-change:transform}
 .jg .jk__f{display:block}
-.jg .jk__i{display:flex;align-items:baseline;gap:9px;max-width:15.5rem;padding:7px 12px 8px 10px;border:1px solid rgba(255,255,255,.3);background:rgba(8,8,8,.72);color:#fff;font-family:var(--font-text);font-weight:400;font-size:.8125rem;line-height:1.25;letter-spacing:.01em;white-space:normal}
+.jg .jk__i{display:flex;align-items:baseline;gap:8px;max-width:14rem;padding:6px 10px 7px 9px;border:1px solid rgba(255,255,255,.3);background:rgba(8,8,8,.72);color:#fff;font-family:var(--font-text);font-weight:400;font-size:.75rem;line-height:1.25;letter-spacing:.01em;white-space:normal}
 .jg .jk__i i{flex:none;display:block;width:8px;height:6.4px;background:var(--gelb);transform:translateY(-1px)}
-@media (max-width:809px){.jg .jk__i{font-size:.75rem;gap:7px;padding:6px 10px 7px 8px;max-width:14rem}.jg .jk__i i{width:7px;height:5.6px}}
+@media (max-width:809px){.jg .jk__i{font-size:.6875rem;gap:6px;padding:5px 8px 6px 7px;max-width:12.5rem}.jg .jk__i i{width:7px;height:5.6px}}
 @media (prefers-reduced-motion:reduce){.jg .jw>span,.jg .jph__l{transition:none}}

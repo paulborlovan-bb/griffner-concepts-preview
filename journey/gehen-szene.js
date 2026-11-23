@@ -13,7 +13,12 @@
    - Kein Auftakt und kein Schluss mehr in der Szene (dafür Einstieg, Stapel und Leben). Am Ende wird das Bild schwarz.
    - Die Leiste rechts: ein Strich je Tag, Lücke zwischen den Phasen, ein Klick springt zum Tag.
    - Haus-Stufen an den neuen Tagen: Plan bei Tag 05 (Entwurfsplanung), Schnurgerüst Tag 09 (Einreichung, Vermessung),
-     Bodenplatte Tag 12 (Freigabe), Haus Tag 13 (Montage), Licht Tag 13 und 14, Tür Tag 14 (Übergabe). */
+     Bodenplatte Tag 12 (Freigabe), Haus Tag 13 (Montage), Licht Tag 13 und 14, Tür Tag 14 (Übergabe).
+
+   Runde 11 (2026-11-23, Kunde: „tight the scroll so you can't stop between steps and you can't jump steps“, „remove the title above“):
+   - Die Zeile „Darum kümmern wir uns“ über den Stichworten ist weg (nur noch für Vorleser), Text und Stichworte etwas kompakter.
+   - handle.stops(): die Halte der Szene (beide Phasen, 14 Tage, Seiten-Y). basis.js schritte() führt jede Geste genau einen Halt weiter.
+     Die Leiste springt über handle.goDay (gleitend) zum Tag. */
 import { clamp, lerp, E, esc, nr2, stichworte, phaseHTML, chip } from './basis.js';
 import { TAGE, SZENE } from './inhalt.js';
 
@@ -70,7 +75,7 @@ export function markup(c0) {
   const c = clean(c0), S = c.steps, N = S.length;
   const phName = i => { const j = c.phaseOf(i); return j >= 0 ? c.phases[j].h : ''; };
   const lis = S.map((s, i) => `<li class="g__s"><p class="info g__m"><span>${esc(c.tag)} <em>${nr2(i + 1)}</em></span>${phName(i) ? `<span>${esc(phName(i))}</span>` : ''}</p><h2 class="g__t">${esc(s.t)}</h2>${s.d ? `<p class="txt">${esc(s.d)}</p>` : ''}${s.k.length ? `<ul class="g__vh">${c.kopf ? `<li>${esc(c.kopf)}:</li>` : ''}${s.k.map(k => `<li>${esc(k)}</li>`).join('')}</ul>` : ''}</li>`).join('');
-  const groups = S.map(s => `<div class="g__kg">${c.kopf ? `<p class="info g__kh jk"><span class="jk__f"><span class="jk__i"><i></i>${esc(c.kopf)}</span></span></p>` : ''}${s.k.map(k => chip(k)).join('')}</div>`).join('');
+  const groups = S.map(s => `<div class="g__kg">${s.k.map(k => chip(k)).join('')}</div>`).join('');
   const rail = S.map((s, i) => `${c.phases.some(p => p.at === i) && i > 0 ? '<b class="g__rg"></b>' : ''}<button class="g__r" type="button" aria-label="${esc(`${c.tag} ${nr2(i + 1)}: ${s.t}`)}"><i></i></button>`).join('');
   const phases = c.phases.map((p, j) => phaseHTML(p, j ? 'g__ph' : 'g__ph g__ph0')).join('');
   const list = S.map((s, i) => {
@@ -84,10 +89,9 @@ export function markup(c0) {
 
 /* Plätze für die Stichworte rund um das Paar (breite Bilder). Einheit: Höhe des Paars im Bild; x vom Paar aus, y von den Köpfen aus.
    a: 'r' das Feld beginnt dort (wächst nach rechts), 'l' es endet dort, 'c' mittig. Die ersten passenden Plätze gewinnen. */
-const SLOTS_KOPF = [{ x: .38, y: -.5, a: 'r' }, { x: -.38, y: -.5, a: 'l' }, { x: 0, y: -.64, a: 'c' }, { x: .62, y: -.7, a: 'r' }];
 /* zwei lockere Spalten neben dem Paar, abwechselnd rechts und links, von der Mitte nach außen */
-const SLOTS = [[.38, -.08], [-.38, .02], [.47, .12], [-.47, -.18], [.38, .32], [-.38, .22], [.47, -.28], [-.47, .42], [.38, .52], [-.38, -.38],
-  [.47, .72], [-.47, .62], [.38, .92], [-.38, -.58], [.6, -.48], [-.6, .82]].map(([x, y]) => ({ x, y, a: x > 0 ? 'r' : 'l' }));
+const SLOTS = [[.34, -.06], [-.34, .02], [.42, .12], [-.42, -.16], [.34, .3], [-.34, .2], [.42, -.24], [-.42, .38], [.34, .48], [-.34, -.34],
+  [.42, .66], [-.42, .56], [.34, .84], [-.34, -.52], [.54, -.42], [-.54, .74]].map(([x, y]) => ({ x, y, a: x > 0 ? 'r' : 'l' }));
 
 /* Szene starten. root: Element mit markup(c) darin (Klasse jg).
    deps: { three: () => Promise<THREE>, makeHaus, figure, family?: T => Promise<Familie> (familie-echt.js), prefetch?: () => void (Familie früh laden),
@@ -113,10 +117,15 @@ export function mount(root, c0, deps) {
 
   /* Klick auf einen Strich der Leiste: zum Tag scrollen (stehend am Feld) */
   const yOfU = handle.yOfU = u => { const r = el.getBoundingClientRect(); return r.top + scrollY + u / U * Math.max(1, el.offsetHeight - innerHeight); };
+  const dayY = handle.dayY = i => yOfU(uOf(arriveW(i) + .08));
   RAIL.forEach((b, i) => b.addEventListener('click', () => {
-    const y = yOfU(uOf(arriveW(i) + .08));
+    if (handle.goDay) return handle.goDay(i);
+    const y = dayY(i);
     deps.scrollTo ? deps.scrollTo(y) : scrollTo({ top: y, behavior: 'smooth' });
   }));
+  /* Halte für schritte(): jede Phase steht (Titel ganz da), jeder Tag steht am Feld. Ruhige Fassung: keine Halte. */
+  const phaseU = j => { const q = PL0.INS[j], off = PL0.INS.slice(0, j).reduce((a, x) => a + x.len, 0); return q.w + off + (q.w === 0 ? .4 : .45) * q.len; };
+  handle.stops = () => root.classList.contains('is-static') ? [] : [...PL0.INS.map((q, j) => yOfU(phaseU(j))), ...LIS.map((_, i) => dayY(i))].sort((a, b) => a - b);
 
   /* Das Paar sofort laden (parallel zu three.js) */
   deps.prefetch && deps.prefetch();
@@ -270,7 +279,7 @@ export function mount(root, c0, deps) {
         return r.l >= B.l && r.r <= B.r && r.t >= B.t && r.b <= B.b && !K.obst.some(o => hit(r, o, m1)) && !used.some(o => hit(r, o, m2));
       };
       K.items.forEach((it, n) => {
-        const list = n === 0 && it.e.classList.contains('g__kh') ? SLOTS_KOPF : SLOTS;
+        const list = SLOTS;
         if (!it.sl || taken.has(it.sl) || !free(it.sl, it, 2, 2)) it.sl = list.find(sl => !taken.has(sl) && free(sl, it, 14, 8)) || (it.sl && !taken.has(it.sl) ? it.sl : list.find(sl => !taken.has(sl)) || list[0]);
         taken.add(it.sl);
         const r = rectAt(it.sl, it.w, it.h); used.push(r);

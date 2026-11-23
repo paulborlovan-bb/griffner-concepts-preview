@@ -29,6 +29,7 @@ import * as Einstieg from './einstieg.js';
 import * as Szene from './gehen-szene.js';
 import * as Stapel from './stapel.js';
 import * as Leben from './leben.js';
+import { schritte } from './basis.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
 import { loadEchteFamilie, prefetchEchteFamilie, familieUrl } from './familie-echt.js';
@@ -45,6 +46,14 @@ window.__je = Einstieg.mount(el('[data-je]'), Einstieg.DEF, { reduce });
 window.__jgh = Szene.mount(el('[data-jg]'), Szene.DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce });
 window.__js = Stapel.mount(el('[data-js]'), Stapel.DEF, { reduce });
 window.__jl = Leben.mount(el('[data-jl]'), Leben.DEF, { reduce });
+/* Runde 11: Schritt für Schritt scrollen (Szene mit Stapel, Besser leben); ?frei schaltet es ab */
+if (!reduce && !q.has('frei')) {
+  const z1 = schritte({ stops: () => [...window.__jgh.stops(), ...window.__js.stops()] });
+  window.__jgh.goDay = i => z1.go(window.__jgh.dayY(i));
+  const z2 = schritte({ stops: () => window.__jl.stops() });
+  window.__jl.go = y => z2.go(y);
+  window.__jz = [z1, z2];
+}
 </script>
 </body>
 </html>

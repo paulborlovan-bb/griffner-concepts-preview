@@ -39,25 +39,25 @@ export const SZENE = { kopf: 'Darum kümmern wir uns', tag: 'Tag' };
 export const STAPEL = { h: 'Um den Rest kümmern wir uns.' };
 
 /* 4 bis 8 · Ab Tag 15, dann die vier Kapitel, alles in einer Sektion; 9 · Abschluss mit Knopf */
-const IMG = id => `https://framerusercontent.com/images/${id}`;
 export const LEBEN = {
   phase: { info: 'Ab Tag 15', h: 'Besser leben.', lead: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.' },
+  /* Runde 11 (Kunde: „remove the images and have just the animations and drawings“): keine Bilder mehr, je Kapitel eine Zeichnung.
+     marken: Beschriftung der Zeichnung, je Marke [Zeile, Zeile] (Reihenfolge wie in leben.js beschrieben). */
   kapitel: [
-    { tab: 'Ab Tag 15', art: 'liste', h: 'Besser leben.', text: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.',
+    { tab: 'Ab Tag 15', art: 'leben', h: 'Besser leben.', text: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.',
       punkte: [
         ['Nach vier Jahreszeiten.', 'Nach einem Jahr im neuen Zuhause setzen wir uns wieder zusammen. Wie fühlen sich Licht, Raumklima und Haustechnik an? Dein Feedback macht unsere Häuser besser.'],
         ['Kundenservice.', 'Bei Fragen zu Pflege, Wartung und allem, was dein Haus betrifft, bleibt unser Kundenservice an deiner Seite. Ein Leben lang.'],
         ['Ambassador Programm.', 'Als eine von 20 Baufamilien öffnest du dein Zuhause für alle, die noch vor ihrem Projekt stehen, und erzählst, wie du es erlebt hast.'],
         ['Home Community.', 'Einmal im Jahr bringen wir GRIFFNER Hausbesitzer zusammen. Zum Austauschen, Kennenlernen und Feiern.']
       ],
-      bild: IMG('NxttXUzpAFR4DutqAuIR1W1c.jpg'), alt: 'Bewohnter GRIFFNER Bungalow mit Pool in der Dämmerung' },
+      marken: [['Tag 15', 'Schlüssel'], ['Nach einem Jahr', 'Feedback'], ['Jedes Jahr', 'Home Community'], ['Ein Leben lang', 'Kundenservice']] },
     { tab: 'Alles in einem Plan', art: 'schichten', h: 'Alles in einem Plan.',
       text: 'Im GRIFFNER Planungssystem führen wir Architektur, Innenarchitektur, Haustechnik, Unterbau und Außenanlagen zusammen. So greift jede Entscheidung in die nächste, und Kosten, Termine und Qualität bleiben in jeder Phase im Blick.',
-      schichten: ['Architektur', 'Innenarchitektur', 'Haustechnik', 'Unterbau', 'Außenanlagen'],
-      bild: IMG('DBUzIPr3WBhHD0bw5wQEfNNUlIk.jpg'), alt: 'Architektur bei GRIFFNER: zwei Menschen über Plänen' },
+      schichten: ['Architektur', 'Innenarchitektur', 'Haustechnik', 'Unterbau', 'Außenanlagen'] },
     { tab: 'Ein Auftrag. Ein Partner.', art: 'partner', h: 'Ein Auftrag. Ein Partner.',
       text: 'Mit deinem Auftrag übernehmen wir die Verantwortung für alles, was wir gemeinsam vereinbaren. Wir koordinieren die Gewerke rund um dein Haus, mit Fachbetrieben aus unserem Netzwerk oder mit Partnern deines Vertrauens.',
-      bild: IMG('nyiGSDXl2pBDMz0tIETioMnxI.jpg'), alt: 'Projektleitung bei GRIFFNER' },
+      marken: [['Unterbau', ''], ['Haustechnik', ''], ['Elektro', ''], ['Küche und Bad', ''], ['Außenanlagen', ''], ['Pool und Zaun', ''], ['Ein Partner', '']] },
     { tab: 'Jede Woche', art: 'update', h: 'Jede Woche weißt du, wo du stehst.',
       text: 'Ab dem Projektstart bekommst du jede Woche ein Update, ganz wie du willst: persönlich, online oder per E-Mail.',
       punkte: [
@@ -66,11 +66,10 @@ export const LEBEN = {
         ['Noch offen.', 'Was ansteht, wer zuständig ist und bis wann.'],
         ['Kosten und Termine.', 'Wo dein Projekt steht und was eine Änderung bewirkt.']
       ],
-      bild: IMG('rV8gy1e6PqyMQpTftwYwhrKeC0.jpg'), alt: 'Haustechnik bei GRIFFNER: ein Mann am Schreibtisch' },
+      marken: [['Wöchentliches Update', '']] },
     { tab: 'Zweimal Griffen', art: 'griffen', h: 'Zweimal Griffen.',
       text: 'Bei der Beauftragung lernst du die Manufaktur und die Menschen dahinter kennen, beim Design Day wählst du jedes Detail für dein Zuhause. Wenn es für dich passt, holen wir dich ab. Mit einem zusätzlichen Tag am Wörthersee oder am Feuerberg lässt du den Besuch in Ruhe ausklingen.',
-      bild: IMG('zCfXGYCeATmXr3DP5nQT6G9IWQ.jpg'), alt: 'Der GRIFFNER Campus in Griffen von oben', bildA: 'Tag 07 · Beauftragung',
-      bild2: IMG('s0nYYX5XQvSCe4t1ePdZzEOBIjQ.jpg'), alt2: 'Innenraum eines GRIFFNER Hauses mit Treppe', bildB: 'Tag 11 · Design Day' }
+      marken: [['Dein Zuhause', ''], ['Griffen', 'Manufaktur'], ['Tag 07', 'Beauftragung'], ['Tag 11', 'Design Day'], ['Wörthersee', ''], ['Feuerberg', '']] }
   ],
   cta: { h: 'Dein Tag 01 beginnt mit einem Gespräch.', knopf: 'Gespräch vereinbaren', href: '/contact#contact-form' }
 };

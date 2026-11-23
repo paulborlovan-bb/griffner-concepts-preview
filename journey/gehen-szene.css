@@ -10,12 +10,13 @@
 .jg .g__stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 58%,rgba(0,0,0,.6) 100%);z-index:1}
 
 /* Text des Tages, unten links */
-.jg .g__steps{list-style:none;margin:0;padding:0;position:absolute;left:var(--page-margin);bottom:clamp(40px,9vh,96px);width:min(38rem,calc(100% - 2 * var(--page-margin)));z-index:3;pointer-events:none}
-.jg .g__s{position:absolute;left:0;bottom:0;width:100%;display:grid;gap:16px;opacity:0;transform:translateY(20px);transition:opacity 700ms var(--ease),transform 1000ms var(--ease)}
+.jg .g__steps{list-style:none;margin:0;padding:0;position:absolute;left:var(--page-margin);bottom:clamp(32px,7vh,80px);width:min(33rem,calc(100% - 2 * var(--page-margin)));z-index:3;pointer-events:none}
+.jg .g__s{position:absolute;left:0;bottom:0;width:100%;display:grid;gap:12px;opacity:0;transform:translateY(20px);transition:opacity 700ms var(--ease),transform 1000ms var(--ease)}
 .jg .g__s.is-on{opacity:1;transform:none;transition-delay:80ms}
 .jg .g__m{display:flex;gap:18px;opacity:.75}
 .jg .g__m em{font-style:normal;color:var(--gelb)}
-.jg .g__t{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--t-l);line-height:1.02;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.jg .g__t{margin:0;font-family:var(--font-display);font-weight:300;font-size:calc(var(--t-l) * .8);line-height:1.02;text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.jg .g__s .txt{font-size:calc(var(--t-body) * .92);max-width:28em}
 .jg .g__vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0;padding:0}
 
 /* Stichworte des Tages: schweben um das Paar (Lage setzt gehen-szene.js) */
@@ -30,13 +31,9 @@
 @keyframes jgSchweben{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-5px,0)}}
 .jg .g__kg.is-on .jk__f{animation:jgSchweben 5.6s ease-in-out infinite;animation-delay:calc(var(--d,0) * -1.4s)}
 .jg .g__kg>.jk:nth-child(even) .jk__f{animation-duration:6.8s}
-/* Kopfzeile „Darum kümmern wir uns“: ohne Rahmen, grau */
-.jg .g__kh .jk__i{border:0;background:none;padding:0 0 2px;font-family:var(--font-text);font-weight:500;font-size:var(--t-info);letter-spacing:.2em;text-transform:uppercase;color:var(--kalk);align-items:center}
-.jg .g__kh .jk__i i{transform:none}
 /* Schmal (Telefon, Tablet hochkant): Wolke über den Köpfen */
-.jg.g--cloud .g__kg{inset:0 var(--page-margin) auto var(--page-margin);display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-end;gap:6px}
+.jg.g--cloud .g__kg{inset:0 var(--page-margin) auto var(--page-margin);display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-end;gap:5px}
 .jg.g--cloud .g__kg .jk{position:relative;transform:none!important}
-.jg.g--cloud .g__kg .g__kh{flex:0 0 100%;display:flex;justify-content:center;margin:0 0 4px}
 
 /* Leiste rechts: ein Strich je Tag, Lücke zwischen den Phasen; Klick springt zum Tag */
 .jg .g__rail{position:absolute;right:calc(var(--page-margin) - 6px);top:50%;transform:translateY(-50%);display:grid;z-index:3}
@@ -62,8 +59,8 @@
   .jg .g__r.is-now i{width:15px;height:12px}
   .jg .g__rg{width:10px;height:auto}
   .jg .g__steps{bottom:calc(46px + env(safe-area-inset-bottom))}
-  .jg .g__s{gap:12px}
-  .jg .g__t{font-size:min(var(--t-l),7.6vw)}
+  .jg .g__s{gap:10px}
+  .jg .g__t{font-size:min(calc(var(--t-l) * .9),6.8vw)}
 }
 
 /* Ruhige Fassung (reduzierte Bewegung, ohne WebGL, Framer Canvas): ein Bild, darunter alle Tage als Liste */

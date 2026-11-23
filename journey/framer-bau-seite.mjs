@@ -1,4 +1,4 @@
-// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23) aus den Teilen der Vorschlagsseite gehen.html:
+// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23; Runde 11 am selben Tag: Halte-Scrollen, Leben als ein Bildschirm mit Zeichnungen) aus den Teilen der Vorschlagsseite gehen.html:
 //   JourneyEinstieg: einstieg.js (wie der Anfang von Über uns)
 //   JourneyGehen:    gehen-szene.js (die 14 Tage mit dem Paar) und stapel.js (Der Stapel), beide aus derselben Liste der Tage
 //   JourneyLeben:    leben.js (Ab Tag 15, fünf Kapitel, Abschluss mit Knopf)
@@ -23,7 +23,7 @@ const URL3S = 'https://framerusercontent.com/assets/7wb8HI39JrQuLr6s7fcBUJPY97I.
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
 const ctl = o => JSON.stringify(o, null, 4).replace(/"(ControlType\.\w+)"/g, '$1');
 const head = (title, files) => `// @ts-nocheck
-// GRIFFNER Journey, Seite /journey (Runde 10): ${title}
+// GRIFFNER Journey, Seite /journey (Runde 11): ${title}
 // ERZEUGT von griffner-konzepte/journey/framer-bau-seite.mjs aus ${files.join(', ')}.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte sind Eingabefelder (rechts in Framer).
 `;
@@ -96,7 +96,6 @@ addPropertyControls(JourneyEinstieg, ${ctl(controls)})
       } },
       defaultValue: TAGE.map(s => ({ titel: s.t, text: s.d, stichworte: s.k, phase: s.ph || '' }))
     },
-    kopf: S('Über den Stichworten', SZENE.kopf),
     tag: S('Wort für Tag', SZENE.tag),
     stapelTitel: S('Stapel Satz', STAPEL.h, { displayTextArea: true }),
     bereich: S('Bereich (Vorlesen)', '', { description: 'Leer: „Deine Journey in N Tagen“' })
@@ -117,7 +116,7 @@ ${LAYOUT}
 export default function JourneyGehen(props: any) {
     const ref = useRef<HTMLDivElement>(null), ref2 = useRef<HTMLDivElement>(null)
     const steps = (props.schritte || []).map((s: any) => ({ t: s?.titel, d: s?.text, k: s?.stichworte, ph: s?.phase }))
-    const cfg = { steps, kopf: props.kopf, tag: props.tag, label: props.bereich || "" }
+    const cfg = { steps, tag: props.tag, label: props.bereich || "" }
     const cfgS = { h: props.stapelTitel, steps, tag: props.tag }
     const html = Szene.markup(cfg), html2 = Stapel.markup(cfgS)
     useEffect(() => {
@@ -137,6 +136,9 @@ export default function JourneyGehen(props: any) {
             onStatic() { scene.forEach(f => f()); scene.length = 0; root.classList.remove("has-dock") },
         })
         const hs = Stapel.mount(root2, cfgS, { reduce, still })
+        /* Halte-Scrollen: jede Geste führt genau einen Halt weiter (zwei Phasen, 14 Tage, Stapel), die Leiste gleitet zum Tag */
+        let halt: any = null
+        if (!still && !reduce) { halt = schritte({ stops: () => [...h.stops(), ...hs.stops()], lenis: () => store.lenis }); h.goDay = (i: number) => halt.go(h.dayY(i)) }
         let zone: any = null
         if (!still) {
             root2.classList.add("has-dock")
@@ -152,6 +154,7 @@ export default function JourneyGehen(props: any) {
         }
         return () => {
             offs.forEach(f => f()); scene.forEach(f => f())
+            halt && halt.dispose()
             zone && store.darkZones.delete(zone)
             h.dispose(); hs.dispose()
             root.classList.remove("has-dock", "is-static", "is-canvas", "is-nogl", "g--cloud"); root2.classList.remove("has-dock", "is-static")
@@ -173,7 +176,8 @@ addPropertyControls(JourneyGehen, ${ctl(controls)})
 /* ---------- JourneyLeben ---------- */
 {
   const files = ['basis.js', 'inhalt.js', 'leben.js', 'basis.css', 'leben.css'];
-  const ARTEN = [['liste', 'Bild und Punkte'], ['schichten', 'Ebenen werden ein Plan'], ['partner', 'Alles läuft in einem Feld zusammen'], ['update', 'Update baut sich auf'], ['griffen', 'Zwei Bilder'], ['bild', 'Nur Bild']];
+  const ARTEN = [['leben', 'Haus und Zeitstrahl'], ['schichten', 'Ebenen werden ein Plan'], ['partner', 'Alles läuft in einem Feld zusammen'], ['update', 'Update baut sich auf'], ['griffen', 'Zwei Wege nach Griffen']];
+  const markenText = k => (k.marken || []).map(([a, b]) => b ? `${a} · ${b}` : a).join('\n');
   const controls = {
     phaseZeile: S('Phase Zeile', LEBEN.phase.info),
     phaseTitel: S('Phase Titel', LEBEN.phase.h),
@@ -182,30 +186,25 @@ addPropertyControls(JourneyGehen, ${ctl(controls)})
       type: 'ControlType.Array', title: 'Kapitel', maxCount: 8,
       control: { type: 'ControlType.Object', controls: {
         reiter: S('Reiter', ''), titel: S('Titel', ''), text: S('Text', '', { displayTextArea: true }),
-        art: { type: 'ControlType.Enum', title: 'Bewegung', defaultValue: 'bild', options: ARTEN.map(a => a[0]), optionTitles: ARTEN.map(a => a[1]) },
+        art: { type: 'ControlType.Enum', title: 'Zeichnung', defaultValue: 'leben', options: ARTEN.map(a => a[0]), optionTitles: ARTEN.map(a => a[1]) },
         punkte: S('Punkte', '', { displayTextArea: true, description: 'Eine Zeile je Punkt: „Titel. Text“' }),
         schichten: S('Ebenen', '', { description: 'Nur bei „Ebenen“: mit · getrennt' }),
-        bild: { type: 'ControlType.ResponsiveImage', title: 'Bild', description: 'Leer = bisheriges Bild' },
-        bildText: S('Bild Zeile', ''),
-        bild2: { type: 'ControlType.ResponsiveImage', title: 'Bild 2', description: 'Nur bei „Zwei Bilder“' },
-        bild2Text: S('Bild 2 Zeile', '')
+        marken: S('Beschriftung', '', { displayTextArea: true, description: 'Eine Zeile je Beschriftung der Zeichnung, zweite Zeile mit · : „Tag 15 · Schlüssel“' })
       } },
-      defaultValue: LEBEN.kapitel.map(k => ({ reiter: k.tab, titel: k.h, text: k.text, art: k.art, punkte: (k.punkte || []).map(p => p.join(' ')).join('\n'), schichten: (k.schichten || []).join(' · '), bildText: k.bildA || '', bild2Text: k.bildB || '' }))
+      defaultValue: LEBEN.kapitel.map(k => ({ reiter: k.tab, titel: k.h, text: k.text, art: k.art, punkte: (k.punkte || []).map(p => p.join(' ')).join('\n'), schichten: (k.schichten || []).join(' · '), marken: markenText(k) }))
     },
     ctaTitel: S('Abschluss Titel', LEBEN.cta.h, { displayTextArea: true }),
     knopf: S('Knopf', LEBEN.cta.knopf),
     knopfLink: { type: 'ControlType.Link', title: 'Knopf Link', defaultValue: LEBEN.cta.href }
   };
-  write('JourneyLeben', `${head('Ab Tag 15: Phase Besser leben, fünf Kapitel zum Umschalten, Abschluss mit Knopf.', files)}${IMPORTS}
+  write('JourneyLeben', `${head('Ab Tag 15: Phase Besser leben, fünf Kapitel auf einem Bildschirm (Scrollen führt Kapitel für Kapitel, Zeichnungen statt Bilder), Abschluss mit Knopf.', files)}${IMPORTS}
 const CSS = ${JSON.stringify(cssOf('basis.css', 'leben.css'))}
 ${sect('basis.js')}${sect('inhalt.js')}${mod('Leben', 'leben.js', 'DEF, markup, mount')}${FRAMER}
 function cfgOf(p: any) {
     return {
         phase: { info: p.phaseZeile, h: p.phaseTitel, lead: p.phaseText },
         kapitel: (p.kapitel || []).map((k: any) => ({
-            tab: k?.reiter, h: k?.titel, text: k?.text, art: k?.art, punkte: k?.punkte, schichten: k?.schichten,
-            bild: k?.bild?.src, alt: k?.bild?.src ? k.bild.alt || "" : undefined, bildA: k?.bildText,
-            bild2: k?.bild2?.src, alt2: k?.bild2?.src ? k.bild2.alt || "" : undefined, bildB: k?.bild2Text,
+            tab: k?.reiter, h: k?.titel, text: k?.text, art: k?.art, punkte: k?.punkte, schichten: k?.schichten, marken: k?.marken,
         })),
         cta: { h: p.ctaTitel, knopf: p.knopf, href: p.knopfLink },
     }
@@ -224,6 +223,9 @@ export default function JourneyLeben(props: any) {
         let tab: any = null
         const h = Leben.mount(root, cfg, { reduce, still, onKapitel(i: number, api: any) { if (tab) tab.el = api.tabFeld() } })
         const offs: any[] = []
+        /* Halte-Scrollen: Phase, dann jedes Kapitel genau ein Halt; die Reiter gleiten zum Kapitel */
+        let halt: any = null
+        if (!still && !reduce) { halt = schritte({ stops: () => h.stops(), lenis: () => store.lenis }); h.go = (y: number) => halt.go(y) }
         let zone: any = null
         if (!still) {
             root.classList.add("has-dock")
@@ -234,7 +236,7 @@ export default function JourneyLeben(props: any) {
             zone = { el: root, on: () => true }
             store.darkZones.add(zone)
         }
-        return () => { offs.forEach(f => f()); zone && store.darkZones.delete(zone); h.dispose(); root.classList.remove("has-dock", "is-static") }
+        return () => { offs.forEach(f => f()); halt && halt.dispose(); zone && store.darkZones.delete(zone); h.dispose(); root.classList.remove("has-dock", "is-static") }
     }, [html])
     return (
         <div style={{ width: "100%" }}>
