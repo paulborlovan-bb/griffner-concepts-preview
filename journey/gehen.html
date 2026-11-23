@@ -29,7 +29,6 @@ import * as Einstieg from './einstieg.js';
 import * as Szene from './gehen-szene.js';
 import * as Stapel from './stapel.js';
 import * as Leben from './leben.js';
-import { schritte } from './basis.js';
 import { makeHaus } from './haus3d.js';
 import { figure } from './figur3d.js';
 import { loadEchteFamilie, prefetchEchteFamilie, familieUrl } from './familie-echt.js';
@@ -43,16 +42,17 @@ el('[data-jg]').innerHTML = Szene.markup(Szene.DEF);
 el('[data-js]').innerHTML = Stapel.markup(Stapel.DEF);
 el('[data-jl]').innerHTML = Leben.markup(Leben.DEF);
 window.__je = Einstieg.mount(el('[data-je]'), Einstieg.DEF, { reduce });
-window.__jgh = Szene.mount(el('[data-jg]'), Szene.DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce });
+window.__jgh = Szene.mount(el('[data-jg]'), Szene.DEF, { three, makeHaus, figure, prefetch: () => prefetchEchteFamilie(FAM), family: T => loadEchteFamilie(T, FAM), reduce, scrollTo: y => window.__lenis ? window.__lenis.scrollTo(y, { duration: Math.min(2.4, 1.1 + Math.abs(y - scrollY) / innerHeight * .18), easing: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2 }) : scrollTo({ top: y, behavior: 'smooth' }) });
 window.__js = Stapel.mount(el('[data-js]'), Stapel.DEF, { reduce });
 window.__jl = Leben.mount(el('[data-jl]'), Leben.DEF, { reduce });
-/* Runde 11: Schritt für Schritt scrollen (Szene mit Stapel, Besser leben); ?frei schaltet es ab */
-if (!reduce && !q.has('frei')) {
-  const z1 = schritte({ stops: () => [...window.__jgh.stops(), ...window.__js.stops()] });
-  window.__jgh.goDay = i => z1.go(window.__jgh.dayY(i));
-  const z2 = schritte({ stops: () => window.__jl.stops() });
-  window.__jl.go = y => z2.go(y);
-  window.__jz = [z1, z2];
+/* Runde 13: frei scrollen, weich wie auf der Website (Lenis 1.1.13 wie SmoothScroll.tsx, auf /journey mit 1,6 s statt 1,25 s); ?nativ schaltet es ab */
+if (!reduce && !q.has('nativ')) {
+  import('https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.mjs').then(({ default: Lenis }) => {
+    const L = window.__lenis = new Lenis({ duration: 1.6, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
+    const loop = t => { L.raf(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
+    const io = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    window.__jl.go = y => L.scrollTo(y, { duration: Math.min(2.4, 1.1 + Math.abs(y - scrollY) / innerHeight * .18), easing: io });
+  }).catch(e => console.warn('[Journey] Lenis', e));
 }
 </script>
 </body>

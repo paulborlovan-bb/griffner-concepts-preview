@@ -48,6 +48,7 @@
 
 /* Phasen: schwarzer Bildschirm über allem (Deckkraft setzt gehen-szene.js) */
 .jg .g__ph{z-index:6;opacity:0;visibility:hidden}
+.jg .g__ph .jph__b{will-change:transform}
 .jg .g__ph0{opacity:1;visibility:visible}
 .jg .g__fade{position:absolute;inset:0;background:#000;z-index:5;opacity:0;pointer-events:none}
 

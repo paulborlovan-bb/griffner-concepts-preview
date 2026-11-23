@@ -18,14 +18,20 @@
    Runde 11 (2026-11-23, Kunde: „tight the scroll so you can't stop between steps and you can't jump steps“, „remove the title above“):
    - Die Zeile „Darum kümmern wir uns“ über den Stichworten ist weg (nur noch für Vorleser), Text und Stichworte etwas kompakter.
    - handle.stops(): die Halte der Szene (beide Phasen, 14 Tage, Seiten-Y). basis.js schritte() führt jede Geste genau einen Halt weiter.
-     Die Leiste springt über handle.goDay (gleitend) zum Tag. */
+     Die Leiste springt über handle.goDay (gleitend) zum Tag.
+
+   Runde 13 (2026-11-23, Kunde: „remove completely the lock on steps, make it natural, more slower“, „besser planen and besser bauen
+   are too long and still, it looks like stuck“, „very smooth ... like a story“):
+   - Kein Halte-Scrollen mehr: die Seite scrollt frei, die Szene folgt dem Scrollen über eine weichere Feder (W0 5 statt 6,5).
+   - Phasen halb so lang (P .9 statt 1,5) und nie still: Schwarz blendet weich ein und aus, Zeile, Feld und Titel wandern dabei
+     langsam durch das Bild nach oben und der Titel wächst ein wenig (alles am Scrollweg, also so schnell wie man scrollt). */
 import { clamp, lerp, E, esc, nr2, stichworte, phaseHTML, chip } from './basis.js';
 import { TAGE, SZENE } from './inhalt.js';
 
 export const DEF = { steps: TAGE, kopf: SZENE.kopf, tag: SZENE.tag };
 
 /* Zeitplan in Einheiten (je Einheit VH Scrollweg): Phase P (schwarz), Anlauf L0, je Tag gehen (WALK) und kurz stehen, am Ende zur Tür und schwarz */
-export const TIMING = { L0: .35, WALK: .8, END: 2.4, P: 1.5, VH: 75, SP: 5.5 };
+export const TIMING = { L0: .35, WALK: .8, END: 2.4, P: .9, VH: 75, SP: 5.5 };
 
 const str = v => String(v ?? '').trim();
 
@@ -100,7 +106,7 @@ export function mount(root, c0, deps) {
   const c = clean(c0), PL0 = plan(c), { N, WU, U, split, uOf, startW, arriveW } = PL0, { L0, WALK, SP } = TIMING;
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
   const el = $('.g'), stage = $('.g__stage');
-  const LIS = $$('.g__s'), RAIL = $$('.g__r'), KG = $$('.g__kg'), PH = $$('.g__ph'), FADE = $('.g__fade');
+  const LIS = $$('.g__s'), RAIL = $$('.g__r'), KG = $$('.g__kg'), PH = $$('.g__ph'), PHB = PH.map(p => p.querySelector('.jph__b')), PHH = PH.map(p => p.querySelector('.jph__h')), FADE = $('.g__fade');
   let alive = true, S = null, tk = null, offScroll = null, active = -2, railAt = -1, phaseOn = -1, coverK = 1, endK = 0;
   const handle = {
     root, stage, rail: RAIL, phases: PH.map(p => p.querySelector('.jph__f')), active: () => active, railAt: () => Math.max(0, railAt),
@@ -119,13 +125,9 @@ export function mount(root, c0, deps) {
   const yOfU = handle.yOfU = u => { const r = el.getBoundingClientRect(); return r.top + scrollY + u / U * Math.max(1, el.offsetHeight - innerHeight); };
   const dayY = handle.dayY = i => yOfU(uOf(arriveW(i) + .08));
   RAIL.forEach((b, i) => b.addEventListener('click', () => {
-    if (handle.goDay) return handle.goDay(i);
     const y = dayY(i);
     deps.scrollTo ? deps.scrollTo(y) : scrollTo({ top: y, behavior: 'smooth' });
   }));
-  /* Halte für schritte(): jede Phase steht (Titel ganz da), jeder Tag steht am Feld. Ruhige Fassung: keine Halte. */
-  const phaseU = j => { const q = PL0.INS[j], off = PL0.INS.slice(0, j).reduce((a, x) => a + x.len, 0); return q.w + off + (q.w === 0 ? .4 : .45) * q.len; };
-  handle.stops = () => root.classList.contains('is-static') ? [] : [...PL0.INS.map((q, j) => yOfU(phaseU(j))), ...LIS.map((_, i) => dayY(i))].sort((a, b) => a - b);
 
   /* Das Paar sofort laden (parallel zu three.js) */
   deps.prefetch && deps.prefetch();
@@ -141,7 +143,7 @@ export function mount(root, c0, deps) {
     if (!alive || root.classList.contains('is-static')) return;
     tk && tk.stop(); offScroll && offScroll();
     root.classList.add('is-static', 'is-nogl'); el.style.height = '';
-    PH.forEach((p, j) => { p.style.opacity = ''; p.classList.toggle('is-in', j === 0); });
+    PH.forEach((p, j) => { p.style.opacity = ''; p.classList.toggle('is-in', j === 0); PHB[j].style.transform = ''; PHH[j].style.transform = ''; });
     phaseOn = -1;
     deps.onStatic && deps.onStatic(handle);
   };
@@ -374,19 +376,24 @@ export function mount(root, c0, deps) {
         anc = { cx: (hd.x + ft.x) / 2, hy: hd.y, hh: Math.max(60, ft.y - hd.y) };
       }
 
-      /* Phasen: der schwarze Bildschirm deckt alles, sein Titel steigt ein */
+      /* Phasen: der schwarze Bildschirm blendet weich ein und aus; Zeile, Feld und Titel wandern dabei langsam nach oben, der Titel wächst ein wenig.
+         Nie still: alles hängt am Scrollweg (über die Feder, also weich). */
       const q = SP2.q;
       let cov = 0, pOn = -1;
       PH.forEach((P, j) => {
-        let o = 0, inn = false;
+        let o = 0, inn = false, f = 0;
         if (q && q.j === j) {
-          const f = SP2.f, first = q.w === 0;
-          o = (first ? 1 : E(f, 0, .2)) * (1 - E(f, .78, 1));
-          inn = f > (first ? .0 : .14) && f < .8;
+          const first = q.w === 0; f = SP2.f;
+          o = (first ? 1 : E(f, 0, .24)) * (1 - E(f, .7, 1));
+          inn = f > (first ? .0 : .1) && f < .78;
           if (first && SP2.f < .02 && el.getBoundingClientRect().top > innerHeight * .4) inn = false;
         }
         const os = o.toFixed(3);
         if (P.dataset.o !== os) { P.dataset.o = os; P.style.opacity = os; P.style.visibility = o > .001 ? 'visible' : 'hidden'; }
+        if (o > .001) {
+          const ty = ((.5 - f) * 22).toFixed(2), sc = (.96 + f * .08).toFixed(4);
+          if (P.dataset.f !== ty) { P.dataset.f = ty; PHB[j].style.transform = `translate3d(0,${ty}vh,0)`; PHH[j].style.transform = `scale(${sc})`; }
+        }
         if (P.classList.contains('is-in') !== inn) P.classList.toggle('is-in', inn);
         if (o > cov) cov = o;
         if (o > .5) pOn = j;
@@ -397,11 +404,13 @@ export function mount(root, c0, deps) {
       const es = endK.toFixed(3); if (FADE.dataset.o !== es) { FADE.dataset.o = es; FADE.style.opacity = es; }
 
       /* Text und Stichworte des Tages: ab startW, bis der nächste beginnt; am Ende aus */
+      /* in einer Phase bis zur Mitte noch der Tag davor (er geht mit dem Schwarz), danach der erste Tag der Phase */
+      const wt = q && SP2.f < .5 ? w - .001 : w;
       let a = -1, r = 0;
       for (let i = 0; i < N; i++) {
         const st = startW(i), nx = i < N - 1 ? startW(i + 1) : L0 + N + .55;
-        if (w >= st && w < nx && cov < .98) a = i;
-        if (w >= st) r = i;
+        if (wt >= st && wt < nx && cov < .98) a = i;
+        if (wt >= st) r = i;
       }
       if (a !== active || r !== railAt) {
         if (a !== active) {
@@ -433,9 +442,9 @@ export function mount(root, c0, deps) {
       return;
     }
 
-    /* Scrollwert über eine kritisch gedämpfte Feder: weich anfahren, weich anhalten. Große Sprünge (Anker, Zurück) springen mit. */
+    /* Scrollwert über eine kritisch gedämpfte Feder: weich anfahren, weich anhalten (Runde 13: etwas weicher). Große Sprünge (Anker, Zurück) springen mit. */
     let x = null, v = 0, lt = 0, calm = false;
-    const W0 = 6.5;
+    const W0 = 5;
     /* Kommt das Gerät nicht mit? Mittel von 40 vollen Bildern (nach den ersten 90), zweimal hintereinander deutlich langsamer als der
        Bildschirmtakt (1,45 fach, mindestens 21 ms): eine Stufe leichter. Stufe 1: 75 % der Bildpunkte, Schatten 1024. Stufe 2: 1 Bildpunkt, Schatten 512. */
     const AQ = { lvl: 0, n: 0, sum: 0, wait: 90, bad: 0 };

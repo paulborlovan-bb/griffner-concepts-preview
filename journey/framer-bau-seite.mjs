@@ -1,4 +1,4 @@
-// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23; Runde 11 am selben Tag: Halte-Scrollen, Leben als ein Bildschirm mit Zeichnungen; Runde 12: Halte-Scrollen schneller, folgt dem Finger, nicht gesperrt) aus den Teilen der Vorschlagsseite gehen.html:
+// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23; Runde 11 am selben Tag: Halte-Scrollen, Leben als ein Bildschirm mit Zeichnungen; Runde 12: Halte-Scrollen schneller; Runde 13: kein Halte-Scrollen mehr, frei und ruhiger, Phasen kürzer und in Bewegung) aus den Teilen der Vorschlagsseite gehen.html:
 //   JourneyEinstieg: einstieg.js (wie der Anfang von Über uns)
 //   JourneyGehen:    gehen-szene.js (die 14 Tage mit dem Paar) und stapel.js (Der Stapel), beide aus derselben Liste der Tage
 //   JourneyLeben:    leben.js (Ab Tag 15, fünf Kapitel, Abschluss mit Knopf)
@@ -23,7 +23,7 @@ const URL3S = 'https://framerusercontent.com/assets/7wb8HI39JrQuLr6s7fcBUJPY97I.
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
 const ctl = o => JSON.stringify(o, null, 4).replace(/"(ControlType\.\w+)"/g, '$1');
 const head = (title, files) => `// @ts-nocheck
-// GRIFFNER Journey, Seite /journey (Runde 12): ${title}
+// GRIFFNER Journey, Seite /journey (Runde 13): ${title}
 // ERZEUGT von griffner-konzepte/journey/framer-bau-seite.mjs aus ${files.join(', ')}.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte sind Eingabefelder (rechts in Framer).
 `;
@@ -31,7 +31,19 @@ const FRAMER = `/* ---------- Framer ---------- */
 const reduceMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
 /* Teil im Bild? (für das gelbe Feld der Website) */
 const vis = (el: any, a = 1, b = 0) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.top < innerHeight * a && r.bottom > innerHeight * b }
-const glatt = (y: number) => store.lenis ? store.lenis.scrollTo(y, { duration: 1.6 }) : window.scrollTo({ top: y, behavior: "smooth" })
+/* Gleiten zu einem Tag oder Kapitel: weich an und aus, länger bei weitem Weg */
+const IO = (t: number) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+const glatt = (y: number) => store.lenis ? store.lenis.scrollTo(y, { duration: Math.min(2.4, 1.1 + Math.abs(y - window.scrollY) / window.innerHeight * .18), easing: IO }) : window.scrollTo({ top: y, behavior: "smooth" })
+/* Runde 13: auf /journey scrollt die Seite frei und etwas ruhiger. Lenis (SmoothScroll.tsx) gleitet hier 1,6 s statt 1,25 s.
+   Gezählt über alle Journey-Teile der Seite; der letzte stellt den alten Wert wieder her. Wird Lenis neu angelegt, gilt es auch für das neue. */
+const RUHIG = 1.6
+const ruhig = () => {
+    const w: any = window, R = w.__jgRuhig || (w.__jgRuhig = { n: 0, L: null, d: 0, t: 0 })
+    const set = () => { const L: any = store.lenis; if (!L || !L.options || R.L === L) return; if (R.L && R.L.options) R.L.options.duration = R.d; R.L = L; R.d = L.options.duration; L.options.duration = Math.max(RUHIG, R.d || 0) }
+    if (R.n++ === 0) { set(); R.t = setInterval(set, 500) }
+    let on = true
+    return () => { if (!on) return; on = false; if (--R.n > 0) return; clearInterval(R.t); if (R.L && R.L.options) R.L.options.duration = R.d; R.L = null }
+}
 `;
 const LAYOUT = `/**
  * @framerSupportedLayoutWidth any-prefer-fixed
@@ -67,9 +79,10 @@ export default function JourneyEinstieg(props: any) {
         const still = RenderTarget.current() === RenderTarget.canvas, reduce = reduceMotion()
         const h = Einstieg.mount(root, cfg, { reduce, still })
         let off: any = null
+        const offR = !still && !reduce ? ruhig() : null
         /* Am Ende dockt das gelbe Feld der Website am Feld an (wie withUManDock auf Über uns) */
         if (!still) { root.classList.add("has-dock"); off = registerDock({ el: h.feld, kind: "box", id: "je-feld", solid: true, when: h.feldOn }) }
-        return () => { off && off(); h.dispose(); root.classList.remove("has-dock", "is-static") }
+        return () => { off && off(); offR && offR(); h.dispose(); root.classList.remove("has-dock", "is-static") }
     }, [html])
     return (
         <div style={{ width: "100%" }}>
@@ -136,9 +149,7 @@ export default function JourneyGehen(props: any) {
             onStatic() { scene.forEach(f => f()); scene.length = 0; root.classList.remove("has-dock") },
         })
         const hs = Stapel.mount(root2, cfgS, { reduce, still })
-        /* Halte-Scrollen: jede Geste führt genau einen Halt weiter (zwei Phasen, 14 Tage, Stapel), die Leiste gleitet zum Tag */
-        let halt: any = null
-        if (!still && !reduce) { halt = schritte({ stops: () => [...h.stops(), ...hs.stops()], lenis: () => store.lenis }); h.goDay = (i: number) => halt.go(h.dayY(i)) }
+        const offR = !still && !reduce ? ruhig() : null
         let zone: any = null
         if (!still) {
             root2.classList.add("has-dock")
@@ -154,7 +165,7 @@ export default function JourneyGehen(props: any) {
         }
         return () => {
             offs.forEach(f => f()); scene.forEach(f => f())
-            halt && halt.dispose()
+            offR && offR()
             zone && store.darkZones.delete(zone)
             h.dispose(); hs.dispose()
             root.classList.remove("has-dock", "is-static", "is-canvas", "is-nogl", "g--cloud"); root2.classList.remove("has-dock", "is-static")
@@ -197,7 +208,7 @@ addPropertyControls(JourneyGehen, ${ctl(controls)})
     knopf: S('Knopf', LEBEN.cta.knopf),
     knopfLink: { type: 'ControlType.Link', title: 'Knopf Link', defaultValue: LEBEN.cta.href }
   };
-  write('JourneyLeben', `${head('Ab Tag 15: Phase Besser leben, fünf Kapitel auf einem Bildschirm (Scrollen führt Kapitel für Kapitel, Zeichnungen statt Bilder), Abschluss mit Knopf.', files)}${IMPORTS}
+  write('JourneyLeben', `${head('Ab Tag 15: Phase Besser leben, fünf Kapitel auf einem Bildschirm (frei scrollen, Zeichnungen statt Bilder), Abschluss mit Knopf.', files)}${IMPORTS}
 const CSS = ${JSON.stringify(cssOf('basis.css', 'leben.css'))}
 ${sect('basis.js')}${sect('inhalt.js')}${mod('Leben', 'leben.js', 'DEF, markup, mount')}${FRAMER}
 function cfgOf(p: any) {
@@ -223,9 +234,9 @@ export default function JourneyLeben(props: any) {
         let tab: any = null
         const h = Leben.mount(root, cfg, { reduce, still, onKapitel(i: number, api: any) { if (tab) tab.el = api.tabFeld() } })
         const offs: any[] = []
-        /* Halte-Scrollen: Phase, dann jedes Kapitel genau ein Halt; die Reiter gleiten zum Kapitel */
-        let halt: any = null
-        if (!still && !reduce) { halt = schritte({ stops: () => h.stops(), lenis: () => store.lenis }); h.go = (y: number) => halt.go(y) }
+        /* Reiter gleiten zum Kapitel (frei scrollen, Lenis etwas ruhiger) */
+        const offR = !still && !reduce ? ruhig() : null
+        if (!still && !reduce) h.go = glatt
         let zone: any = null
         if (!still) {
             root.classList.add("has-dock")
@@ -236,7 +247,7 @@ export default function JourneyLeben(props: any) {
             zone = { el: root, on: () => true }
             store.darkZones.add(zone)
         }
-        return () => { offs.forEach(f => f()); halt && halt.dispose(); zone && store.darkZones.delete(zone); h.dispose(); root.classList.remove("has-dock", "is-static") }
+        return () => { offs.forEach(f => f()); offR && offR(); zone && store.darkZones.delete(zone); h.dispose(); root.classList.remove("has-dock", "is-static") }
     }, [html])
     return (
         <div style={{ width: "100%" }}>

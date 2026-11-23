@@ -94,8 +94,10 @@ export function markup(c0) {
 </section>`;
 }
 
-/* deps: { reduce, still, onKapitel?(i, api) } → { phaseFeld, phaseOn(), tabFeld(), tabsOn(), ctaFeld, ctaOn(), index(), stops(), go?: y => void, dispose }
-   Wer schritte() nutzt, setzt handle.go (gleiten zu einem Halt); sonst gleitet der Browser. */
+/* deps: { reduce, still, onKapitel?(i, api) } → { phaseFeld, phaseOn(), tabFeld(), tabsOn(), ctaFeld, ctaOn(), index(), go?: y => void, dispose }
+   handle.go: gleiten zu einem Kapitel (Reiter); auf der Website mit Lenis, sonst gleitet der Browser.
+   Runde 13: frei scrollen (kein Halte-Scrollen). Die Phase „Besser leben.“ ist kürzer und wandert beim Scrollen langsam nach oben,
+   die Zeichnung und der Text des Kapitels steigen mit dem Scrollen ganz leicht, damit der klebende Bildschirm nie still steht. */
 export function mount(root, c0, deps = {}) {
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
   const ph = $('.lb__ph'), jph = $('.lb__ph .jph'), TABS = $$('.lb__tab'), SL = $$('.lb__sl'), k = $('.lb__k'), kp = $('.lb__kp'), cta = $('.lb__cta');
@@ -105,12 +107,13 @@ export function mount(root, c0, deps = {}) {
   /* Kapitel-Halte: der klebende Bildschirm steht, jedes Kapitel ein gleich langes Stück Scrollweg */
   const geo = () => { const r = k.getBoundingClientRect(), top = r.top + scrollY, span = Math.max(1, k.offsetHeight - kp.offsetHeight); return { top, step: n > 1 ? span / (n - 1) : 0 }; };
   const kapY = i => { const g = geo(); return g.top + i * g.step; };
+  const PHB = $('.lb__ph .jph__b'), PHH = $('.lb__ph .jph__h'), MS = SL.map(s => s.querySelector('.lb__m')), TX = SL.map(s => s.querySelector('.lb__tx'));
+  let phK = '', kK = '';
   const handle = {
     root, phaseFeld: $('.lb__ph .jph__f'), ctaFeld: $('.lb__f'),
     phaseOn: () => jph.classList.contains('is-in') && vis(ph.firstElementChild, .62, .3),
     tabFeld: () => TABS[idx].querySelector('.lb__tf'), tabsOn: () => { const r = k.getBoundingClientRect(); return r.top < innerHeight * .35 && r.bottom > innerHeight * .65; },
-    ctaOn: () => vis($('.lb__f'), .62, 0), index: () => idx, go: null, dispose,
-    stops: () => { if (stat || root.classList.contains('is-static')) return []; const r = ph.getBoundingClientRect(); return [r.top + scrollY + Math.max(0, ph.offsetHeight - innerHeight) * .5, ...SL.map((_, i) => kapY(i))]; }
+    ctaOn: () => vis($('.lb__f'), .62, 0), index: () => idx, go: null, dispose
   };
   const show = (i, focus) => {
     i = clamp(i, 0, n - 1); if (i === idx && SL[i].classList.contains('is-on')) return;
@@ -150,11 +153,19 @@ export function mount(root, c0, deps = {}) {
   let raf = 0;
   const run = () => {
     raf = 0; if (!alive) return;
-    const r = ph.getBoundingClientRect(), inn = r.top < innerHeight * .4 && r.bottom > innerHeight * .6;
+    const r = ph.getBoundingClientRect(), inn = r.top < innerHeight * .45 && r.bottom > innerHeight * .55;
     if (jph.classList.contains('is-in') !== inn) jph.classList.toggle('is-in', inn);
-    /* welches Kapitel: nächster Halt */
-    const g = geo(), i = g.step ? clamp(Math.round((scrollY - g.top) / g.step), 0, n - 1) : 0;
+    /* Phase: solange sie klebt, wandert sie langsam nach oben und der Titel wächst ein wenig */
+    if (r.top < innerHeight && r.bottom > 0) {
+      const f = clamp(-r.top / Math.max(1, ph.offsetHeight - innerHeight)), key = f.toFixed(4);
+      if (key !== phK) { phK = key; PHB.style.transform = `translate3d(0,${((.5 - f) * 18).toFixed(2)}vh,0)`; PHH.style.transform = `scale(${(.96 + f * .08).toFixed(4)})`; }
+    }
+    /* welches Kapitel: das nächste am Scrollweg */
+    const g = geo(), at = g.step ? (scrollY - g.top) / g.step : 0, i = clamp(Math.round(at), 0, n - 1);
     if (i !== idx) show(i);
+    /* das aktive Kapitel steigt mit dem Scrollen ganz leicht (Zeichnung mehr als Text) */
+    const kf = clamp(at - i, -.5, .5), kk = i + ':' + kf.toFixed(3);
+    if (kk !== kK) { kK = kk; MS[i].style.transform = `translate3d(0,${(-kf * 4).toFixed(2)}vh,0)`; TX[i].style.transform = `translate3d(0,${(-kf * 1.6).toFixed(2)}vh,0)`; }
     const kv = vis(kp, .75, .25); if (k.classList.contains('is-vis') !== kv && kv) k.classList.add('is-vis');
     const cv = vis(cta, .8, 0); if (cv && !cta.classList.contains('is-in')) cta.classList.add('is-in');
   };

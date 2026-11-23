@@ -1,6 +1,7 @@
-/* GRIFFNER Journey, Ab Tag 15 (Runde 10, Runde 11): Phase „Besser leben.“, fünf Kapitel als ein klebender Bildschirm mit Zeichnungen, Abschluss mit Knopf. */
+/* GRIFFNER Journey, Ab Tag 15 (Runde 10, 11, 13): Phase „Besser leben.“ (Runde 13 kürzer, wandert beim Scrollen), fünf Kapitel als ein klebender Bildschirm mit Zeichnungen, Abschluss mit Knopf. */
 .jg .lb{position:relative;background:#000}
-.jg .lb__ph{height:170vh}
+.jg .lb__ph{height:135vh}
+.jg .lb__ph .jph__b{will-change:transform}
 .jg .lb__phs{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 
 /* Kapitel: ein Bildschirm, der klebt, solange die fünf Kapitel durchgescrollt werden */
