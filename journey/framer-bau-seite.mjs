@@ -1,4 +1,4 @@
-// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23; Runde 11 am selben Tag: Halte-Scrollen, Leben als ein Bildschirm mit Zeichnungen) aus den Teilen der Vorschlagsseite gehen.html:
+// Baut die Framer Code-Komponenten der Seite /journey (Runde 10, 2026-11-23; Runde 11 am selben Tag: Halte-Scrollen, Leben als ein Bildschirm mit Zeichnungen; Runde 12: Halte-Scrollen schneller, folgt dem Finger, nicht gesperrt) aus den Teilen der Vorschlagsseite gehen.html:
 //   JourneyEinstieg: einstieg.js (wie der Anfang von Über uns)
 //   JourneyGehen:    gehen-szene.js (die 14 Tage mit dem Paar) und stapel.js (Der Stapel), beide aus derselben Liste der Tage
 //   JourneyLeben:    leben.js (Ab Tag 15, fünf Kapitel, Abschluss mit Knopf)
@@ -23,7 +23,7 @@ const URL3S = 'https://framerusercontent.com/assets/7wb8HI39JrQuLr6s7fcBUJPY97I.
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
 const ctl = o => JSON.stringify(o, null, 4).replace(/"(ControlType\.\w+)"/g, '$1');
 const head = (title, files) => `// @ts-nocheck
-// GRIFFNER Journey, Seite /journey (Runde 11): ${title}
+// GRIFFNER Journey, Seite /journey (Runde 12): ${title}
 // ERZEUGT von griffner-konzepte/journey/framer-bau-seite.mjs aus ${files.join(', ')}.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte sind Eingabefelder (rechts in Framer).
 `;

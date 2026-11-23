@@ -18,15 +18,22 @@ export const inView = el => { const r = el.getBoundingClientRect(); return r.bot
 /* Bilder von Framer in passender Größe */
 export const srcset = (u, ws = [512, 1024, 2048]) => /framerusercontent\.com\/images\//.test(u) ? ws.map(w => `${u}?scale-down-to=${w} ${w}w`).join(', ') : '';
 
-/* ---------- Schritt für Schritt (Runde 11, 2026-11-23) ----------
-   Kundenwunsch: „tight the scroll so you can't stop between steps and you can't jump steps“.
+/* ---------- Schritt für Schritt (Runde 11 und 12, 2026-11-23) ----------
+   Runde 11, Kundenwunsch: „tight the scroll so you can't stop between steps and you can't jump steps“.
+   Runde 12, Kundenwunsch: „too slow between steps, make it faster and correlated, don't lock it and also make it smoother“. Darum:
+   - schneller: eine Geste gleitet in rund 0,4 bis 0,8 s zum nächsten Halt (vorher 0,65 bis 1,9 s), sofort schnell und weich auslaufend (wie Schwung)
+   - mitgehend: am Telefon folgt die Seite dem Finger 1:1 (höchstens bis zum Nachbarhalt); beim Loslassen gleitet sie mit dem Tempo des Fingers weiter
+   - nicht gesperrt: während des Gleitens zählt jede neue Geste (Mausrad, Wischen, Taste) und führt einen Halt weiter oder zurück;
+     ein Finger fängt das Gleiten auf. Nur der Nachlauf derselben Geste (Trackpad-Schwung) wird weiter geschluckt, damit nichts übersprungen wird.
    Jede Sektion meldet ihre Halte (Seiten-Y, aufsteigend) als Zone an: die Szene (Phasen und Tage) mit dem Stapel, Besser leben (Phase und Kapitel).
-   Innerhalb einer Zone (und zwischen zwei Zonen, die weniger als 1,6 Bildschirmhöhen auseinander liegen) führt jede Geste genau einen Halt weiter:
-   Mausrad und Trackpad (ein Halt je Geste, der Nachlauf wird geschluckt), Wischen am Telefon, Pfeiltasten, Bild auf/ab, Leertaste.
-   Hinter dem letzten und vor dem ersten Halt scrollt die Seite wieder frei. Wer von außen hineinscrollt (auch mit Schwung), landet am ersten
+   Innerhalb einer Zone (und zwischen zwei Zonen, die weniger als 1,6 Bildschirmhöhen auseinander liegen) führt jede Geste genau einen Halt weiter.
+   Hinter dem letzten und vor dem ersten Halt scrollt die Seite frei. Wer von außen hineinscrollt (auch mit Schwung), landet am ersten
    bzw. letzten Halt. Bleibt die Seite zwischen zwei Halten stehen (Scrollbalken, Sprung), gleitet sie zum nächsten.
    Alle Komponenten teilen sich ein Steuerwerk (window.__jgSchritte); auf der Website gleitet es mit Lenis (store.lenis), sonst selbst. */
 const EASE_IO = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const EASE_OUT = t => 1 - Math.pow(1 - t, 3);
+/* Anlauf mit dem Tempo des Fingers (m = Anfangstempo relativ zum Mittel, 0 bis 3; m = 3 ist EASE_OUT), dann weich zum Halt */
+const HERMITE = m => t => (t * t * t - 2 * t * t + t) * m + (3 * t * t - 2 * t * t * t);
 function steuerwerk() {
   const G = { zones: new Set(), n: 0, anim: null, animEnd: 0, lastT: 0, lastAbs: 0, acc: 0, used: false, touch: null, pending: null, prevY: 0, settle: 0 };
   const lenis = () => { for (const z of G.zones) { const l = z.lenis && z.lenis(); if (l) return l; } return null; };
@@ -54,16 +61,28 @@ function steuerwerk() {
     }
     return null;
   };
-  const go = (to, max = 1900) => {
-    const from = scrollY, dist = Math.abs(to - from);
-    if (dist < 1) return;
-    const ms = clamp(480 + dist / innerHeight * 600, 650, max), L = lenis(), a = { to };
+  const near = (s, y) => { let i = 0; s.forEach((v, j) => { if (Math.abs(v - y) < Math.abs(s[i] - y)) i = j; }); return i; };
+  /* sofort setzen (Finger) */
+  const setY = y => { const L = lenis(); if (L) L.scrollTo(y, { immediate: true, force: true }); else scrollTo({ top: y, behavior: 'instant' }); };
+  /* Gleiten anhalten, wo es gerade ist; gibt das Ziel zurück */
+  const stop = () => {
+    const a = G.anim; if (!a) return null;
+    G.anim = null; G.animEnd = performance.now();
+    const L = lenis(); if (L) L.scrollTo(scrollY, { immediate: true, force: true });
+    G.prevY = scrollY; return a;
+  };
+  /* Gleiten. Gesten: sofort schnell, weich auslaufen (Schwung). Klick auf Reiter oder Leiste: weich an und aus. o.ms: Dauer vorgeben (Finger-Tempo). */
+  const go = (to, o = {}) => {
+    const from = scrollY, dist = Math.abs(to - from), vh = innerHeight;
+    if (dist < 1) { stop(); return; }
+    const ms = o.ms || (o.click ? clamp(420 + dist / vh * 220, 480, 1100) : clamp(300 + dist / vh * 220, 380, 800));
+    const ease = o.ease || (o.click ? EASE_IO : EASE_OUT), L = lenis(), a = { to };
     G.anim = a; G.used = true;
     const done = () => { if (G.anim !== a) return; G.anim = null; G.animEnd = performance.now(); G.prevY = scrollY; };
-    if (L) { L.scrollTo(to, { duration: ms / 1000, easing: EASE_IO, lock: true, force: true, onComplete: done }); setTimeout(done, ms + 500); }
+    if (L) { L.scrollTo(to, { duration: ms / 1000, easing: ease, lock: false, force: true, onComplete: done }); setTimeout(done, ms + 400); }
     else {
       const t0 = performance.now();
-      const tick = now => { if (G.anim !== a) return; const k = clamp((now - t0) / ms); scrollTo({ top: from + (to - from) * EASE_IO(k), behavior: 'instant' }); if (k < 1) requestAnimationFrame(tick); else done(); };
+      const tick = now => { if (G.anim !== a) return; const k = clamp((now - t0) / ms); scrollTo({ top: from + (to - from) * ease(k), behavior: 'instant' }); if (k < 1) requestAnimationFrame(tick); else done(); };
       requestAnimationFrame(tick);
     }
   };
@@ -80,50 +99,81 @@ function steuerwerk() {
     const dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
     if (!dy || Math.abs(dy) < Math.abs(e.deltaX)) return;
     const now = performance.now(), gap = now - G.lastT, abs = Math.abs(dy);
-    /* neue Geste: Pause über 180 ms, oder nach dem Gleiten ein deutlich kräftigerer Stoß als der Nachlauf */
-    const fresh = gap > 180 || (abs > Math.max(24, G.lastAbs * 2.2) && now - G.animEnd > 150);
+    /* neue Geste: Pause über 160 ms (auch während des Gleitens), oder nach dem Gleiten ein deutlich kräftigerer Stoß als der Nachlauf */
+    const fresh = gap > 160 || (!G.anim && abs > Math.max(24, G.lastAbs * 2.2) && now - G.animEnd > 150);
     G.lastT = now; G.lastAbs = abs;
     if (fresh) { G.used = false; G.acc = 0; }
-    if (G.anim) { eat(e); return; }
-    const y = scrollY, L = lenis(), t = target(y, Math.sign(dy), (L ? L.targetScroll : y) + dy);
+    if (G.anim && G.used) { eat(e); return; } // Nachlauf der Geste, die gerade gleitet
+    const base = G.anim ? G.anim.to : scrollY, L = lenis();
+    const t = target(base, Math.sign(dy), (G.anim ? base : L ? L.targetScroll : base) + dy);
     if (!t) return;
-    if (t.release) { if (G.used) eat(e); return; }
+    if (t.release) { if (G.used) { eat(e); return; } stop(); return; } // frei weiter: Lenis übernimmt
     eat(e);
     if (G.used) return;
     G.acc += dy; if (Math.abs(G.acc) < 6) return;
     go(t.y);
   };
-  const onTS = e => { G.touch = e.touches.length === 1 ? { y0: e.touches[0].clientY, x0: e.touches[0].clientX, mode: null, t: null, fired: false } : null; };
+  /* Telefon: die Seite folgt dem Finger (bis zum Nachbarhalt), beim Loslassen gleitet sie mit seinem Tempo zum Halt */
+  const onTS = e => {
+    if (e.touches.length !== 1 || !G.zones.size || skip(e.target)) { G.touch = null; return; }
+    const p = e.touches[0], a = G.anim ? stop() : null; // ein Finger fängt das Gleiten auf
+    G.touch = { y0: p.clientY, x0: p.clientX, s0: scrollY, mode: null, base: a ? a.to : null, grab: !!a, smp: [[performance.now(), scrollY]] };
+  };
   const onTM = e => {
     const T = G.touch; if (!T || !G.zones.size) return;
-    const dy = T.y0 - e.touches[0].clientY;
+    const p = e.touches[0], dy = T.y0 - p.clientY;
     if (T.mode === null) {
       if (!dy) return;
-      if (Math.abs(T.x0 - e.touches[0].clientX) > Math.abs(dy)) T.mode = 'native'; // seitlich wischen (Reiter) bleibt frei
-      else if (G.anim) T.mode = 'block';
-      else { const y = scrollY; T.t = target(y, Math.sign(dy), y + dy * 4); T.mode = !T.t || T.t.release ? 'native' : 'step'; }
+      if (Math.abs(T.x0 - p.clientX) > Math.abs(dy)) { T.mode = 'side'; return; } // seitlich wischen (Reiter) bleibt frei
+      const base = T.base != null ? T.base : T.s0, s = inSeg(base);
+      if (!s) { T.mode = 'native'; return; }
+      const i = near(s, base), nx = dy > 0 ? s[i + 1] : s[i - 1];
+      if (nx == null) { T.mode = 'native'; return; } // am Rand nach außen: frei
+      T.mode = 'drag'; T.base = s[i]; T.lo = i > 0 ? s[i - 1] : s[i]; T.hi = i < s.length - 1 ? s[i + 1] : s[i];
     }
-    if (T.mode === 'native') return;
-    if (e.cancelable) e.preventDefault();
-    if (T.mode === 'step' && !T.fired && Math.abs(dy) > 26) { T.fired = true; go(T.t.y); }
+    if (T.mode !== 'drag') return;
+    eat(e);
+    const y = clamp(T.s0 + dy, T.lo, T.hi);
+    setY(y);
+    T.smp.push([performance.now(), y]); if (T.smp.length > 8) T.smp.shift();
   };
-  const onTE = () => { G.touch = null; if (G.pending != null) { const y = G.pending; G.pending = null; kill(); go(y); } };
+  const onTE = () => {
+    const T = G.touch; G.touch = null;
+    if (T && T.mode === 'drag') {
+      const y = scrollY, off = y - T.base, now = performance.now(), last = T.smp[T.smp.length - 1];
+      const first = T.smp.find(q => last[0] - q[0] < 100) || last;
+      let v = last[0] > first[0] ? (last[1] - first[1]) / (last[0] - first[0]) : 0; // px je ms, + = nach unten
+      if (now - last[0] > 120) v = 0; // Finger vor dem Loslassen still gehalten
+      const nb = off > 0 ? T.hi : T.lo, span = Math.abs(nb - T.base) || 1;
+      let to = T.base;
+      if (Math.abs(v) > .3) { if (Math.sign(v) === Math.sign(off) || Math.abs(off) < 2) to = v > 0 ? T.hi : T.lo; }
+      else if (Math.abs(off) > Math.min(40, span * .15)) to = nb;
+      /* Dauer aus der Reststrecke (kurz), Anfangstempo = Finger; ist der Finger schneller, wird es noch kürzer */
+      const D = Math.abs(to - y), sp = Math.sign(to - y) === Math.sign(v) ? Math.abs(v) : 0;
+      let ms = clamp(260 + D / innerHeight * 240, 320, 700);
+      if (sp > 0 && D > 1) ms = Math.max(220, Math.min(ms, 3 * D / sp));
+      go(to, { ms, ease: HERMITE(D > 1 ? Math.min(3, sp * ms / D) : 0) });
+      return;
+    }
+    if (T && T.grab && (T.mode === null || T.mode === 'side')) { go(T.base); return; } // nur angetippt: weiter zum Halt
+    if (G.pending != null) { const y = G.pending; G.pending = null; kill(); go(y); }
+  };
   const onKey = e => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !G.zones.size) return;
     const k = e.key, tg = e.target;
     if (tg && (tg.isContentEditable || skip(tg))) return;
     const d = k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey) ? 1 : k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey) ? -1 : 0;
     if (!d || (k === ' ' && tg && /^(BUTTON|A)$/.test(tg.tagName))) return;
-    const y = scrollY;
-    if (G.anim) { if (inSeg(y)) e.preventDefault(); return; }
-    const t = target(y, d, y + d * innerHeight * .9);
-    if (!t || t.release) return;
+    const base = G.anim ? G.anim.to : scrollY;
+    const t = target(base, d, base + d * innerHeight * .9);
+    if (!t) return;
+    if (t.release) { stop(); return; }
     e.preventDefault(); go(t.y);
   };
   /* Scrollen ohne Geste (Schwung, Balken, Sprung): von außen hinein → an den Rand; zwischen Halten stehen geblieben → zum nächsten */
   const onScroll = () => {
     const y = scrollY, p = G.prevY; G.prevY = y;
-    if (G.anim || !G.zones.size) return;
+    if (G.anim || !G.zones.size || (G.touch && G.touch.mode === 'drag')) return;
     clearTimeout(G.settle);
     if (Math.abs(y - p) < innerHeight * 2.5) for (const s of segs()) {
       const a = s[0], b = s[s.length - 1];
@@ -134,7 +184,7 @@ function steuerwerk() {
       if (G.anim || G.touch) return;
       const y2 = scrollY, s = inSeg(y2); if (!s) return;
       let best = s[0]; s.forEach(v => { if (Math.abs(v - y2) < Math.abs(best - y2)) best = v; });
-      if (Math.abs(best - y2) > 2) go(best);
+      if (Math.abs(best - y2) > 2) go(best, { click: true });
     }, 220);
   };
   const L = [['wheel', onWheel, { capture: true, passive: false }], ['touchstart', onTS, { capture: true, passive: true }], ['touchmove', onTM, { capture: true, passive: false }],
@@ -144,11 +194,11 @@ function steuerwerk() {
   G.go = go;
   return G;
 }
-/* zone: { stops: () => Seiten-Y[] (aufsteigend), lenis?: () => Lenis } → { go(y), dispose() } */
+/* zone: { stops: () => Seiten-Y[] (aufsteigend), lenis?: () => Lenis } → { go(y) (Klick: weich an und aus), dispose() } */
 export function schritte(zone) {
   if (typeof window === 'undefined') return { go() { }, dispose() { } };
   const G = window.__jgSchritte || (window.__jgSchritte = steuerwerk());
   G.zones.add(zone); G.up();
   let on = true;
-  return { go: (y, max) => G.go(y, max), dispose() { if (!on) return; on = false; G.zones.delete(zone); G.down(); } };
+  return { go: (y, o) => G.go(y, { click: true, ...(o || {}) }), dispose() { if (!on) return; on = false; G.zones.delete(zone); G.down(); } };
 }
