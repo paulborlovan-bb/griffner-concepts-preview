@@ -266,7 +266,7 @@ class Weg {
   dispose() {
     this.alive = false;
     cancelAnimationFrame(this.raf); clearInterval(this.iv); clearTimeout(this.mt); clearTimeout(this.rt); clearTimeout(this.lt2); clearTimeout(this.lt3);
-    removeEventListener('resize', this.onResize); removeEventListener('scroll', this.onScroll); ['wheel', 'touchstart', 'keydown'].forEach(ev => removeEventListener(ev, this.onUser)); removeEventListener('hashchange', this.onHash);
+    removeEventListener('resize', this.onResize); removeEventListener('scroll', this.onScroll); ['wheel', 'touchstart', 'keydown'].forEach(ev => removeEventListener(ev, this.onUser)); removeEventListener('hashchange', this.onHash); removeEventListener('click', this.onBtn, true);
     this.onLoad && removeEventListener('load', this.onLoad);
   }
   op(t) { return t < -1 ? t : t < 0 ? -1 + Math.min(.5, t + 1) : t < 1 ? -.5 + .5 * t : t < 7 ? t - 1 : t < 9 ? 6 + (t - 7) / 2 : t < 15 ? t - 2 : t < 17 ? 13 : t - 4; }
@@ -312,9 +312,21 @@ class Weg {
       const rg = e.target.closest('[data-rgo]'); if (rg) { const y = this.yjump && this.yjump[+rg.dataset.rgo]; if (y != null) this.glide(y); return; }
       const c = e.target.closest('[data-cgo]'); if (c) { const s = this.GO[c.dataset.cgo]; if (s) this.go(s[0], s[1]); return; }
       const b = e.target.closest('[data-ckwb]'); if (b) { this.toggleKw(this.kwb.indexOf(b)); return; }
-      const eb = e.target.closest('[data-endbtn]'); if (eb) { const h = eb.getAttribute('href') || ''; const t = h.startsWith('#') ? document.getElementById(h.slice(1)) || document.getElementById('contact') || document.getElementById('contact-form') : null; if (!t) { if (h.startsWith('#')) { e.preventDefault(); location.href = '/contact#contact-form'; } return; } e.preventDefault(); this.glide(t.getBoundingClientRect().top + scrollY - 0); }
     };
     R.addEventListener('click', this.onClick);
+    /* Knopf „Gespräch vereinbaren“ (Runde 14): steht unter der Komponente ein Formular (Kontakt-Sektion der Website), gleitet die Seite dorthin,
+       an den Anfang der Sektion; sonst gilt der Link (Framer: /contact#contact-form). Auf window in der Capture-Phase, weil der Router
+       der Website Klicks auf Links sonst vorher übernimmt. */
+    this.onBtn = e => {
+      const eb = e.target && e.target.closest && e.target.closest('[data-endbtn]'); if (!eb || !R.contains(eb)) return;
+      const h = eb.getAttribute('href') || '', FOL = Node.DOCUMENT_POSITION_FOLLOWING;
+      const f = [...document.querySelectorAll('form')].find(x => (R.compareDocumentPosition(x) & FOL) && x.getBoundingClientRect().height > 0);
+      let y = null;
+      if (f && (h.startsWith('#') || /contact|kontakt/i.test(h))) { const yb = R.getBoundingClientRect().bottom + scrollY, yf = f.getBoundingClientRect().top + scrollY; y = yf - yb < innerHeight * 1.5 ? yb : yf - 120; }
+      else if (h.startsWith('#')) { const t = document.getElementById(h.slice(1)); if (t) y = t.getBoundingClientRect().top + scrollY; else { e.preventDefault(); e.stopImmediatePropagation(); location.href = '/contact#contact-form'; return; } }
+      if (y != null) { e.preventDefault(); e.stopImmediatePropagation(); this.glide(y); }
+    };
+    addEventListener('click', this.onBtn, true);
   }
   go(state, off, instant) {
     if (!this.H) return;
