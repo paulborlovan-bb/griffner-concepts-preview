@@ -121,11 +121,12 @@ export function markup(c0) {
   const endS3 = zeilen(c.schluss.h3).map(l => `<span data-endsl="1" style="display:block;white-space:nowrap">${l.split(/\s+/).map(w => maske(w, 'data-endsw', '.22em')).join(' ')}</span>`).join('');
   const lebenH = esc(c.leben.h).replace(' ', '<br>');
   return `<div class="jw" data-j3="1" style="position:relative;color:var(--griffner-weiss);font-family:var(--font-text)">
+<div data-stp0="1" aria-hidden="true" style="position:sticky;top:0;width:1px;height:0;margin-bottom:0;pointer-events:none"></div><div data-fxp="1" aria-hidden="true" style="position:fixed;top:0;left:0;width:1px;height:0;pointer-events:none"></div>
 <div id="weg-film" data-tfilm="1" data-room="j-schwarz" style="position:relative;height:1900vh">
   <div id="planen" style="position:absolute;left:0;top:0;width:1px;height:1px"></div>
   <div id="bauen" style="position:absolute;left:0;top:0;width:1px;height:1px"></div>
   <div id="leben" style="position:absolute;left:0;top:0;width:1px;height:1px"></div>
-  <div data-tstage="1" class="jw-stage" style="position:sticky;top:0;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:var(--griffner-schwarz)">
+  <div data-tstage="1" class="jw-stage" style="position:sticky;top:var(--jw-obs,0px);height:100vh;height:100svh;min-height:520px;overflow:hidden;background:var(--griffner-schwarz)">
     <canvas data-tcan="1" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
     <div data-hphoto="1" aria-hidden="true" style="position:absolute;inset:0;overflow:hidden">
       ${img(B.weg, `data-jh-img="1" alt="" fetchpriority="high" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;transform:scale(1.05);transition:transform 2600ms cubic-bezier(.2,.7,.2,1)"`)}
@@ -198,7 +199,7 @@ export function markup(c0) {
 <!-- Runde 22: Übergang „Was deine Journey noch besser macht.“ (Entwurf 05c, Variante weg): eine gepunktete Linie zeichnet sich, vorne läuft ein gelbes Feld mit;
      erreicht es ein Wort, steigt das Wort aus der Maske; danach gleitet alles nach oben weg -->
 <section data-ub="1" data-room="j-weiss" style="position:relative;height:230vh;color:var(--griffner-schwarz);background:var(--griffner-weiss)">
-  <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden">
+  <div style="position:sticky;top:var(--jw-obs,0px);height:100vh;height:100svh;overflow:hidden">
     <div data-ubv="1" style="position:absolute;left:var(--page-margin);right:calc(var(--page-margin) + 48px);top:0;bottom:0;display:grid;align-content:center">
       <h2 data-ubwh="1" style="margin:0;${DISP};font-size:clamp(40px,7vw,150px);line-height:.94;white-space:nowrap">${ubH}</h2>
       <div style="position:relative;height:16px;margin-top:clamp(20px,3.4vh,36px);margin-right:calc(-1 * (var(--page-margin) + 48px))">
@@ -211,7 +212,7 @@ export function markup(c0) {
 
 <div data-sys="1" data-room="j-weiss" style="position:relative;height:260vh;color:var(--griffner-schwarz);background:var(--griffner-weiss)">
   ${c.sys.themen.map(() => '<div data-chap="1" data-smk="1" style="position:absolute;left:0;top:0;width:1px;height:1px"></div>').join('')}
-  <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden">
+  <div style="position:sticky;top:var(--jw-obs,0px);height:100vh;height:100svh;overflow:hidden">
     <div data-stxw="1" style="position:absolute;left:var(--page-margin);top:50%;transform:translateY(-50%);width:min(36vw,32em);display:grid;grid-template-columns:minmax(0,1fr)">
       ${c.sys.themen.map(t => `<div data-stx="1" style="grid-area:1/1;align-self:center;opacity:0;visibility:hidden">
         <h2 style="margin:0;${DISP};font-size:clamp(36px,min(4.4vw,8vh),84px);line-height:.94;text-wrap:balance">${esc(t.h)}</h2>
@@ -235,7 +236,7 @@ export function markup(c0) {
 </nav>
 
 <section data-endimg="1" data-room="j-schwarz" style="position:relative;height:340vh">
-  <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--griffner-schwarz)">
+  <div style="position:sticky;top:var(--jw-obs,0px);height:100vh;height:100svh;overflow:hidden;background:var(--griffner-schwarz)">
     <div data-endph="1" style="position:absolute;left:0;top:0;bottom:0;width:100%;overflow:hidden">
       ${lazy(B.zurueck, `data-endi="1" alt="${esc(c.alt.zurueck)}" decoding="async" style="position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:48% 30%;transform-origin:88% 40%"`, '120vw')}
       <div data-endsh="1" aria-hidden="true" style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
@@ -282,6 +283,7 @@ class Weg {
     this.tick();
   }
   dispose() {
+    if (this.diag) { this.diag.remove(); this.diag = null; }
     this.alive = false;
     cancelAnimationFrame(this.raf); clearInterval(this.iv); clearTimeout(this.mt); clearTimeout(this.rt); clearTimeout(this.lt2); clearTimeout(this.lt3);
     removeEventListener('resize', this.onResize); removeEventListener('scroll', this.onScroll); ['wheel', 'touchstart', 'keydown'].forEach(ev => removeEventListener(ev, this.onUser)); removeEventListener('hashchange', this.onHash); removeEventListener('click', this.onBtn, true);
@@ -299,8 +301,19 @@ class Weg {
   }
   tick() {
     const now = performance.now();
+    this.obsFix();
     if (!this.H && now - this.lastM > 250) { this.lastM = now; this.measure(); }
     this.frame();
+  }
+  /* Runde 24: iOS 26 Safari mit der Adressleiste oben legt sticky-Elemente mit top:0 unter die Leiste (rund 75 px),
+     fixe Elemente wie die Kopfzeile der Website aber darunter. Der Abstand zwischen einer fixen und einer sticky Sonde
+     ist genau diese verdeckte Fläche; um sie rücken alle Bühnen nach unten (--jw-obs). Sonst bleibt er 0. */
+  obsFix() {
+    const sp = this.stp0, fx = this.fxp, jw = this.root; if (!sp || !fx || this.still) return;
+    const jr = jw.getBoundingClientRect(); if (jr.top > -2 || jr.bottom < innerHeight) return;
+    const ob = Math.round(Math.max(0, Math.min(160, fx.getBoundingClientRect().top - sp.getBoundingClientRect().top)));
+    if (Math.abs(ob - (this.obs || 0)) >= 2) { this.obs = ob; jw.style.setProperty('--jw-obs', ob + 'px'); }
+    if (this.diag) this.diag.textContent = 'obs ' + ob + ' fx ' + Math.round(fx.getBoundingClientRect().top) + ' st ' + Math.round(sp.getBoundingClientRect().top) + ' ih ' + innerHeight + ' ch ' + document.documentElement.clientHeight + (window.visualViewport ? ' vv ' + Math.round(visualViewport.height) + '/' + Math.round(visualViewport.offsetTop) : '') + ' H ' + this.H;
   }
   intro() {
     const R = this.root;
@@ -311,6 +324,8 @@ class Weg {
   }
   bind() {
     const R = this.root, q = s => R.querySelector(s), qa = s => [...R.querySelectorAll(s)];
+    this.stp0 = q('[data-stp0]'); this.fxp = q('[data-fxp]'); this.endPh = q('[data-endph]');
+    if (/[?&]jdiag\b/.test(location.search)) { const d = this.diag = document.createElement('div'); d.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;background:#FFB200;color:#000;font:12px/1.3 monospace;padding:6px 8px;pointer-events:none'; document.body.appendChild(d); }
     this.tfilm = q('[data-tfilm]'); this.tstage = q('[data-tstage]'); this.can = q('[data-tcan]'); this.ctx = this.can.getContext('2d');
     this.fl2 = q('[data-fl2]'); this.fwin = q('[data-fwin]'); this.s15 = q('[data-s15]'); this.fkit = q('[data-fkit]'); this.fksh = q('[data-fksh]'); this.s15b = q('[data-s15b]'); this.s15ls = qa('[data-s15l]'); this.s15rs = qa('[data-s15r]'); this.s15i = q('[data-s15i]'); this.s15x = q('[data-s15x]'); this.s15n = q('[data-s15n]'); this.fwbg = q('[data-fwbg]'); this.fwimg = q('[data-fwimg]'); this.fwsh = q('[data-fwsh]'); this.c15 = q('[data-c15]'); this.c15in = q('[data-c15in]'); this.c15h = q('[data-c15h]'); this.c15l = q('[data-c15l]'); this.c15items = qa('[data-lp]'); this.c15k = q('[data-c15k]'); this.c15kn = q('[data-c15kn]'); this.c15kt = qa('.jw-lp-kt i'); this.hero = q('[data-chero]'); this.cman = q('[data-cman]'); this.mws = qa('[data-mw]'); this.hphoto = q('[data-hphoto]'); this.himg = q('[data-jh-img]'); this.hshade = q('[data-hshade]'); this.hh1 = this.hero.querySelector('h1'); this.ph = q('[data-cph]'); this.texts = qa('[data-ctext]'); this.ths = qa('[data-cth]'); this.fins = qa('[data-cfin]');
     this.kwb = qa('[data-ckwb]'); this.kws = qa('[data-ckw]'); this.plus = qa('[data-cplus]');
@@ -485,18 +500,20 @@ class Weg {
     this.sys.style.height = (H + T) + 'px';
     [0, .27, .52, .8].forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(LT + f * TH) + 'px'; });
     const top0 = Math.round(Math.max(mob ? 96 : 120, H * (mob ? .12 : .15)));
-    { const hs = this.stx.map(s => s.querySelector('h2')), cw = mob ? W - 2 * m : Math.round(Math.min(W * .36, 520)); let mw = 1;
+    /* Runde 24: auf großen Bildschirmen (über 1600 px) wächst die Textspalte mit, bis 1,6-fach */
+    const kL = mob ? 1 : Math.max(1, Math.min(1.6, W / 1600)), cwD = Math.round(Math.min(W * .36, 520 * kL));
+    { const hs = this.stx.map(s => s.querySelector('h2')), cw = mob ? W - 2 * m : cwD; let mw = 1;
       hs.forEach(h => { h.style.fontSize = '100px'; });
       hs.forEach(h => { const sp = document.createElement('span'); sp.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit;text-transform:inherit'; h.appendChild(sp); h.textContent.split(/\s+/).forEach(w => { sp.textContent = w; mw = Math.max(mw, sp.offsetWidth); }); sp.remove(); });
-      const fs = Math.min(100 * cw / mw, H * (mob ? .07 : .11), 84); hs.forEach(h => { h.style.fontSize = fs + 'px'; }); }
-    Object.assign(this.stxw.style, mob ? { top: top0 + 'px', transform: 'none', width: 'auto', right: m + 'px' } : { top: '50%', transform: 'translateY(-50%)', width: 'min(36vw,32em)', right: 'auto' });
-    this.stp.forEach(p => { p.style.fontSize = ''; });
+      const fs = Math.min(100 * cw / mw, H * (mob ? .07 : .11), 84 * kL); hs.forEach(h => { h.style.fontSize = fs + 'px'; }); }
+    Object.assign(this.stxw.style, mob ? { top: top0 + 'px', transform: 'none', width: 'auto', right: m + 'px' } : { top: '50%', transform: 'translateY(-50%)', width: (kL > 1 ? cwD : Math.min(W * .36, 512)) + 'px', right: 'auto' });
+    this.stp.forEach(p => { p.style.fontSize = kL > 1 ? (19 * kL).toFixed(1) + 'px' : ''; p.style.maxWidth = kL > 1 ? 'none' : ''; });
     if (mob) {
       this.stx.forEach(s => { s.style.alignSelf = 'start'; });
       let th = Math.max(...this.stx.map(s => s.offsetHeight)), f = 1;
       for (let n = 0; n < 8 && H - 32 - (top0 + th + 20) < Math.max(220, H * .34) && f > .84; n++) { f -= .02; this.stp.forEach(p => { p.style.fontSize = (16 * f).toFixed(1) + 'px'; }); th = Math.max(...this.stx.map(s => s.offsetHeight)); }
       Object.assign(this.svis.style, { left: m + 'px', right: m + 'px', top: Math.round(top0 + th + 20) + 'px', bottom: '32px' });
-    } else { this.stx.forEach(s => { s.style.alignSelf = 'center'; }); Object.assign(this.svis.style, { left: Math.round(m + Math.min(W * .36, 520) + Math.max(40, W * .04)) + 'px', right: m + 'px', top: top0 + 'px', bottom: Math.round(H * .1) + 'px' }); }
+    } else { this.stx.forEach(s => { s.style.alignSelf = 'center'; }); Object.assign(this.svis.style, { left: Math.round(m + cwD + Math.max(40, W * .04)) + 'px', right: m + 'px', top: top0 + 'px', bottom: Math.round(H * .1) + 'px' }); }
     /* die 3D-Szenen passen sich ihrer Fläche an */
     (this.sz || []).forEach(z => z.size(mob));
   }
@@ -507,13 +524,15 @@ class Weg {
     const IW = 2400, IH = 1600, sub = this.endSub, lines = [...h.children, ...(sub ? [...sub.children] : [])];
     const fit = (wAv, hAv, cap) => { h.style.fontSize = '100px'; if (sub) sub.style.fontSize = '100px'; const rg = document.createRange(); let mw = 1; lines.forEach(l => { rg.selectNodeContents(l); mw = Math.max(mw, rg.getBoundingClientRect().width); }); h.style.fontSize = Math.max(24, Math.min(wAv / mw * 100 * .98, hAv / 5.9, cap)) + 'px'; if (sub) sub.style.fontSize = h.style.fontSize; };
     Object.assign(ph.style, { top: '0', bottom: '0', width: '100%', height: 'auto' });
-    if (mob || W < H * 1.1) { /* Telefon und Hochformat (Tablet): Text oben auf Schwarz, Foto darunter */
-      const top = Math.round(Math.max(88, H * .11));
+    if (mob || W < H * 1.1) { /* Runde 24, Telefon und Hochformat (Tablet): erst das Foto oben, darunter die Headline auf Schwarz.
+         So kommt nach der weißen Bühne gleich das Bild herein statt einer leeren schwarzen Fläche */
+      const ph0 = Math.round(H * (mob ? .46 : .5)), top = ph0 + Math.round(Math.max(24, H * .035));
       Object.assign(c.style, { left: m + 'px', right: m + 'px', top: top + 'px', bottom: 'auto', alignContent: 'start' });
-      fit(W - 2 * m, H * .4, mob ? 64 : 104);
-      const ty = Math.round(top + c.offsetHeight + 28), b = Math.max(W / IW, (H - ty) / IH), iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .5 * W - .46 * iw));
+      fit(W - 2 * m, H - top - Math.max(32, H * .05), mob ? 64 : 104);
+      const b = Math.max(W / IW, ph0 / IH), iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .5 * W - .46 * iw)), ty = Math.round(Math.min(0, Math.max(ph0 - ih, ph0 * .5 - .35 * ih)));
       Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: ty + 'px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.35 * ih).toFixed(0) + 'px' });
-      sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,1) 0px,rgba(0,0,0,1) ' + ty + 'px,rgba(0,0,0,0) ' + Math.round(ty + 60) + 'px,rgba(0,0,0,0) 100%)';
+      /* oben leicht abgedunkelt für die weiße Kopfzeile, unten läuft das Foto weich ins Schwarz der Headline */
+      sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,.5) 0px,rgba(0,0,0,0) ' + Math.round(ph0 * .3) + 'px,rgba(0,0,0,0) ' + Math.round(ph0 - 90) + 'px,rgba(0,0,0,1) ' + ph0 + 'px,rgba(0,0,0,1) 100%)';
     } else {
       const b = Math.max(W / IW, H / IH) * 1.2, iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .36 * W - .46 * iw));
       Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: '0px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.3 * ih).toFixed(0) + 'px' });
@@ -1074,6 +1093,7 @@ class Weg {
     if (this.endS) { const r = this.endS.getBoundingClientRect(); if (r.top < H && r.bottom > 0) {
       const p = cl(-r.top / Math.max(1, r.height - H)), ex = sm(rp(p, .88, .99)), eo3 = v => 1 - Math.pow(1 - v, 3);
       S(this.endI, 1, 'scale(' + (1 + .05 * (1 - sm(cl((H - r.top) / (H * 1.5)))) + .03 * ex).toFixed(4) + ')');
+      if (this.endPh) { const hv = ex > .995 ? 'hidden' : ''; if (this.endPh.style.visibility !== hv) this.endPh.style.visibility = hv; } /* Runde 24: keine Fotokante unter dem Schwarz */
       S(this.endB, ex); S(this.endC, 1 - sm(rp(p, .86, .96)), 'translate3d(0,' + (-sm(rp(p, .86, .97)) * 40).toFixed(1) + 'px,0)');
       /* Runde 23 (Entwurf v10): die Headline gleitet nach oben weg, an derselben Stelle steigt „Weil du es genau so wieder machen würdest.“ Wort für Wort aus der Maske */
       if (this.endSub) { const o1 = red ? (p > .62 ? 1 : 0) : sm(rp(p, .6, .66)); S(this.endH, 1 - o1, red ? 'none' : 'translate3d(0,' + (-o1 * 30).toFixed(1) + 'px,0)'); this.endSW.forEach((w, i) => { const t = red ? (p > .62 ? 1 : 0) : eo3(rp(p, .64 + i * .018, .72 + i * .018)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + '%,0)'); }); }
@@ -1093,6 +1113,7 @@ class Weg {
         this.stp.forEach(p => S(p, 1, 'none'));
         const t0 = 1 - sm(io(.2, .25)), t1 = sm(io(.27, .32)) * (1 - sm(io(.46, .51))), t2 = sm(io(.52, .57)) * (1 - sm(io(.73, .78))), t3 = sm(io(.8, .85));
         V(this.stx[0], t0, io(.2, .25)); V(this.stx[1], t1, u < .4 ? io(.27, .32) - 1 : io(.46, .51)); V(this.stx[2], t2, u < .65 ? io(.52, .57) - 1 : io(.73, .78)); V(this.stx[3], t3, io(.8, .85) - 1);
+        { const o = (1 - sm(rp(s, LT + TH, LT + TH + H * .28))).toFixed(3); if (this.stxw.style.opacity !== o) this.stxw.style.opacity = o; } /* Runde 24: der Text blendet aus, während die Bühne nach oben geht (nicht unter die Kopfzeile) */
         /* Runde 20: die 3D-Szenen laufen mit dem Scrollen (p 0 bis 1) und stehen am Ende, bevor ihr Thema geht.
            Runde 22: die erste beginnt, während die Sektion hereinkommt (kein Titelbild mehr). */
         const g0 = red ? 1 : sm(rp(s, -H * .55, -H * .1)), tt = [t0 * g0, t1, t2, t3];

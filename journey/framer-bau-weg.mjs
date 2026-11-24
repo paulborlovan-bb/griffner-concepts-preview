@@ -3,6 +3,8 @@
 // Runde 22 (2026-11-24): weißer Übergang „Was deine Journey noch besser macht.“ statt der schwarzen Titelseite, Schlussbild
 // „Eines Tages schaust du zurück. Und lächelst.“ (Entwurf) statt „Von Anfang an ein gutes Gefühl.“ mit Knopf. Neue Feldnamen, damit alte Werte nicht greifen.
 // Runde 23 (2026-11-24, Entwurf v10): Momente in den 14 gelben Feldern, steilere Kamera am Desktop, danach „Weil du es genau so wieder machen würdest.“ (Feld schluss3).
+// Runde 24 (2026-11-24): iOS 26 Safari (Adressleiste oben) legt sticky-Bühnen unter die Leiste, sie rücken um die gemessene Fläche nach unten (--jw-obs);
+// Schlussbild am Telefon erst das Foto, darunter die Headline; keine Fotokante unter dem Schwarz. Diagnose: /journey?jdiag
 // Quellen: basis.js, inhalt.js, weg-zeichnung.js, weg.js, weg.css (Vorschau: weg.html). Ersetzt JourneyEinstieg, JourneyGehen und JourneyLeben.
 // Aufruf: cd griffner-konzepte/journey && node framer-bau-weg.mjs. Ziel: griffner/framer-code/JourneyWeg.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
