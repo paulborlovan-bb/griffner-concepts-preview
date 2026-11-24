@@ -842,17 +842,19 @@ class Weg {
     const H = this.H, sm = v => v * v * (3 - 2 * v), MK = this.c.marken;
     [[MK[0][0], MK[0][1], .5, .36, 0], [MK[1][0], MK[1][1], 8, .36, 1], [MK[2][0], MK[2][1], 16.15, .8, 2]].forEach(([lab, hl, at, ty, n]) => {
       const d = TT - at, hot = sm(cl(1 - Math.abs(d) / (d > 0 ? (n === 0 ? .45 : .75) : n === 2 ? .55 : 1.15))), a = fr * hot; if (a <= .01) return;
-      const hs = Math.min(W * (this.mob ? .1 : .072), 140); let qx = W / 2, qy = Math.max(H * ty, Math.max(150, H * .2) + hs * 1.1) - d * 70 + (1 - hot) * 24;
+      const hs = this.mob ? Math.min(W * .1, 140) : n === 2 ? Math.min(W * .072, 140) : Math.min(W * .05, 96); /* Runde 26: Start/Zwischenziel am Desktop kleiner, links */ let qx = W / 2, qy = Math.max(H * ty, Math.max(150, H * .2) + hs * 1.1) - d * 70 + (1 - hot) * 24;
       if (n === 2) { const c0 = this.S(15.7), t = this.T(14.3), rr = { x: t.z, z: -t.x }, u = 150 * .62, v = -450 * .62, c = tc(c0.x + rr.x * u + t.x * v, 0, c0.z + rr.z * u + t.z * v);
         if (c[2] > NEAR) { const sx = this.cx0p + c[0] * this.Fp / c[2], sy = this.cy0p - c[1] * this.Fp / c[2]; x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; const tw = x.measureText(hl.toUpperCase()).width;
           qx = this.mob ? W / 2 : W / 2 + (Math.max(this.m + tw / 2, Math.min(W - this.m - tw / 2, sx)) - W / 2) * (this.zcp ?? 1); /* Runde 19: Telefon mittig */ qy = Math.min(H - Math.max(36, H * .07), sy + hs * 1.5) - d * 70 + (1 - hot) * 24; } }
-      x.globalAlpha = a; x.fillStyle = '#FFFFFF'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      /* Runde 26, Desktop: Start und Zwischenziel stehen links am Seitenrand wie die Tagestitel, das Brett ist nach rechts verschoben und die Modelle lagen sonst unter der Schrift */
+      const lft = !this.mob && n !== 2; if (lft) qx = this.m;
+      x.globalAlpha = a; x.fillStyle = '#FFFFFF'; x.textAlign = lft ? 'left' : 'center'; x.textBaseline = 'alphabetic';
       x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; x.letterSpacing = '0px'; x.fillText(hl.toUpperCase(), qx, qy);
       const ls = Math.max(10, Math.min(14, hs * .14)); x.font = '500 ' + ls.toFixed(1) + 'px ' + this.fT; x.letterSpacing = '0.16em';
       const ly = qy - hs * .92 - ls * .9; x.fillText(lab.toUpperCase(), qx, ly);
-      const lw = x.measureText(lab.toUpperCase()).width; x.fillStyle = '#FFB200'; x.fillRect(qx - lw / 2, ly + ls * .5, lw, 3);
+      const lw = x.measureText(lab.toUpperCase()).width; x.fillStyle = '#FFB200'; x.fillRect(lft ? qx : qx - lw / 2, ly + ls * .5, lft ? lw - ls * .16 : lw, 3);
     });
-    x.globalAlpha = 1; x.letterSpacing = '0px';
+    x.globalAlpha = 1; x.letterSpacing = '0px'; x.textAlign = 'center';
   }
   drawStops(TT, tc, pr, clip, NEAR, fogS, fw, fi) {
     const x = this.ctx, cl = v => v < 0 ? 0 : v > 1 ? 1 : v, rp = (v, a, b) => cl((v - a) / (b - a));
@@ -889,13 +891,13 @@ class Weg {
     let rx = fz, rz = -fx; const rl = Math.hypot(rx, rz); rx /= rl; rz /= rl;
     const ux = fy * rz, uy = fz * rx - fx * rz, uz = -fy * rx;
     /* Runde 25c, Desktop: die Verschiebung nach rechts oben (Platz für den Tagestext) läuft vor dem Ziel aus, Haus und „Besser leben.“ stehen mittig */
-    const zc = this.mob ? 1 : 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT - 14.9) / .9)));
+    const zz = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT - 14.9) / .9))), zc = this.mob ? 1 : zz; /* Runde 26: Zentrieren am Ziel auch am Telefon (zz), die Verschiebung gibt es nur am Desktop (zc) */
     const fw = (p => p * p * (3 - 2 * p))(Math.max(0, Math.min(1, (pos - 13.3) / .7))), bgo = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (pos - 15.1) / .45))), fi = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT + 1) / .9))), cx00 = W * (.5 + (this.mob ? 0 : .06) * fi + (this.mob ? 0 : .17) * (pos > -1.3 && pos < 13.6 ? (1 - Math.max(fw, fi)) * zc : 0)), cy00 = H * (.36 + (this.mob ? .02 : .1) * fw + (this.mob ? -.02 : -.035) * fi + (this.mob ? 0 : -.13) * (pos > -1.3 && pos < 13.6 ? (1 - Math.max(fw, fi)) * zc : 0)), NEAR = 30;
     F *= 1 - (this.mob ? .05 : .2) * fi;
     /* Runde 25c, Desktop: am Ziel steht die Mitte des Hauses waagrecht in der Bildmitte und auf 30 % der Höhe; „Besser leben.“ darunter */
     let cx0 = cx00, cy0 = cy00; this.zcp = zc;
-    if (zc < 1) { const c0 = this.S(15.7), t3 = this.T(14.3), hx = c0.x + t3.z * 93, hz = c0.z - t3.x * 93, dx = hx - C.x, dy = 190 - C.y, dz = hz - C.z, X = dx * rx + dz * rz, Y = dx * ux + dy * uy + dz * uz, Z = dx * fx + dy * fy + dz * fz;
-      if (Z > NEAR) { cx0 += (W / 2 - (cx00 + X * F / Z)) * (1 - zc); cy0 += (H * .3 - (cy00 - Y * F / Z)) * (1 - zc); } }
+    if (zz < 1 && TT < 17.4) { /* nur am Ziel: sobald die Kamera zur Übersicht zurückfährt, läuft das Zentrieren aus */ const c0 = this.S(15.7), t3 = this.T(14.3), hx = c0.x + t3.z * 93, hz = c0.z - t3.x * 93, dx = hx - C.x, dy = 190 - C.y, dz = hz - C.z, X = dx * rx + dz * rz, Y = dx * ux + dy * uy + dz * uz, Z = dx * fx + dy * fy + dz * fz;
+      if (Z > NEAR) { const wz = (1 - zz) * (1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT - 16.6) / .8)))); cx0 += (W / 2 - (cx00 + X * F / Z)) * wz; cy0 += (H * .3 - (cy00 - Y * F / Z)) * wz; } }
     this.Fp = F; this.cx0p = cx0; this.cy0p = cy0;
     const tc = (px, py, pz) => { const dx = px - C.x, dy = py - C.y, dz = pz - C.z; return [dx * rx + dz * rz, dx * ux + dy * uy + dz * uz, dx * fx + dy * fy + dz * fz]; };
     const pr = c => [cx0 + c[0] * F / c[2], cy0 - c[1] * F / c[2]];
