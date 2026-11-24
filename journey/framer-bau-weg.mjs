@@ -2,6 +2,7 @@
 // mit den eigenen Zeichnungen in „Wie wir das möglich machen.“ und den schöner eingebundenen Einträgen in „Besser leben.“.
 // Runde 22 (2026-11-24): weißer Übergang „Was deine Journey noch besser macht.“ statt der schwarzen Titelseite, Schlussbild
 // „Eines Tages schaust du zurück. Und lächelst.“ (Entwurf) statt „Von Anfang an ein gutes Gefühl.“ mit Knopf. Neue Feldnamen, damit alte Werte nicht greifen.
+// Runde 23 (2026-11-24, Entwurf v10): Momente in den 14 gelben Feldern, steilere Kamera am Desktop, danach „Weil du es genau so wieder machen würdest.“ (Feld schluss3).
 // Quellen: basis.js, inhalt.js, weg-zeichnung.js, weg.js, weg.css (Vorschau: weg.html). Ersetzt JourneyEinstieg, JourneyGehen und JourneyLeben.
 // Aufruf: cd griffner-konzepte/journey && node framer-bau-weg.mjs. Ziel: griffner/framer-code/JourneyWeg.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -47,6 +48,7 @@ const controls = {
   ubTitel: S('Übergang Titel', DEF.sys.kopf, { description: '/ = neue Zeile' }),
   themen: obj('System Themen', { titel: S('Titel', ''), text: T('Text', '') }, DEF.sys.themen.map(t => ({ titel: t.h, text: t.text })), 4),
   schluss1: S('Schluss Zeilen', DEF.schluss.h, { description: '/ = neue Zeile' }), schluss2: S('Schluss Nachsatz', DEF.schluss.h2, { description: '/ = neue Zeile' }),
+  schluss3: S('Schluss danach', DEF.schluss.h3, { description: 'Ersetzt danach die Headline an derselben Stelle. / = neue Zeile' }),
   kapitel: { type: 'ControlType.Array', title: 'Leiste Kapitel', maxCount: 9, control: { type: 'ControlType.String' }, defaultValue: DEF.kapitel },
   bildWeg: { type: 'ControlType.ResponsiveImage', title: 'Bild Hero' },
   bildAngekommen: { type: 'ControlType.ResponsiveImage', title: 'Bild Tag 15' },
@@ -93,7 +95,7 @@ function cfgOf(p: any) {
         ankommen: { info: p.ankZeile, zahl: p.ankZahl, woerter: p.ankWoerter },
         leben: { info: p.lebenZeile, zahl: p.lebenZahl, h: p.lebenTitel, lead: p.lebenSatz, punkte: (p.punkte || []).map((x: any) => ({ t: x?.titel, f: x?.merk ?? "", d: x?.text })) },
         sys: { kopf: p.ubTitel, themen: (p.themen || []).map((x: any) => ({ h: x?.titel, text: x?.text })) },
-        schluss: { h: p.schluss1, h2: p.schluss2 },
+        schluss: { h: p.schluss1, h2: p.schluss2, h3: p.schluss3 },
         kapitel: p.kapitel,
         bilder: { weg: bild(p.bildWeg, BILD.weg), angekommen: bild(p.bildAngekommen, BILD.angekommen), terrasse: bild(p.bildTerrasse, BILD.terrasse), zurueck: bild(p.bildZurueck, BILD.zurueck) },
         alt: { zurueck: (p.bildZurueck && p.bildZurueck.alt) || undefined },

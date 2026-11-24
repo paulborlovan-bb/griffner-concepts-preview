@@ -69,7 +69,7 @@ export const LEBEN = {
       marken: [['Wöchentliches Update', '']] },
     { tab: 'Zweimal Griffen', art: 'griffen', h: 'Zweimal Griffen.',
       text: 'Bei der Beauftragung lernst du die Manufaktur und die Menschen dahinter kennen, beim Design Day wählst du jedes Detail für dein Zuhause. Wenn es für dich passt, holen wir dich ab. Mit einem zusätzlichen Tag am Wörthersee oder am Feuerberg lässt du den Besuch in Ruhe ausklingen.',
-      marken: [['Dein Zuhause', ''], ['Griffen', 'Manufaktur'], ['Tag 07', 'Beauftragung'], ['Tag 11', 'Design Day'], ['Wörthersee', ''], ['Feuerberg', '']] }
+      marken: [['Dein Zuhause', ''], ['Griffen', 'GRIFFNER Campus'], ['Tag 07', 'Beauftragung'], ['Tag 11', 'Design Day'], ['Wörthersee', ''], ['Feuerberg', '']] }
   ],
   cta: { h: 'Dein Tag 01 beginnt mit einem Gespräch.', knopf: 'Gespräch vereinbaren', href: '/contact#contact-form' }
 };
