@@ -3,14 +3,15 @@
    die 14 Tage mit Start, Zwischenziel und Ziel, „14 Tage deiner Zeit.“, Tag 15, Besser leben; danach „Wie wir das möglich machen.“
    und das Schlussbild mit Knopf. Logik, Kamera und Zeichnen sind aus dem Entwurf übernommen (Klasse Component in J10Journey.dc.html).
    Änderungen des Kunden gegenüber dem Entwurf:
-   - „Wie wir das möglich machen.“: statt der Zeichnungen des Entwurfs die eigenen Zeichnungen aus Runde 11 (weg-zeichnung.js).
+   - „Wie wir das möglich machen.“: statt der Zeichnungen des Entwurfs eigene Zeichnungen; seit Runde 20 kleine 3D-Szenen in der
+     Bildsprache der 14 Tage, die mit dem Scrollen laufen (weg-sys3d.js).
    - „Besser leben.“: Bild, Text und die vier Einträge bleiben, die Einträge sind schöner eingebunden: Nummer und Merkzeile, die Linien
      zeichnen sich nacheinander und laufen bis an das Bild, die Liste endet auf der Unterkante des Bildes, der aktive Eintrag trägt
      die gelbe Notiz. Telefon: ein Eintrag nach dem anderen unter dem Bild, mit Zähler.
    Auf der Website (Framer, JourneyWeg) kommen Kopfzeile, das gelbe Feld, das Kontaktformular und die Fußzeile von der Website;
    deps.scrollTo gleitet mit Lenis, deps.reduce schaltet die Bewegung ab, deps.still zeigt eine ruhige Fassung (Framer Canvas). */
 import { esc, srcset } from './basis.js';
-import { zeichnung } from './weg-zeichnung.js';
+import { Szene } from './weg-sys3d.js';
 import { LEBEN } from './inhalt.js';
 
 const K = n => LEBEN.kapitel.find(k => k.art === n) || {};
@@ -197,7 +198,7 @@ export function markup(c0) {
       </div>`).join('')}
     </div>
     <div data-svis="1" aria-hidden="true" style="position:absolute;left:46%;right:120px;top:12%;bottom:12%">
-      ${c.sys.themen.map(t => `<div class="wz wz--${esc(t.art)}" data-wz="1"><div class="lb__fig">${zeichnung(t)}</div></div>`).join('')}
+      ${c.sys.themen.map(t => `<div class="wz wz--${esc(t.art)}" data-wz="1"><canvas data-wzc="1"></canvas></div>`).join('')}
     </div>
     <div data-scov="1" style="position:absolute;inset:0;background:var(--griffner-schwarz);color:var(--griffner-weiss)">
       <h2 data-scovh="1" style="position:absolute;left:var(--page-margin);right:var(--page-margin);bottom:clamp(44px,9vh,104px);margin:0;${DISP};font-size:96px;line-height:1.06;text-wrap:balance">${c.sys.kopf.split(/\s+/).filter(Boolean).map(w => `<span style="display:inline-block;overflow:hidden;padding:.2em 0 .04em;margin:-.2em 0 -.04em;vertical-align:top"><span data-scw="1" style="display:inline-block;transform:translate3d(0,150%,0)">${esc(w)}</span></span>`).join(' ')}</h2>
@@ -308,6 +309,8 @@ class Weg {
     const cs = getComputedStyle(R);
     this.fD = cs.getPropertyValue('--font-display').trim() || 'sans-serif';
     this.fT = cs.getPropertyValue('--font-text').trim() || 'sans-serif';
+    /* Runde 20: je Thema eine 3D-Szene (weg-sys3d.js) */
+    this.sz = qa('[data-wzc]').map((cv, i) => new Szene(cv, this.c.sys.themen[i] || {}, { fT: this.fT }));
     this.onClick = e => {
       const rg = e.target.closest('[data-rgo]'); if (rg) { const y = this.yjump && this.yjump[+rg.dataset.rgo]; if (y != null) this.glide(y); return; }
       const c = e.target.closest('[data-cgo]'); if (c) { const s = this.GO[c.dataset.cgo]; if (s) this.go(s[0], s[1]); return; }
@@ -457,7 +460,8 @@ class Weg {
   layoutSys(W, H, m, mob) {
     /* Runde 18: erst ein Titelbild (Schwarz, „Wie wir das möglich machen.“), das nach oben wegwischt; danach die vier Themen ohne Kopfzeile
        und ohne Nummern. Telefon: Text und Zeichnung zusammen, die Zeichnung darunter und kleiner */
-    const LT = this.sysLT = Math.round(H * .8), TH = this.sysTH = Math.round(H * (mob ? 2.8 : 2.2)), T = LT + TH;
+    /* Runde 20: die Szenen laufen mit dem Scrollen, je Thema etwas mehr Strecke (Desktop 3,0, Telefon 3,4 Bildschirme statt 2,2 und 2,8) */
+    const LT = this.sysLT = Math.round(H * .8), TH = this.sysTH = Math.round(H * (mob ? 3.4 : 3.0)), T = LT + TH;
     this.sys.style.height = (H + T) + 'px';
     [0, .27, .52, .8].forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(LT + f * TH) + 'px'; });
     const top0 = Math.round(Math.max(mob ? 96 : 120, H * (mob ? .12 : .15)));
@@ -477,9 +481,8 @@ class Weg {
     if (this.scovh) { const h = this.scovh; h.style.fontSize = '100px'; let mw = 1, tw = 0; this.scw.forEach(w => { const x = w.offsetWidth; mw = Math.max(mw, x); tw += x + 28; });
       h.style.fontSize = (mob ? Math.min(100 * (W - 2 * m) / mw, H * .085, 64) : Math.min(100 * (W - 2 * m) / (tw / 1.9), 100 * (W - 2 * m) / mw, H * .15, 150)) + 'px';
       h.style.bottom = mob ? '64px' : 'clamp(44px,9vh,104px)'; }
-    /* die Karte des Wochenupdates passt immer in ihre Fläche */
-    const sh = this.svis.clientHeight, sw = this.svis.clientWidth;
-    this.svis.querySelectorAll('.lb__up').forEach(up => { up.style.transform = ''; const k = Math.min(1, (sh - 8) / Math.max(1, up.offsetHeight), sw / Math.max(1, up.offsetWidth)); up.style.transform = k < 1 ? 'translate(-50%,-50%) scale(' + k.toFixed(3) + ')' : ''; });
+    /* die 3D-Szenen passen sich ihrer Fläche an */
+    (this.sz || []).forEach(z => z.size(mob));
   }
   applyHero(W, H, m, mob, bH) {
     this.hero.style.bottom = bH; this.hshade.style.display = ''; this.hphoto.style.background = 'none';
@@ -781,16 +784,18 @@ class Weg {
           const cv = wp < .999 ? 'visible' : 'hidden'; if (this.scov._v !== cv) { this.scov._v = cv; this.scov.style.visibility = cv; }
         }
         this.su = this.su == null ? ut : this.su + (ut - this.su) * kS; if (Math.abs(ut - this.su) < .0005) this.su = ut;
+        this.ss = this.ss == null ? s : this.ss + (s - this.ss) * kS; if (Math.abs(s - this.ss) < .5) this.ss = s;
         const u = this.su, io = (a, b) => rp(u, a, b);
         this.stp.forEach(p => S(p, 1, 'none'));
         const t0 = 1 - sm(io(.2, .25)), t1 = sm(io(.27, .32)) * (1 - sm(io(.46, .51))), t2 = sm(io(.52, .57)) * (1 - sm(io(.73, .78))), t3 = sm(io(.8, .85));
         V(this.stx[0], t0, io(.2, .25)); V(this.stx[1], t1, u < .4 ? io(.27, .32) - 1 : io(.46, .51)); V(this.stx[2], t2, u < .65 ? io(.52, .57) - 1 : io(.73, .78)); V(this.stx[3], t3, io(.8, .85) - 1);
-        /* Runde 14: die eigenen Zeichnungen; sie laufen ab, sobald ihr Thema da ist, und beginnen von vorn, wenn es wiederkommt.
-           Das erste Thema startet, wenn das Titelbild fast weg ist. */
+        /* Runde 20: die 3D-Szenen laufen mit dem Scrollen (p 0 bis 1) und stehen am Ende, bevor ihr Thema geht.
+           Die erste beginnt, während das Titelbild wegwischt. */
         const g0 = sm(rp(s, H * .58, H * .74)), tt = [t0 * g0, t1, t2, t3];
+        const pp = red ? [1, 1, 1, 1] : [rp(this.ss, H * .5, LT + TH * .17), io(.255, .42), io(.505, .68), io(.785, .94)];
         this.wz.forEach((z, i) => {
           const t = tt[i] || 0; V(z, t, i === 0 && g0 < 1 ? g0 - 1 : 0);
-          const on = t > .5; if (on && !z._on) { z._on = 1; z.classList.add('is-on'); } else if (!on && t < .02 && z._on) { z._on = 0; z.classList.remove('is-on'); }
+          if (t > .005 && this.sz && this.sz[i]) this.sz[i].draw(pp[i]);
         });
       }
     }
@@ -831,7 +836,9 @@ export function mount(root, c0, deps = {}) {
     root.querySelectorAll('[data-jh-l]').forEach(l => { l.style.transform = 'none'; });
     root.querySelectorAll('[data-endw]').forEach(l => { l.style.transform = 'none'; });
     const ec = root.querySelector('[data-endcta]'); if (ec) ec.style.opacity = 1;
-    const z = root.querySelector('[data-wz]'); if (z) { z.classList.add('is-on'); z.style.opacity = 1; z.style.visibility = 'visible'; }
+    const z = root.querySelector('[data-wz]'); if (z) { z.style.opacity = 1; z.style.visibility = 'visible';
+      const cv = z.querySelector('[data-wzc]'), sz = cv && new Szene(cv, c.sys.themen[0] || {}, { fT: getComputedStyle(root.querySelector('[data-j3]') || root).getPropertyValue('--font-text').trim() });
+      const go = () => { if (!sz) return; sz.size(innerWidth < 820); sz.key = ''; sz.draw(1); }; requestAnimationFrame(go); document.fonts && document.fonts.ready.then(go); }
     const s = root.querySelector('[data-stx]'); if (s) { s.style.opacity = 1; s.style.visibility = 'visible'; }
     return { dispose() { }, runner: root.querySelector('.jw-runner'), railOn: () => false, dark: () => false, lebenOn: () => false };
   }

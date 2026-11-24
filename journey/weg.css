@@ -68,70 +68,9 @@
 .jw.jw-mob .jw-lp{padding:0!important}
 .jw.jw-mob .jw-lp__t{font-size:1.4em;margin-top:10px}
 
-/* ---------- Wie wir das möglich machen: die Zeichnungen aus Runde 11, auf Weiß ---------- */
-.jw .wz{position:absolute;inset:0;container-type:size;display:grid;place-items:center;opacity:0;visibility:hidden}
-.jw .lb__fig{position:relative;width:min(100cqw,133.333cqh);height:min(100cqh,75cqw);container-type:size}
-.jw .lb__svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.jw .lb__d{fill:none;stroke:rgba(0,0,0,.85);stroke-width:1.3;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
-.jw .lb__dash{fill:none;stroke:rgba(68,68,66,.7);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-dasharray:4 6;opacity:0}
-.jw .lb__sq{fill:#fff;stroke:#000;stroke-width:1;vector-effect:non-scaling-stroke;opacity:0}
-.jw .lb__sq--x{stroke:rgba(0,0,0,.55);stroke-dasharray:3 4}
-.jw .lb__ce{fill:var(--griffner-gelb);opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.4)}
-.jw .lb__lb{position:absolute;margin:0;transform:translate(-50%,0);display:grid;justify-items:center;gap:3px;text-align:center;white-space:nowrap;opacity:0;pointer-events:none}
-.jw .lb__lb.is-a{transform:translate(-50%,-100%)}
-.jw .lb__l1{font-family:var(--font-text);font-weight:500;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--griffner-anthrazit)}
-.jw .lb__l2{font-size:13px;line-height:1.2;color:var(--griffner-schwarz)}
-.jw .lb__lb.is-hell .lb__l1{color:var(--griffner-schwarz)}
-@keyframes jwZeichnen{to{stroke-dashoffset:0}}
-@keyframes jwDa{to{opacity:1;transform:none}}
-@keyframes jwHin{to{opacity:1}}
-.jw .wz.is-on .lb__d{animation:jwZeichnen 1100ms var(--ease) calc(150ms + var(--j) * 150ms) forwards}
-.jw .wz.is-on .lb__sq{animation:jwDa 600ms var(--ease) calc(200ms + var(--j,0) * 110ms) forwards}
-.jw .wz.is-on .lb__lb{animation:jwHin 600ms var(--ease) calc(1500ms + var(--j) * 160ms) forwards}
-/* Ein Vertragspartner: erst die Gewerke, dann laufen die Linien zusammen, dann das gelbe Feld */
-.jw .wz--partner.is-on .lb__d{animation-delay:calc(700ms + var(--j) * 140ms)}
-.jw .wz--partner.is-on .lb__ce{animation:jwDa 800ms var(--ease) 1900ms forwards}
-.jw .wz--partner.is-on .lb__lb{animation-delay:calc(500ms + var(--j) * 110ms)}
-.jw .wz--partner.is-on .lb__lb.is-hell{animation-delay:2100ms}
-/* Besuch in Griffen: Griffen, dann der Weg zur Beauftragung, dann der zum Design Day, dann ein Tag mehr */
-.jw .wz--griffen.is-on .lb__ce{animation:jwDa 700ms var(--ease) 450ms forwards}
-.jw .wz--griffen.is-on .lb__d{animation-duration:1300ms;animation-delay:calc(800ms + var(--j) * 1000ms)}
-.jw .wz--griffen.is-on .lb__lb{animation-delay:500ms}
-.jw .wz--griffen.is-on .lb__lb.is-a{animation-delay:1500ms}
-.jw .wz--griffen.is-on .lb__lb.is-b{animation-delay:2500ms}
-.jw .wz--griffen.is-on .lb__dash,.jw .wz--griffen.is-on .lb__sq--x,.jw .wz--griffen.is-on .lb__lb.is-x{animation:jwHin 800ms var(--ease) 3200ms forwards}
-/* Planungssystem: fünf Ebenen übereinander, dann fallen sie zu einem Plan zusammen (das oberste wird das gelbe Feld) */
-.jw .lb__sch{position:absolute;inset:0;--w:min(34cqw,46cqh)}
-.jw .lb__e{--o:calc(var(--j) - (var(--n) - 1) / 2);position:absolute;left:40%;top:50%;width:0;height:0;opacity:0;transform:translate3d(0,calc(var(--o) * 13%),0)}
-.jw .lb__pl{position:absolute;left:0;top:0;width:var(--w);aspect-ratio:5/4;border:1px solid rgba(0,0,0,.85);background:rgba(255,255,255,.88);transform:translate(-50%,-50%) rotateX(60deg) rotateZ(-42deg)}
-.jw .lb__et{position:absolute;left:calc(var(--w) * .66 + 14px);top:0;transform:translateY(-50%);white-space:nowrap;color:var(--griffner-schwarz);font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase}
-@keyframes jwEbene{0%{opacity:0;transform:translate3d(0,calc(var(--o) * var(--w) * .3 + 20px),0)}14%,52%{opacity:1;transform:translate3d(0,calc(var(--o) * var(--w) * .3),0)}82%,100%{opacity:1;transform:translate3d(0,calc(var(--o) * 3px),0)}}
-@keyframes jwEtikett{0%,58%{opacity:1}76%,100%{opacity:0}}
-@keyframes jwPlan{0%,74%{background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.85)}90%,100%{background:var(--griffner-gelb);border-color:var(--griffner-gelb)}}
-.jw .wz.is-on .lb__e{animation:jwEbene 5.2s var(--ease) calc(var(--j) * 90ms) forwards}
-.jw .wz.is-on .lb__et{animation:jwEtikett 5.2s linear forwards}
-.jw .wz.is-on .lb__e:first-child .lb__pl{animation:jwPlan 5.2s linear forwards}
-/* Wochenupdate: das Update baut sich Zeile für Zeile auf (weiße Karte mit Haarlinie) */
-.jw .lb__up{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,26rem);padding:16px 22px 8px;background:var(--griffner-weiss);border:1px solid var(--griffner-kalk)}
-.jw .lb__uh{display:flex;align-items:center;gap:10px;margin:0;padding-bottom:12px;color:var(--griffner-anthrazit);font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase}
-.jw .lb__uh i{display:block;width:11px;height:8.8px;background:var(--griffner-gelb)}
-.jw .lb__ur{display:grid;grid-template-columns:12px 1fr;gap:14px;padding:13px 0;border-top:1px solid var(--griffner-kalk);opacity:0;transform:translate3d(0,8px,0)}
-.jw .lb__ur i{display:block;width:11px;height:8.8px;margin-top:3px;border:1px solid rgba(0,0,0,.7)}
-.jw .lb__ur i.is-done{background:var(--griffner-gelb);border-color:var(--griffner-gelb)}
-.jw .lb__ut{margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--griffner-schwarz)}
-.jw .lb__ux{margin:0;font-size:14px;line-height:1.4;color:var(--griffner-anthrazit)}
-.jw .wz.is-on .lb__ur{animation:jwDa 700ms var(--ease) calc(300ms + var(--j) * 420ms) forwards}
-@media (max-width:819px){
-  .jw .lb__l1{font-size:8px;letter-spacing:.14em}
-  .jw .lb__l2{font-size:10px}
-  .jw .lb__et{font-size:9px;letter-spacing:.14em}
-  .jw .lb__up{width:min(96%,20rem);padding:10px 14px 4px}
-  .jw .lb__uh{padding-bottom:8px}
-  .jw .lb__ur{padding:7px 0;gap:10px}
-  .jw .lb__ux{font-size:11px}
-  .jw .lb__ut{font-size:10px;margin-bottom:2px}
-}
-@media (prefers-reduced-motion:reduce){.jw .lb__e,.jw .lb__et,.jw .lb__pl,.jw .lb__d,.jw .lb__sq,.jw .lb__ce,.jw .lb__ur,.jw .lb__lb,.jw .lb__dash{animation-duration:1ms!important;animation-delay:0s!important}}
+/* ---------- Wie wir das möglich machen (Runde 20): je Thema eine 3D-Szene auf Canvas (weg-sys3d.js), auf Weiß ---------- */
+.jw .wz{position:absolute;inset:0;opacity:0;visibility:hidden}
+.jw .wz canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* Schlussbild am Telefon (Runde 14): das Foto zeigt dort Gregor, schwarze Schrift läge auf der dunklen Jacke. Weiß über --bildschutz, Knopf weiß */
 .jw.jw-mob [data-endsh]{background:var(--bildschutz)!important}

@@ -54,7 +54,7 @@ const controls = {
   bildManufaktur: { type: 'ControlType.ResponsiveImage', title: 'Bild Schluss' }
 };
 
-const files = ['basis.js', 'inhalt.js', 'weg-zeichnung.js', 'weg.js', 'weg.css'];
+const files = ['basis.js', 'inhalt.js', 'weg-sys3d.js', 'weg.js', 'weg.css'];
 const tsx = `// @ts-nocheck
 // GRIFFNER Journey, Seite /journey (Runde 14, 2026-11-24): der Entwurf „Dein Weg“ als eine Komponente. Eine Kamerafahrt durch die 14 Tage,
 // Tag 15, Besser leben (Bild mit Headline und vier Einträgen), Wie wir das möglich machen (eigene Zeichnungen), Schlussbild mit Knopf.
@@ -65,7 +65,7 @@ import { RenderTarget, addPropertyControls, ControlType } from "framer"
 import { store, registerDock } from "./GriffnerStore.tsx"
 
 const CSS = ${JSON.stringify(cssOf('weg.css'))}
-${sect('basis.js')}${sect('inhalt.js')}${mod('WZ', 'weg-zeichnung.js', 'zeichnung, zeichnungDaten')}const zeichnung = WZ.zeichnung
+${sect('basis.js')}${sect('inhalt.js')}${mod('WS', 'weg-sys3d.js', 'Szene, szeneDaten')}const Szene = WS.Szene
 ${mod('JW', 'weg.js', 'DEF, markup, mount, clean')}
 /* ---------- Framer ---------- */
 const reduceMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
