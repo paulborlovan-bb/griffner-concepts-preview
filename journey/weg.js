@@ -42,15 +42,16 @@ export const DEF = {
     ['Übergabe', 'Wir gehen gemeinsam durch dein Haus, erklären die Haustechnik und übergeben alle Unterlagen. Dann schließt du selbst auf.', ['Gemeinsame Abnahme', 'Einweisung in die Haustechnik', 'Übergabe von Plänen und Baudokumentation', 'Garantieunterlagen', 'Pflege- und Wartungshinweise', 'Kontakte für Service und Notfall']]
   ].map(([t, d, k]) => ({ t, d, k })),
   finale: ['14 Tage deiner Zeit.', 'Um den Rest kümmern wir uns.'],
-  ankommen: { info: 'Tag', zahl: '15', woerter: ['Einatmen.', 'Ausatmen.', 'Angekommen.'] },
+  /* Runde 16 (2026-11-24): „Ankommen.“ statt „Angekommen.“; die Merkzeilen der vier Einträge in Besser leben entfallen (Kunde) */
+  ankommen: { info: 'Tag', zahl: '15', woerter: ['Einatmen.', 'Ausatmen.', 'Ankommen.'] },
   leben: {
     info: 'Ab Tag', zahl: '15', h: 'Besser leben.', lead: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.',
     /* f: Merkzeile über dem Titel (Runde 14, aus dem Text des Eintrags) */
     punkte: [
-      { t: 'Jahrescheck.', f: 'Nach einem Jahr', d: 'Ein Haus zeigt sich erst im Lauf eines ganzen Jahres. Deshalb kommen wir nach einem Jahr zurück und hören, wie es sich bei dir lebt.' },
-      { t: 'GRIFFNER Care.', f: 'Jederzeit', d: 'Auch Jahre nach dem Einzug kennen wir dein Haus bis ins Detail. Und wir sind da, wann immer du uns brauchst.' },
-      { t: 'Open House.', f: '20 Baufamilien', d: 'Werde eine von 20 Baufamilien, die ihr Zuhause für Besucher öffnen. Niemand erzählt ehrlicher, wie es sich in einem GRIFFNER Haus lebt.' },
-      { t: 'GRIFFNER Club.', f: 'Einmal im Jahr', d: 'Einmal im Jahr laden wir alle ein, die mit uns gebaut haben. Ein Treffen voller Geschichten, Ideen und neuer Bekanntschaften.' }
+      { t: 'Jahrescheck.', f: '', d: 'Ein Haus zeigt sich erst im Lauf eines ganzen Jahres. Deshalb kommen wir nach einem Jahr zurück und hören, wie es sich bei dir lebt.' },
+      { t: 'GRIFFNER Care.', f: '', d: 'Auch Jahre nach dem Einzug kennen wir dein Haus bis ins Detail. Und wir sind da, wann immer du uns brauchst.' },
+      { t: 'Open House.', f: '', d: 'Werde eine von 20 Baufamilien, die ihr Zuhause für Besucher öffnen. Niemand erzählt ehrlicher, wie es sich in einem GRIFFNER Haus lebt.' },
+      { t: 'GRIFFNER Club.', f: '', d: 'Einmal im Jahr laden wir alle ein, die mit uns gebaut haben. Ein Treffen voller Geschichten, Ideen und neuer Bekanntschaften.' }
     ]
   },
   sys: {
