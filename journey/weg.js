@@ -457,7 +457,7 @@ class Weg {
   layoutSys(W, H, m, mob) {
     /* Runde 18: erst ein Titelbild (Schwarz, „Wie wir das möglich machen.“), das nach oben wegwischt; danach die vier Themen ohne Kopfzeile
        und ohne Nummern. Telefon: Text und Zeichnung zusammen, die Zeichnung darunter und kleiner */
-    const LT = this.sysLT = Math.round(H * 1.25), TH = this.sysTH = Math.round(H * (mob ? 2.8 : 2.2)), T = LT + TH;
+    const LT = this.sysLT = Math.round(H * .8), TH = this.sysTH = Math.round(H * (mob ? 2.8 : 2.2)), T = LT + TH;
     this.sys.style.height = (H + T) + 'px';
     [0, .27, .52, .8].forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(LT + f * TH) + 'px'; });
     const top0 = Math.round(Math.max(mob ? 96 : 120, H * (mob ? .12 : .15)));
@@ -496,7 +496,7 @@ class Weg {
       const hs = Math.min(W * (this.mob ? .1 : .072), 140); let qx = W / 2, qy = Math.max(H * ty, Math.max(150, H * .2) + hs * 1.1) - d * 70 + (1 - hot) * 24;
       if (n === 2) { const c0 = this.S(15.7), t = this.T(14.3), rr = { x: t.z, z: -t.x }, u = 150 * .62, v = -450 * .62, c = tc(c0.x + rr.x * u + t.x * v, 0, c0.z + rr.z * u + t.z * v);
         if (c[2] > NEAR) { const sx = this.cx0p + c[0] * this.Fp / c[2], sy = this.cy0p - c[1] * this.Fp / c[2]; x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; const tw = x.measureText(hl.toUpperCase()).width;
-          qx = Math.max(this.m + tw / 2, Math.min(W - this.m - 48 - tw / 2, sx)); qy = Math.min(H - Math.max(36, H * .07), sy + hs * 1.5) - d * 70 + (1 - hot) * 24; } }
+          qx = this.mob ? W / 2 : Math.max(this.m + tw / 2, Math.min(W - this.m - tw / 2, sx)); /* Runde 19: Telefon mittig */ qy = Math.min(H - Math.max(36, H * .07), sy + hs * 1.5) - d * 70 + (1 - hot) * 24; } }
       x.globalAlpha = a; x.fillStyle = '#FFFFFF'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
       x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; x.letterSpacing = '0px'; x.fillText(hl.toUpperCase(), qx, qy);
       const ls = Math.max(10, Math.min(14, hs * .14)); x.font = '500 ' + ls.toFixed(1) + 'px ' + this.fT; x.letterSpacing = '0.16em';
@@ -774,10 +774,10 @@ class Weg {
         const LT = this.sysLT || H, TH = this.sysTH || H * 2.2, s = -r.top, ut = cl((s - LT) / TH);
         /* Titelbild: die Wörter kommen beim Hereinfahren, dann wischt das Schwarz nach oben weg */
         if (this.scov) {
-          this.scw.forEach((w, i) => { const t = red ? 1 : (v => 1 - Math.pow(1 - v, 3))(rp(s, H * (-.15 + i * .05), H * (.25 + i * .05))); S(w, 1, 'translate3d(0,' + ((1 - t) * 150).toFixed(1) + '%,0)'); });
-          const wp = sm(rp(s, H * .62, H * 1.08)), cp = 'inset(0 0 ' + (wp * 100).toFixed(2) + '% 0)';
+          this.scw.forEach((w, i) => { const t = red ? 1 : (v => 1 - Math.pow(1 - v, 3))(rp(s, H * (-.25 + i * .04), H * (.08 + i * .04))); S(w, 1, 'translate3d(0,' + ((1 - t) * 150).toFixed(1) + '%,0)'); });
+          const wp = sm(rp(s, H * .36, H * .7)), cp = 'inset(0 0 ' + (wp * 100).toFixed(2) + '% 0)';
           if (this.scov._cp !== cp) { this.scov._cp = cp; this.scov.style.clipPath = cp; }
-          S(this.scovh, 1 - sm(rp(s, H * .52, H * .82)), 'translate3d(0,' + (-sm(rp(s, H * .52, H * .9)) * 60).toFixed(1) + 'px,0)');
+          S(this.scovh, 1 - sm(rp(s, H * .3, H * .5)), 'translate3d(0,' + (-sm(rp(s, H * .3, H * .56)) * 60).toFixed(1) + 'px,0)');
           const cv = wp < .999 ? 'visible' : 'hidden'; if (this.scov._v !== cv) { this.scov._v = cv; this.scov.style.visibility = cv; }
         }
         this.su = this.su == null ? ut : this.su + (ut - this.su) * kS; if (Math.abs(ut - this.su) < .0005) this.su = ut;
@@ -787,7 +787,7 @@ class Weg {
         V(this.stx[0], t0, io(.2, .25)); V(this.stx[1], t1, u < .4 ? io(.27, .32) - 1 : io(.46, .51)); V(this.stx[2], t2, u < .65 ? io(.52, .57) - 1 : io(.73, .78)); V(this.stx[3], t3, io(.8, .85) - 1);
         /* Runde 14: die eigenen Zeichnungen; sie laufen ab, sobald ihr Thema da ist, und beginnen von vorn, wenn es wiederkommt.
            Das erste Thema startet, wenn das Titelbild fast weg ist. */
-        const g0 = sm(rp(s, H * .92, H * 1.12)), tt = [t0 * g0, t1, t2, t3];
+        const g0 = sm(rp(s, H * .58, H * .74)), tt = [t0 * g0, t1, t2, t3];
         this.wz.forEach((z, i) => {
           const t = tt[i] || 0; V(z, t, i === 0 && g0 < 1 ? g0 - 1 : 0);
           const on = t > .5; if (on && !z._on) { z._on = 1; z.classList.add('is-on'); } else if (!on && t < .02 && z._on) { z._on = 0; z.classList.remove('is-on'); }
