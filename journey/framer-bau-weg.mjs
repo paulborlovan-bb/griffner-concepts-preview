@@ -5,6 +5,8 @@
 // Runde 23 (2026-11-24, Entwurf v10): Momente in den 14 gelben Feldern, steilere Kamera am Desktop, danach „Weil du es genau so wieder machen würdest.“ (Feld schluss3).
 // Runde 24 (2026-11-24): iOS 26 Safari (Adressleiste oben) legt sticky-Bühnen unter die Leiste, sie rücken um die gemessene Fläche nach unten (--jw-obs);
 // Schlussbild am Telefon erst das Foto, darunter die Headline; keine Fotokante unter dem Schwarz. Diagnose: /journey?jdiag
+// Runde 25 (2026-11-24): am Telefon sind „Was deine Journey noch besser macht.“ und die Schluss-Headlines so groß wie die Hero-Headline (heroFs).
+// Runde 25b: am Telefon kommt das Schlussbild weiß herein, das Foto blendet bildfüllend auf, zieht sich nach oben in seinen Rahmen und die schwarze Fläche steigt von unten (endBox, data-endwb, data-endpn).
 // Quellen: basis.js, inhalt.js, weg-zeichnung.js, weg.js, weg.css (Vorschau: weg.html). Ersetzt JourneyEinstieg, JourneyGehen und JourneyLeben.
 // Aufruf: cd griffner-konzepte/journey && node framer-bau-weg.mjs. Ziel: griffner/framer-code/JourneyWeg.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';

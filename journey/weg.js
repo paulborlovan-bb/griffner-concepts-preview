@@ -114,7 +114,7 @@ export function markup(c0) {
   const c = clean(c0), B = c.bilder;
   const words = c.manifest.split(/\s+/).filter(Boolean);
   const zeilen = t => String(t).split(/\s*\/\s*/).map(l => l.trim()).filter(Boolean);
-  const maske = (w, attr, top = '.1em') => `<span style="display:inline-block;overflow:hidden;padding:${top} .02em .04em;margin:-${top} 0 -.04em;vertical-align:top"><span ${attr}="1" style="display:inline-block;transform:translate3d(0,110%,0)">${esc(w)}</span></span>`;
+  const maske = (w, attr, top = '.1em') => `<span style="display:inline-block;overflow:hidden;padding:${top} .02em .04em;margin:-${top} 0 -.04em;vertical-align:top"><span ${attr}="1" style="display:inline-block;transform:translate3d(0,140%,0)">${esc(w)}</span></span>`; /* 140 %: Umlautpunkte schauen im Versteck nicht unten heraus */
   const ubH = zeilen(c.sys.kopf).map(l => l.split(/\s+/).map(w => maske(w, 'data-ubww')).join(' ')).join('<br>');
   const endH = zeilen(c.schluss.h).map(l => `<span data-endl="1" style="display:block;white-space:nowrap">${l.split(/\s+/).map(w => maske(w, 'data-endw', '.22em')).join(' ')}</span>`).join('')
     + `<span data-endl="1" style="display:block;white-space:nowrap;margin-top:.3em">${zeilen(c.schluss.h2).map(l => [...l].map(ch => ch === ' ' ? ' ' : `<span data-endk="1" style="display:inline-block;opacity:0">${esc(ch)}</span>`).join('')).join('<br>')}</span>`;
@@ -240,7 +240,9 @@ export function markup(c0) {
     <div data-endph="1" style="position:absolute;left:0;top:0;bottom:0;width:100%;overflow:hidden">
       ${lazy(B.zurueck, `data-endi="1" alt="${esc(c.alt.zurueck)}" decoding="async" style="position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:48% 30%;transform-origin:88% 40%"`, '120vw')}
       <div data-endsh="1" aria-hidden="true" style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
+      <div data-endpn="1" aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:0;display:none;background:linear-gradient(180deg,rgba(0,0,0,0) 0px,var(--griffner-schwarz) 90px)"></div>
     </div>
+    <div data-endwb="1" aria-hidden="true" style="position:absolute;inset:0;background:var(--griffner-weiss);opacity:0;pointer-events:none"></div>
     <div data-endc="1" style="position:absolute;left:calc(58% + 56px);right:calc(var(--page-margin) + 48px);top:0;bottom:0;display:grid;align-content:center;color:var(--griffner-weiss)">
       <h2 data-endh="1" style="margin:0;${DISP};font-size:64px;line-height:1.02;color:var(--griffner-weiss)">${endH}</h2>
       <h2 data-endsub="1" aria-label="${esc(zeilen(c.schluss.h3).join(' '))}" style="position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);margin:0;${DISP};font-size:64px;line-height:1.02;color:var(--griffner-weiss);pointer-events:none">${endS3}</h2>
@@ -337,7 +339,7 @@ class Weg {
     });
     this.anc = { planen: q('#planen'), bauen: q('#bauen'), leben: q('#leben') };
     this.sys = q('[data-sys]'); this.smk = qa('[data-smk]'); this.stxw = q('[data-stxw]'); this.ubS = q('[data-ub]'); this.ubV = q('[data-ubv]'); this.stx = qa('[data-stx]'); this.stp = this.stx.map(s => s.querySelector('p')); this.svis = q('[data-svis]'); this.wz = qa('[data-wz]');
-    this.endS = q('[data-endimg]'); this.endI = q('[data-endi]'); this.endW = qa('[data-endw]'); this.endK = qa('[data-endk]'); this.endH = q('[data-endh]'); this.endSub = q('[data-endsub]'); this.endSW = qa('[data-endsw]'); this.endB = q('[data-endb]'); this.endC = q('[data-endc]');
+    this.endS = q('[data-endimg]'); this.endI = q('[data-endi]'); this.endW = qa('[data-endw]'); this.endK = qa('[data-endk]'); this.endH = q('[data-endh]'); this.endSub = q('[data-endsub]'); this.endSW = qa('[data-endsw]'); this.endB = q('[data-endb]'); this.endC = q('[data-endc]'); this.endWB = q('[data-endwb]'); this.endPn = q('[data-endpn]');
     const cs = getComputedStyle(R);
     this.fD = cs.getPropertyValue('--font-display').trim() || 'sans-serif';
     this.fT = cs.getPropertyValue('--font-text').trim() || 'sans-serif';
@@ -522,18 +524,34 @@ class Weg {
   layoutEnd(W, H, m, mob) {
     const R = this.root, ph = R.querySelector('[data-endph]'), c = this.endC, h = this.endH, im = this.endI, sh = R.querySelector('[data-endsh]'); if (!ph || !c || !h || !im) return;
     const IW = 2400, IH = 1600, sub = this.endSub, lines = [...h.children, ...(sub ? [...sub.children] : [])];
+    this.endLead = mob ? Math.round(H * .85) : 0; if (this.endS) this.endS.style.height = mob ? 'calc(340vh + ' + this.endLead + 'px)' : '';
     const fit = (wAv, hAv, cap) => { h.style.fontSize = '100px'; if (sub) sub.style.fontSize = '100px'; const rg = document.createRange(); let mw = 1; lines.forEach(l => { rg.selectNodeContents(l); mw = Math.max(mw, rg.getBoundingClientRect().width); }); h.style.fontSize = Math.max(24, Math.min(wAv / mw * 100 * .98, hAv / 5.9, cap)) + 'px'; if (sub) sub.style.fontSize = h.style.fontSize; };
     Object.assign(ph.style, { top: '0', bottom: '0', width: '100%', height: 'auto' });
     if (mob || W < H * 1.1) { /* Runde 24, Telefon und Hochformat (Tablet): erst das Foto oben, darunter die Headline auf Schwarz.
          So kommt nach der weißen Bühne gleich das Bild herein statt einer leeren schwarzen Fläche */
-      const ph0 = Math.round(H * (mob ? .46 : .5)), top = ph0 + Math.round(Math.max(24, H * .035));
-      Object.assign(c.style, { left: m + 'px', right: m + 'px', top: top + 'px', bottom: 'auto', alignContent: 'start' });
-      fit(W - 2 * m, H - top - Math.max(32, H * .05), mob ? 64 : 104);
+      /* Runde 25: Headline am Telefon so groß wie die Hero-Headline; das Foto wächst in den frei gewordenen Platz (46 bis 64 % der Höhe) */
+      Object.assign(c.style, { left: m + 'px', right: m + 'px', top: '0px', bottom: 'auto', alignContent: 'start' });
+      fit(W - 2 * m, H * .42, mob ? this.heroFs(W, H, true) : 104);
+      const hH = h.offsetHeight, tb = Math.max(hH, sub ? sub.offsetHeight : 0), pad = Math.max(40, Math.round(H * .07)), gap = Math.max(24, Math.round(H * .035));
+      const ph0 = Math.round(Math.max(H * (mob ? .46 : .5), Math.min(H * .64, H - pad - tb - gap))), top = Math.round(ph0 + gap + (tb - hH) / 2);
+      c.style.top = top + 'px';
       const b = Math.max(W / IW, ph0 / IH), iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .5 * W - .46 * iw)), ty = Math.round(Math.min(0, Math.max(ph0 - ih, ph0 * .5 - .35 * ih)));
-      Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: ty + 'px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.35 * ih).toFixed(0) + 'px' });
-      /* oben leicht abgedunkelt für die weiße Kopfzeile, unten läuft das Foto weich ins Schwarz der Headline */
-      sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,.5) 0px,rgba(0,0,0,0) ' + Math.round(ph0 * .3) + 'px,rgba(0,0,0,0) ' + Math.round(ph0 - 90) + 'px,rgba(0,0,0,1) ' + ph0 + 'px,rgba(0,0,0,1) 100%)';
+      const pn = this.endPn;
+      if (mob && pn) { /* Runde 25b, Telefon: das Foto blendet zuerst bildfüllend aus dem Weiß auf (Box A), dann zieht es sich nach oben in seinen Rahmen (Box B),
+           während die schwarze Fläche mit weicher Oberkante von unten hochsteigt. So geht nichts durch Grau. Bewegung per transform (endFrame) */
+        const bA = Math.max(W / IW, (H + 90) / IH), iwA = IW * bA, ihA = IH * bA, txA = Math.min(0, Math.max(W - iwA, .5 * W - .46 * iwA)), tyA = Math.round(Math.min(0, Math.max(H - ihA, .5 * H - .35 * ihA)));
+        Object.assign(im.style, { inset: 'auto', width: iwA + 'px', height: ihA + 'px', left: txA + 'px', top: tyA + 'px', objectFit: 'fill', transformOrigin: '0 0' });
+        this.endBox = { k: iw / iwA, dx: tx - txA, dy: ty - tyA, fx: .46 * iwA, fy: .35 * ihA, tyA, ihA, ph0, H };
+        Object.assign(pn.style, { display: 'block', top: (ph0 - 90) + 'px', height: (H - ph0 + 90) + 'px' });
+        sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,.5) 0px,rgba(0,0,0,0) ' + Math.round(ph0 * .3) + 'px)';
+      } else {
+        this.endBox = null; if (pn) pn.style.display = 'none';
+        Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: ty + 'px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.35 * ih).toFixed(0) + 'px' });
+        /* oben leicht abgedunkelt für die weiße Kopfzeile, unten läuft das Foto weich ins Schwarz der Headline */
+        sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,.5) 0px,rgba(0,0,0,0) ' + Math.round(ph0 * .3) + 'px,rgba(0,0,0,0) ' + Math.round(ph0 - 90) + 'px,rgba(0,0,0,1) ' + ph0 + 'px,rgba(0,0,0,1) 100%)';
+      }
     } else {
+      this.endBox = null; if (this.endPn) this.endPn.style.display = 'none';
       const b = Math.max(W / IW, H / IH) * 1.2, iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .36 * W - .46 * iw));
       Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: '0px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.3 * ih).toFixed(0) + 'px' });
       const x0 = Math.round(Math.max(tx + .64 * iw + Math.max(32, W * .03), W * .54)), x1 = W - m - 48;
@@ -545,8 +563,10 @@ class Weg {
   applyHero(W, H, m, mob, bH) {
     this.hero.style.bottom = bH; this.hshade.style.display = ''; this.hphoto.style.background = 'none';
     Object.assign(this.himg.style, { inset: '0', left: '0', top: '0', width: '100%', height: '100%', objectPosition: mob ? '50% 40%' : '22% 40%' });
-    this.hh1.style.fontSize = Math.min(W * (mob ? .105 : .082), H * .125, 168) + 'px';
+    this.hh1.style.fontSize = this.heroFs(W, H, mob) + 'px';
   }
+  /* Runde 25: Größe der Hero-Headline; am Telefon nehmen Übergang und Schlussbild genau diese Größe (Kunde: sonst zu groß) */
+  heroFs(W, H, mob) { return Math.min(W * (mob ? .105 : .082), H * .125, 168); }
 
   /* Runde 23 (Entwurf v10, 1:1): je Tag ein kleiner Moment, der sich im gelben Feld aufbaut (Haus, Grundstück, Stapel, Räume, Vertrag, Pläne, Montage …) */
   drawMoment(k, pos, cx, cz, top, A0, tc, pr, NEAR) {
@@ -1091,13 +1111,24 @@ class Weg {
     /* Schlussbild (Runde 22): die Wörter von Satz 1 steigen rückwärts aus der Maske (zuerst „zurück.“), die Buchstaben von
        „Und lächelst.“ kommen von der Mitte nach außen, das Foto zoomt langsam, am Ende Blende in Schwarz zum Kontaktformular */
     if (this.endS) { const r = this.endS.getBoundingClientRect(); if (r.top < H && r.bottom > 0) {
-      const p = cl(-r.top / Math.max(1, r.height - H)), ex = sm(rp(p, .88, .99)), eo3 = v => 1 - Math.pow(1 - v, 3);
-      S(this.endI, 1, 'scale(' + (1 + .05 * (1 - sm(cl((H - r.top) / (H * 1.5)))) + .03 * ex).toFixed(4) + ')');
+      /* Runde 25b, nur Telefon: das Schlussbild kommt weiß herein (wie die Bühne davor), das Foto blendet bildfüllend auf,
+         dann zieht es sich in seinen Rahmen oben und die schwarze Fläche steigt von unten; die Strecke ist dafür um .85 H länger */
+      const EB = this.mob ? this.endBox : null, lead = EB ? this.endLead || 0 : 0, e = -r.top / H, fi = EB ? sm(rp(e, -.3, .25)) : 1;
+      if (this.endWB) S(this.endWB, 1 - fi);
+      { const rm = fi < .5 ? 'j-weiss' : 'j-schwarz'; if (this.endS.dataset.room !== rm) this.endS.dataset.room = rm; }
+      const p = cl((-r.top - lead) / Math.max(1, r.height - H - lead)), ex = sm(rp(p, .88, .99)), eo3 = v => 1 - Math.pow(1 - v, 3);
+      if (EB) {
+        const u = red ? (e > .55 ? 1 : 0) : sm(rp(e, .3, .8)), z = 1 + .03 * ex, k = 1 + (EB.k - 1) * u;
+        S(this.endI, 1, 'translate3d(' + (EB.dx * u + k * EB.fx * (1 - z)).toFixed(1) + 'px,' + (EB.dy * u + k * EB.fy * (1 - z)).toFixed(1) + 'px,0) scale(' + (k * z).toFixed(4) + ')');
+        /* die weiche Oberkante der schwarzen Fläche liegt immer mindestens 90 px über der Unterkante des Fotos: keine harte Fotokante */
+        const iB = EB.tyA + EB.dy * u + k * EB.ihA, pT = Math.min(iB, EB.ph0 + (1 - u) * (EB.H + 90 - EB.ph0)) - 90;
+        S(this.endPn, 1, 'translate3d(0,' + (pT - (EB.ph0 - 90)).toFixed(1) + 'px,0)');
+      } else S(this.endI, 1, 'scale(' + (1 + .05 * (1 - sm(cl((H - r.top) / (H * 1.5)))) + .03 * ex).toFixed(4) + ')');
       if (this.endPh) { const hv = ex > .995 ? 'hidden' : ''; if (this.endPh.style.visibility !== hv) this.endPh.style.visibility = hv; } /* Runde 24: keine Fotokante unter dem Schwarz */
       S(this.endB, ex); S(this.endC, 1 - sm(rp(p, .86, .96)), 'translate3d(0,' + (-sm(rp(p, .86, .97)) * 40).toFixed(1) + 'px,0)');
       /* Runde 23 (Entwurf v10): die Headline gleitet nach oben weg, an derselben Stelle steigt „Weil du es genau so wieder machen würdest.“ Wort für Wort aus der Maske */
-      if (this.endSub) { const o1 = red ? (p > .62 ? 1 : 0) : sm(rp(p, .6, .66)); S(this.endH, 1 - o1, red ? 'none' : 'translate3d(0,' + (-o1 * 30).toFixed(1) + 'px,0)'); this.endSW.forEach((w, i) => { const t = red ? (p > .62 ? 1 : 0) : eo3(rp(p, .64 + i * .018, .72 + i * .018)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + '%,0)'); }); }
-      { const n = this.endW.length; this.endW.forEach((w, i) => { const k = n - 1 - i, t = red ? 1 : eo3(rp(p, .02 + k * .06, .15 + k * .06)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + '%,0)'); }); }
+      if (this.endSub) { const o1 = red ? (p > .62 ? 1 : 0) : sm(rp(p, .6, .66)); S(this.endH, 1 - o1, red ? 'none' : 'translate3d(0,' + (-o1 * 30).toFixed(1) + 'px,0)'); this.endSW.forEach((w, i) => { const t = red ? (p > .62 ? 1 : 0) : eo3(rp(p, .64 + i * .018, .72 + i * .018)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 140).toFixed(1) + '%,0)'); }); }
+      { const n = this.endW.length; this.endW.forEach((w, i) => { const k = n - 1 - i, t = red ? 1 : eo3(rp(p, .02 + k * .06, .15 + k * .06)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 140).toFixed(1) + '%,0)'); }); }
       { const N = this.endK.length, cc = Math.max(1, (N - 1) / 2); this.endK.forEach((k, i) => { const d = Math.abs(i - cc) / cc, t = red ? 1 : sm(rp(p, .44 + d * .09, .52 + d * .09)); S(k, t, 'translate3d(0,' + ((1 - t) * 14).toFixed(1) + 'px,0)'); }); }
     } }
     this.ubFrame(H, cl, rp, sm, S, red);
@@ -1134,7 +1165,7 @@ class Weg {
       const h = v.querySelector('[data-ubwh]'), ln = v.querySelector('[data-ubln]'), mob = this.mob;
       h.style.whiteSpace = mob ? 'normal' : 'nowrap'; h.style.fontSize = '100px';
       const avail = v.clientWidth, rg = document.createRange(); rg.selectNodeContents(h); const w1 = rg.getBoundingClientRect().width || 1;
-      h.style.fontSize = (mob ? Math.min(avail / 5.2, H * .1) : Math.min(avail / w1 * 100 * .97, H * .19)) + 'px';
+      h.style.fontSize = (mob ? this.heroFs(this.W || innerWidth, H, true) : Math.min(avail / w1 * 100 * .97, H * .19)) + 'px';
       const ws = [...v.querySelectorAll('[data-ubww]')], hl = h.getBoundingClientRect().left;
       this.ubM = { ws, ln, tip: v.querySelector('[data-ubtip]'), lw: ln.getBoundingClientRect().width, x: ws.map(w => { const b = w.parentNode.getBoundingClientRect(); return [b.left - hl, b.width]; }) };
     }
