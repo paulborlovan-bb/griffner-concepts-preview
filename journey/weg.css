@@ -41,6 +41,7 @@
 .jw .jw-lp:nth-last-child(-n+2){padding-bottom:0}
 .jw .jw-lp__ln{position:absolute;left:0;right:0;top:0;height:1px;background:var(--griffner-kalk);transform:scaleX(0);transform-origin:0 50%;transition:background-color 500ms var(--ease)}
 .jw .jw-lp.is-akt .jw-lp__ln{background:var(--griffner-schwarz)}
+.jw .jw-lp__ln{display:none} /* Runde 18: keine Linien über den Reihen (Kunde) */
 .jw .jw-lp__n{display:flex;align-items:baseline;gap:14px;margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase;font-variant-numeric:tabular-nums}
 .jw .jw-lp__z{padding-bottom:2px;border-bottom:4px solid transparent;transition:border-color 500ms var(--ease)}
 .jw .jw-lp.is-akt .jw-lp__z{border-bottom-color:var(--griffner-gelb)}
@@ -56,21 +57,16 @@
 }
 /* Telefon: Bild oben, darunter Headline, dann ein Eintrag nach dem anderen mit Zähler */
 .jw.jw-mob .jw-c15in{display:block}
-.jw.jw-mob .jw-c15h{position:absolute;left:0;right:0;top:0}
+.jw.jw-mob .jw-c15h{position:relative}
 .jw .jw-c15t{font-size:clamp(48px,min(7.4vw,13vh),150px)}
 .jw .jw-c15lead{font-size:clamp(19px,1.7vw,27px)}
 .jw.jw-mob .jw-c15t{font-size:clamp(40px,12vw,56px)}
 .jw.jw-mob .jw-c15lead{font-size:17px;margin-top:14px!important}
-.jw.jw-mob .jw-lp-l{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:minmax(0,1fr);font-size:15px}
-.jw.jw-mob .jw-lp-k{grid-area:1/1;display:flex;align-items:center;gap:.6em;margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase;font-variant-numeric:tabular-nums;opacity:0}
-.jw.jw-mob .jw-lp-k span:first-child{padding-bottom:2px;border-bottom:4px solid var(--griffner-gelb)}
-.jw.jw-mob .jw-lp-kt{display:flex;gap:6px;margin-left:auto}
-.jw.jw-mob .jw-lp-kt i{display:block;width:18px;height:1px;background:var(--griffner-kalk);transition:background-color 400ms var(--ease)}
-.jw.jw-mob .jw-lp-kt i.is-on{background:var(--griffner-schwarz)}
-.jw.jw-mob .jw-lp{grid-area:2/1;align-self:start;padding:14px 0 0!important;opacity:0;visibility:hidden}
-.jw.jw-mob .jw-lp__z{display:none}
-.jw.jw-mob .jw-lp__ln{background:var(--griffner-schwarz)}
-.jw.jw-mob .jw-lp__t{font-size:1.4em}
+/* Runde 18, Telefon: alle vier Einträge untereinander, ohne Zähler und ohne Abfolge */
+.jw.jw-mob .jw-lp-l{position:relative;display:grid;grid-template-columns:minmax(0,1fr);row-gap:30px;margin-top:36px;font-size:15px}
+.jw.jw-mob .jw-lp-k{display:none}
+.jw.jw-mob .jw-lp{padding:0!important}
+.jw.jw-mob .jw-lp__t{font-size:1.4em;margin-top:10px}
 
 /* ---------- Wie wir das möglich machen: die Zeichnungen aus Runde 11, auf Weiß ---------- */
 .jw .wz{position:absolute;inset:0;container-type:size;display:grid;place-items:center;opacity:0;visibility:hidden}
@@ -144,4 +140,4 @@
 
 /* Ruhige Fassung (Framer Canvas): ohne Scroll-Strecken */
 .is-still .jw [data-tfilm],.is-still .jw [data-sys],.is-still .jw [data-endimg]{height:100vh!important}
-.is-still .jw [data-rail]{display:none}
+.is-still .jw [data-rail],.is-still .jw [data-scov]{display:none}
