@@ -303,7 +303,7 @@ class Weg {
       b.addEventListener('mouseenter', on); b.addEventListener('mouseleave', off); b.addEventListener('focus', on); b.addEventListener('blur', off);
     });
     this.anc = { planen: q('#planen'), bauen: q('#bauen'), leben: q('#leben') };
-    this.sys = q('[data-sys]'); this.smk = qa('[data-smk]'); this.stxw = q('[data-stxw]'); this.skn = q('[data-skn]'); this.skick = q('[data-skick]'); this.stx = qa('[data-stx]'); this.svis = q('[data-svis]'); this.wz = qa('[data-wz]');
+    this.sys = q('[data-sys]'); this.smk = qa('[data-smk]'); this.stxw = q('[data-stxw]'); this.skn = q('[data-skn]'); this.skick = q('[data-skick]'); this.stx = qa('[data-stx]'); this.stp = this.stx.map(s => s.querySelector('p')); this.svis = q('[data-svis]'); this.wz = qa('[data-wz]');
     this.endS = q('[data-endimg]'); this.endI = q('[data-endi]'); this.endW = qa('[data-endw]'); this.endH = q('[data-endh]'); this.endB = q('[data-endb]'); this.endC = q('[data-endc]'); this.endCta = q('[data-endcta]');
     const cs = getComputedStyle(R);
     this.fD = cs.getPropertyValue('--font-display').trim() || 'sans-serif';
@@ -380,10 +380,13 @@ class Weg {
     const d = span * F / (W * .42) * (1 - .04 * k), el = 1.08 + .06 * k;
     az = az || 0; return { C: { x: cx + d * Math.cos(el) * Math.cos(az), y: d * Math.sin(el), z: zc + d * Math.cos(el) * Math.sin(az) }, L: { x: cx, y: 0, z: zc } };
   }
+  /* Einstieg des Bretts (0 bis 1). Runde 15, Telefon: erst steht „Das ist die GRIFFNER Journey.“ allein, dann geht der Text
+     und das Brett baut sich auf (tau -2,5 bis -1,1); am Desktop läuft es hinter dem Text (tau -3,45 bis -1,1). */
+  iaT(t) { const a = this.mob ? 2.5 : 3.45, b = this.mob ? 1.4 : 2.35; return Math.max(0, Math.min(1, (t + a) / b)); }
   camera(p) {
     const ez = v => .35 * v + .65 * v * v * (3 - 2 * v);
     const mix = (a, b, u, lift) => { const k = ez(Math.max(0, Math.min(1, u))), l = (x, y) => x + (y - x) * k; return { C: { x: l(a.C.x, b.C.x), y: l(a.C.y, b.C.y) + (lift || 0) * Math.sin(Math.PI * k), z: l(a.C.z, b.C.z) }, L: { x: l(a.L.x, b.L.x), y: l(a.L.y, b.L.y), z: l(a.L.z, b.L.z) } }; };
-    if (p < -1) { const u = ez(Math.max(0, Math.min(1, (p + 3.45) / 2.35))); return this.camBack(-1.1 + 1.8 * u, .2 * (1 - u)); }
+    if (p < -1) { const u = ez(this.iaT(p)); return this.camBack(-1.1 + 1.8 * u, .2 * (1 - u)); }
     if (p < 0) return mix(this.camBack(.7), this.camAt(0), p + 1);
     if (p < 13) return this.camAt(p);
     if (p < 14) return mix(this.camAt(13.85), this.camBack(0), p - 13);
@@ -446,23 +449,26 @@ class Weg {
     let g = 1; for (let n = 0; n < 24 && !fits() && g > .62; n++) { g -= .04; h2.style.fontSize = Math.max(40, B.h2 * g) + 'px'; lead.style.fontSize = Math.max(17, B.lead * Math.max(.82, g)) + 'px'; }
     let f = 1; for (let n = 0; n < 12 && !fits() && f > .8; n++) { f -= .03; its.forEach(it => { it.style.fontSize = (f * 100).toFixed(0) + '%'; }); }
   }
-  /* Wie wir das möglich machen: Kopfzeile, links Headline und Text je Thema, rechts die Zeichnung (Telefon: darunter) */
+  /* Wie wir das möglich machen: Kopfzeile, links Headline und Text je Thema, rechts die Zeichnung.
+     Runde 15, Telefon: je Thema ein Bildschirm; unter der Headline erst der Text, dann an seiner Stelle die Zeichnung (nichts liegt übereinander) */
   layoutSys(W, H, m, mob) {
-    const T = Math.round(H * 2.2); this.sys.style.height = (H + T) + 'px';
-    [0, .27, .52, .8].forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(f * T) + 'px'; });
+    const T = Math.round(H * (mob ? 4 : 2.2)); this.sys.style.height = (H + T) + 'px';
+    (mob ? [0, .27, .52, .77] : [0, .27, .52, .8]).forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(f * T) + 'px'; });
     const kb = this.skick.offsetTop + this.skick.offsetHeight;
     { const hs = this.stx.map(s => s.querySelector('h2')), cw = mob ? W - 2 * m : Math.round(Math.min(W * .36, 520)); let mw = 1;
       hs.forEach(h => { h.style.fontSize = '100px'; });
       hs.forEach(h => { const sp = document.createElement('span'); sp.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit;text-transform:inherit'; h.appendChild(sp); h.textContent.split(/\s+/).forEach(w => { sp.textContent = w; mw = Math.max(mw, sp.offsetWidth); }); sp.remove(); });
       const fs = Math.min(100 * cw / mw, H * (mob ? .075 : .11), 84); hs.forEach(h => { h.style.fontSize = fs + 'px'; }); }
     Object.assign(this.stxw.style, mob ? { top: (kb + 24) + 'px', transform: 'none', width: 'auto', right: m + 'px' } : { top: 'calc(50% + ' + Math.round(kb / 2) + 'px)', transform: 'translateY(-50%)', width: 'min(36vw,32em)', right: 'auto' });
+    this.stp.forEach(p => { p.style.fontSize = ''; });
     if (mob) {
-      /* Telefon: die Zeichnung beginnt unter dem längsten Text, damit nichts übereinander liegt */
-      this.stx.forEach(s => { s.querySelector('p').style.fontSize = ''; });
-      let th = Math.max(...this.stx.map(s => s.offsetHeight)), f = 1;
-      for (let n = 0; n < 10 && H - 64 - (kb + 24 + th + 20) < Math.max(190, H * .3) && f > .82; n++) { f -= .03; this.stx.forEach(s => { s.querySelector('p').style.fontSize = (16 * f).toFixed(1) + 'px'; }); th = Math.max(...this.stx.map(s => s.offsetHeight)); }
-      Object.assign(this.svis.style, { left: m + 'px', right: m + 'px', top: Math.round(kb + 24 + th + 20) + 'px', bottom: '64px' });
-    } else Object.assign(this.svis.style, { left: Math.round(m + Math.min(W * .36, 520) + Math.max(40, W * .04)) + 'px', right: (m + 48) + 'px', top: Math.round(kb + Math.max(36, H * .06)) + 'px', bottom: Math.round(H * .08) + 'px' });
+      this.stx.forEach(s => { s.style.alignSelf = 'start'; });
+      const hh = Math.max(...this.stx.map(s => s.querySelector('h2').offsetHeight));
+      Object.assign(this.svis.style, { left: m + 'px', right: m + 'px', top: Math.round(kb + 24 + hh + Math.max(20, H * .03)) + 'px', bottom: '64px' });
+    } else { this.stx.forEach(s => { s.style.alignSelf = 'center'; }); Object.assign(this.svis.style, { left: Math.round(m + Math.min(W * .36, 520) + Math.max(40, W * .04)) + 'px', right: (m + 48) + 'px', top: Math.round(kb + Math.max(36, H * .06)) + 'px', bottom: Math.round(H * .08) + 'px' }); }
+    /* die Karte des Wochenupdates passt immer in ihre Fläche */
+    const sh = this.svis.clientHeight, sw = this.svis.clientWidth;
+    this.svis.querySelectorAll('.lb__up').forEach(up => { up.style.transform = ''; const k = Math.min(1, (sh - 8) / Math.max(1, up.offsetHeight), sw / Math.max(1, up.offsetWidth)); up.style.transform = k < 1 ? 'translate(-50%,-50%) scale(' + k.toFixed(3) + ')' : ''; });
   }
   applyHero(W, H, m, mob, bH) {
     this.hero.style.bottom = bH; this.hshade.style.display = ''; this.hphoto.style.background = 'none';
@@ -686,7 +692,7 @@ class Weg {
     const raw = Math.max(0, -fr.top) / (this.L * H), tgt = Math.min(26.6 + this.P, raw) - 2 - this.P;
     this.tau += (tgt - this.tau) * kS; if (Math.abs(tgt - this.tau) < .0004) this.tau = tgt;
     const tau = this.tau, pos = this.pos = this.op(tau);
-    this.ia = red ? 1 : Math.max(0, Math.min(1, (tau + 3.45) / 2.35));
+    this.ia = red ? 1 : this.iaT(tau);
     const key = tau.toFixed(4) + '|' + this.W + '|' + H + '|' + this.ia.toFixed(3);
     if (key !== this.key && fr.top < H && fr.bottom > 0) { this.key = key; this.draw(pos); }
 
@@ -699,7 +705,8 @@ class Weg {
     const pin = sm(rp(hh, 2.62, 2.95));
     S(this.can, sm(rp(hh, 2.55, 3)));
     const hv = ho > .01 ? 'visible' : 'hidden'; if (this.hphoto._v !== hv) { this.hphoto._v = hv; this.hphoto.style.visibility = hv; }
-    V(this.ph, pos < -1 ? pin : vis(pos + 1), pos < -1 ? (hh < 2.95 ? pin - 1 : 0) : pos + 1);
+    if (this.mob) { const go = sm(rp(tau, -2.8, -2.5)); V(this.ph, pos < -1 ? pin * (1 - go) : 0, hh < 2.95 ? pin - 1 : go); }
+    else V(this.ph, pos < -1 ? pin : vis(pos + 1), pos < -1 ? (hh < 2.95 ? pin - 1 : 0) : pos + 1);
     this.texts.forEach((el, k) => { const d = tau - (k + 1 + (k >= 7 ? 1 : 0)); V(el, vis(d), d); });
 
     { const o = sm(rp(pos, 13.55, 13.9)) * (1 - sm(rp(pos, 15.2, 15.5))), d = pos < 13.9 ? (pos - 13.9) * 1.5 : pos > 15.2 ? (pos - 15.2) * 1.5 : 0; V(this.fins[0], o, d); S(this.fl2, sm(rp(pos, 14.25, 14.6)), 'translate3d(0,' + ((1 - sm(rp(pos, 14.25, 14.6))) * 16).toFixed(1) + 'px,0)'); }
@@ -747,6 +754,20 @@ class Weg {
         const T = Math.max(1, r.height - H), ut = cl(-r.top / T);
         this.su = this.su == null ? ut : this.su + (ut - this.su) * kS; if (Math.abs(ut - this.su) < .0005) this.su = ut;
         const u = this.su, io = (a, b) => rp(u, a, b);
+        if (this.mob) {
+          /* Telefon (Runde 15): vier Themen je ein Viertel; die Headline bleibt, der Text geht, dann kommt an seiner Stelle die Zeichnung */
+          { const n = '0' + (u < .2375 ? 1 : u < .4875 ? 2 : u < .7375 ? 3 : 4); if (this.skn.textContent !== n) this.skn.textContent = n; }
+          this.stx.forEach((el, i) => {
+            const a = i * .25, b = a + .25, tin = i ? sm(io(a, a + .025)) : 1, tout = i < 3 ? sm(io(b - .025, b)) : 0, th = tin * (1 - tout);
+            const c = a + (i ? .13 : .09), pf = 1 - sm(io(c, c + .03)), dv = sm(io(c + .015, c + .045)), z = this.wz[i];
+            V(el, th, u < a + .1 ? tin - 1 : tout);
+            S(this.stp[i], pf, 'translate3d(0,' + (-(1 - pf) * 14).toFixed(1) + 'px,0)');
+            if (!z) return; const t = th * dv; V(z, t, dv < 1 ? (dv - 1) * .8 : tout);
+            const on = t > .5; if (on && !z._on) { z._on = 1; z.classList.add('is-on'); } else if (!on && t < .02 && z._on) { z._on = 0; z.classList.remove('is-on'); }
+          });
+          return;
+        }
+        this.stp.forEach(p => S(p, 1, 'none'));
         const t0 = 1 - sm(io(.2, .25)), t1 = sm(io(.27, .32)) * (1 - sm(io(.46, .51))), t2 = sm(io(.52, .57)) * (1 - sm(io(.73, .78))), t3 = sm(io(.8, .85));
         { const n = '0' + (u < .26 ? 1 : u < .515 ? 2 : u < .79 ? 3 : 4); if (this.skn.textContent !== n) this.skn.textContent = n; }
         V(this.stx[0], t0, io(.2, .25)); V(this.stx[1], t1, u < .4 ? io(.27, .32) - 1 : io(.46, .51)); V(this.stx[2], t2, u < .65 ? io(.52, .57) - 1 : io(.73, .78)); V(this.stx[3], t3, io(.8, .85) - 1);
@@ -760,32 +781,36 @@ class Weg {
       }
     }
   }
-  /* Besser leben (Runde 14), Desktop: die Einträge kommen nacheinander (Linie zeichnet sich bis an das Bild, dann Text);
+  /* Runde 15: Kopf und Einträge erben die Sichtbarkeit (nie 'visible' in der versteckten Sektion, sonst fangen sie Klicks auf
+     „Darum kümmern wir uns“); am Telefon stehen die Texte der Einträge immer voll da.
+     Besser leben (Runde 14), Desktop: die Einträge kommen nacheinander (Linie zeichnet sich bis an das Bild, dann Text);
      der zuletzt gekommene trägt die gelbe Notiz an seiner Nummer. Telefon: Headline, dann ein Eintrag nach dem anderen mit Zähler. */
   lebenFrame(pos, S, sm, rp) {
     const its = this.c15items, n = its.length; if (!n) return;
     const T = (el, tf) => { if (el._t !== tf) { el._t = tf; el.style.transform = tf; } };
     if (this.mob) {
-      const hd = 1 - sm(rp(pos, 18.05, 18.35)); S(this.c15h, hd, 'translate3d(0,' + (-(1 - hd) * 40).toFixed(1) + 'px,0)'); this.c15h.style.visibility = hd > .01 ? 'visible' : 'hidden';
+      const hd = 1 - sm(rp(pos, 18.05, 18.35)); S(this.c15h, hd, 'translate3d(0,' + (-(1 - hd) * 40).toFixed(1) + 'px,0)'); this.c15h.style.visibility = hd > .01 ? 'inherit' : 'hidden';
       const span = Math.max(.4, (20.3 - 18.35) / n);
       let cur = 0;
       its.forEach((it, i) => {
         const a = 18.35 + i * span, inn = sm(rp(pos, a, a + span * .32)), out = i < n - 1 ? sm(rp(pos, a + span * .82, a + span * 1.02)) : 0, o = inn * (1 - out);
         if (pos >= a) cur = i;
-        S(it, o, 'translate3d(0,' + ((1 - inn) * 26 - out * 26).toFixed(1) + 'px,0)'); it.style.visibility = o > .01 ? 'visible' : 'hidden';
+        S(it, o, 'translate3d(0,' + ((1 - inn) * 26 - out * 26).toFixed(1) + 'px,0)'); it.style.visibility = o > .01 ? 'inherit' : 'hidden';
+        [...it.children].slice(1).forEach(ch => S(ch, 1, 'none'));
         T(it.firstElementChild, 'scaleX(' + inn.toFixed(3) + ')');
         it.classList.toggle('is-akt', true);
       });
+      this.lpA = null;
       const ko = sm(rp(pos, 18.25, 18.4)); S(this.c15k, ko);
       if (this.c15kn._n !== cur) { this.c15kn._n = cur; this.c15kn.textContent = String(cur + 1).padStart(2, '0'); this.c15kt.forEach((k, i) => k.classList.toggle('is-on', i <= cur)); }
       return;
     }
-    S(this.c15h, 1, 'none'); this.c15h.style.visibility = 'visible'; S(this.c15k, 0);
+    S(this.c15h, 1, 'none'); this.c15h.style.visibility = 'inherit'; S(this.c15k, 0);
     let akt = -1;
     its.forEach((it, i) => {
       const a = 18.0 + i * .34, ln = sm(rp(pos, a, a + .3)), tx = sm(rp(pos, a + .1, a + .42));
       if (tx > .5) akt = i;
-      S(it, 1, 'none'); it.style.visibility = 'visible';
+      S(it, 1, 'none'); it.style.visibility = 'inherit';
       T(it.firstElementChild, 'scaleX(' + ln.toFixed(3) + ')');
       [...it.children].slice(1).forEach((ch, j) => { const t = sm(rp(pos, a + .1 + j * .05, a + .42 + j * .05)); S(ch, t, 'translate3d(0,' + ((1 - t) * 14).toFixed(1) + 'px,0)'); });
     });
