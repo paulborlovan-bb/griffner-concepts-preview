@@ -1,0 +1,147 @@
+/* GRIFFNER Journey, Runde 14 (2026-11-24): Seite /journey nach dem Entwurf „Dein Weg“ (J10Journey). Alles unter .jw.
+   Token wie im Designsystem des Entwurfs (README), Schrift Ofelia als woff2 von griffner.com (Framer), eigene Familiennamen.
+   Regeln: Ecken 0, keine Schatten, Linien nur 1 px, kein Verlauf außer --bildschutz, kein Blur, Gelb höchstens 10 % der Fläche. */
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/pvfPivjIrdt8tu9p7EHXE3Y.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Display";src:url("https://framerusercontent.com/assets/G1C12Uf2g2THxCfbjczrRTrhJc.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/yOxv1P33k9x3ue2EWzm4JZ40JA.woff2") format("woff2");font-weight:100 400;font-style:normal;font-display:swap}
+@font-face{font-family:"JG Text";src:url("https://framerusercontent.com/assets/Q4vZdey99kLNgQDJCUVHlth04I.woff2") format("woff2");font-weight:500 600;font-style:normal;font-display:swap}
+
+.jw{
+  --griffner-weiss:#FFFFFF; --griffner-schwarz:#000000; --griffner-anthrazit:#444442; --griffner-kalk:#CACACA; --griffner-gelb:#FFB200;
+  --fs-info-web:11px; --tracking-info-web:.2em; --leading-body:1.45;
+  --page-margin:clamp(24px,5.5vw,80px); --grid-gutter:24px;
+  --bildschutz:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 62%,rgba(0,0,0,.6) 100%);
+  --font-display:"JG Display","Helvetica Neue",Arial,sans-serif;
+  --font-text:"JG Text","Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  width:100%;background:var(--griffner-schwarz);font-size:16px;line-height:var(--leading-body);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+.jw *,.jw *::before,.jw *::after{box-sizing:border-box}
+.jw h1,.jw h2,.jw h3,.jw p{font-feature-settings:'liga' 0}
+.jw button{-webkit-tap-highlight-color:transparent}
+.jw button:focus-visible,.jw a:focus-visible{outline:1px solid var(--griffner-gelb);outline-offset:4px}
+/* Hover wie im Entwurf (dort per JS): Knöpfe werden leiser, der schwarze Knopf wird Anthrazit */
+@media (hover:hover){
+  .jw .jw-hov:hover{opacity:.64}
+  .jw .jw-btn:hover{background:var(--griffner-anthrazit)!important}
+  .jw [data-rgo]:hover [data-rtick]{width:14px!important}
+}
+.jw .jw-press:active{opacity:.64}
+.jw .jw-runner{display:block;width:14px;height:11px;background:var(--griffner-gelb)}
+.jw.has-dock .jw-runner{background:transparent}
+
+/* ---------- Besser leben: Bild rechts, links Headline oben und die vier Einträge unten ---------- */
+.jw .jw-c15in{display:flex;flex-direction:column;justify-content:space-between}
+.jw .jw-c15h{flex:none}
+.jw .jw-lp-l{flex:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));font-size:clamp(14px,1.02vw,16px)}
+.jw .jw-lp-k{display:none}
+.jw .jw-lp{position:relative;padding:clamp(14px,2.1vh,22px) clamp(20px,2.6vw,44px) clamp(18px,2.8vh,30px) 0}
+.jw .jw-lp:nth-child(odd){padding-left:clamp(20px,2.6vw,44px)} /* :nth-child zählt den Zähler mit: 2. und 4. Eintrag stehen rechts */
+.jw .jw-lp:nth-last-child(-n+2){padding-bottom:0}
+.jw .jw-lp__ln{position:absolute;left:0;right:0;top:0;height:1px;background:var(--griffner-kalk);transform:scaleX(0);transform-origin:0 50%;transition:background-color 500ms var(--ease)}
+.jw .jw-lp.is-akt .jw-lp__ln{background:var(--griffner-schwarz)}
+.jw .jw-lp__n{display:flex;align-items:baseline;gap:14px;margin:0;font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase;font-variant-numeric:tabular-nums}
+.jw .jw-lp__z{padding-bottom:2px;border-bottom:4px solid transparent;transition:border-color 500ms var(--ease)}
+.jw .jw-lp.is-akt .jw-lp__z{border-bottom-color:var(--griffner-gelb)}
+.jw .jw-lp__f{color:var(--griffner-anthrazit)}
+.jw .jw-lp__t{margin:clamp(10px,1.6vh,16px) 0 0;font-family:var(--font-display);font-weight:500;font-size:1.3em;line-height:1.05;letter-spacing:.04em;text-transform:uppercase}
+.jw .jw-lp__x{margin:.6em 0 0;font-size:1em;line-height:var(--leading-body);color:var(--griffner-anthrazit);text-wrap:pretty;max-width:26em}
+/* wenn alle da sind: der Eintrag unter der Maus trägt die Notiz */
+@media (hover:hover){
+  .jw .jw-lp-l.is-voll:hover .jw-lp .jw-lp__z{border-bottom-color:transparent}
+  .jw .jw-lp-l.is-voll:hover .jw-lp .jw-lp__ln{background:var(--griffner-kalk)}
+  .jw .jw-lp-l.is-voll .jw-lp:hover .jw-lp__z{border-bottom-color:var(--griffner-gelb)!important}
+  .jw .jw-lp-l.is-voll .jw-lp:hover .jw-lp__ln{background:var(--griffner-schwarz)!important}
+}
+/* Telefon: Bild oben, darunter Headline, dann ein Eintrag nach dem anderen mit Zähler */
+.jw.jw-mob .jw-c15in{display:block}
+.jw.jw-mob .jw-c15h{position:absolute;left:0;right:0;top:0}
+.jw .jw-c15t{font-size:clamp(48px,min(7.4vw,13vh),150px)}
+.jw .jw-c15lead{font-size:clamp(19px,1.7vw,27px)}
+.jw.jw-mob .jw-c15t{font-size:clamp(40px,12vw,56px)}
+.jw.jw-mob .jw-c15lead{font-size:17px;margin-top:14px!important}
+.jw.jw-mob .jw-lp-l{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:minmax(0,1fr);font-size:15px}
+.jw.jw-mob .jw-lp-k{grid-area:1/1;display:flex;align-items:center;gap:.6em;margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase;font-variant-numeric:tabular-nums;opacity:0}
+.jw.jw-mob .jw-lp-k span:first-child{padding-bottom:2px;border-bottom:4px solid var(--griffner-gelb)}
+.jw.jw-mob .jw-lp-kt{display:flex;gap:6px;margin-left:auto}
+.jw.jw-mob .jw-lp-kt i{display:block;width:18px;height:1px;background:var(--griffner-kalk);transition:background-color 400ms var(--ease)}
+.jw.jw-mob .jw-lp-kt i.is-on{background:var(--griffner-schwarz)}
+.jw.jw-mob .jw-lp{grid-area:2/1;align-self:start;padding:14px 0 0!important;opacity:0;visibility:hidden}
+.jw.jw-mob .jw-lp__z{display:none}
+.jw.jw-mob .jw-lp__ln{background:var(--griffner-schwarz)}
+.jw.jw-mob .jw-lp__t{font-size:1.4em}
+
+/* ---------- Wie wir das möglich machen: die Zeichnungen aus Runde 11, auf Weiß ---------- */
+.jw .wz{position:absolute;inset:0;container-type:size;display:grid;place-items:center;opacity:0;visibility:hidden}
+.jw .lb__fig{position:relative;width:min(100cqw,133.333cqh);height:min(100cqh,75cqw);container-type:size}
+.jw .lb__svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.jw .lb__d{fill:none;stroke:rgba(0,0,0,.85);stroke-width:1.3;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
+.jw .lb__dash{fill:none;stroke:rgba(68,68,66,.7);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-dasharray:4 6;opacity:0}
+.jw .lb__sq{fill:#fff;stroke:#000;stroke-width:1;vector-effect:non-scaling-stroke;opacity:0}
+.jw .lb__sq--x{stroke:rgba(0,0,0,.55);stroke-dasharray:3 4}
+.jw .lb__ce{fill:var(--griffner-gelb);opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.4)}
+.jw .lb__lb{position:absolute;margin:0;transform:translate(-50%,0);display:grid;justify-items:center;gap:3px;text-align:center;white-space:nowrap;opacity:0;pointer-events:none}
+.jw .lb__lb.is-a{transform:translate(-50%,-100%)}
+.jw .lb__l1{font-family:var(--font-text);font-weight:500;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--griffner-anthrazit)}
+.jw .lb__l2{font-size:13px;line-height:1.2;color:var(--griffner-schwarz)}
+.jw .lb__lb.is-hell .lb__l1{color:var(--griffner-schwarz)}
+@keyframes jwZeichnen{to{stroke-dashoffset:0}}
+@keyframes jwDa{to{opacity:1;transform:none}}
+@keyframes jwHin{to{opacity:1}}
+.jw .wz.is-on .lb__d{animation:jwZeichnen 1100ms var(--ease) calc(150ms + var(--j) * 150ms) forwards}
+.jw .wz.is-on .lb__sq{animation:jwDa 600ms var(--ease) calc(200ms + var(--j,0) * 110ms) forwards}
+.jw .wz.is-on .lb__lb{animation:jwHin 600ms var(--ease) calc(1500ms + var(--j) * 160ms) forwards}
+/* Ein Vertragspartner: erst die Gewerke, dann laufen die Linien zusammen, dann das gelbe Feld */
+.jw .wz--partner.is-on .lb__d{animation-delay:calc(700ms + var(--j) * 140ms)}
+.jw .wz--partner.is-on .lb__ce{animation:jwDa 800ms var(--ease) 1900ms forwards}
+.jw .wz--partner.is-on .lb__lb{animation-delay:calc(500ms + var(--j) * 110ms)}
+.jw .wz--partner.is-on .lb__lb.is-hell{animation-delay:2100ms}
+/* Besuch in Griffen: Griffen, dann der Weg zur Beauftragung, dann der zum Design Day, dann ein Tag mehr */
+.jw .wz--griffen.is-on .lb__ce{animation:jwDa 700ms var(--ease) 450ms forwards}
+.jw .wz--griffen.is-on .lb__d{animation-duration:1300ms;animation-delay:calc(800ms + var(--j) * 1000ms)}
+.jw .wz--griffen.is-on .lb__lb{animation-delay:500ms}
+.jw .wz--griffen.is-on .lb__lb.is-a{animation-delay:1500ms}
+.jw .wz--griffen.is-on .lb__lb.is-b{animation-delay:2500ms}
+.jw .wz--griffen.is-on .lb__dash,.jw .wz--griffen.is-on .lb__sq--x,.jw .wz--griffen.is-on .lb__lb.is-x{animation:jwHin 800ms var(--ease) 3200ms forwards}
+/* Planungssystem: fünf Ebenen übereinander, dann fallen sie zu einem Plan zusammen (das oberste wird das gelbe Feld) */
+.jw .lb__sch{position:absolute;inset:0;--w:min(34cqw,46cqh)}
+.jw .lb__e{--o:calc(var(--j) - (var(--n) - 1) / 2);position:absolute;left:40%;top:50%;width:0;height:0;opacity:0;transform:translate3d(0,calc(var(--o) * 13%),0)}
+.jw .lb__pl{position:absolute;left:0;top:0;width:var(--w);aspect-ratio:5/4;border:1px solid rgba(0,0,0,.85);background:rgba(255,255,255,.88);transform:translate(-50%,-50%) rotateX(60deg) rotateZ(-42deg)}
+.jw .lb__et{position:absolute;left:calc(var(--w) * .66 + 14px);top:0;transform:translateY(-50%);white-space:nowrap;color:var(--griffner-schwarz);font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase}
+@keyframes jwEbene{0%{opacity:0;transform:translate3d(0,calc(var(--o) * var(--w) * .3 + 20px),0)}14%,52%{opacity:1;transform:translate3d(0,calc(var(--o) * var(--w) * .3),0)}82%,100%{opacity:1;transform:translate3d(0,calc(var(--o) * 3px),0)}}
+@keyframes jwEtikett{0%,58%{opacity:1}76%,100%{opacity:0}}
+@keyframes jwPlan{0%,74%{background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.85)}90%,100%{background:var(--griffner-gelb);border-color:var(--griffner-gelb)}}
+.jw .wz.is-on .lb__e{animation:jwEbene 5.2s var(--ease) calc(var(--j) * 90ms) forwards}
+.jw .wz.is-on .lb__et{animation:jwEtikett 5.2s linear forwards}
+.jw .wz.is-on .lb__e:first-child .lb__pl{animation:jwPlan 5.2s linear forwards}
+/* Wochenupdate: das Update baut sich Zeile für Zeile auf (weiße Karte mit Haarlinie) */
+.jw .lb__up{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,26rem);padding:16px 22px 8px;background:var(--griffner-weiss);border:1px solid var(--griffner-kalk)}
+.jw .lb__uh{display:flex;align-items:center;gap:10px;margin:0;padding-bottom:12px;color:var(--griffner-anthrazit);font-family:var(--font-text);font-weight:500;font-size:var(--fs-info-web);letter-spacing:var(--tracking-info-web);text-transform:uppercase}
+.jw .lb__uh i{display:block;width:11px;height:8.8px;background:var(--griffner-gelb)}
+.jw .lb__ur{display:grid;grid-template-columns:12px 1fr;gap:14px;padding:13px 0;border-top:1px solid var(--griffner-kalk);opacity:0;transform:translate3d(0,8px,0)}
+.jw .lb__ur i{display:block;width:11px;height:8.8px;margin-top:3px;border:1px solid rgba(0,0,0,.7)}
+.jw .lb__ur i.is-done{background:var(--griffner-gelb);border-color:var(--griffner-gelb)}
+.jw .lb__ut{margin:0 0 4px;font-family:var(--font-text);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--griffner-schwarz)}
+.jw .lb__ux{margin:0;font-size:14px;line-height:1.4;color:var(--griffner-anthrazit)}
+.jw .wz.is-on .lb__ur{animation:jwDa 700ms var(--ease) calc(300ms + var(--j) * 420ms) forwards}
+@media (max-width:819px){
+  .jw .lb__l1{font-size:8px;letter-spacing:.14em}
+  .jw .lb__l2{font-size:10px}
+  .jw .lb__et{font-size:9px;letter-spacing:.14em}
+  .jw .lb__up{width:min(96%,20rem);padding:10px 14px 4px}
+  .jw .lb__uh{padding-bottom:8px}
+  .jw .lb__ur{padding:7px 0;gap:10px}
+  .jw .lb__ux{font-size:11px}
+  .jw .lb__ut{font-size:10px;margin-bottom:2px}
+}
+@media (prefers-reduced-motion:reduce){.jw .lb__e,.jw .lb__et,.jw .lb__pl,.jw .lb__d,.jw .lb__sq,.jw .lb__ce,.jw .lb__ur,.jw .lb__lb,.jw .lb__dash{animation-duration:1ms!important;animation-delay:0s!important}}
+
+/* Schlussbild am Telefon (Runde 14): das Foto zeigt dort Gregor, schwarze Schrift läge auf der dunklen Jacke. Weiß über --bildschutz, Knopf weiß */
+.jw.jw-mob [data-endsh]{background:var(--bildschutz)!important}
+.jw.jw-mob [data-endc],.jw.jw-mob [data-endh]{color:var(--griffner-weiss)!important}
+.jw.jw-mob .jw-btn{background:var(--griffner-weiss)!important;color:var(--griffner-schwarz)!important}
+
+/* Ruhige Fassung (Framer Canvas): ohne Scroll-Strecken */
+.is-still .jw [data-tfilm],.is-still .jw [data-sys],.is-still .jw [data-endimg]{height:100vh!important}
+.is-still .jw [data-rail]{display:none}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Journey · Dein Weg</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="weg.css">
+<style>
+  html,body{margin:0;background:#000}
+  /* Platzhalter für die Kopfzeile der Website (Logo im Differenz-Modus, über dunklen Räumen weiß) */
+  .kopf{position:fixed;z-index:10;left:0;right:0;top:0;height:88px;display:flex;align-items:center;padding:0 clamp(24px,5.5vw,80px);pointer-events:none;mix-blend-mode:difference}
+  .kopf.is-hell{mix-blend-mode:normal}
+  .kopf img{height:22px;filter:invert(1)}
+  .platz{display:grid;place-items:center;height:80vh;color:#fff;font:500 11px/1.4 "JG Text",Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<!-- Runde 14 (2026-11-24): die Seite /journey nach dem Entwurf „Dein Weg“ (J10Journey), mit den eigenen Zeichnungen in
+     „Wie wir das möglich machen.“ und schöner eingebundenen Einträgen in „Besser leben.“. Auf der Website: Framer Komponente JourneyWeg. -->
+<header class="kopf"><img src="wortmarke.svg" alt="GRIFFNER"></header>
+<main>
+<div data-weg></div>
+<section id="contact" class="platz" style="background:#000;border-top:1px solid #444442">Kontaktformular der Website</section>
+<footer class="platz" style="height:40vh;background:#000;color:#CACACA">Fußzeile</footer>
+</main>
+<script type="module">
+import * as Weg from './weg.js';
+const el = document.querySelector('[data-weg]'), q = new URLSearchParams(location.search);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || q.has('reduce');
+el.innerHTML = Weg.markup(Weg.DEF);
+const io = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const W = window.__j4 = Weg.mount(el, Weg.DEF, { reduce, still: q.has('still'), lenis: () => window.__lenis,
+  scrollTo: y => window.__lenis ? window.__lenis.scrollTo(y, { duration: Math.min(2.4, 1.1 + Math.abs(y - scrollY) / innerHeight * .18), easing: io }) : scrollTo({ top: y, behavior: 'smooth' }) });
+/* Kopfzeile wie auf der Website: über Schwarz und Vollbild-Fotos weiß, sonst Differenz */
+const kopf = document.querySelector('.kopf');
+const tick = () => { const e = W.end && W.end.getBoundingClientRect(); kopf.classList.toggle('is-hell', !!(W.dark && W.dark()) || !!(e && e.top <= 44 && e.bottom >= 44)); requestAnimationFrame(tick); }; tick();
+/* weich wie auf der Website (Lenis 1.1.13, auf /journey 1,6 s); ?nativ schaltet es ab */
+if (!reduce && !q.has('nativ')) {
+  import('https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.mjs').then(({ default: Lenis }) => {
+    const L = window.__lenis = new Lenis({ duration: 1.6, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
+    const loop = t => { L.raf(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop);
+  }).catch(e => console.warn('[Journey] Lenis', e));
+}
+</script>
+</body>
+</html>
