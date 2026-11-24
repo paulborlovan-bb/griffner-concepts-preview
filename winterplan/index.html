@@ -59,8 +59,7 @@ header { display: flex; flex-direction: column; gap: 16px; }
 .nums span { color: var(--muted); font-size: 0.92rem; }
 
 section { display: flex; flex-direction: column; gap: 16px; }
-.jobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 820px) { .jobs { grid-template-columns: 1fr; } }
+.jobs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .job { border: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .job .k { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .job ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
@@ -91,10 +90,6 @@ td.hi { background: var(--accent); color: var(--on-accent); font-weight: 700; }
 .dec li::before { content: counter(d); font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); padding-top: 2px; }
 .dec li small { display: block; color: var(--muted); font-size: 0.85rem; }
 
-footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
-a { color: var(--fg); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
-a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
 @media (max-width: 640px) {
   .jobs, .dec { grid-template-columns: 1fr; }
   .nums { grid-template-columns: 1fr; }
@@ -102,7 +97,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .dates li { grid-template-columns: 1fr; gap: 2px; }
 }
 </style>
-<style>html{-webkit-text-size-adjust:100%} body{margin:0} :root{color-scheme:light}</style>
+<style>html{-webkit-text-size-adjust:100%} body{margin:0}</style>
 </head>
 <body>
 
@@ -110,18 +105,18 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   <header>
     <div class="eyebrow">GRIFFNER Marketing · for Hannes and Paul · 24 Nov 2026</div>
     <h1>Winter Plan</h1>
-    <p class="lede">From 3 December we start Google and Meta ads and fix how people find us on Google and in AI answers. Four months, one budget, one set of numbers to watch.</p>
+    <p class="lede">From 3 December we start Google and Meta ads and fix how people find us on Google and in AI answers. On 1 January we start clean in a new CRM.</p>
     <p class="why">December is our quietest month every year. January is when Austrians search most for a house. So December is for setting up and testing, and most of the money goes into January.</p>
   </header>
 
   <div class="nums">
-    <div><b>€11,900</b><span>ad budget, December to March</span></div>
-    <div><b>≈ 180</b><span>new leads from ads</span></div>
-    <div><b>4–5</b><span>houses sold from them, mostly signed by autumn 2027</span></div>
+    <div><b>€10,000</b><span>ad budget, December to March</span></div>
+    <div><b>≈ 160</b><span>new leads from ads</span></div>
+    <div><b>≈ 4</b><span>houses sold from them, mostly signed by autumn 2027</span></div>
   </div>
 
   <section>
-    <h2>The three jobs</h2>
+    <h2>The four jobs</h2>
     <div class="jobs">
       <article class="job">
         <div class="k">1 · Google Ads</div>
@@ -133,22 +128,22 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         </ul>
         <dl>
           <dt>Start</dt><dd>Thursday 3 December</dd>
-          <dt>Cost</dt><dd>€6,100</dd>
-          <dt>Goal</dt><dd>≈ 114 leads</dd>
+          <dt>Cost</dt><dd>€5,450</dd>
+          <dt>Goal</dt><dd>≈ 100 leads</dd>
         </dl>
       </article>
       <article class="job">
         <div class="k">2 · Meta</div>
         <h3>Lead ads, and boosts we can measure</h3>
         <ul>
-          <li>Catalogue and show-house ads, plus ads that push our best posts.</li>
+          <li>Catalogue and show-house ads, plus a small budget to push our best posts.</li>
           <li>Every boost runs through our own ad account with tracking, so we see what it brings.</li>
-          <li>From 14 December, Meta’s lead forms send leads straight into Sellsation.</li>
+          <li>From 1 January, Meta’s lead forms send leads straight into the new CRM.</li>
         </ul>
         <dl>
           <dt>Start</dt><dd>Friday 4 December</dd>
-          <dt>Cost</dt><dd>€5,800</dd>
-          <dt>Goal</dt><dd>≈ 68 leads</dd>
+          <dt>Cost</dt><dd>€4,550</dd>
+          <dt>Goal</dt><dd>≈ 60 leads</dd>
         </dl>
       </article>
       <article class="job">
@@ -156,13 +151,27 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         <h3>Be found on Google and in AI answers</h3>
         <ul>
           <li>First fixes by 3 December: Search Console, Bing, Google profile, wording.</li>
-          <li>A house-costs page in mid-December, the biggest single fix.</li>
+          <li>One comparison page in mid-December: Fertighaus or Architektenhaus, wood or concrete, with costs. The biggest single fix.</li>
           <li>Show-house pages and guides from January. Every month we check what ChatGPT and Google’s AI say about us.</li>
         </ul>
         <dl>
           <dt>Start</dt><dd>Now</dd>
           <dt>Cost</dt><dd>Done in-house</dd>
           <dt>Goal</dt><dd>Search clicks 232 → 400 a month</dd>
+        </dl>
+      </article>
+      <article class="job">
+        <div class="k">4 · CRM</div>
+        <h3>A new CRM from 1 January</h3>
+        <ul>
+          <li>Try Pipedrive and Zoho for a week, choose by 11 December.</li>
+          <li>Set it up in December: our phases, required fields, website and Meta forms connected.</li>
+          <li>Start clean on 1 January. Old leads stay in Sellsation as an archive. Nothing gets cleaned up or moved.</li>
+        </ul>
+        <dl>
+          <dt>Start</dt><dd>Friday 1 January</dd>
+          <dt>Cost</dt><dd>Pipedrive ≈ €10,600 or Zoho ≈ €4,100 a year, against Sellsation €16,200–18,000</dd>
+          <dt>Goal</dt><dd>Every lead answered by the next working day</dd>
         </dl>
       </article>
     </div>
@@ -174,28 +183,30 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       <table>
         <thead><tr><th></th><th>Dec</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th></tr></thead>
         <tbody>
-          <tr><td>Google Ads</td><td>€1,250</td><td>€1,750</td><td>€1,600</td><td>€1,500</td><td>€6,100</td></tr>
-          <tr><td>Meta</td><td>€1,000</td><td>€1,800</td><td>€1,500</td><td>€1,500</td><td>€5,800</td></tr>
-          <tr class="sum"><td>Budget</td><td>€2,250</td><td class="hi">€3,550</td><td>€3,100</td><td>€3,000</td><td>€11,900</td></tr>
-          <tr class="leads"><td>Expected leads</td><td>≈ 33</td><td>≈ 55</td><td>≈ 48</td><td>≈ 46</td><td>≈ 180</td></tr>
-          <tr><td>Of them, a consultation</td><td>≈ 9</td><td>≈ 14</td><td>≈ 12</td><td>≈ 12</td><td>≈ 47</td></tr>
+          <tr><td>Google Ads</td><td>€1,100</td><td>€1,550</td><td>€1,400</td><td>€1,400</td><td>€5,450</td></tr>
+          <tr><td>Meta</td><td>€700</td><td>€1,450</td><td>€1,200</td><td>€1,200</td><td>€4,550</td></tr>
+          <tr class="sum"><td>Budget</td><td>€1,800</td><td class="hi">€3,000</td><td>€2,600</td><td>€2,600</td><td>€10,000</td></tr>
+          <tr class="leads"><td>Expected leads</td><td>≈ 28</td><td>≈ 48</td><td>≈ 41</td><td>≈ 41</td><td>≈ 160</td></tr>
+          <tr><td>Of them, a consultation</td><td>≈ 7</td><td>≈ 12</td><td>≈ 11</td><td>≈ 11</td><td>≈ 41</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">Plus about €600 in platform fees. Realistic range: 115 to 360 leads; the first four weeks show where we land. Every Monday the cockpit shows cost per lead, and on 8 January and 5 February money moves to the campaign that brings the most consultations.</p>
+    <p class="note">Plus about €500 in platform fees. Realistic range: 100 to 320 leads; the first four weeks show where we land. Every Monday the cockpit shows cost per lead, and on 8 January and 5 February money moves to the campaign that brings the most consultations.</p>
   </section>
 
   <section>
     <h2>Dates</h2>
     <ul class="dates">
       <li><span class="d">Fri 27 Nov</span><span>Decisions below are made</span></li>
-      <li><span class="d">30 Nov – 2 Dec</span><span>Overdue leads cleared, campaigns built, first SEO fixes</span></li>
+      <li><span class="d">30 Nov – 2 Dec</span><span>Campaigns built, first SEO fixes, CRM trials start</span></li>
       <li class="go"><span class="d">Thu 3 Dec</span><span>Google Ads live</span></li>
       <li class="go"><span class="d">Fri 4 Dec</span><span>Meta ads live</span></li>
-      <li><span class="d">Mon 14 Dec</span><span>Meta lead forms flow into Sellsation</span></li>
-      <li><span class="d">Mid-December</span><span>House-costs page live</span></li>
+      <li><span class="d">Fri 11 Dec</span><span>New CRM chosen and signed</span></li>
+      <li><span class="d">Mid-December</span><span>Comparison page live</span></li>
+      <li><span class="d">14–23 Dec</span><span>CRM set up, forms connected, team trained (about 2 hours each)</span></li>
       <li><span class="d">23 Dec – 5 Jan</span><span>One person answers new leads on 23, 28, 29, 30 Dec and 2, 5 Jan</span></li>
       <li><span class="d">From 27 Dec</span><span>Ad spend goes up for the January peak</span></li>
+      <li class="go"><span class="d">Fri 1 Jan</span><span>New CRM live, every new lead goes there</span></li>
       <li><span class="d">8 Jan · 5 Feb</span><span>Budget moves to the best campaigns</span></li>
       <li><span class="d">Early March</span><span>90-day review: keep what brings consultations under €300</span></li>
     </ul>
@@ -207,8 +218,9 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       <div>
         <h3>Hannes</h3>
         <ol>
-          <li><span>Budget of €11,900 for December to March<small>€2,250 in December, most in January</small></span></li>
-          <li><span>Use the word “Fertighaus” and show a price range<small>Needed for the house-costs page</small></span></li>
+          <li><span>Budget of €10,000 for December to March<small>€1,800 in December, most in January</small></span></li>
+          <li><span>New CRM from 1 January<small>Pipedrive or Zoho, final pick on 11 December</small></span></li>
+          <li><span>Use the word “Fertighaus” and show price ranges<small>Needed for the comparison page</small></span></li>
           <li><span>Which fairs we attend<small>Each one gets its own ad</small></span></li>
           <li><span>One filming day in a show house<small>Short clips for Meta and the website</small></span></li>
         </ol>
@@ -216,10 +228,11 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       <div>
         <h3>Paul, Sarah and sales</h3>
         <ol>
-          <li><span>Who clears the 73 overdue leads, and who is on call over the holidays<small>Sarah, sales</small></span></li>
+          <li><span>Who answers new leads over the holidays<small>Sarah, sales</small></span></li>
           <li><span>Are show houses open over the holidays?<small>Sales</small></span></li>
+          <li><span>Sellsation notice period, so we can cancel in time<small>Paul</small></span></li>
           <li><span>Meta house ads run in the Housing category<small>Paul</small></span></li>
-          <li><span>Meta lead connector and its privacy text<small>Paul</small></span></li>
+          <li><span>Meta lead forms and their privacy text<small>Paul</small></span></li>
         </ol>
       </div>
     </div>
