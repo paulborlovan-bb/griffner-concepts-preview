@@ -72,11 +72,8 @@
 .jw .wz{position:absolute;inset:0;opacity:0;visibility:hidden}
 .jw .wz canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
-/* Schlussbild am Telefon (Runde 14): das Foto zeigt dort Gregor, schwarze Schrift läge auf der dunklen Jacke. Weiß über --bildschutz, Knopf weiß */
-.jw.jw-mob [data-endsh]{background:var(--bildschutz)!important}
-.jw.jw-mob [data-endc],.jw.jw-mob [data-endh]{color:var(--griffner-weiss)!important}
-.jw.jw-mob .jw-btn{background:var(--griffner-weiss)!important;color:var(--griffner-schwarz)!important}
+/* Schlussbild (Runde 22): Layout und Abdunkelung setzt layoutEnd() in weg.js (Telefon: Text oben auf Schwarz, Foto darunter) */
 
 /* Ruhige Fassung (Framer Canvas): ohne Scroll-Strecken */
-.is-still .jw [data-tfilm],.is-still .jw [data-sys],.is-still .jw [data-endimg]{height:100vh!important}
+.is-still .jw [data-tfilm],.is-still .jw [data-ub],.is-still .jw [data-sys],.is-still .jw [data-endimg]{height:100vh!important}
 .is-still .jw [data-rail],.is-still .jw [data-scov]{display:none}

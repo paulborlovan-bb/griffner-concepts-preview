@@ -1,9 +1,9 @@
 /* GRIFFNER Journey, Runde 14 (2026-11-24): die Seite /journey nach dem neuen Entwurf „Dein Weg“ (Handoff J10Journey, Claude Design).
    Eine durchgehende Kamerafahrt durch eine gezeichnete 3D-Welt (Canvas 2D, eigene Projektion): Hero, Manifest, GRIFFNER Journey,
-   die 14 Tage mit Start, Zwischenziel und Ziel, „14 Tage deiner Zeit.“, Tag 15, Besser leben; danach „Wie wir das möglich machen.“
-   und das Schlussbild mit Knopf. Logik, Kamera und Zeichnen sind aus dem Entwurf übernommen (Klasse Component in J10Journey.dc.html).
+   die 14 Tage mit Start, Zwischenziel und Ziel, „14 Tage deiner Zeit.“, Tag 15, Besser leben; danach der Übergang „Was deine Journey
+   noch besser macht.“ (Runde 22), die vier Leistungen und das Schlussbild „Eines Tages schaust du zurück. Und lächelst.“ (Runde 22, ohne Knopf). Logik, Kamera und Zeichnen sind aus dem Entwurf übernommen (Klasse Component in J10Journey.dc.html).
    Änderungen des Kunden gegenüber dem Entwurf:
-   - „Wie wir das möglich machen.“: statt der Zeichnungen des Entwurfs eigene Zeichnungen; seit Runde 20 kleine 3D-Szenen in der
+   - Die vier Leistungen: statt der Zeichnungen des Entwurfs eigene Zeichnungen; seit Runde 20 kleine 3D-Szenen in der
      Bildsprache der 14 Tage, die mit dem Scrollen laufen (weg-sys3d.js).
    - „Besser leben.“: Bild, Text und die vier Einträge bleiben, die Einträge sind schöner eingebunden: Nummer und Merkzeile, die Linien
      zeichnen sich nacheinander und laufen bis an das Bild, die Liste endet auf der Unterkante des Bildes, der aktive Eintrag trägt
@@ -56,7 +56,8 @@ export const DEF = {
     ]
   },
   sys: {
-    kopf: 'Wie wir das möglich machen.',
+    /* Runde 22 (Entwurf vom 24.11.): Übergang vor den vier Leistungen, „ / “ = Zeilenumbruch */
+    kopf: 'Was deine Journey / noch besser macht.',
     themen: [
       { h: 'GRIFFNER Planungssystem.', text: 'Architektur, Innenarchitektur, Haustechnik, Unterbau und Außenanlagen planen wir in einem gemeinsamen System. So greift jede Entscheidung in die nächste, und Kosten und Termine bleiben jederzeit im Blick.', art: 'schichten', schichten: K('schichten').schichten },
       { h: 'Ein Vertragspartner.', text: 'Mit deinem Auftrag übernehmen wir die Verantwortung für alles, was wir gemeinsam vereinbaren. Ob Fachbetriebe aus unserem Netzwerk oder Partner deines Vertrauens: Wir koordinieren alle Gewerke rund um dein Haus.', art: 'partner', marken: K('partner').marken },
@@ -64,10 +65,11 @@ export const DEF = {
       { h: 'Besuch in Griffen.', text: 'Zweimal kommst du zu uns nach Griffen. Beim ersten Besuch erlebst du, wo und von wem dein Haus gebaut wird. Beim zweiten wählst du, was es zu deinem Zuhause macht. Auf Wunsch holen wir dich ab, und wenn du noch bleiben möchtest, klingt dein Besuch am Wörthersee oder am Feuerberg aus.', art: 'griffen', marken: K('griffen').marken }
     ]
   },
-  schluss: { h: 'Von Anfang an ein gutes Gefühl.', lead: 'Dein Tag 01 beginnt mit einem Gespräch.', knopf: 'Gespräch vereinbaren', href: '#contact' },
+  /* Runde 22: Schlussbild nach dem Entwurf vom 24.11., ohne Knopf; „ / “ = Zeilenumbruch. h: Wörter steigen rückwärts aus der Maske, h2: Buchstaben von der Mitte nach außen */
+  schluss: { h: 'Eines Tages / schaust du / zurück.', h2: 'Und / lächelst.' },
   kapitel: ['Dein Weg', 'Die Journey', 'Besser planen', 'Besser bauen', 'Besser leben', 'Planungssystem', 'Vertragspartner', 'Wochenupdate', 'Besuch in Griffen'],
-  bilder: { weg: 'img/weg-griffen.jpg', angekommen: 'img/weg-angekommen.jpg', terrasse: 'img/weg-terrasse.jpg', manufaktur: 'img/weg-manufaktur.jpg' },
-  alt: { manufaktur: 'Gregor in der GRIFFNER Manufaktur in Griffen' }
+  bilder: { weg: 'img/weg-griffen.jpg', angekommen: 'img/weg-angekommen.jpg', terrasse: 'img/weg-terrasse.jpg', zurueck: 'img/weg-zurueck.jpg' },
+  alt: { zurueck: 'Ein Mann lehnt in seinem Zuhause an der Kücheninsel und blickt lächelnd zur Seite' }
 };
 
 const str = (v, d) => { const s = String(v ?? '').trim(); return s || d; };
@@ -93,7 +95,7 @@ export function clean(c = {}) {
       punkte: list(L.punkte, D.leben.punkte).map((p, i) => ({ t: str(p?.t, ''), d: str(p?.d, ''), f: String(p?.f ?? (D.leben.punkte[i] || {}).f ?? '').trim() })).filter(p => p.t || p.d).slice(0, 4)
     },
     sys: { kopf: str(Sy.kopf, D.sys.kopf), themen: list(Sy.themen, D.sys.themen).slice(0, 4).map((t, i) => ({ ...D.sys.themen[i], ...Object.fromEntries(Object.entries(t || {}).filter(([, v]) => v != null && v !== '')) })) },
-    schluss: { h: str(Sc.h, D.schluss.h), lead: str(Sc.lead, D.schluss.lead), knopf: str(Sc.knopf, D.schluss.knopf), href: str(Sc.href, D.schluss.href) },
+    schluss: { h: str(Sc.h, D.schluss.h), h2: str(Sc.h2, D.schluss.h2) },
     kapitel: [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => str((c.kapitel || [])[i], D.kapitel[i])),
     bilder: { ...D.bilder, ...Object.fromEntries(Object.entries(c.bilder || {}).filter(([, v]) => v)) },
     alt: { ...D.alt, ...Object.fromEntries(Object.entries(c.alt || {}).filter(([, v]) => v)) }
@@ -111,7 +113,11 @@ const pad = n => String(n).padStart(2, '0');
 export function markup(c0) {
   const c = clean(c0), B = c.bilder;
   const words = c.manifest.split(/\s+/).filter(Boolean);
-  const endW = c.schluss.h.split(/\s+/).filter(Boolean);
+  const zeilen = t => String(t).split(/\s*\/\s*/).map(l => l.trim()).filter(Boolean);
+  const maske = (w, attr, top = '.1em') => `<span style="display:inline-block;overflow:hidden;padding:${top} .02em .04em;margin:-${top} 0 -.04em;vertical-align:top"><span ${attr}="1" style="display:inline-block;transform:translate3d(0,110%,0)">${esc(w)}</span></span>`;
+  const ubH = zeilen(c.sys.kopf).map(l => l.split(/\s+/).map(w => maske(w, 'data-ubww')).join(' ')).join('<br>');
+  const endH = zeilen(c.schluss.h).map(l => `<span data-endl="1" style="display:block;white-space:nowrap">${l.split(/\s+/).map(w => maske(w, 'data-endw', '.22em')).join(' ')}</span>`).join('')
+    + `<span data-endl="1" style="display:block;white-space:nowrap;margin-top:.3em">${zeilen(c.schluss.h2).map(l => [...l].map(ch => ch === ' ' ? ' ' : `<span data-endk="1" style="display:inline-block;opacity:0">${esc(ch)}</span>`).join('')).join('<br>')}</span>`;
   const lebenH = esc(c.leben.h).replace(' ', '<br>');
   return `<div class="jw" data-j3="1" style="position:relative;color:var(--griffner-weiss);font-family:var(--font-text)">
 <div id="weg-film" data-tfilm="1" data-room="j-schwarz" style="position:relative;height:1900vh">
@@ -188,6 +194,20 @@ export function markup(c0) {
   </div>
 </div>
 
+<!-- Runde 22: Übergang „Was deine Journey noch besser macht.“ (Entwurf 05c, Variante weg): eine gepunktete Linie zeichnet sich, vorne läuft ein gelbes Feld mit;
+     erreicht es ein Wort, steigt das Wort aus der Maske; danach gleitet alles nach oben weg -->
+<section data-ub="1" data-room="j-weiss" style="position:relative;height:230vh;color:var(--griffner-schwarz);background:var(--griffner-weiss)">
+  <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden">
+    <div data-ubv="1" style="position:absolute;left:var(--page-margin);right:calc(var(--page-margin) + 48px);top:0;bottom:0;display:grid;align-content:center">
+      <h2 data-ubwh="1" style="margin:0;${DISP};font-size:clamp(40px,7vw,150px);line-height:.94;white-space:nowrap">${ubH}</h2>
+      <div style="position:relative;height:16px;margin-top:clamp(20px,3.4vh,36px);margin-right:calc(-1 * (var(--page-margin) + 48px))">
+        <div data-ubln="1" style="position:absolute;left:0;right:0;top:7px;height:2px;background-image:repeating-linear-gradient(90deg,var(--griffner-schwarz) 0 3px,transparent 3px 11px);clip-path:inset(0 100% 0 0)"></div>
+        <div data-ubtip="1" style="position:absolute;left:0;top:0;width:20px;height:16px;background:var(--griffner-gelb);opacity:0"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <div data-sys="1" data-room="j-weiss" style="position:relative;height:260vh;color:var(--griffner-schwarz);background:var(--griffner-weiss)">
   ${c.sys.themen.map(() => '<div data-chap="1" data-smk="1" style="position:absolute;left:0;top:0;width:1px;height:1px"></div>').join('')}
   <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden">
@@ -199,9 +219,6 @@ export function markup(c0) {
     </div>
     <div data-svis="1" aria-hidden="true" style="position:absolute;left:46%;right:120px;top:12%;bottom:12%">
       ${c.sys.themen.map(t => `<div class="wz wz--${esc(t.art)}" data-wz="1"><canvas data-wzc="1"></canvas></div>`).join('')}
-    </div>
-    <div data-scov="1" style="position:absolute;inset:0;background:var(--griffner-schwarz);color:var(--griffner-weiss)">
-      <h2 data-scovh="1" style="position:absolute;left:var(--page-margin);right:var(--page-margin);bottom:clamp(44px,9vh,104px);margin:0;${DISP};font-size:96px;line-height:1.06;text-wrap:balance">${c.sys.kopf.split(/\s+/).filter(Boolean).map(w => `<span style="display:inline-block;overflow:hidden;padding:.2em 0 .04em;margin:-.2em 0 -.04em;vertical-align:top"><span data-scw="1" style="display:inline-block;transform:translate3d(0,150%,0)">${esc(w)}</span></span>`).join(' ')}</h2>
     </div>
   </div>
 </div>
@@ -218,16 +235,14 @@ export function markup(c0) {
 
 <section data-endimg="1" data-room="j-schwarz" style="position:relative;height:280vh">
   <div style="position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--griffner-schwarz)">
-    ${lazy(B.manufaktur, `data-endi="1" alt="${esc(c.alt.manufaktur)}" decoding="async" style="position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:50% 100%;transform-origin:50% 100%"`)}
-    <div data-endsh="1" aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 28%)"></div>
-    <div data-endb="1" aria-hidden="true" style="position:absolute;inset:0;background:var(--griffner-schwarz);opacity:0"></div>
-    <div data-endc="1" style="position:absolute;left:var(--page-margin);right:var(--page-margin);bottom:clamp(16px,3vh,40px);display:grid;row-gap:clamp(12px,2vh,20px);color:var(--griffner-schwarz)">
-      <h2 data-endh="1" style="margin:0;color:var(--griffner-schwarz);${DISP};font-size:64px;line-height:.94"><span data-endl="1" style="display:block;white-space:nowrap">${endW.map(w => `<span style="display:inline-block;overflow:hidden;padding:.22em .02em .04em;margin:-.22em 0 -.04em;vertical-align:top"><span data-endw="1" style="display:inline-block;transform:translate3d(0,110%,0)">${esc(w)}</span></span>`).join(' ')}</span></h2>
-      <div data-endcta="1" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 32px;opacity:0">
-        <p style="margin:0;font-size:clamp(17px,1.4vw,22px);line-height:1.3">${esc(c.schluss.lead)}</p>
-        <a href="${esc(c.schluss.href)}" data-endbtn="1" class="jw-btn" style="display:inline-flex;align-items:center;gap:14px;min-height:48px;padding:0 24px;background:var(--griffner-schwarz);color:var(--griffner-weiss);text-decoration:none;${INFO};transition:background-color 300ms cubic-bezier(.2,.7,.2,1)"><span>${esc(c.schluss.knopf)}</span><span aria-hidden="true">→</span></a>
-      </div>
+    <div data-endph="1" style="position:absolute;left:0;top:0;bottom:0;width:100%;overflow:hidden">
+      ${lazy(B.zurueck, `data-endi="1" alt="${esc(c.alt.zurueck)}" decoding="async" style="position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:48% 30%;transform-origin:88% 40%"`, '120vw')}
+      <div data-endsh="1" aria-hidden="true" style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
     </div>
+    <div data-endc="1" style="position:absolute;left:calc(58% + 56px);right:calc(var(--page-margin) + 48px);top:0;bottom:0;display:grid;align-content:center;color:var(--griffner-weiss)">
+      <h2 data-endh="1" style="margin:0;${DISP};font-size:64px;line-height:1.02;color:var(--griffner-weiss)">${endH}</h2>
+    </div>
+    <div data-endb="1" aria-hidden="true" style="position:absolute;inset:0;background:var(--griffner-schwarz);opacity:0;pointer-events:none"></div>
   </div>
 </section>
 </div>`;
@@ -304,8 +319,8 @@ class Weg {
       b.addEventListener('mouseenter', on); b.addEventListener('mouseleave', off); b.addEventListener('focus', on); b.addEventListener('blur', off);
     });
     this.anc = { planen: q('#planen'), bauen: q('#bauen'), leben: q('#leben') };
-    this.sys = q('[data-sys]'); this.smk = qa('[data-smk]'); this.stxw = q('[data-stxw]'); this.scov = q('[data-scov]'); this.scovh = q('[data-scovh]'); this.scw = qa('[data-scw]'); this.stx = qa('[data-stx]'); this.stp = this.stx.map(s => s.querySelector('p')); this.svis = q('[data-svis]'); this.wz = qa('[data-wz]');
-    this.endS = q('[data-endimg]'); this.endI = q('[data-endi]'); this.endW = qa('[data-endw]'); this.endH = q('[data-endh]'); this.endB = q('[data-endb]'); this.endC = q('[data-endc]'); this.endCta = q('[data-endcta]');
+    this.sys = q('[data-sys]'); this.smk = qa('[data-smk]'); this.stxw = q('[data-stxw]'); this.ubS = q('[data-ub]'); this.ubV = q('[data-ubv]'); this.stx = qa('[data-stx]'); this.stp = this.stx.map(s => s.querySelector('p')); this.svis = q('[data-svis]'); this.wz = qa('[data-wz]');
+    this.endS = q('[data-endimg]'); this.endI = q('[data-endi]'); this.endW = qa('[data-endw]'); this.endK = qa('[data-endk]'); this.endH = q('[data-endh]'); this.endB = q('[data-endb]'); this.endC = q('[data-endc]');
     const cs = getComputedStyle(R);
     this.fD = cs.getPropertyValue('--font-display').trim() || 'sans-serif';
     this.fT = cs.getPropertyValue('--font-text').trim() || 'sans-serif';
@@ -415,12 +430,13 @@ class Weg {
     Object.keys(this.GO).forEach(k => { const s = this.GO[k]; this.anc[k].style.top = Math.round((s[0] + 2 + this.P + s[1]) * this.L * H) + 'px'; });
     this.active = -9; this.key = null;
     this.layoutSys(W, H, m, mob);
-    { const eh = this.endH, el = eh && eh.firstElementChild; if (el) { eh.style.fontSize = '100px'; el.style.whiteSpace = 'nowrap'; const w = el.scrollWidth || 1000; el.style.whiteSpace = mob ? 'normal' : 'nowrap'; eh.style.fontSize = (mob ? Math.min(W * .11, 56) : Math.min((W - 2 * m) / w * 100, H * .13, 150)) + 'px'; } }
+    this.ubM = null; this.layoutEnd(W, H, m, mob);
     this.fwimg.style.objectPosition = mob ? '48% 28%' : '50% 40%';
     this.layoutLeben(W, H, m, mob);
     /* Runde 18: Ende der Fahrt. Desktop wie bisher plus Ruhe und Blende nach Schwarz; Telefon: die vier Einträge stehen untereinander
        und laufen 1:1 mit dem Scrollen nach oben, danach kurz Ruhe und die Blende nach Schwarz */
-    this.pEnd = mob ? Math.max(19.3, 18.15 + (this.lebOvf || 0) / (this.L * H) + 1.05) : 21;
+    /* Runde 22: keine Blende nach Schwarz mehr; Besser leben bleibt stehen und schiebt sich nach oben, darunter kommt der weiße Übergang */
+    this.pEnd = mob ? Math.max(18.9, 18.15 + (this.lebOvf || 0) / (this.L * H) + .6) : 20.3;
     this.tEnd = this.pEnd + 4;
     this.tfilm.style.height = Math.round(((this.tEnd + 2 + this.P) * this.L + 1.3) * H) + 'px';
     { const RS = this.winRectS(); Object.assign(this.s15.style, { width: RS.w + 'px', height: RS.h + 'px' });
@@ -461,7 +477,8 @@ class Weg {
     /* Runde 18: erst ein Titelbild (Schwarz, „Wie wir das möglich machen.“), das nach oben wegwischt; danach die vier Themen ohne Kopfzeile
        und ohne Nummern. Telefon: Text und Zeichnung zusammen, die Zeichnung darunter und kleiner */
     /* Runde 20: die Szenen laufen mit dem Scrollen, je Thema etwas mehr Strecke (Desktop 3,0, Telefon 3,4 Bildschirme statt 2,2 und 2,8) */
-    const LT = this.sysLT = Math.round(H * .8), TH = this.sysTH = Math.round(H * (mob ? 3.4 : 3.0)), T = LT + TH;
+    /* Runde 22: das Titelbild entfällt (der Übergang davor übernimmt), die Themen beginnen sofort */
+    const LT = this.sysLT = 0, TH = this.sysTH = Math.round(H * (mob ? 3.4 : 3.0)), T = LT + TH;
     this.sys.style.height = (H + T) + 'px';
     [0, .27, .52, .8].forEach((f, i) => { if (this.smk[i]) this.smk[i].style.top = Math.round(LT + f * TH) + 'px'; });
     const top0 = Math.round(Math.max(mob ? 96 : 120, H * (mob ? .12 : .15)));
@@ -477,12 +494,31 @@ class Weg {
       for (let n = 0; n < 8 && H - 32 - (top0 + th + 20) < Math.max(220, H * .34) && f > .84; n++) { f -= .02; this.stp.forEach(p => { p.style.fontSize = (16 * f).toFixed(1) + 'px'; }); th = Math.max(...this.stx.map(s => s.offsetHeight)); }
       Object.assign(this.svis.style, { left: m + 'px', right: m + 'px', top: Math.round(top0 + th + 20) + 'px', bottom: '32px' });
     } else { this.stx.forEach(s => { s.style.alignSelf = 'center'; }); Object.assign(this.svis.style, { left: Math.round(m + Math.min(W * .36, 520) + Math.max(40, W * .04)) + 'px', right: m + 'px', top: top0 + 'px', bottom: Math.round(H * .1) + 'px' }); }
-    /* Titelbild: Schriftgröße so, dass der Titel am Desktop in etwa zwei Zeilen steht */
-    if (this.scovh) { const h = this.scovh; h.style.fontSize = '100px'; let mw = 1, tw = 0; this.scw.forEach(w => { const x = w.offsetWidth; mw = Math.max(mw, x); tw += x + 28; });
-      h.style.fontSize = (mob ? Math.min(100 * (W - 2 * m) / mw, H * .085, 64) : Math.min(100 * (W - 2 * m) / (tw / 1.9), 100 * (W - 2 * m) / mw, H * .15, 150)) + 'px';
-      h.style.bottom = mob ? '64px' : 'clamp(44px,9vh,104px)'; }
     /* die 3D-Szenen passen sich ihrer Fläche an */
     (this.sz || []).forEach(z => z.size(mob));
+  }
+  /* Schlussbild (Runde 22, Entwurf layoutEnd): Foto 2400 × 1600 um 1,2 vergrößert, Gregor links, Text rechts mittig.
+     Telefon: Text oben auf Schwarz, das Foto beginnt darunter und läuft weich aus dem Schwarz heraus */
+  layoutEnd(W, H, m, mob) {
+    const R = this.root, ph = R.querySelector('[data-endph]'), c = this.endC, h = this.endH, im = this.endI, sh = R.querySelector('[data-endsh]'); if (!ph || !c || !h || !im) return;
+    const IW = 2400, IH = 1600, lines = [...h.children];
+    const fit = (wAv, hAv, cap) => { h.style.fontSize = '100px'; const rg = document.createRange(); let mw = 1; lines.forEach(l => { rg.selectNodeContents(l); mw = Math.max(mw, rg.getBoundingClientRect().width); }); h.style.fontSize = Math.max(24, Math.min(wAv / mw * 100 * .98, hAv / 5.9, cap)) + 'px'; };
+    Object.assign(ph.style, { top: '0', bottom: '0', width: '100%', height: 'auto' });
+    if (mob || W < H * 1.1) { /* Telefon und Hochformat (Tablet): Text oben auf Schwarz, Foto darunter */
+      const top = Math.round(Math.max(88, H * .11));
+      Object.assign(c.style, { left: m + 'px', right: m + 'px', top: top + 'px', bottom: 'auto', alignContent: 'start' });
+      fit(W - 2 * m, H * .4, mob ? 64 : 104);
+      const ty = Math.round(top + c.offsetHeight + 28), b = Math.max(W / IW, (H - ty) / IH), iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .5 * W - .46 * iw));
+      Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: ty + 'px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.35 * ih).toFixed(0) + 'px' });
+      sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,1) 0px,rgba(0,0,0,1) ' + ty + 'px,rgba(0,0,0,0) ' + Math.round(ty + 60) + 'px,rgba(0,0,0,0) 100%)';
+    } else {
+      const b = Math.max(W / IW, H / IH) * 1.2, iw = IW * b, ih = IH * b, tx = Math.min(0, Math.max(W - iw, .36 * W - .46 * iw));
+      Object.assign(im.style, { inset: 'auto', width: iw + 'px', height: ih + 'px', left: tx + 'px', top: '0px', objectFit: 'fill', transformOrigin: (.46 * iw).toFixed(0) + 'px ' + (.3 * ih).toFixed(0) + 'px' });
+      const x0 = Math.round(Math.max(tx + .64 * iw + Math.max(32, W * .03), W * .54)), x1 = W - m - 48;
+      sh.style.background = 'linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.3) 16%,rgba(0,0,0,0) 30%),linear-gradient(90deg,rgba(0,0,0,.28) 0px,rgba(0,0,0,.28) ' + Math.max(0, x0 - 220) + 'px,rgba(0,0,0,.6) ' + Math.max(0, x0 - 30) + 'px,rgba(0,0,0,.62) 100%)';
+      Object.assign(c.style, { left: x0 + 'px', right: (W - x1) + 'px', top: '0', bottom: '0', alignContent: 'center' });
+      fit(x1 - x0, H * .7, 150);
+    }
   }
   applyHero(W, H, m, mob, bH) {
     this.hero.style.bottom = bH; this.hshade.style.display = ''; this.hphoto.style.background = 'none';
@@ -732,7 +768,7 @@ class Weg {
     { const o = sm(rp(pos, 13.55, 13.9)) * (1 - sm(rp(pos, 15.2, 15.5))), d = pos < 13.9 ? (pos - 13.9) * 1.5 : pos > 15.2 ? (pos - 15.2) * 1.5 : 0; V(this.fins[0], o, d); S(this.fl2, sm(rp(pos, 14.25, 14.6)), 'translate3d(0,' + ((1 - sm(rp(pos, 14.25, 14.6))) * 16).toFixed(1) + 'px,0)'); }
     const act = pos < -.5 || pos > 13.5 ? -1 : Math.round(pos);
     if (act !== this.active) { if (this.open >= 0) this.toggleKw(this.open); this.active = act; }
-    const pE = this.pEnd || 20.6, blk = red ? sm(rp(pos, pE - .3, pE - .1)) : sm(rp(pos, pE - .62, pE - .12));
+    const blk = 0; /* Runde 22: keine Blende nach Schwarz am Ende der Fahrt */
     const ly = this.mob ? Math.min(this.lebOvf || 0, Math.max(0, pos - 18.15) * this.L * H) : 0;
     { const wr = pos > 17.05 && blk < .5 ? 'j-weiss' : 'j-schwarz'; if (this.tfilm.dataset.room !== wr) this.tfilm.dataset.room = wr; }
     {
@@ -761,28 +797,22 @@ class Weg {
     /* Kopfzeile: über Schwarz und dem Vollbild-Foto weiß; über Weiß (auch während das gelbe Feld wächst) im Differenz-Modus */
     this.darkTop = fr.top <= 44 && fr.bottom >= 44 ? (!(pos >= 15.97 && pos < 16.3) && pos < 17.05) || blk > .5 : false;
 
+    /* Schlussbild (Runde 22): die Wörter von Satz 1 steigen rückwärts aus der Maske (zuerst „zurück.“), die Buchstaben von
+       „Und lächelst.“ kommen von der Mitte nach außen, das Foto zoomt langsam, am Ende Blende in Schwarz zum Kontaktformular */
     if (this.endS) { const r = this.endS.getBoundingClientRect(); if (r.top < H && r.bottom > 0) {
-      const p = cl(-r.top / Math.max(1, r.height - H));
-      const ex = sm(rp(p, .68, .97));
-      S(this.endI, 1, 'translate3d(' + (this.mob ? 0 : -9) + '%,0,0) scale(' + (1.2 - .03 * sm(cl((H - r.top) / (H * 1.6))) + .06 * ex).toFixed(4) + ')');
-      S(this.endB, ex); S(this.endC, 1 - sm(rp(p, .66, .84)), 'translate3d(0,' + (-sm(rp(p, .66, .86)) * 40).toFixed(1) + 'px,0)');
-      { const t = red ? 1 : sm(rp(p, .36, .48)); S(this.endCta, t, 'translate3d(0,' + ((1 - t) * 16).toFixed(1) + 'px,0)'); this.endCta.style.pointerEvents = t > .5 ? 'auto' : 'none'; }
-      this.endW.forEach((w, i) => { const t = red ? 1 : (v => 1 - Math.pow(1 - v, 3))(rp(p, .03 + i * .055, .15 + i * .055)); S(w, 1, 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + '%,0)'); });
+      const p = cl(-r.top / Math.max(1, r.height - H)), ex = sm(rp(p, .76, .97)), eo3 = v => 1 - Math.pow(1 - v, 3);
+      S(this.endI, 1, 'scale(' + (1 + .05 * (1 - sm(cl((H - r.top) / (H * 1.5)))) + .03 * ex).toFixed(4) + ')');
+      S(this.endB, ex); S(this.endC, 1 - sm(rp(p, .74, .9)), 'translate3d(0,' + (-sm(rp(p, .74, .92)) * 40).toFixed(1) + 'px,0)');
+      { const n = this.endW.length; this.endW.forEach((w, i) => { const k = n - 1 - i, t = red ? 1 : eo3(rp(p, .02 + k * .06, .15 + k * .06)); S(w, 1, t >= 1 ? 'none' : 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + '%,0)'); }); }
+      { const N = this.endK.length, cc = Math.max(1, (N - 1) / 2); this.endK.forEach((k, i) => { const d = Math.abs(i - cc) / cc, t = red ? 1 : sm(rp(p, .44 + d * .09, .52 + d * .09)); S(k, t, 'translate3d(0,' + ((1 - t) * 14).toFixed(1) + 'px,0)'); }); }
     } }
+    this.ubFrame(H, cl, rp, sm, S, red);
     this.rail(pos, now);
 
     if (this.sys) {
       const r = this.sys.getBoundingClientRect();
       if (r.bottom > -H && r.top < 2 * H) {
-        const LT = this.sysLT || H, TH = this.sysTH || H * 2.2, s = -r.top, ut = cl((s - LT) / TH);
-        /* Titelbild: die Wörter kommen beim Hereinfahren, dann wischt das Schwarz nach oben weg */
-        if (this.scov) {
-          this.scw.forEach((w, i) => { const t = red ? 1 : (v => 1 - Math.pow(1 - v, 3))(rp(s, H * (-.25 + i * .04), H * (.08 + i * .04))); S(w, 1, 'translate3d(0,' + ((1 - t) * 150).toFixed(1) + '%,0)'); });
-          const wp = sm(rp(s, H * .36, H * .7)), cp = 'inset(0 0 ' + (wp * 100).toFixed(2) + '% 0)';
-          if (this.scov._cp !== cp) { this.scov._cp = cp; this.scov.style.clipPath = cp; }
-          S(this.scovh, 1 - sm(rp(s, H * .3, H * .5)), 'translate3d(0,' + (-sm(rp(s, H * .3, H * .56)) * 60).toFixed(1) + 'px,0)');
-          const cv = wp < .999 ? 'visible' : 'hidden'; if (this.scov._v !== cv) { this.scov._v = cv; this.scov.style.visibility = cv; }
-        }
+        const LT = this.sysLT ?? H, TH = this.sysTH || H * 2.2, s = -r.top, ut = cl((s - LT) / TH);
         this.su = this.su == null ? ut : this.su + (ut - this.su) * kS; if (Math.abs(ut - this.su) < .0005) this.su = ut;
         this.ss = this.ss == null ? s : this.ss + (s - this.ss) * kS; if (Math.abs(s - this.ss) < .5) this.ss = s;
         const u = this.su, io = (a, b) => rp(u, a, b);
@@ -790,15 +820,34 @@ class Weg {
         const t0 = 1 - sm(io(.2, .25)), t1 = sm(io(.27, .32)) * (1 - sm(io(.46, .51))), t2 = sm(io(.52, .57)) * (1 - sm(io(.73, .78))), t3 = sm(io(.8, .85));
         V(this.stx[0], t0, io(.2, .25)); V(this.stx[1], t1, u < .4 ? io(.27, .32) - 1 : io(.46, .51)); V(this.stx[2], t2, u < .65 ? io(.52, .57) - 1 : io(.73, .78)); V(this.stx[3], t3, io(.8, .85) - 1);
         /* Runde 20: die 3D-Szenen laufen mit dem Scrollen (p 0 bis 1) und stehen am Ende, bevor ihr Thema geht.
-           Die erste beginnt, während das Titelbild wegwischt. */
-        const g0 = sm(rp(s, H * .58, H * .74)), tt = [t0 * g0, t1, t2, t3];
-        const pp = red ? [1, 1, 1, 1] : [rp(this.ss, H * .5, LT + TH * .17), io(.255, .42), io(.505, .68), io(.785, .94)];
+           Runde 22: die erste beginnt, während die Sektion hereinkommt (kein Titelbild mehr). */
+        const g0 = red ? 1 : sm(rp(s, -H * .55, -H * .1)), tt = [t0 * g0, t1, t2, t3];
+        const pp = red ? [1, 1, 1, 1] : [rp(this.ss, -H * .45, TH * .17), io(.255, .42), io(.505, .68), io(.785, .94)];
         this.wz.forEach((z, i) => {
           const t = tt[i] || 0; V(z, t, i === 0 && g0 < 1 ? g0 - 1 : 0);
           if (t > .005 && this.sz && this.sz[i]) this.sz[i].draw(pp[i]);
         });
       }
     }
+  }
+  /* Übergang „Was deine Journey noch besser macht.“ (Runde 22, Entwurf ubFrame, Variante weg) */
+  ubFrame(H, cl, rp, sm, S, red) {
+    const sec = this.ubS, v = this.ubV; if (!sec || !v) return;
+    const r = sec.getBoundingClientRect(); if (r.bottom < -H || r.top > 2 * H) return;
+    const p = cl(-r.top / Math.max(1, r.height - H)), eo = x => 1 - Math.pow(1 - x, 3), out = sm(rp(p, .84, 1));
+    if (!this.ubM) {
+      const h = v.querySelector('[data-ubwh]'), ln = v.querySelector('[data-ubln]'), mob = this.mob;
+      h.style.whiteSpace = mob ? 'normal' : 'nowrap'; h.style.fontSize = '100px';
+      const avail = v.clientWidth, rg = document.createRange(); rg.selectNodeContents(h); const w1 = rg.getBoundingClientRect().width || 1;
+      h.style.fontSize = (mob ? Math.min(avail / 5.2, H * .1) : Math.min(avail / w1 * 100 * .97, H * .19)) + 'px';
+      const ws = [...v.querySelectorAll('[data-ubww]')], hl = h.getBoundingClientRect().left;
+      this.ubM = { ws, ln, tip: v.querySelector('[data-ubtip]'), lw: ln.getBoundingClientRect().width, x: ws.map(w => { const b = w.parentNode.getBoundingClientRect(); return [b.left - hl, b.width]; }) };
+    }
+    const M = this.ubM, t = red ? 1 : sm(rp(p, .03, .72)), tx = t * M.lw;
+    { const cp = 'inset(0 ' + ((1 - t) * 100).toFixed(2) + '% 0 0)'; if (M.ln._cp !== cp) { M.ln._cp = cp; M.ln.style.clipPath = cp; } }
+    S(M.tip, t > .001 && t < .999 ? 1 : 0, 'translate3d(' + Math.max(0, tx - 20).toFixed(1) + 'px,0,0)');
+    M.ws.forEach((w, i) => { const [x0, ww] = M.x[i], k = (this.mob ? rp(t, i / M.ws.length * .8, i / M.ws.length * .8 + .22) : rp(tx, x0 - 10, x0 + ww * .6 + 30)) * sm(rp(p, 0, .03)), e = red ? 1 : eo(k); S(w, 1, e >= 1 ? 'none' : 'translate3d(0,' + ((1 - e) * 110).toFixed(1) + '%,0)'); });
+    S(v, 1 - out, 'translate3d(0,' + (-out * 60).toFixed(1) + 'px,0)');
   }
   /* Runde 15: Kopf und Einträge erben die Sichtbarkeit (nie 'visible' in der versteckten Sektion, sonst fangen sie Klicks auf
      „Darum kümmern wir uns“); am Telefon stehen die Texte der Einträge immer voll da.
@@ -834,8 +883,9 @@ export function mount(root, c0, deps = {}) {
     root.classList.add('is-still');
     root.querySelectorAll('img[data-src]').forEach(im => { im.src = im.dataset.src; if (im.dataset.srcset) im.srcset = im.dataset.srcset; });
     root.querySelectorAll('[data-jh-l]').forEach(l => { l.style.transform = 'none'; });
-    root.querySelectorAll('[data-endw]').forEach(l => { l.style.transform = 'none'; });
-    const ec = root.querySelector('[data-endcta]'); if (ec) ec.style.opacity = 1;
+    root.querySelectorAll('[data-endw],[data-ubww]').forEach(l => { l.style.transform = 'none'; });
+    root.querySelectorAll('[data-endk]').forEach(l => { l.style.opacity = 1; });
+    const ul = root.querySelector('[data-ubln]'); if (ul) ul.style.clipPath = 'none';
     const z = root.querySelector('[data-wz]'); if (z) { z.style.opacity = 1; z.style.visibility = 'visible';
       const cv = z.querySelector('[data-wzc]'), sz = cv && new Szene(cv, c.sys.themen[0] || {}, { fT: getComputedStyle(root.querySelector('[data-j3]') || root).getPropertyValue('--font-text').trim() });
       const go = () => { if (!sz) return; sz.size(innerWidth < 820); sz.key = ''; sz.draw(1); }; requestAnimationFrame(go); document.fonts && document.fonts.ready.then(go); }

@@ -1,5 +1,7 @@
 // Baut die Framer Code-Komponente JourneyWeg (Runde 14, 2026-11-24): die Seite /journey nach dem Entwurf „Dein Weg“ (J10Journey)
 // mit den eigenen Zeichnungen in „Wie wir das möglich machen.“ und den schöner eingebundenen Einträgen in „Besser leben.“.
+// Runde 22 (2026-11-24): weißer Übergang „Was deine Journey noch besser macht.“ statt der schwarzen Titelseite, Schlussbild
+// „Eines Tages schaust du zurück. Und lächelst.“ (Entwurf) statt „Von Anfang an ein gutes Gefühl.“ mit Knopf. Neue Feldnamen, damit alte Werte nicht greifen.
 // Quellen: basis.js, inhalt.js, weg-zeichnung.js, weg.js, weg.css (Vorschau: weg.html). Ersetzt JourneyEinstieg, JourneyGehen und JourneyLeben.
 // Aufruf: cd griffner-konzepte/journey && node framer-bau-weg.mjs. Ziel: griffner/framer-code/JourneyWeg.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -18,9 +20,8 @@ const BILD = {
   weg: 'https://framerusercontent.com/images/OnyU0vHMXRCLs7597ROVJY7K9A.jpg',
   angekommen: 'https://framerusercontent.com/images/MciebrW3wttsi2dqkRoLusftZNs.jpg',
   terrasse: 'https://framerusercontent.com/images/mJp2wjsRSiX2ap5RQuiNySnZ7c.jpg',
-  manufaktur: 'https://framerusercontent.com/images/INJIf7WgTnMEsGzb9KPw6cdmXYg.jpg'
+  zurueck: 'https://framerusercontent.com/images/L2ltYOHmX9dUkIBQfBJ1Icrxbw.jpg'
 };
-const KONTAKT = '/contact#contact-form';
 
 const S = (title, def, extra = {}) => ({ type: 'ControlType.String', title, defaultValue: def, ...extra });
 const T = (title, def, extra = {}) => S(title, def, { displayTextArea: true, ...extra });
@@ -43,21 +44,20 @@ const controls = {
   lebenTitel: S('Besser leben Titel', DEF.leben.h), lebenSatz: T('Besser leben Satz', DEF.leben.lead),
   punkte: obj('Besser leben Einträge', { titel: S('Titel', ''), merk: S('Merkzeile', '', { description: 'Kleine Zeile neben der Nummer, leer = keine' }), text: T('Text', '') },
     DEF.leben.punkte.map(p => ({ titel: p.t, merk: p.f, text: p.d })), 4),
-  sysKopf: S('System Kopfzeile', DEF.sys.kopf),
+  ubTitel: S('Übergang Titel', DEF.sys.kopf, { description: '/ = neue Zeile' }),
   themen: obj('System Themen', { titel: S('Titel', ''), text: T('Text', '') }, DEF.sys.themen.map(t => ({ titel: t.h, text: t.text })), 4),
-  schlussTitel: S('Schluss Titel', DEF.schluss.h), schlussSatz: S('Schluss Satz', DEF.schluss.lead),
-  knopf: S('Knopf', DEF.schluss.knopf), knopfLink: { type: 'ControlType.Link', title: 'Knopf Link', defaultValue: KONTAKT },
+  schluss1: S('Schluss Zeilen', DEF.schluss.h, { description: '/ = neue Zeile' }), schluss2: S('Schluss Nachsatz', DEF.schluss.h2, { description: '/ = neue Zeile' }),
   kapitel: { type: 'ControlType.Array', title: 'Leiste Kapitel', maxCount: 9, control: { type: 'ControlType.String' }, defaultValue: DEF.kapitel },
   bildWeg: { type: 'ControlType.ResponsiveImage', title: 'Bild Hero' },
   bildAngekommen: { type: 'ControlType.ResponsiveImage', title: 'Bild Tag 15' },
   bildTerrasse: { type: 'ControlType.ResponsiveImage', title: 'Bild Besser leben' },
-  bildManufaktur: { type: 'ControlType.ResponsiveImage', title: 'Bild Schluss' }
+  bildZurueck: { type: 'ControlType.ResponsiveImage', title: 'Bild Schluss' }
 };
 
 const files = ['basis.js', 'inhalt.js', 'weg-sys3d.js', 'weg.js', 'weg.css'];
 const tsx = `// @ts-nocheck
 // GRIFFNER Journey, Seite /journey (Runde 14, 2026-11-24): der Entwurf „Dein Weg“ als eine Komponente. Eine Kamerafahrt durch die 14 Tage,
-// Tag 15, Besser leben (Bild mit Headline und vier Einträgen), Wie wir das möglich machen (eigene Zeichnungen), Schlussbild mit Knopf.
+// Tag 15, Besser leben (Bild mit Headline und vier Einträgen), Übergang „Was deine Journey noch besser macht.“, vier 3D-Szenen, Schlussbild (Runde 22).
 // ERZEUGT von griffner-konzepte/journey/framer-bau-weg.mjs aus ${files.join(', ')}.
 // Nicht von Hand ändern: dort ändern und neu bauen. Alle Texte sind Eingabefelder (rechts in Framer).
 import { useEffect, useRef } from "react"
@@ -92,11 +92,11 @@ function cfgOf(p: any) {
         finale: [p.finale1, p.finale2],
         ankommen: { info: p.ankZeile, zahl: p.ankZahl, woerter: p.ankWoerter },
         leben: { info: p.lebenZeile, zahl: p.lebenZahl, h: p.lebenTitel, lead: p.lebenSatz, punkte: (p.punkte || []).map((x: any) => ({ t: x?.titel, f: x?.merk ?? "", d: x?.text })) },
-        sys: { kopf: p.sysKopf, themen: (p.themen || []).map((x: any) => ({ h: x?.titel, text: x?.text })) },
-        schluss: { h: p.schlussTitel, lead: p.schlussSatz, knopf: p.knopf, href: p.knopfLink || ${JSON.stringify(KONTAKT)} },
+        sys: { kopf: p.ubTitel, themen: (p.themen || []).map((x: any) => ({ h: x?.titel, text: x?.text })) },
+        schluss: { h: p.schluss1, h2: p.schluss2 },
         kapitel: p.kapitel,
-        bilder: { weg: bild(p.bildWeg, BILD.weg), angekommen: bild(p.bildAngekommen, BILD.angekommen), terrasse: bild(p.bildTerrasse, BILD.terrasse), manufaktur: bild(p.bildManufaktur, BILD.manufaktur) },
-        alt: { manufaktur: (p.bildManufaktur && p.bildManufaktur.alt) || undefined },
+        bilder: { weg: bild(p.bildWeg, BILD.weg), angekommen: bild(p.bildAngekommen, BILD.angekommen), terrasse: bild(p.bildTerrasse, BILD.terrasse), zurueck: bild(p.bildZurueck, BILD.zurueck) },
+        alt: { zurueck: (p.bildZurueck && p.bildZurueck.alt) || undefined },
     }
 }
 
