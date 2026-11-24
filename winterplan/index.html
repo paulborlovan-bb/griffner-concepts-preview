@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Winter Plan Summary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* One column, read top to bottom in two minutes: numbers, four jobs, money, dates, decisions. */
+:root {
+  --bg: #ffffff;
+  --fg: #151513;
+  --muted: #64625c;
+  --line: #e3e0d8;
+  --soft: #f5f3ee;
+  --accent: #f5a800;
+  --on-accent: #151513;
+  --font-display: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --fg: #f1efea; --muted: #a29f98; --line: #2d2c29; --soft: #1b1a18;
+    --accent: #f5b120; --on-accent: #151513; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --fg: #f1efea; --muted: #a29f98; --line: #2d2c29; --soft: #1b1a18;
+  --accent: #f5b120; --on-accent: #151513; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+h2 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; font-weight: 700; line-height: 1.25; }
+p { margin: 0; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 14px; height: 14px; background: var(--accent); }
+header { display: flex; flex-direction: column; gap: 16px; }
+.lede { font-size: 1.15rem; max-width: 62ch; }
+.why { color: var(--muted); max-width: 62ch; }
+
+.nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--fg); }
+.nums > div { padding: 16px 16px 4px 0; display: flex; flex-direction: column; gap: 4px; }
+.nums > div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+.nums b { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.nums span { color: var(--muted); font-size: 0.92rem; }
+
+section { display: flex; flex-direction: column; gap: 16px; }
+.jobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 820px) { .jobs { grid-template-columns: 1fr; } }
+.job { border: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.job .k { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.job ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
+.job dl { margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 52px 1fr; gap: 4px 12px; font-size: 0.9rem; }
+.job dt { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding-top: 3px; }
+.job dd { margin: 0; font-weight: 600; }
+
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 520px; }
+th, td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+thead th { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 2px solid var(--fg); }
+tr.sum td { font-weight: 700; border-top: 2px solid var(--fg); }
+tr.leads td { background: var(--soft); font-weight: 600; }
+td.hi { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.note { color: var(--muted); font-size: 0.92rem; max-width: 70ch; }
+
+.dates { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--fg); }
+.dates li { display: grid; grid-template-columns: 150px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.dates .d { font-family: var(--font-mono); font-size: 0.85rem; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.dates li.go .d::before { content: ""; display: inline-block; width: 9px; height: 9px; background: var(--accent); margin-right: 8px; vertical-align: 1px; }
+.dates li.go { font-weight: 600; }
+
+.dec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.dec h3 { padding-bottom: 8px; border-bottom: 2px solid var(--fg); }
+.dec ol { margin: 0; padding: 0; list-style: none; counter-reset: d; }
+.dec li { counter-increment: d; display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+.dec li::before { content: counter(d); font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); padding-top: 2px; }
+.dec li small { display: block; color: var(--muted); font-size: 0.85rem; }
+
+footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+a { color: var(--fg); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .jobs, .dec { grid-template-columns: 1fr; }
+  .nums { grid-template-columns: 1fr; }
+  .nums > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  .dates li { grid-template-columns: 1fr; gap: 2px; }
+}
+</style>
+<style>html{-webkit-text-size-adjust:100%} body{margin:0} :root{color-scheme:light}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">GRIFFNER Marketing · for Hannes and Paul · 24 Nov 2026</div>
+    <h1>Winter Plan</h1>
+    <p class="lede">From 3 December we start Google and Meta ads and fix how people find us on Google and in AI answers. Four months, one budget, one set of numbers to watch.</p>
+    <p class="why">December is our quietest month every year. January is when Austrians search most for a house. So December is for setting up and testing, and most of the money goes into January.</p>
+  </header>
+
+  <div class="nums">
+    <div><b>€11,900</b><span>ad budget, December to March</span></div>
+    <div><b>≈ 180</b><span>new leads from ads</span></div>
+    <div><b>4–5</b><span>houses sold from them, mostly signed by autumn 2027</span></div>
+  </div>
+
+  <section>
+    <h2>The three jobs</h2>
+    <div class="jobs">
+      <article class="job">
+        <div class="k">1 · Google Ads</div>
+        <h3>Search ads for people planning a house</h3>
+        <ul>
+          <li>Three campaigns: our name, wooden and architect houses, show-house visits.</li>
+          <li>Low spend before Christmas, more from 27 December, most in January.</li>
+          <li>Fix the show-house visit tracking before launch.</li>
+        </ul>
+        <dl>
+          <dt>Start</dt><dd>Thursday 3 December</dd>
+          <dt>Cost</dt><dd>€6,100</dd>
+          <dt>Goal</dt><dd>≈ 114 leads</dd>
+        </dl>
+      </article>
+      <article class="job">
+        <div class="k">2 · Meta</div>
+        <h3>Lead ads, and boosts we can measure</h3>
+        <ul>
+          <li>Catalogue and show-house ads, plus ads that push our best posts.</li>
+          <li>Every boost runs through our own ad account with tracking, so we see what it brings.</li>
+          <li>From 14 December, Meta’s lead forms send leads straight into Sellsation.</li>
+        </ul>
+        <dl>
+          <dt>Start</dt><dd>Friday 4 December</dd>
+          <dt>Cost</dt><dd>€5,800</dd>
+          <dt>Goal</dt><dd>≈ 68 leads</dd>
+        </dl>
+      </article>
+      <article class="job">
+        <div class="k">3 · SEO, AEO, GEO</div>
+        <h3>Be found on Google and in AI answers</h3>
+        <ul>
+          <li>First fixes by 3 December: Search Console, Bing, Google profile, wording.</li>
+          <li>A house-costs page in mid-December, the biggest single fix.</li>
+          <li>Show-house pages and guides from January. Every month we check what ChatGPT and Google’s AI say about us.</li>
+        </ul>
+        <dl>
+          <dt>Start</dt><dd>Now</dd>
+          <dt>Cost</dt><dd>Done in-house</dd>
+          <dt>Goal</dt><dd>Search clicks 232 → 400 a month</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Money and leads per month</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th></th><th>Dec</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Google Ads</td><td>€1,250</td><td>€1,750</td><td>€1,600</td><td>€1,500</td><td>€6,100</td></tr>
+          <tr><td>Meta</td><td>€1,000</td><td>€1,800</td><td>€1,500</td><td>€1,500</td><td>€5,800</td></tr>
+          <tr class="sum"><td>Budget</td><td>€2,250</td><td class="hi">€3,550</td><td>€3,100</td><td>€3,000</td><td>€11,900</td></tr>
+          <tr class="leads"><td>Expected leads</td><td>≈ 33</td><td>≈ 55</td><td>≈ 48</td><td>≈ 46</td><td>≈ 180</td></tr>
+          <tr><td>Of them, a consultation</td><td>≈ 9</td><td>≈ 14</td><td>≈ 12</td><td>≈ 12</td><td>≈ 47</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Plus about €600 in platform fees. Realistic range: 115 to 360 leads; the first four weeks show where we land. Every Monday the cockpit shows cost per lead, and on 8 January and 5 February money moves to the campaign that brings the most consultations.</p>
+  </section>
+
+  <section>
+    <h2>Dates</h2>
+    <ul class="dates">
+      <li><span class="d">Fri 27 Nov</span><span>Decisions below are made</span></li>
+      <li><span class="d">30 Nov – 2 Dec</span><span>Overdue leads cleared, campaigns built, first SEO fixes</span></li>
+      <li class="go"><span class="d">Thu 3 Dec</span><span>Google Ads live</span></li>
+      <li class="go"><span class="d">Fri 4 Dec</span><span>Meta ads live</span></li>
+      <li><span class="d">Mon 14 Dec</span><span>Meta lead forms flow into Sellsation</span></li>
+      <li><span class="d">Mid-December</span><span>House-costs page live</span></li>
+      <li><span class="d">23 Dec – 5 Jan</span><span>One person answers new leads on 23, 28, 29, 30 Dec and 2, 5 Jan</span></li>
+      <li><span class="d">From 27 Dec</span><span>Ad spend goes up for the January peak</span></li>
+      <li><span class="d">8 Jan · 5 Feb</span><span>Budget moves to the best campaigns</span></li>
+      <li><span class="d">Early March</span><span>90-day review: keep what brings consultations under €300</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Decisions needed by Friday 27 November</h2>
+    <div class="dec">
+      <div>
+        <h3>Hannes</h3>
+        <ol>
+          <li><span>Budget of €11,900 for December to March<small>€2,250 in December, most in January</small></span></li>
+          <li><span>Use the word “Fertighaus” and show a price range<small>Needed for the house-costs page</small></span></li>
+          <li><span>Which fairs we attend<small>Each one gets its own ad</small></span></li>
+          <li><span>One filming day in a show house<small>Short clips for Meta and the website</small></span></li>
+        </ol>
+      </div>
+      <div>
+        <h3>Paul, Sarah and sales</h3>
+        <ol>
+          <li><span>Who clears the 73 overdue leads, and who is on call over the holidays<small>Sarah, sales</small></span></li>
+          <li><span>Are show houses open over the holidays?<small>Sales</small></span></li>
+          <li><span>Meta house ads run in the Housing category<small>Paul</small></span></li>
+          <li><span>Meta lead connector and its privacy text<small>Paul</small></span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>
