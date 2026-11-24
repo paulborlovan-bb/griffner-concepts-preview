@@ -148,7 +148,7 @@ export function markup(c0) {
         <h3 data-cth="1" style="margin:clamp(8px,1.6vh,18px) 0 0;${DISP};font-size:96px;line-height:.94;white-space:nowrap">${esc(p.t)}.</h3>
         <p style="margin:clamp(12px,2vh,24px) 0 0;max-width:28em;font-size:clamp(17px,1.4vw,22px);line-height:1.35;text-wrap:pretty">${esc(p.d)}</p>
         <p data-ckw="1" style="display:none;margin:clamp(14px,2vh,22px) 0 0;max-width:46em;font-size:15px;line-height:1.6;color:var(--griffner-weiss);text-wrap:pretty;opacity:0;transition:opacity 600ms cubic-bezier(.2,.7,.2,1)">${p.k.map(esc).join('&nbsp; ·&nbsp; ')}</p>
-        <button type="button" class="jw-hov" data-ckwb="1" aria-expanded="false" style="display:inline-flex;align-items:center;gap:14px;min-height:44px;margin:clamp(10px,1.6vh,18px) 0 0;padding:0;border:0;background:none;color:inherit;cursor:pointer;${INFO};transition:opacity 300ms"><span data-cplus="1" aria-hidden="true" style="display:grid;place-items:center;width:26px;height:26px;border:1px solid var(--griffner-weiss);font-size:16px;line-height:1;letter-spacing:0;transition:transform 600ms cubic-bezier(.2,.7,.2,1)">+</span><span>${esc(c.kwKnopf)}</span></button>
+        <button type="button" class="jw-hov" data-ckwb="1" aria-expanded="false" style="display:inline-flex;align-items:center;gap:12px;min-height:44px;margin:clamp(12px,1.8vh,20px) 0 0;padding:0 18px 0 14px;border:1px solid var(--griffner-weiss);background:none;color:inherit;cursor:pointer;${INFO};transition:opacity 300ms"><span data-cplus="1" aria-hidden="true" style="display:grid;place-items:center;width:14px;height:26px;font-size:17px;line-height:1;letter-spacing:0;transition:transform 600ms cubic-bezier(.2,.7,.2,1)">+</span><span>${esc(c.kwKnopf)}</span></button>
       </div>`).join('')}
     <div data-fwbg="1" aria-hidden="true" style="position:absolute;inset:0;background:var(--griffner-weiss);opacity:0;visibility:hidden"></div>
     <div data-fwin="1" aria-hidden="true" style="position:absolute;left:0;top:0;width:0;height:0;overflow:hidden;background:var(--griffner-gelb);visibility:hidden">
@@ -632,6 +632,8 @@ class Weg {
   winRect0() { const W = this.W, H = this.H, w = Math.min(W * (this.mob ? .3 : .16), 240), h = w * .8; return { x: W / 2 - w / 2, y: H * .44 - h / 2, w, h }; }
   layoutRail() {
     const W = innerWidth, H = innerHeight, mob = this.rmob = W < 820, n = this.rbtn.length, m = this.m || 40;
+    /* Runde 17: am Telefon keine Fortschrittsleiste unten (Kunde) */
+    this.nav.style.display = mob ? 'none' : '';
     this.rx = Math.round(W - Math.max(24, m / 2));
     this.rlen = mob ? W - 2 * m : Math.min(H * .5, (n - 1) * 46);
     this.ry0 = mob ? H - 22 : Math.round(H / 2 - this.rlen / 2);
@@ -660,7 +662,7 @@ class Weg {
     if (this.rmob) { this.runner.style.transform = 'translate3d(' + (m + d - 7).toFixed(1) + 'px,' + (this.ry0 - 5).toFixed(1) + 'px,0)'; this.rfill.style.width = d.toFixed(1) + 'px'; }
     else { this.runner.style.transform = 'translate3d(' + (this.rx - 6.5).toFixed(1) + 'px,' + (this.ry0 + d - 5.5).toFixed(1) + 'px,0)'; this.rfill.style.height = d.toFixed(1) + 'px'; }
     const cur = Math.min(n - 1, Math.floor(f + .002)), lr = (this.sys || this.chs[this.chs.length - 1]).getBoundingClientRect();
-    const on = sy > H * .2 && lr.bottom > H * .5;
+    const on = !this.rmob && sy > H * .2 && lr.bottom > H * .5;
     if (on !== this.ron) {
       this.ron = on; this.nav.style.opacity = on ? 1 : 0;
       this.rbtn.forEach(b => { b.style.pointerEvents = on ? 'auto' : 'none'; b.tabIndex = on ? 0 : -1; });
