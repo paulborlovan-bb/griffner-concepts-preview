@@ -524,14 +524,14 @@ class Weg {
   layoutEnd(W, H, m, mob) {
     const R = this.root, ph = R.querySelector('[data-endph]'), c = this.endC, h = this.endH, im = this.endI, sh = R.querySelector('[data-endsh]'); if (!ph || !c || !h || !im) return;
     const IW = 2400, IH = 1600, sub = this.endSub, lines = [...h.children, ...(sub ? [...sub.children] : [])];
-    this.endLead = mob ? Math.round(H * .85) : 0; if (this.endS) this.endS.style.height = mob ? 'calc(340vh + ' + this.endLead + 'px)' : '';
+    this.endLead = mob ? Math.round(H * .85) : 0; if (this.endS) this.endS.style.height = mob ? 'calc(340vh + ' + this.endLead + 'px)' : '340vh'; /* Runde 25c: nie leeren, sonst fällt die Strecke weg */
     const fit = (wAv, hAv, cap) => { h.style.fontSize = '100px'; if (sub) sub.style.fontSize = '100px'; const rg = document.createRange(); let mw = 1; lines.forEach(l => { rg.selectNodeContents(l); mw = Math.max(mw, rg.getBoundingClientRect().width); }); h.style.fontSize = Math.max(24, Math.min(wAv / mw * 100 * .98, hAv / 5.9, cap)) + 'px'; if (sub) sub.style.fontSize = h.style.fontSize; };
     Object.assign(ph.style, { top: '0', bottom: '0', width: '100%', height: 'auto' });
     if (mob || W < H * 1.1) { /* Runde 24, Telefon und Hochformat (Tablet): erst das Foto oben, darunter die Headline auf Schwarz.
          So kommt nach der weißen Bühne gleich das Bild herein statt einer leeren schwarzen Fläche */
       /* Runde 25: Headline am Telefon so groß wie die Hero-Headline; das Foto wächst in den frei gewordenen Platz (46 bis 64 % der Höhe) */
       Object.assign(c.style, { left: m + 'px', right: m + 'px', top: '0px', bottom: 'auto', alignContent: 'start' });
-      fit(W - 2 * m, H * .42, mob ? this.heroFs(W, H, true) : 104);
+      fit(W - 2 * m, H * .42, mob ? this.heroFs(W, H, true) * .8 : 104); /* Runde 25c: Kunde wollte es noch kleiner, 0,8 × Hero */
       const hH = h.offsetHeight, tb = Math.max(hH, sub ? sub.offsetHeight : 0), pad = Math.max(40, Math.round(H * .07)), gap = Math.max(24, Math.round(H * .035));
       const ph0 = Math.round(Math.max(H * (mob ? .46 : .5), Math.min(H * .64, H - pad - tb - gap))), top = Math.round(ph0 + gap + (tb - hH) / 2);
       c.style.top = top + 'px';
@@ -845,7 +845,7 @@ class Weg {
       const hs = Math.min(W * (this.mob ? .1 : .072), 140); let qx = W / 2, qy = Math.max(H * ty, Math.max(150, H * .2) + hs * 1.1) - d * 70 + (1 - hot) * 24;
       if (n === 2) { const c0 = this.S(15.7), t = this.T(14.3), rr = { x: t.z, z: -t.x }, u = 150 * .62, v = -450 * .62, c = tc(c0.x + rr.x * u + t.x * v, 0, c0.z + rr.z * u + t.z * v);
         if (c[2] > NEAR) { const sx = this.cx0p + c[0] * this.Fp / c[2], sy = this.cy0p - c[1] * this.Fp / c[2]; x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; const tw = x.measureText(hl.toUpperCase()).width;
-          qx = this.mob ? W / 2 : Math.max(this.m + tw / 2, Math.min(W - this.m - tw / 2, sx)); /* Runde 19: Telefon mittig */ qy = Math.min(H - Math.max(36, H * .07), sy + hs * 1.5) - d * 70 + (1 - hot) * 24; } }
+          qx = this.mob ? W / 2 : W / 2 + (Math.max(this.m + tw / 2, Math.min(W - this.m - tw / 2, sx)) - W / 2) * (this.zcp ?? 1); /* Runde 19: Telefon mittig */ qy = Math.min(H - Math.max(36, H * .07), sy + hs * 1.5) - d * 70 + (1 - hot) * 24; } }
       x.globalAlpha = a; x.fillStyle = '#FFFFFF'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
       x.font = '300 ' + hs.toFixed(1) + 'px ' + this.fD; x.letterSpacing = '0px'; x.fillText(hl.toUpperCase(), qx, qy);
       const ls = Math.max(10, Math.min(14, hs * .14)); x.font = '500 ' + ls.toFixed(1) + 'px ' + this.fT; x.letterSpacing = '0.16em';
@@ -888,8 +888,14 @@ class Weg {
     let fx = cam.L.x - C.x, fy = cam.L.y - C.y, fz = cam.L.z - C.z; const fl = Math.hypot(fx, fy, fz); fx /= fl; fy /= fl; fz /= fl;
     let rx = fz, rz = -fx; const rl = Math.hypot(rx, rz); rx /= rl; rz /= rl;
     const ux = fy * rz, uy = fz * rx - fx * rz, uz = -fy * rx;
-    const fw = (p => p * p * (3 - 2 * p))(Math.max(0, Math.min(1, (pos - 13.3) / .7))), bgo = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (pos - 15.1) / .45))), fi = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT + 1) / .9))), cx0 = W * (.5 + (this.mob ? 0 : .06) * fi + (this.mob ? 0 : .17) * (pos > -1.3 && pos < 13.6 ? 1 - Math.max(fw, fi) : 0)), cy0 = H * (.36 + (this.mob ? .02 : .1) * fw + (this.mob ? -.02 : -.035) * fi + (this.mob ? 0 : -.13) * (pos > -1.3 && pos < 13.6 ? 1 - Math.max(fw, fi) : 0)), NEAR = 30;
+    /* Runde 25c, Desktop: die Verschiebung nach rechts oben (Platz für den Tagestext) läuft vor dem Ziel aus, Haus und „Besser leben.“ stehen mittig */
+    const zc = this.mob ? 1 : 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT - 14.9) / .9)));
+    const fw = (p => p * p * (3 - 2 * p))(Math.max(0, Math.min(1, (pos - 13.3) / .7))), bgo = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (pos - 15.1) / .45))), fi = 1 - (v => v * v * (3 - 2 * v))(Math.max(0, Math.min(1, (TT + 1) / .9))), cx00 = W * (.5 + (this.mob ? 0 : .06) * fi + (this.mob ? 0 : .17) * (pos > -1.3 && pos < 13.6 ? (1 - Math.max(fw, fi)) * zc : 0)), cy00 = H * (.36 + (this.mob ? .02 : .1) * fw + (this.mob ? -.02 : -.035) * fi + (this.mob ? 0 : -.13) * (pos > -1.3 && pos < 13.6 ? (1 - Math.max(fw, fi)) * zc : 0)), NEAR = 30;
     F *= 1 - (this.mob ? .05 : .2) * fi;
+    /* Runde 25c, Desktop: am Ziel steht die Mitte des Hauses waagrecht in der Bildmitte und auf 30 % der Höhe; „Besser leben.“ darunter */
+    let cx0 = cx00, cy0 = cy00; this.zcp = zc;
+    if (zc < 1) { const c0 = this.S(15.7), t3 = this.T(14.3), hx = c0.x + t3.z * 93, hz = c0.z - t3.x * 93, dx = hx - C.x, dy = 190 - C.y, dz = hz - C.z, X = dx * rx + dz * rz, Y = dx * ux + dy * uy + dz * uz, Z = dx * fx + dy * fy + dz * fz;
+      if (Z > NEAR) { cx0 += (W / 2 - (cx00 + X * F / Z)) * (1 - zc); cy0 += (H * .3 - (cy00 - Y * F / Z)) * (1 - zc); } }
     this.Fp = F; this.cx0p = cx0; this.cy0p = cy0;
     const tc = (px, py, pz) => { const dx = px - C.x, dy = py - C.y, dz = pz - C.z; return [dx * rx + dz * rz, dx * ux + dy * uy + dz * uz, dx * fx + dy * fy + dz * fz]; };
     const pr = c => [cx0 + c[0] * F / c[2], cy0 - c[1] * F / c[2]];

@@ -7,6 +7,7 @@
 // Schlussbild am Telefon erst das Foto, darunter die Headline; keine Fotokante unter dem Schwarz. Diagnose: /journey?jdiag
 // Runde 25 (2026-11-24): am Telefon sind „Was deine Journey noch besser macht.“ und die Schluss-Headlines so groß wie die Hero-Headline (heroFs).
 // Runde 25b: am Telefon kommt das Schlussbild weiß herein, das Foto blendet bildfüllend auf, zieht sich nach oben in seinen Rahmen und die schwarze Fläche steigt von unten (endBox, data-endwb, data-endpn).
+// Runde 25c: Desktop-Schlussbild hat wieder seine Scroll-Strecke (Höhe nie leeren), am Ziel stehen Haus und „Besser leben.“ mittig (zc), Telefon-Schlusstext 0,8 × Hero.
 // Quellen: basis.js, inhalt.js, weg-zeichnung.js, weg.js, weg.css (Vorschau: weg.html). Ersetzt JourneyEinstieg, JourneyGehen und JourneyLeben.
 // Aufruf: cd griffner-konzepte/journey && node framer-bau-weg.mjs. Ziel: griffner/framer-code/JourneyWeg.tsx (erzeugt, nicht von Hand ändern).
 import { readFileSync, writeFileSync } from 'node:fs';
