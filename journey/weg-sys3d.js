@@ -6,7 +6,7 @@
    schichten: die Ebenen des Planungssystems fallen zu einem Plan zusammen, daraus wächst das Haus aus gelben Blöcken;
    partner:   sechs Gewerke, ihre Wege laufen in einem gelben Block zusammen (Ein Partner);
    update:    die Wochen als Kacheln in die Tiefe, der Punkt zieht Woche für Woche weiter (erledigt, als nächstes, noch offen);
-   griffen:   zwei Wege von deinem Zuhause zur Manufaktur, mit jedem Besuch geht dort ein Fenster an; dann ein Tag mehr. */
+   griffen:   zwei Wege von deinem Zuhause zur Manufaktur (Runde 21: in der Form des Floating House), mit jedem Besuch geht dort ein Geschoss an; dann ein Tag mehr. */
 
 const G = 100, INS = 7, NEAR = 20;
 const GELB = '#FFB200', SCHWARZ = '#000000', ANTH = '#444442', KALK = '#CACACA', WEISS = '#FFFFFF';
@@ -76,7 +76,7 @@ export class Szene {
     if (a === 'schichten') { const mg = io(rp(p, .5, .78)); return this.view(A - .72 + .34 * e, (m ? .56 : .5) + .16 * mg, 1250, [0, 80 * (1 - mg) + 10, 0]); }
     if (a === 'partner') return this.view(A + R - .34 + .24 * e, (m ? .98 : .84) - .1 * e, 1900, [0, 20, 0]);
     if (a === 'update') return this.view(A + R - .3 + .2 * e, (m ? .9 : .66) + .05 * e, 2600, [0, 0, 0]);
-    return this.view(A + R + (m ? .5 - .2 * e : -.36 + .26 * e), (m ? .96 : .86) - .06 * e, 2000, [60, 20, 0]);
+    return this.view(A + R + (m ? .5 - .2 * e : -.36 + .26 * e), (m ? .86 : .66) - .05 * e, 2000, [60, 20, 0]);
   }
   /* Bildschirmpunkt unter (bzw. über) einer Kachel: Mitte und unterste (oberste) Ecke */
   kante(cx, cz, h, unten, y = 0) { let b = null, s = 0, n = 0; [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, c]) => { const q = this.P(cx + a * h, y, cz + c * h); if (!q) return; s += q[0]; n++; if (!b || (unten ? q[1] > b[1] : q[1] < b[1])) b = q; }); return b ? [s / n, b[1]] : null; }
@@ -86,6 +86,8 @@ export class Szene {
     if (Math.abs(dx) * (o.k || 1) > Math.abs(dy)) this.lab(q[0] + (dx > 0 ? d : -d), q[1] - this.lh(l1, l2) / 2, l1, l2, { ...o, al: dx > 0 ? 'left' : 'right' });
     else this.lab(q[0], q[1] + (dy > 0 ? d : -d), l1, l2, { ...o, up: dy < 0 });
   }
+  /* Q: wie P, aber durch die Hausdrehung this.T (am Telefon steht das Floating House quer, die Fassade schaut zur Kamera) */
+  Q(x, y, z) { return this.T ? this.P(...this.T([x, y, z])) : this.P(x, y, z); }
   P(x, y, z) { const c = this.tc(x, y, z); return c[2] < NEAR ? null : [this.cx + c[0] * this.F / c[2], this.cy - c[1] * this.F / c[2]]; }
   /* Maßstab so, dass die Szene über ihren ganzen Ablauf in die Fläche passt (Platz für die Beschriftungen bleibt frei) */
   hull() {
@@ -93,7 +95,7 @@ export class Szene {
     if (a === 'schichten') { const r = this.mob ? 170 : 230; return quader(-r, r, 0, 30 + (n - 1) * 62 + 20, -r, r); }
     if (a === 'partner') return quader(-450, 450, 0, 90, -260, 260);
     if (a === 'update') return quader(-760, 760, 0, 50, this.mob ? -150 : -200, this.mob ? 150 : 200);
-    return this.mob ? quader(-470, 500, 0, 100, -360, 360) : quader(-470, 640, 0, 100, -330, 330);
+    return this.mob ? quader(-470, 500, 0, 110, -360, 360) : quader(-470, 640, 0, 110, -330, 330);
   }
   pads() {
     const m = this.mob, a = this.art, k = this.f1 / 9, K = o => m ? Object.fromEntries(Object.entries(o).map(([n, v]) => [n, v * k])) : o;
@@ -111,7 +113,7 @@ export class Szene {
   }
 
   /* ---------- Zeichnen ---------- */
-  poly(pts) { const s = pts.map(q => this.P(q[0], q[1], q[2])); if (s.some(v => !v)) return null; const pa = new Path2D(); s.forEach((q, i) => i ? pa.lineTo(q[0], q[1]) : pa.moveTo(q[0], q[1])); pa.closePath(); return pa; }
+  poly(pts) { const s = pts.map(q => this.Q(q[0], q[1], q[2])); if (s.some(v => !v)) return null; const pa = new Path2D(); s.forEach((q, i) => i ? pa.lineTo(q[0], q[1]) : pa.moveTo(q[0], q[1])); pa.closePath(); return pa; }
   quad(x0, z0, x1, z1, y = 0) { return this.poly([[x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]]); }
   /* Kachelbrett wie in der Fahrt; die Kacheln wachsen von der Mitte nach außen (g0 bis g1) und laufen zum Rand ins Weiß aus */
   board(p, ni, nj, R, g0, g1, skip) {
@@ -128,7 +130,7 @@ export class Szene {
   /* Kachel als Block: 'gelb' wie die Tage der Fahrt, 'weiss' mit Haarlinie, 'schwarz' wie das Haus am Ende der Fahrt */
   box(x0, z0, x1, z1, y0, y1, st, a = 1, win) {
     const B = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
-    if (y1 - y0 > .5) [0, 1, 2, 3].map(i => { const p = B[i], q = B[(i + 1) % 4], f = [[p[0], y0, p[1]], [q[0], y0, q[1]], [q[0], y1, q[1]], [p[0], y1, p[1]]]; return { f, i, z: f.reduce((s, c) => s + this.tc(c[0], c[1], c[2])[2], 0) / 4 }; })
+    if (y1 - y0 > .5) [0, 1, 2, 3].map(i => { const p = B[i], q = B[(i + 1) % 4], f = [[p[0], y0, p[1]], [q[0], y0, q[1]], [q[0], y1, q[1]], [p[0], y1, p[1]]]; return { f, i, z: f.reduce((s, c) => s + (this.T ? this.tc(...this.T(c)) : this.tc(c[0], c[1], c[2]))[2], 0) / 4 }; })
       .sort((u, v) => v.z - u.z).forEach(({ f, i }) => { const pa = this.poly(f); if (!pa) return; this.face(pa, st, a, false); if (win && i === 0) win(z0); });
     const pt = this.quad(x0, z0, x1, z1, y1); if (pt) this.face(pt, st, a, true);
   }
@@ -330,28 +332,45 @@ export class Szene {
   s_griffen(p) {
     const x = this.x, M = this.t.marken, m = k => M[k] || [];
     /* Wörthersee und Feuerberg: am Desktop hinter der Manufaktur, am Telefon links und rechts daneben */
-    const HX = 300, home = [-4, 0], X = this.mob ? [[4, 3], [4, -3]] : [[6, 2], [6, -2]];
-    this.board(p, 6, 3, [700, 400], 0, .28, (i, j) => (i === home[0] && j === home[1]) || (i >= 2 && i <= 4 && j >= -1 && j <= 1) || X.some(c => c[0] === i && c[1] === j));
-    const A = bez([-400, 0, G / 2 - INS], [-330, 0, 330], [80, 0, 340], [HX - 120, 0, 72]), B = bez([-400, 0, -G / 2 + INS], [-320, 0, -330], [60, 0, -330], [HX - 100, 0, -74]);
+    const HX = 300, home = [-4, 0], mo = this.mob, X = mo ? [[4, 3], [4, -3]] : [[6, 2], [6, -2]], zc = mo ? -30 : 0;
+    /* Hausdrehung am Telefon: Länge quer zur Blickrichtung, das Carport liegt seitlich, die Fassade schaut zu deinem Zuhause */
+    const TH = mo ? ([u, y, v]) => [HX + v, y, HX - u + zc] : null, TQ = c => TH ? TH(c) : c;
+    this.board(p, 6, 3, [700, 400], 0, .28, (i, j) => (i === home[0] && j === home[1]) || (mo ? i >= 2 && i <= 4 && j >= -2 && j <= 2 : i >= 1 && i <= 4 && j >= -1 && j <= 1) || X.some(c => c[0] === i && c[1] === j));
+    const ax = mo ? 196 : 110, az = mo ? 60 : 74;
+    const A = bez([-400, 0, G / 2 - INS], [-330, 0, 330], [40, 0, 330], [ax, 0, zc + az]), B = bez([-400, 0, -G / 2 + INS], [-320, 0, -330], [40, 0, -330], [ax, 0, zc - az]);
     const ra = io(rp(p, .2, .48)), rb = io(rp(p, .5, .78)), pa = eo(rp(p, .14, .26)), l1 = rp(p, .47, .55), l2 = rp(p, .76, .84), ex = rp(p, .8, .95);
     this.path(A, 0, 1, KALK, pa); this.path(B, 0, 1, KALK, pa);
     this.path(A, 0, ra, SCHWARZ, .9); this.path(B, 0, rb, SCHWARZ, .9);
-    const XP = X.map(([i, j], k) => { const s = k ? -1 : 1; return this.mob ? bez([HX + 60, 0, s * 70], [HX + 60, 0, s * 150], [i * G, 0, j * G - s * 120], [i * G, 0, j * G - s * (G / 2 - INS)]) : bez([HX + 186, 0, s * 30], [HX + 250, 0, s * 60], [i * G - 80, 0, j * G], [i * G - G / 2 + INS, 0, j * G]); });
+    const XP = X.map(([i, j], k) => { const s = k ? -1 : 1; return mo ? bez([HX + 84, 0, zc + s * 40], [HX + 124, 0, zc + s * 120], [i * G, 0, j * G - s * 130], [i * G, 0, j * G - s * (G / 2 - INS)]) : bez([HX + 156, 0, s * 30], [HX + 226, 0, s * 60], [i * G - 80, 0, j * G], [i * G - G / 2 + INS, 0, j * G]); });
     XP.forEach(pts => this.path(pts, 0, io(ex), ANTH, .8, [2, 5], 1.1));
     X.forEach(([i, j]) => { const q = this.quad(i * G - G / 2 + INS, j * G - G / 2 + INS, i * G + G / 2 - INS, j * G + G / 2 - INS); if (q && ex > .3) { x.globalAlpha = rp(ex, .3, .7) * .8; x.strokeStyle = ANTH; x.lineWidth = 1; x.setLineDash([3, 4]); x.stroke(q); x.setLineDash([]); } });
-    /* dein Zuhause (weißer Block) und die Manufaktur (wie das Haus am Ende der Fahrt: schwarz, Fenster gehen gelb an) */
+    /* dein Zuhause (weißer Block) und die Manufaktur in der Form unseres Floating House (Runde 21): das verglaste Erdgeschoss
+       steht zurückgesetzt, das Obergeschoss schwebt darüber und kragt rundum aus, links das Carportdach auf dem Lagerkasten.
+       Schwarz wie das Haus am Ende der Fahrt; Tag 07 macht das Erdgeschoss hell, Tag 11 die Loggia oben. */
     const ah = eo(rp(p, .04, .18)), hs = eo(rp(p, .08, .3));
+    const fen = (x0, x1, us, ya, yb, lit) => z0 => us.forEach(([a, b]) => { const u0 = x0 + (x1 - x0) * a, u1 = x0 + (x1 - x0) * b, q = this.poly([[u0, ya, z0], [u1, ya, z0], [u1, yb, z0], [u0, yb, z0]]); if (!q) return; if (lit > 0) { x.globalAlpha = lit; x.fillStyle = GELB; x.fill(q); } x.globalAlpha = .7; x.strokeStyle = WEISS; x.lineWidth = 1; x.stroke(q); });
+    const latte = (x0, x1, n, ya, yb) => z0 => { x.globalAlpha = .32; x.strokeStyle = WEISS; x.lineWidth = 1; x.beginPath(); for (let k = 1; k < n; k++) { const u = x0 + (x1 - x0) * k / n, a = this.Q(u, ya, z0), b = this.Q(u, yb, z0); if (a && b) { x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); } } x.stroke(); };
+    const fhaus = () => {
+      if (hs <= 0) return;
+      const he = 50 * eo(rp(hs, 0, .55)), c = eo(rp(hs, .2, .7)), ho = 56 * eo(rp(hs, .45, 1)), hc = 42 * c;
+      const carport = { z: this.tc(...(this.T ? this.T([110, 0, 0]) : [110, 0, 0]))[2], f: () => { if (c <= 0) return;
+        this.box(46, -54, 94, 54, 0, hc, 'schwarz', 1, latte(46, 94, 7, 3 * c, hc - 3 * c));
+        [-60, 54].forEach(z => this.box(HX - 166, z, HX - 160, z + 6, 0, hc, 'schwarz', 1));
+        this.box(46, -60, HX - 128, 60, hc, hc + 8 * c, 'schwarz', 1); } };
+      const erd = { z: this.tc(HX, 0, 0)[2], f: () => { if (he <= .5) return; this.box(HX - 126, -56, HX + 132, 64, 0, he, 'schwarz', 1, fen(HX - 126, HX + 132, [[.03, .24], [.36, .57], [.68, .89]], he * .1, he * .92, l1)); } };
+      [carport, erd].sort((a, b) => b.z - a.z).forEach(it => it.f());
+      if (ho > .5) {
+        const y0 = Math.max(he, hc + 8 * c), y1 = y0 + ho, lo = z0 => { const q = this.poly([[HX - 140, y0, z0], [HX + 140, y0, z0], [HX + 140, y0 + ho * .7, z0], [HX - 140, y0 + ho * .7, z0]]); if (q) { x.globalAlpha = .5; x.strokeStyle = WEISS; x.lineWidth = 1; x.stroke(q); } fen(HX - 150, HX + 150, [[.13, .31], [.42, .6], [.7, .89]], y0 + ho * .06, y0 + ho * .66, l2)(z0); };
+        this.box(HX - 150, -78, HX + 150, 78, y0, y1, 'schwarz', 1, lo);
+      }
+    };
     const items = [{ z: this.tc(home[0] * G, 0, 0)[2], f: () => { if (ah <= 0) return; const nn = G / 2 - (G / 2 - INS) * Math.min(1.04, pop(ah)); this.box(home[0] * G - G / 2 + nn, -G / 2 + nn, home[0] * G + G / 2 - nn, G / 2 - nn, 0, 30 * ah, 'weiss', 1); } },
-      { z: this.tc(HX, 0, 0)[2], f: () => { if (hs <= 0) return;
-        const fen = (u0, u1, y0, y1, lit) => z0 => { const q = this.poly([[u0, y0, z0], [u1, y0, z0], [u1, y1, z0], [u0, y1, z0]]); if (!q) return; if (lit > 0) { x.globalAlpha = lit; x.fillStyle = GELB; x.fill(q); } x.globalAlpha = .7; x.strokeStyle = WEISS; x.lineWidth = 1; x.stroke(q); };
-        this.box(HX - 140, -70, HX + 140, 70, 0, 52 * hs, 'schwarz', 1, fen(HX - 127, HX - 19, 5 * hs, 46 * hs, l1));
-        if (hs > .5) { const h2 = rp(hs, .5, 1); this.box(HX - 46, -62, HX + 186, 62, 52 * hs, 52 * hs + 45 * h2, 'schwarz', 1, fen(HX + 46, HX + 173, 52 * hs + 7 * h2, 52 * hs + 38 * h2, l2)); }
-      } }];
+      { z: this.tc(HX, 0, 0)[2], f: () => { this.T = TH; fhaus(); this.T = null; } }];
     items.sort((a, b) => b.z - a.z).forEach(it => it.f());
     if (ra > 0 && ra < 1) this.dot(this.P(...auf(A, ra))); if (rb > 0 && rb < 1) this.dot(this.P(...auf(B, rb)));
-    const mo = this.mob;
-    if (hs > 0) this.sperre(quader(HX - 140, HX + 186, 0, 97 * hs, -70, 70));
-    this.setze(this.kante(HX + 70, 0, 116, false, 97 * hs), m(1)[0], m(1)[1], { mark: true, a: eo(rp(p, .18, .32)) }, ['o', 'r', 'l']);
+    if (hs > 0) this.sperre(quader(46, HX + 150, 0, 106 * hs, -78, 78).map(TQ));
+    let dach = null; [[-150, -78], [150, -78], [150, 78], [-150, 78]].forEach(([a, c]) => { const q = this.P(...TQ([HX + a, 106 * hs, c])); if (q && (!dach || q[1] < dach[1])) dach = q; }); const dm = this.P(...TQ([HX, 106 * hs, 0])); if (dach && dm) dach = [dm[0], dach[1]];
+    this.setze(dach, m(1)[0], m(1)[1], { mark: true, a: eo(rp(p, .18, .32)) }, ['o', 'r', 'l']);
     this.setze(this.kante(home[0] * G, 0, G / 2 - INS, true), m(0)[0], m(0)[1], { a: eo(rp(p, .1, .24)) }, ['u', 'l', 'r']);
     this.setze(this.P(...auf(A, .5)), m(2)[0], m(2)[1], { a: rp(ra, .35, .65) }, mo ? ['l', 'o', 'r'] : ['o', 'l', 'r']);
     this.setze(this.P(...auf(B, .5)), m(3)[0], m(3)[1], { a: rp(rb, .35, .65) }, mo ? ['r', 'u', 'l'] : ['u', 'r', 'l']);
