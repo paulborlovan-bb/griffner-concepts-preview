@@ -22,7 +22,7 @@ export const ECHT_WHO = [
 /* Wer hält wen: [links, rechts, wessen Hand vorn liegt]. Die rechte Hand der linken Figur nimmt die linke Hand der rechten. */
 const HOLD = [['mutter', 'vater', 'vater']];
 /* Die Familie ist etwas kleiner als echt (Kundenwunsch: kleiner im Bild) */
-const FS = .84;
+const FS0 = .84;
 /* Gesicht (Kundenwunsch 2026-11-19: „sie schauen traurig“): freundliches Lächeln über die Gesichtsknochen.
    Verschiebung in cm am Modell (y oben, z nach vorn, +x links der Figur), für rechts gespiegelt, bei Kindern nach Gesichtsbreite kleiner */
 const SMILE = (typeof window !== 'undefined' && window.__smile) || {
@@ -48,17 +48,19 @@ export function prefetchEchteFamilie(url) { famBuf(url).catch(() => { }); }
 /* Telefon (schmal): die kleine Datei. big = Desktop und Tablet, small = Telefon */
 export const familieUrl = (big, small) => (small && typeof matchMedia !== 'undefined' && matchMedia('(max-width: 809px)').matches) ? small : big;
 
-export async function loadEchteFamilie(T, url, who = ECHT_WHO) {
+/* opt.fs: Maßstab statt FS0 (2026-11-25: der Hero auf /concepts zeigt das Paar in echter Größe, dort ist die Figur der Maßstab) */
+export async function loadEchteFamilie(T, url, who = ECHT_WHO, opt = {}) {
   let buf = await famBuf(url);
   const u8 = new Uint8Array(buf, 0, 2);
   if (u8[0] === 0x1f && u8[1] === 0x8b) {
     if (typeof DecompressionStream === 'undefined') throw new Error('DecompressionStream fehlt');
     buf = await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
-  return echteFamilie(T, buf, who);
+  return echteFamilie(T, buf, who, opt);
 }
 
-export async function echteFamilie(T, buf, who = ECHT_WHO) {
+export async function echteFamilie(T, buf, who = ECHT_WHO, opt = {}) {
+  const FS = opt.fs || FS0;
   const dv = new DataView(buf);
   if (String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3)) !== 'GJR1') throw new Error('familie-echt.bin: falsches Format');
   const jl = dv.getUint32(4, true), HD = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, jl))), base = 8 + jl;

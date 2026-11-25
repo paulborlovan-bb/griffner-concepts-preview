@@ -102,7 +102,7 @@ export class Welt {
   feld(k, hg = 24) { const p = this.PTS[k], a = Math.floor(p.x / G2) * G2 + G2 / 2, b = Math.floor(p.z / G2) * G2 + G2 / 2; return this.P(a, hg, b); }
 
   /* o: netz (Linien bis zum Horizont, Deckkraft), rand (Rahmen der Kacheln), kachel(cell) 0..1, nebel [z0, Weite] oder null,
-     weg [p0, p1] (gestrichelt), punkt (p oder null), linien (Querlinien bei Start und Zwischenziel), tag(k) → { u, hot, m, flat, h },
+     weg [p0, p1] (gestrichelt), punkt (p oder null), linien (Querlinien bei Start und Zwischenziel), tag(k) → { u, hot, m, flat, h, za (Deckkraft der eigenen Nummer) },
      zahl (Deckkraft der Nummern), haus (Deckkraft), licht (Fenster 0..1), clipY (darunter nichts zeichnen) */
   draw(pos, cam, o = {}) {
     if (!this.W) return;
@@ -181,10 +181,10 @@ export class Welt {
         low = Bq;
       }
       /* Nummer unter dem Feld (unter der untersten Ecke, egal von wo die Kamera schaut) */
-      if (za > 0 && low && !low.some(c => c[2] < NEAR)) {
+      if (za > 0 && st.za !== 0 && low && !low.some(c => c[2] < NEAR)) {
         const s = low.map(pr), cx = s.reduce((v, p) => v + p[0], 0) / 4, by = Math.max(...s.map(p => p[1]));
         x.font = '500 ' + nf.toFixed(1) + 'px ' + this.fT; x.letterSpacing = '0.14em'; x.textAlign = 'center'; x.textBaseline = 'top'; x.fillStyle = hell ? SCHWARZ : WEISS;
-        x.globalAlpha = za * fz * (u > 0 ? .55 + .45 * hot : .6); x.fillText(String(k + 1).padStart(2, '0'), cx, by + 8); x.letterSpacing = '0px';
+        x.globalAlpha = za * (st.za == null ? 1 : st.za) * fz * (u > 0 ? .55 + .45 * hot : .6); x.fillText(String(k + 1).padStart(2, '0'), cx, by + 8); x.letterSpacing = '0px';
       }
     });
 

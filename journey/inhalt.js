@@ -66,7 +66,7 @@ export const LEBEN = {
         ['Noch offen.', 'Was ansteht, wer zuständig ist und bis wann.'],
         ['Kosten und Termine.', 'Wo dein Projekt steht und was eine Änderung bewirkt.']
       ],
-      marken: [['Wöchentliches Update', '']] },
+      marken: [['Projektupdate', '']] }, /* Runde 27: Beschriftung der 3D-Szene, „regelmäßig“ statt „jede Woche“ */
     { tab: 'Zweimal Griffen', art: 'griffen', h: 'Zweimal Griffen.',
       text: 'Bei der Beauftragung lernst du die Manufaktur und die Menschen dahinter kennen, beim Design Day wählst du jedes Detail für dein Zuhause. Wenn es für dich passt, holen wir dich ab. Mit einem zusätzlichen Tag am Wörthersee oder am Feuerberg lässt du den Besuch in Ruhe ausklingen.',
       marken: [['Dein Zuhause', ''], ['Griffen', 'GRIFFNER Campus'], ['Tag 07', 'Beauftragung'], ['Tag 11', 'Design Day'], ['Wörthersee', ''], ['Feuerberg', '']] }

@@ -3,8 +3,19 @@
    Deine Worte schweben im Raum, fliegen in den Grundriss, die Wände wachsen, das Haus entsteht, wechselt durch eigene Concepts,
    am Ende ein Feld aus Häusern mit dem gelben Feld in der Mitte.
    Anders als im Handoff sitzt das ganze Bild etwas weiter rechts oben (Kamera-Ausschnitt), damit es nicht hinter den großen Sätzen unten links liegt.
-   Die vorige Fassung liegt im Scratchpad der Sitzung als hero-round3.js. */
+   Die vorige Fassung liegt im Scratchpad der Sitzung als hero-round3.js.
+   2026-11-25 (Kunde: „on concepts page now we have a man silhouette, i want to replace him with that couple we had for the journey
+   before the design from the client“): statt der gebauten Figur steht das Paar aus der Journey da (journey/familie-echt.js, Microsoft
+   Rocketbox, MIT), Hand in Hand und in echter Größe. Es blendet aus dem Punkt auf, schaut zu den Wörtern, schaut sich ab und zu an und
+   geht, wenn das Haus steht, gemeinsam auf die Tür zu. Die gebaute Figur bleibt als Anker für Lichtkegel und Schatten, und sie springt ein,
+   solange das Paar lädt oder falls es nicht laden kann. */
 import { $, $$, E, win, lerp, clamp, ease, reduce, prog, loop } from './core.js';
+import { loadEchteFamilie, familieUrl, ECHT_WHO } from '../journey/familie-echt.js';
+
+/* Modell-Dateien des Paars: Desktop und Tablet, Telefon (halbe Texturen). In Framer setzt framer/build.mjs die Adressen bei Framer ein. */
+const PAAR_URL = ['journey/familie-echt.bin.gz', 'journey/familie-echt-s.bin.gz'];
+/* echte Größe (1,82 m und 1,69 m), darum auch etwas weiter auseinander als in der Journey (dort 84 %) */
+const PAAR = ECHT_WHO.map(w => ({ ...w, lat: w.lat / .84 * .95 }));
 
 const GHOSTS = [
   { L0: 13, D: 10, H1: 3, L1: 13, H2: 3, sx: 0, up: 1, R: 0, gl: .6, gu: .6, ge: 0, slope: 0 },
@@ -38,7 +49,7 @@ const WINS = [null, [.1, .19], [.205, .37], [.405, .54], [.575, .69], [.725, .85
 const SHIFT = { wide: [.06, .11], narrow: [-.2, .1] };
 let sk = '';
 
-let D, M, H, T, G = null, hi = reduce ? 1 : 0, rig = null;
+let D, M, H, T, G = null, hi = reduce ? 1 : 0, rig = null, FAM = null;
 
 export function initHero() {
   const el = $('#k-hero');
@@ -62,6 +73,12 @@ async function boot() {
   build();
   shift(0);
   loop.poke();
+  loadEchteFamilie(T, familieUrl(PAAR_URL[0], PAAR_URL[1]), PAAR, { fs: 1 }).then(f => {
+    if (!G) return;
+    f.members.forEach(m => { m.g.traverse(o => { if (o.isMesh) o.castShadow = true; }); f.fade(m, 0); H.scene.add(m.g); });
+    G.man.children.forEach(c => { c.visible = false; });
+    FAM = f; loop.poke();
+  }).catch(e => console.warn('Paar nicht geladen, die Figur bleibt', e));
 }
 
 /* Solange die Wörter frei im Raum schweben (p .2 bis .4), rückt das Bild weniger nach rechts, damit kein Wort am Rand abgeschnitten wird */
@@ -232,7 +249,8 @@ function tick() {
   pose(p, E(p, .07, .11));
   const pl = G.plate, ya = E(p, .325, .365), yf = E(p, .41, .5), tt = performance.now() / 1000;
   pl.visible = ya > .002;
-  const fx = HF[0] + 1.25, fy = 2.45 + Math.sin(tt * 1.1) * .05 * (1 - yf), fz = HF[1] - 1.7;
+  /* mit dem Paar erscheint die Idee mittig über beiden (es greift niemand danach), sonst an der Hand der Figur */
+  const fx = HF[0] + (FAM ? 0 : 1.25), fy = 2.45 + Math.sin(tt * 1.1) * .05 * (1 - yf), fz = HF[1] - 1.7;
   pl.position.set(lerp(fx, HY[0], yf), lerp(fy, .015, yf), lerp(fz, HY[1], yf));
   pl.scale.setScalar(Math.max(.001, lerp(.2 * ya, 1, yf * yf * yf)));
   pl.rotation.set(lerp(Math.PI / 2, 0, yf), lerp(Math.sin(tt * .6) * .35 + .25, 0, yf) + (1 - yf) * yf * 4 * Math.PI * .5, 0);
@@ -289,6 +307,15 @@ function pose(p, up) {
   hy = lerp(hy, .38, E(p, .21, .25)); hy = lerp(hy, -.32, E(p, .26, .3)); hy = lerp(hy, .08, E(p, .31, .35));
   hx += .26 * E(p, .31, .35) * (1 - E(p, .39, .45)) - .22 * E(p, .4, .46) * (1 - E(p, .58, .64)) + .3 * E(p, .64, .7) * (1 - E(p, .9, .95));
   hy = lerp(hy, 0, E(p, .39, .45));
+  /* Das Paar: Hand in Hand, seitlich vom Weg; die Schrittphase hängt am gegangenen Weg (rückwärts scrollen geht rückwärts, nichts rutscht).
+     Beide schauen wie die Figur zu den Wörtern (Drehung des Kopfs), sonst ab und zu zueinander. */
+  if (FAM) {
+    const o = p < .93 ? up : 0, yaw = man.rotation.y, c = Math.cos(yaw), s = Math.sin(yaw);
+    const phW = Math.hypot(HP[0] - HF[0], HP[1] - HF[1]) * sw2 / FAM.stride() * Math.PI * 2;
+    FAM.members.forEach(m => { FAM.fade(m, o); m.g.position.set(man.position.x + c * m.lat, 0, man.position.z - s * m.lat); m.g.rotation.y = yaw; });
+    if (o > .002) { FAM.members.forEach(m => FAM.pose(m, phW, env, t, hy, reduce)); FAM.hands(reduce); }
+    return;
+  }
   R.head.rotation.set(hx + Math.sin(t * .9) * .015, hy + Math.sin(t * .37) * .03, 0);
   /* Wovon du träumst: der Arm hebt sich, die Hand öffnet sich in den Raum */
   const reach = E(p, .315, .36) * (1 - E(p, .39, .46));
