@@ -58,6 +58,8 @@
 .gg1{position:relative;height:100vh;height:100svh;min-height:620px;background:var(--griffner-schwarz);color:var(--griffner-weiss);overflow:hidden}
 .gg1__media{position:absolute;inset:0}
 .gg1__shade{position:absolute;inset:0;background:var(--bildschutz);transition:opacity 600ms}
+/* flache Abdunklung zusätzlich zum Bildschutz, damit der Text auf hellen Stellen des Films lesbar bleibt */
+.gg1__shade::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.22)}
 .gg1 .gv-tag{left:var(--vx-m);top:clamp(92px,12vh,120px)}
 .gg1__over{position:absolute;z-index:2;left:0;right:0;bottom:clamp(40px,8vh,88px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);align-items:end;padding:0 var(--vx-m);transition:opacity 500ms,transform 700ms var(--ease)}
 .gg1__h{grid-column:1 / span 7}
@@ -134,7 +136,7 @@ html.is-kino{overflow:hidden}
   .gp__ton span:last-child{display:none}
   .gg1{min-height:560px}
   /* am Telefon liegt der Text höher im Bild: eine flache Abdunklung zusätzlich zum Bildschutz */
-  .gg1__shade::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.3)}
+  .gg1__shade::after{background:rgba(0,0,0,.3)}
   .gg1__over{grid-template-columns:minmax(0,1fr);row-gap:22px;bottom:32px}
   .gg1__h,.gg1__side{grid-column:1}
   .gg1__side{gap:22px}
