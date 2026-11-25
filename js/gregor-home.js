@@ -7,7 +7,8 @@
    03 Kino      Vorschau mit gelbem Knopf; der Film mit Ton öffnet sich über der Seite (Esc oder Kreuz schließt, Fokus bleibt im Kino)
    04 Geteilt   Text links, Film hoch rechts mit dem Schalter Ton an (Balken bewegen sich, solange Ton läuft)
    05 Zeiger    am Rechner folgt der Hinweis Mit Ton abspielen der Maus, Klick ins Bild startet oder pausiert; Zeitleiste zum Springen
-   PLATZHALTER: assets/video/gregor-platzhalter.mp4 ist der GRIFFNER Film „Built Different“ ohne Tonspur, bis der Film mit Gregor vorliegt.
+   Film: Vorschau = assets/video/gregor-vorschau.mp4 (13 s Ausschnitt, stumm, ohne Balken); mit Ton = der Gregor-Film von griffner.com/gregor
+   (Framer-Datei mit Balken oben und unten, darum mit Ton immer object-fit: contain). Die Leiste zeigt erst mit Ton Zeit und Länge.
    Ohne Bewegung (prefers-reduced-motion): keine stumme Vorschau, nur das Standbild; der Knopf mit Ton funktioniert. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
@@ -19,33 +20,39 @@ const ALL = [];
 
 class Film {
   constructor(v, root, opt = {}) {
-    this.v = v; this.root = root; this.opt = opt; this.mode = 'vorschau'; this.vis = false; this.subs = []; ALL.push(this);
-    /* data-ab: die stumme Vorschau läuft ab dieser Sekunde (beim Platzhalter ab dem Haus, der Anfang ist schwarz) */
-    this.ab = +v.dataset.ab || 0;
-    const zumAb = () => { if (this.mode === 'vorschau' && this.ab && v.currentTime < this.ab - .25 && v.readyState > 0) v.currentTime = this.ab; };
-    v.addEventListener('loadedmetadata', zumAb); v.addEventListener('timeupdate', zumAb); v.addEventListener('seeked', zumAb);
+    this.v = v; this.root = root; this.opt = opt; this.mode = 'vorschau'; this.vis = false; this.subs = []; this.ziel = null; ALL.push(this);
+    /* vor: kurzer stummer Ausschnitt für die Vorschau (data-src), ton: der ganze Film mit Ton von griffner.com (data-ton) */
+    this.vor = v.dataset.src || ''; this.tonSrc = v.dataset.ton || opt.src || this.vor;
     v.muted = true; v.loop = !opt.einmal; v.playsInline = true;
     v.addEventListener('ended', () => { if (opt.ende) opt.ende(); else if (this.mode !== 'vorschau') this.vorschau(); });
-    ['play', 'pause', 'volumechange', 'loadedmetadata', 'durationchange'].forEach(e => v.addEventListener(e, () => this.sync()));
+    /* Sprung in der Zeitleiste, bevor der ganze Film geladen ist: nachholen, sobald seine Länge bekannt ist */
+    v.addEventListener('loadedmetadata', () => { if (this.ziel != null && this.mode === 'ton' && isFinite(v.duration)) { v.currentTime = this.ziel * v.duration; this.ziel = null; } });
+    ['play', 'pause', 'volumechange', 'loadedmetadata', 'durationchange', 'seeked'].forEach(e => v.addEventListener(e, () => this.sync()));
     this.sync();
   }
-  laden() { const v = this.v; if (!v.getAttribute('src')) { v.preload = 'auto'; v.src = v.dataset.src || this.opt.src; } }
+  quelle(src) { const v = this.v; if (src && v.getAttribute('src') !== src) { v.preload = 'auto'; v.src = src; return true; } return false; }
+  laden() { if (!this.v.getAttribute('src')) this.quelle(this.mode === 'ton' ? this.tonSrc : (this.vor || this.tonSrc)); }
   spielen() { this.laden(); const p = this.v.play(); if (p) p.catch(() => this.sync()); }
   vorschau() {
-    this.mode = 'vorschau'; const v = this.v; v.muted = true; v.loop = !this.opt.einmal;
-    if (this.ab && v.readyState > 0) v.currentTime = this.ab;
+    this.mode = 'vorschau'; const v = this.v; this.ziel = null;
+    if (this.vor && v.getAttribute('src') === this.tonSrc && this.vor !== this.tonSrc) { v.pause(); this.quelle(this.vor); }
+    v.muted = true; v.loop = !this.opt.einmal;
     if (this.vis && !reduce && !this.opt.einmal) this.spielen(); else v.pause();
     this.sync();
   }
+  /* im Klick aufrufen: Quelle wechseln und play() im selben Schritt, dann erlaubt auch iOS den Ton */
   mitTon() {
     ALL.forEach(f => { if (f !== this && f.mode !== 'vorschau') f.vorschau(); });
-    this.mode = 'ton'; const v = this.v; this.laden(); v.loop = false; v.muted = false;
-    try { v.currentTime = 0; } catch (e) { /* noch keine Daten */ }
+    this.mode = 'ton'; const v = this.v; v.loop = false; v.muted = false;
+    if (!this.quelle(this.tonSrc)) { try { v.currentTime = 0; } catch (e) { /* noch keine Daten */ } }
     this.spielen(); this.sync();
   }
   pp() { if (this.mode === 'vorschau') return this.mitTon(); if (this.v.paused) this.spielen(); else this.v.pause(); }
   ton() { if (this.mode === 'vorschau') return this.mitTon(); this.v.muted = !this.v.muted; }
-  springe(fr) { const v = this.v; if (this.mode === 'vorschau') this.mitTon(); if (isFinite(v.duration)) v.currentTime = cl(fr) * v.duration; }
+  springe(fr) {
+    const v = this.v; if (this.mode === 'vorschau') this.mitTon();
+    if (isFinite(v.duration) && v.getAttribute('src') === this.tonSrc) v.currentTime = cl(fr) * v.duration; else this.ziel = cl(fr);
+  }
   sicht(b) {
     this.vis = b;
     if (!b) { if (!this.v.paused) this.v.pause(); }
@@ -154,7 +161,7 @@ function gg3() {
     if (kino) kino.mode = 'vorschau';
     pre.sicht(true); frameBtn.focus({ preventScroll: true });
   };
-  kino = new Film(kv, k, { einmal: true, src: pre.v.dataset.src, ende: zu });
+  kino = new Film(kv, k, { einmal: true, src: pre.v.dataset.ton, ende: zu });
   leiste($('[data-gp]', k), kino, zu); ruhe(k);
   frameBtn.addEventListener('click', () => {
     k.hidden = false; document.documentElement.classList.add('is-kino');
@@ -170,9 +177,6 @@ function gg3() {
       e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
     }
   });
-  /* Länge des Films auf dem Knopf, sobald bekannt */
-  const dur = $('[data-g3-dur]', s);
-  pre.v.addEventListener('loadedmetadata', () => { if (isFinite(pre.v.duration)) dur.textContent = fmt(pre.v.duration); });
 }
 
 /* ---------- 04 Geteilt ---------- */
@@ -207,8 +211,8 @@ function gg5() {
     const v = f.v, du = v.duration || 0, on = f.mode === 'ton';
     hl.textContent = !on ? 'Mit Ton abspielen' : v.paused ? 'Weiter' : 'Pause';
     tl.textContent = !on || v.muted ? 'Ton an' : 'Ton aus';
-    fill.style.transform = `scaleX(${du ? (v.currentTime / du).toFixed(4) : 0})`;
-    t.textContent = fmt(v.currentTime); if (du) d.textContent = fmt(du);
+    fill.style.transform = `scaleX(${on && du ? (v.currentTime / du).toFixed(4) : 0})`;
+    t.textContent = on ? fmt(v.currentTime) : '0:00'; if (on && du) d.textContent = fmt(du);
   });
   /* der Hinweis folgt der Maus (weich nachgezogen) */
   let tx = 0, ty = 0, x = 0, y = 0, inside = false, anim = false;

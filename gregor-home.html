@@ -18,8 +18,9 @@
 <body data-page="gregor-home">
 <!-- Gregor auf der Startseite. Runde 1 (2026-11-25): statt der Sprungschanze (GregorFilm) der Film mit Gregor. Er läuft stumm als Vorschau,
      ein Knopf startet ihn von vorn mit Ton. Fünf Varianten: 01 Vollbild, 02 Rahmen, 03 Kino, 04 Geteilt, 05 Zeiger.
-     Texte wie der Abschnitt Gregor auf der Startseite. PLATZHALTER: Der Film mit Gregor liegt noch nicht vor; bis dahin läuft der
-     GRIFFNER Film „Built Different“ (ohne Tonspur) aus assets/video/gregor-platzhalter.mp4. Abläufe in js/gregor-home.js, Gestaltung in css/gregor-home.css. -->
+     Texte wie der Abschnitt Gregor auf der Startseite. Film: der Gregor-Film von griffner.com/gregor (Framer-Datei, 1:37, mit Ton), er läuft mit Ton
+     direkt von dort (data-ton). Die stumme Vorschau assets/video/gregor-vorschau.mp4 ist ein Ausschnitt daraus (65 bis 78 s, ohne Balken, 1280 x 544).
+     Abläufe in js/gregor-home.js, Gestaltung in css/gregor-home.css. -->
 <div class="site">
   <div class="bgl" data-bgl aria-hidden="true"></div>
   <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
@@ -34,7 +35,7 @@
         <p class="info" data-reveal>Startseite / Gregor / Runde 1</p>
         <h1 class="vxi__h" data-reveal="80">Der Film mit Gregor.</h1>
         <p class="vxi__txt" data-reveal="160">Fünf Varianten, wie der Film mit Gregor Schlierenzauer die Sprungschanze auf der Startseite ersetzt. Der Film läuft zuerst stumm als Vorschau. Ein Knopf startet ihn von vorn mit Ton, damit man ihn ganz erlebt. Texte wie im Abschnitt Gregor auf der Startseite.</p>
-        <p class="vxi__note" data-reveal="200"><b>Platzhalter</b><span>Der Film mit Gregor liegt uns noch nicht vor. Bis dahin läuft hier der GRIFFNER Film „Built Different“, er hat keine Tonspur. Mit dem echten Film kommt der Ton dazu, die Knöpfe funktionieren schon.</span></p>
+        <p class="vxi__note" data-reveal="200"><b>Film</b><span>Der Film von der Seite Gregor auf griffner.com (1:37, mit Ton). Die stumme Vorschau ist ein Ausschnitt daraus: Sprung, Flug und Gregor vor dem Haus.</span></p>
         <ol class="vxi__list" data-reveal="240">
           <li><a href="#v1"><span class="info">01</span><span class="vxi__n">Vollbild</span></a></li>
           <li><a href="#v2"><span class="info">02</span><span class="vxi__n">Rahmen</span></a></li>
@@ -48,8 +49,7 @@
     <!-- 01 VOLLBILD: der Film füllt den Abschnitt und läuft stumm, Überschrift und Knopf liegen darauf. Mit Ton verschwindet der Text, unten erscheint die Leiste -->
     <div class="vxt" data-room="tag" id="v1"><p class="info">Variante 01</p><p class="vxt__n">Vollbild</p><p class="vxt__x">Der Film füllt den ganzen Abschnitt und läuft stumm. Überschrift, Text und der Knopf Film mit Ton ansehen liegen darauf. Ein Klick startet den Film von vorn mit Ton, der Text tritt zurück, unten erscheint eine schlichte Leiste.</p></div>
     <section class="gg1 vx-dark" data-room="schwarz" data-gv="1" aria-labelledby="g1-h">
-      <div class="gg1__media"><video class="gv-v" data-gv-v data-src="assets/video/gregor-platzhalter.mp4" data-ab="13" poster="assets/video/gregor-platzhalter.jpg" muted loop playsinline preload="none" disablepictureinpicture></video><div class="gg1__shade" aria-hidden="true"></div></div>
-      <p class="gv-tag">Platzhalter</p>
+      <div class="gg1__media"><video class="gv-v" data-gv-v data-src="assets/video/gregor-vorschau.mp4" data-ton="https://framerusercontent.com/assets/JcngSdBgoNDbZEF8ZGCgHWSjkQ.mp4" poster="assets/video/gregor-vorschau.jpg" muted loop playsinline preload="none" disablepictureinpicture></video><div class="gg1__shade" aria-hidden="true"></div></div>
       <div class="gg1__over">
         <h2 class="vx-h gg1__h" id="g1-h" data-reveal>Er hat das Springen neu gedacht. Wir das Bauen.</h2>
         <div class="gg1__side" data-reveal="120">
@@ -69,8 +69,7 @@
             <h2 class="vx-h gg2__h" id="g2-h">Er hat das Springen neu gedacht. Wir das Bauen.</h2>
           </div>
           <div class="gg2__frame" data-g2-frame>
-            <video class="gv-v" data-gv-v data-src="assets/video/gregor-platzhalter.mp4" data-ab="13" poster="assets/video/gregor-platzhalter.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
-            <p class="gv-tag">Platzhalter</p>
+            <video class="gv-v" data-gv-v data-src="assets/video/gregor-vorschau.mp4" data-ton="https://framerusercontent.com/assets/JcngSdBgoNDbZEF8ZGCgHWSjkQ.mp4" poster="assets/video/gregor-vorschau.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
             <div class="gg2__cta" data-g2-cta>
               <button type="button" class="gv-big" data-gv-go aria-label="Film mit Ton ansehen"><span class="gv-big__i" aria-hidden="true"></span></button>
               <p class="gg2__lbl">Film mit Ton ansehen</p>
@@ -91,9 +90,8 @@
         <p class="vx-lead" data-reveal="120">Gregor Schlierenzauer hat nie gefragt, wie man es immer gemacht hat, sondern wie es besser geht. Heute fragt er, wie man gut lebt. Darum ist er Teil von GRIFFNER.</p>
       </div>
       <button type="button" class="gg3__frame" data-gv-go data-reveal="160" aria-label="Film mit Ton ansehen">
-        <video class="gv-v" data-gv-v data-src="assets/video/gregor-platzhalter.mp4" data-ab="13" poster="assets/video/gregor-platzhalter.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true"></video>
-        <span class="gv-tag">Platzhalter</span>
-        <span class="gg3__cta"><span class="gv-big" aria-hidden="true"><span class="gv-big__i"></span></span><span class="gg3__lbl">Film mit Ton ansehen</span><span class="gg3__dur info" data-g3-dur>0:27</span></span>
+        <video class="gv-v" data-gv-v data-src="assets/video/gregor-vorschau.mp4" data-ton="https://framerusercontent.com/assets/JcngSdBgoNDbZEF8ZGCgHWSjkQ.mp4" poster="assets/video/gregor-vorschau.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true"></video>
+        <span class="gg3__cta"><span class="gv-big" aria-hidden="true"><span class="gv-big__i"></span></span><span class="gg3__lbl">Film mit Ton ansehen</span><span class="gg3__dur info">1:37</span></span>
       </button>
       <div class="vx-foot"><p class="vx-foot__l"><span class="info">Gregor Schlierenzauer</span><span>Teil von GRIFFNER.</span></p><a class="vx-btn" href="https://griffner.com/gregor">Gregors Geschichte</a></div>
     </section>
@@ -109,8 +107,7 @@
           <div class="gv-acts" data-reveal="180"><button type="button" class="vx-btn gv-btn" data-gv-go><span class="gv-play__i" aria-hidden="true"></span>Film mit Ton ansehen</button><a class="gv-link" href="https://griffner.com/gregor">Gregors Geschichte</a></div>
         </div>
         <div class="gg4__media" data-reveal="100">
-          <video class="gv-v" data-gv-v data-src="assets/video/gregor-platzhalter.mp4" data-ab="13" poster="assets/video/gregor-platzhalter.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
-          <p class="gv-tag">Platzhalter</p>
+          <video class="gv-v" data-gv-v data-src="assets/video/gregor-vorschau.mp4" data-ton="https://framerusercontent.com/assets/JcngSdBgoNDbZEF8ZGCgHWSjkQ.mp4" poster="assets/video/gregor-vorschau.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
           <button type="button" class="gg4__ton" data-gv-ton><span class="gv-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-gv-ton-l>Ton an</span></button>
           <span class="gg4__line" aria-hidden="true"><i data-gv-fill></i></span>
         </div>
@@ -125,14 +122,13 @@
         <p class="vx-lead" data-reveal="120">Gregor Schlierenzauer hat nie gefragt, wie man es immer gemacht hat, sondern wie es besser geht. Heute fragt er, wie man gut lebt. Darum ist er Teil von GRIFFNER.</p>
       </div>
       <div class="gg5__frame" data-g5-frame data-reveal="160">
-        <video class="gv-v" data-gv-v data-src="assets/video/gregor-platzhalter.mp4" data-ab="13" poster="assets/video/gregor-platzhalter.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
-        <p class="gv-tag">Platzhalter</p>
+        <video class="gv-v" data-gv-v data-src="assets/video/gregor-vorschau.mp4" data-ton="https://framerusercontent.com/assets/JcngSdBgoNDbZEF8ZGCgHWSjkQ.mp4" poster="assets/video/gregor-vorschau.jpg" muted loop playsinline preload="none" disablepictureinpicture></video>
         <button type="button" class="gg5__hint" data-g5-hint data-gv-go><span class="gg5__sq" aria-hidden="true"></span><span data-g5-hint-l>Mit Ton abspielen</span></button>
       </div>
       <div class="gg5__bar">
         <span class="gg5__t info" data-gv-t>0:00</span>
         <span class="gg5__line" data-gv-seek role="slider" aria-label="Stelle im Film" tabindex="0"><i data-gv-fill></i></span>
-        <span class="gg5__t info" data-gv-d>0:27</span>
+        <span class="gg5__t info" data-gv-d>1:37</span>
         <button type="button" class="gg5__ton" data-gv-ton><span class="gv-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span data-gv-ton-l>Ton an</span></button>
       </div>
       <div class="vx-foot"><p class="vx-foot__l"><span class="info">Gregor Schlierenzauer</span><span>Teil von GRIFFNER.</span></p><a class="vx-btn" href="https://griffner.com/gregor">Gregors Geschichte</a></div>
@@ -144,7 +140,7 @@
 
 <!-- Kino für 03: der Film mit Ton über der ganzen Seite -->
 <div class="ggk" data-g3k hidden role="dialog" aria-modal="true" aria-label="Film mit Gregor">
-  <video class="ggk__v" data-g3k-v playsinline preload="none" disablepictureinpicture poster="assets/video/gregor-platzhalter.jpg"></video>
+  <video class="ggk__v" data-g3k-v playsinline preload="none" disablepictureinpicture poster="assets/video/gregor-vorschau.jpg"></video>
   <button type="button" class="ggk__x" data-g3k-x aria-label="Schließen"><i></i><i></i></button>
   <div class="gp gp--on" data-gp></div>
 </div>
