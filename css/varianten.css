@@ -1,0 +1,82 @@
+/* Gemeinsam für die Variantenseiten der Startseite (journey-home.html, gregor-home.html, 2026-11-25).
+   Aufbau wie services-home.html: Einstieg mit Liste, vor jeder Variante ein sandfarbener Streifen (Nummer, Name, Hinweis),
+   Sprungleiste rechts im Rand (Telefon unten). Abschnittskopf wie auf griffner.com: große Überschrift links, kurzer Text rechts,
+   unten eine Haarlinie mit Bezeichnung und Knopf. Schwarz, Weiß, Sand nur für die Hinweisstreifen, Gelb nur als Akzent.
+   Keine Rundungen, keine Schatten, keine Verläufe außer --bildschutz. */
+:root{
+  --room-vx-start:var(--griffner-weiss);
+  --room-tag:var(--griffner-sand);
+  --room-weiss:var(--griffner-weiss);
+  --room-schwarz:var(--griffner-schwarz);
+  --vx-m:var(--page-margin);
+  --vx-h:clamp(40px,4.4vw,76px);
+  --vx-pad:clamp(80px,12vh,128px);
+  --vx-rule-d:rgba(0,0,0,.14);
+  --vx-rule-l:rgba(255,255,255,.2);
+}
+.vx-btn,.vxi__list a,.vxsw a{-webkit-tap-highlight-color:transparent}
+
+/* ---------- Einstieg ---------- */
+.vxi{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:clamp(150px,20vh,220px) 0 clamp(64px,10vh,112px)}
+.vxi__in{width:min(920px,calc(100% - 2 * var(--vx-m)));margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.vxi__in>*{margin:0}
+.vxi__h{font-family:var(--font-display);font-weight:300;font-size:var(--t-hero);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.vxi__txt{max-width:34em;font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.75;text-wrap:pretty}
+.vxi__list{list-style:none;padding:0;margin:clamp(12px,3vh,32px) 0 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:20px;border-top:1px solid var(--vx-rule-d)}
+.vxi__list li{display:flex}
+.vxi__list a{flex:1;display:flex;flex-direction:column;gap:10px;padding:16px 0 15px;border-bottom:1px solid var(--vx-rule-d);color:inherit;text-decoration:none;transition:padding 400ms var(--ease)}
+.vxi__list .info{opacity:.5}
+.vxi__n{font-family:var(--font-display);font-weight:300;font-size:clamp(20px,1.7vw,26px);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0}
+@media (hover:hover){.vxi__list a:hover{padding-left:8px}}
+.vxi__note{display:flex;gap:14px;align-items:baseline;padding:14px 16px;background:var(--griffner-sand);font-size:var(--t-body-s);line-height:1.45}
+.vxi__note b{font-family:var(--font-text);font-weight:600;font-size:11px;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+
+/* ---------- Hinweisstreifen vor jeder Variante (gehört nicht zum Abschnitt) ---------- */
+.vxt{background:var(--griffner-sand);color:var(--griffner-schwarz);padding:18px var(--vx-m) 17px;display:grid;grid-template-columns:120px minmax(0,15em) minmax(0,1fr);align-items:baseline;column-gap:24px}
+.vxt>*{margin:0}
+.vxt .info{opacity:.6}
+.vxt__n{font-family:var(--font-display);font-weight:300;font-size:clamp(20px,1.6vw,26px);line-height:1;text-transform:uppercase;font-feature-settings:'liga' 0}
+.vxt__x{font-size:var(--t-body-s);line-height:1.4;opacity:.75;max-width:54em;text-wrap:pretty}
+
+/* ---------- Abschnittskopf und Fuß wie auf der Startseite ---------- */
+.vx-h{margin:0;font-family:var(--font-display);font-weight:300;font-size:var(--vx-h);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.vx-lead{margin:0;font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.75;max-width:26em;text-wrap:pretty}
+.vx-head{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);align-items:center;padding:0 var(--vx-m)}
+.vx-head .vx-h{grid-column:1 / span 7}
+.vx-head .vx-lead{grid-column:9 / -1}
+.vx-foot{display:flex;align-items:center;gap:28px;padding:0 var(--vx-m);margin-top:clamp(40px,6vh,64px)}
+.vx-foot__l{margin:0;flex:1;display:flex;gap:18px;align-items:baseline;padding-top:18px;border-top:1px solid currentColor}
+.vx-foot__l .info{opacity:.9}
+.vx-foot__l span:last-child{font-size:var(--t-body-s);opacity:.6}
+.vx-foot .vx-btn{margin-top:18px}
+/* Knopf wie auf der Website (Fläche, Pfeil): auf Weiß schwarz, auf Schwarz weiß */
+.vx-btn{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 26px;box-sizing:border-box;background:var(--griffner-schwarz);color:var(--griffner-weiss);border:0;font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;text-decoration:none;white-space:nowrap;cursor:pointer;transition:gap 300ms var(--ease),background-color 300ms}
+.vx-btn::after{content:'→';font-size:1.15em;line-height:1}
+@media (hover:hover){.vx-btn:hover{gap:18px;background:#222221}}
+.vx-btn:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:3px}
+.vx-dark .vx-btn{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+@media (hover:hover){.vx-dark .vx-btn:hover{background:#e6e4df}}
+
+/* ---------- Sprungleiste der Varianten ---------- */
+.vxsw{position:fixed;right:10px;top:50%;z-index:40;display:flex;flex-direction:column;background:rgba(0,0,0,.82);transform:translate(8px,-50%);opacity:0;pointer-events:none;transition:opacity 400ms,transform 400ms var(--ease)}
+.vxsw.is-on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+.vxsw a{padding:11px 10px 10px;color:var(--griffner-weiss);font-family:var(--font-text);font-weight:500;font-size:11px;letter-spacing:.14em;text-decoration:none;opacity:.5;border-left:2px solid transparent}
+.vxsw a.is-cur{opacity:1;border-left-color:var(--griffner-gelb)}
+
+@media (max-width:899px){
+  :root{--vx-pad:clamp(64px,10vh,96px)}
+  .vxsw{right:auto;left:50%;top:auto;bottom:max(12px,env(safe-area-inset-bottom));flex-direction:row;transform:translate(-50%,12px)}
+  .vxsw.is-on{transform:translate(-50%,0)}
+  .vxsw a{padding:11px 12px 10px;border-left:0;border-bottom:2px solid transparent}
+  .vxsw a.is-cur{border-bottom-color:var(--griffner-gelb)}
+  .vxi__list{grid-template-columns:minmax(0,1fr)}
+  .vxi__list a{flex-direction:row;align-items:baseline;gap:14px}
+  .vxi__list .info{min-width:4.6em}
+  .vxt{grid-template-columns:auto minmax(0,1fr);row-gap:8px;padding:16px var(--vx-m)}
+  .vxt__x{grid-column:1 / -1}
+  .vx-head{grid-template-columns:minmax(0,1fr);row-gap:20px}
+  .vx-head .vx-h,.vx-head .vx-lead{grid-column:1 / -1}
+  .vx-btn{min-height:48px;padding:0 22px;font-size:14px}
+  .vx-foot{flex-wrap:wrap;gap:0}
+  .vx-foot__l{flex:1 1 100%;flex-direction:column;gap:6px}
+}

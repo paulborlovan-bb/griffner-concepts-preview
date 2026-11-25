@@ -1,0 +1,158 @@
+/* Gregor auf der Startseite (gregor-home.html), Runde 1, 2026-11-25. Abläufe in js/gregor-home.js, Gemeinsames in css/varianten.css.
+   Nacht wie die Sprungschanze: Schwarz, Weiß, Gelb nur für den großen Knopf, die Marke im Zeiger und die Balken. Keine Rundungen,
+   keine Schatten, keine Verläufe außer --bildschutz; dunkle Flächen hinter Leisten sind flach (rgba). */
+.gv-play,.gv-big,.gp__b,.gg4__ton,.gg5__hint,.gg5__ton,.gg3__frame,.ggk__x{-webkit-tap-highlight-color:transparent}
+/* der Film liegt absolut in seinem Rahmen: Safari zieht eine Höhe in Prozent nicht nach, wenn der Rahmen beim Scrollen wächst (02) */
+.gv-v{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.gv-tag{position:absolute;left:16px;top:16px;z-index:4;margin:0;transition:opacity 300ms;padding:6px 9px 5px;background:var(--griffner-sand);color:var(--griffner-schwarz);font-family:var(--font-text);font-weight:600;font-size:10px;line-height:1;letter-spacing:.18em;text-transform:uppercase;pointer-events:none}
+
+[data-mode="ton"] .gv-tag{opacity:0}
+.gg2 .gv-tag{top:auto;bottom:16px}
+
+/* Knöpfe */
+.gv-acts{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.gv-play{display:inline-flex;align-items:center;gap:14px;min-height:52px;padding:0 26px;box-sizing:border-box;background:var(--griffner-weiss);color:var(--griffner-schwarz);border:0;font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;transition:gap 300ms var(--ease),background-color 300ms}
+@media (hover:hover){.gv-play:hover{gap:18px;background:#e6e4df}}
+.gv-play:focus-visible,.gv-big:focus-visible,.gp__b:focus-visible,.gg4__ton:focus-visible,.gg5__hint:focus-visible,.gg5__ton:focus-visible,.gg3__frame:focus-visible,.ggk__x:focus-visible,.gp__line:focus-visible,.gg5__line:focus-visible{outline:2px solid var(--griffner-gelb);outline-offset:3px}
+.gv-play__i{display:block;width:10px;height:12px;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}
+.gv-btn{gap:14px}
+.gv-btn::after{content:none}
+.gv-link{display:inline-flex;align-items:center;gap:10px;padding:8px 0;color:inherit;text-decoration:none;border-bottom:1px solid currentColor;font-size:15px;white-space:nowrap;transition:gap 300ms var(--ease)}
+.gv-link::after{content:'→';font-size:1.15em;line-height:1}
+@media (hover:hover){.gv-link:hover{gap:16px}}
+/* großer gelber Knopf mit Dreieck */
+.gv-big{position:relative;display:flex;align-items:center;justify-content:center;width:clamp(72px,7vw,104px);aspect-ratio:1;padding:0;border:0;background:var(--griffner-gelb);color:var(--griffner-schwarz);cursor:pointer;transition:transform 500ms var(--ease)}
+.gv-big__i{display:block;width:26%;height:30%;margin-left:6%;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}
+@media (hover:hover){.gv-big:hover,.gg3__frame:hover .gv-big{transform:scale(1.07)}}
+/* Balken: bewegen sich, solange Ton läuft */
+.gv-bars{display:inline-flex;align-items:flex-end;gap:2px;height:12px}
+.gv-bars i{display:block;width:2px;height:100%;background:currentColor;transform-origin:50% 100%;transform:scaleY(.35)}
+@keyframes gv-eq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+[data-mode="ton"]:not(.is-muted):not(.is-paused) .gv-bars i{animation:gv-eq 900ms ease-in-out infinite}
+[data-mode="ton"]:not(.is-muted):not(.is-paused) .gv-bars i:nth-child(2){animation-delay:-300ms;animation-duration:700ms}
+[data-mode="ton"]:not(.is-muted):not(.is-paused) .gv-bars i:nth-child(3){animation-delay:-600ms;animation-duration:1100ms}
+[data-mode="ton"]:not(.is-muted):not(.is-paused) .gv-bars i:nth-child(4){animation-delay:-150ms;animation-duration:800ms}
+
+/* Leiste für den Film mit Ton (01, 02, Kino): erscheint mit Ton, blendet sich am Rechner nach 2,5 s Ruhe aus */
+.gp{position:absolute;z-index:5;left:var(--vx-m);right:var(--vx-m);bottom:clamp(16px,3vh,28px);display:flex;align-items:center;gap:clamp(10px,1.6vw,20px);padding:4px 14px;background:rgba(0,0,0,.55);color:var(--griffner-weiss);opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity 400ms,transform 500ms var(--ease)}
+[data-mode="ton"] .gp{opacity:1;pointer-events:auto;transform:none}
+[data-mode="ton"].is-idle:not(.is-paused) .gp{opacity:0;pointer-events:none}
+@media (hover:none){[data-mode="ton"].is-idle:not(.is-paused) .gp{opacity:1;pointer-events:auto}}
+.gp__b{display:inline-flex;align-items:center;gap:10px;min-height:44px;min-width:44px;justify-content:center;padding:0 6px;background:none;border:0;color:inherit;cursor:pointer;font-family:var(--font-text);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.gp__ic{position:relative;display:block;width:12px;height:14px}
+.gp__ic::before,.gp__ic::after{content:'';position:absolute;top:0;width:4px;height:14px;background:currentColor}
+.gp__ic::before{left:0}.gp__ic::after{right:0}
+.is-paused .gp__ic::after{display:none}
+.is-paused .gp__ic::before{width:12px;clip-path:polygon(0 0,100% 50%,0 100%)}
+.gp__line,.gg5__line{position:relative;flex:1;height:28px;cursor:pointer;touch-action:none}
+.gp__line::before,.gg5__line::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.35)}
+.gp__line i,.gg5__line i{position:absolute;left:0;right:0;top:calc(50% - 1px);height:3px;background:var(--griffner-weiss);transform-origin:left center;transform:scaleX(0)}
+.gp__t{opacity:.8;white-space:nowrap;font-feature-settings:'tnum' 1}
+.gp__x{width:44px}
+.gp__x i,.ggk__x i{position:absolute;width:18px;height:1.5px;background:currentColor}
+.gp__x{position:relative}
+.gp__x i:first-child,.ggk__x i:first-child{transform:rotate(45deg)}
+.gp__x i:last-child,.ggk__x i:last-child{transform:rotate(-45deg)}
+
+/* ---------- 01 Vollbild ---------- */
+.gg1{position:relative;height:100vh;height:100svh;min-height:620px;background:var(--griffner-schwarz);color:var(--griffner-weiss);overflow:hidden}
+.gg1__media{position:absolute;inset:0}
+.gg1__shade{position:absolute;inset:0;background:var(--bildschutz);transition:opacity 600ms}
+.gg1 .gv-tag{left:var(--vx-m);top:clamp(92px,12vh,120px)}
+.gg1__over{position:absolute;z-index:2;left:0;right:0;bottom:clamp(40px,8vh,88px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);align-items:end;padding:0 var(--vx-m);transition:opacity 500ms,transform 700ms var(--ease)}
+.gg1__h{grid-column:1 / span 7}
+.gg1__side{grid-column:9 / -1;display:flex;flex-direction:column;align-items:flex-start;gap:28px}
+.gg1__side .vx-lead{opacity:.85}
+.gg1[data-mode="ton"] .gg1__over{opacity:0;transform:translateY(14px);pointer-events:none}
+.gg1[data-mode="ton"] .gg1__shade{opacity:.35}
+
+/* ---------- 02 Rahmen ---------- */
+.gg2{background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+.gg2__run{position:relative;height:280vh;height:280svh}
+.gg2__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.gg2__head{position:absolute;z-index:1;left:var(--vx-m);right:var(--vx-m);top:clamp(116px,17vh,180px);text-align:center}
+.gg2__h{max-width:14em;margin:0 auto}
+.gg2__frame{position:absolute;z-index:2;left:50%;top:50%;width:42vw;height:23.6vw;transform:translateX(-50%);overflow:hidden;background:#0b0b0b}
+.gg2__cta{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:0 var(--vx-m);text-align:center;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;transition:opacity 600ms}
+.gg2__cta>*{margin:0}
+.gg2.is-cta .gg2__cta{opacity:1;pointer-events:auto}
+.gg2[data-mode="ton"] .gg2__cta{opacity:0;pointer-events:none}
+.gg2__lbl{font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em}
+.gg2__txt{max-width:32em;margin-top:clamp(12px,3vh,36px)!important;font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.85;text-wrap:pretty}
+
+/* ---------- 03 Kino ---------- */
+.gg3{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding:var(--vx-pad) 0}
+.gg3__frame{position:relative;display:block;width:calc(100% - 2 * var(--vx-m));margin:clamp(48px,8vh,88px) var(--vx-m) 0;aspect-ratio:16/9;padding:0;border:0;background:#0b0b0b;color:var(--griffner-weiss);cursor:pointer;overflow:hidden;font:inherit;text-align:left}
+.gg3__frame .gv-v{transition:transform 1400ms var(--ease)}
+@media (hover:hover){.gg3__frame:hover .gv-v{transform:scale(1.03)}}
+.gg3__cta{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(0,0,0,.22)}
+.gg3__lbl{font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em}
+.gg3__dur{opacity:.7}
+/* das Kino über der Seite */
+.ggk{position:fixed;inset:0;z-index:200;background:var(--griffner-schwarz);color:var(--griffner-weiss)}
+.ggk[hidden]{display:none}
+.ggk__v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--griffner-schwarz)}
+.ggk__x{position:absolute;z-index:6;top:max(14px,env(safe-area-inset-top));right:14px;display:flex;align-items:center;justify-content:center;width:52px;height:52px;padding:0;border:0;background:rgba(0,0,0,.55);color:var(--griffner-weiss);cursor:pointer}
+.ggk__x i{width:22px}
+.ggk .gp{bottom:max(16px,env(safe-area-inset-bottom))}
+html.is-kino{overflow:hidden}
+
+/* ---------- 04 Geteilt (Weiß) ---------- */
+.gg4{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--vx-pad) 0}
+.gg4__grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);align-items:center;padding:0 var(--vx-m)}
+.gg4__txt{grid-column:1 / span 5;display:flex;flex-direction:column;align-items:flex-start;gap:28px}
+.gg4__txt>*{margin:0}
+.gg4__k{opacity:.55}
+.gg4__media{grid-column:7 / -1;position:relative;height:min(82vh,780px);min-height:460px;overflow:hidden;background:#0b0b0b;color:var(--griffner-weiss)}
+.gg4__ton{position:absolute;z-index:3;left:16px;bottom:20px;display:inline-flex;align-items:center;gap:12px;min-height:46px;padding:0 18px;border:0;background:var(--griffner-weiss);color:var(--griffner-schwarz);font-family:var(--font-text);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.gg4__line{position:absolute;z-index:2;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.25)}
+.gg4__line i{display:block;height:100%;background:var(--griffner-gelb);transform-origin:left center;transform:scaleX(0)}
+
+/* ---------- 05 Zeiger ---------- */
+.gg5{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding:var(--vx-pad) 0}
+.gg5__frame{position:relative;margin:clamp(48px,8vh,88px) var(--vx-m) 0;aspect-ratio:21/9;overflow:hidden;background:#0b0b0b;cursor:pointer}
+.gg5__hint{position:absolute;z-index:3;left:0;top:0;display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:0 18px;border:0;background:var(--griffner-schwarz);color:var(--griffner-weiss);font-family:var(--font-text);font-weight:600;font-size:14px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;transition:opacity 300ms}
+.gg5__sq{display:block;width:11px;height:11px;background:var(--griffner-gelb)}
+@media (hover:hover) and (pointer:fine){
+  .gg5__frame{cursor:none}
+  .gg5__hint{pointer-events:none}
+  .gg5[data-mode="ton"]:not(.is-zeig):not(.is-paused) .gg5__hint{opacity:0}
+}
+.gg5__bar{display:flex;align-items:center;gap:16px;margin:14px var(--vx-m) 0}
+.gg5__t{opacity:.7;min-width:3em;font-feature-settings:'tnum' 1}
+.gg5__t:first-child{text-align:left}
+.gg5__ton{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 4px 0 12px;border:0;background:none;color:inherit;font-family:var(--font-text);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+
+/* ---------- Telefon ---------- */
+@media (max-width:899px){
+  .gv-acts{gap:18px 24px}
+  .gv-play{min-height:48px;padding:0 22px;font-size:14px}
+  /* mit Ton zeigt der Film das ganze Bild */
+  [data-mode="ton"] .gg1__media .gv-v,[data-mode="ton"] .gg2__frame .gv-v,[data-mode="ton"] .gg4__media .gv-v{object-fit:contain}
+  .gp{left:12px;right:12px;padding:2px 6px;gap:6px}
+  .gp__t{display:none}
+  .gp__ton span:last-child{display:none}
+  .gg1{min-height:560px}
+  /* am Telefon liegt der Text höher im Bild: eine flache Abdunklung zusätzlich zum Bildschutz */
+  .gg1__shade::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.3)}
+  .gg1__over{grid-template-columns:minmax(0,1fr);row-gap:22px;bottom:32px}
+  .gg1__h,.gg1__side{grid-column:1}
+  .gg1__side{gap:22px}
+  .gg1__side .vx-lead{font-size:var(--t-body)}
+  .gg1 .gv-tag{top:76px}
+  .gg2__head{top:96px}
+  .gg2__txt{font-size:var(--t-body);max-width:24em}
+  .gg2__lbl{font-size:14px}
+  .gg4__grid{grid-template-columns:minmax(0,1fr);row-gap:40px}
+  .gg4__txt,.gg4__media{grid-column:1}
+  .gg4__txt{gap:22px}
+  .gg4__media{height:auto;min-height:0;aspect-ratio:4/5}
+  .gg5__frame{aspect-ratio:16/9}
+  .gg5__hint{left:50%;top:auto;bottom:14px;transform:translateX(-50%);min-height:44px;font-size:13px}
+  .gg5__bar{gap:10px}
+  .gg5__ton span:last-child{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .gv-bars i{animation:none!important}
+  .gg3__frame .gv-v{transition:none}
+}
