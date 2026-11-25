@@ -16,6 +16,8 @@
   --room-v6:var(--griffner-schwarz);
   --room-v6d:var(--griffner-schwarz);
   --room-v6e:var(--griffner-schwarz);
+  --room-v6e2:var(--griffner-schwarz);
+  --room-v6e3:var(--griffner-schwarz);
   --room-v6f:var(--griffner-schwarz);
   --room-v7:var(--griffner-weiss);
   --sh-m:var(--page-margin);
@@ -234,19 +236,40 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .sho__foot{display:flex;flex-direction:column;align-items:center;gap:clamp(20px,3.4vh,32px);text-align:center}
 .sho__xs{justify-items:center;opacity:var(--o)}
 
-/* 6E Band: Fenster 4:5, darin die drei Filme übereinander; die Wörter übereinander in einer Maske von einer Zeile */
-.shb__run{height:320vh;height:320svh;position:relative}
-.shb__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:clamp(22px,3.6vh,36px);padding:clamp(96px,13vh,132px) var(--sh-m) clamp(40px,8vh,80px);overflow:hidden}
+/* 6E Band (Runde 9 kompakt): alles auf einer stehenden Bühne, Überschrift und Knopf bleiben beim Scrollen sichtbar.
+   Fenster 4:5 mit den drei Filmen übereinander, die Wörter übereinander in einer Maske von einer Zeile.
+   E = Kopf links, Satz und Knopf rechts; E2 (shb--m) alles mittig, Knopf unten; E3 (shb--e) Texte in den vier Ecken */
+.shb{--bw:clamp(40px,5.4vw,104px);padding-top:0}
+.shb__run{height:270vh;height:270svh;position:relative}
+.shb__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:clamp(20px,3.6vh,40px);padding:clamp(96px,12.5vh,124px) var(--sh-m) clamp(28px,5vh,52px);overflow:hidden}
+.shb__head{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);align-items:end}
+.shb__head>*{margin:0}
+.shb__h{grid-column:1 / span 7;font-family:var(--font-display);font-weight:300;font-size:clamp(30px,2.9vw,52px);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.shb__side{grid-column:9 / -1;display:flex;flex-direction:column;align-items:flex-start;gap:18px}
+.shb__lead{margin:0;font-size:var(--t-body);line-height:var(--lh-body);opacity:.7;max-width:26em;text-wrap:pretty}
 .shb__mid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-items:center;column-gap:clamp(20px,2.6vw,44px);min-height:0}
+.shb__a,.shb__w,.shb__wm{font-size:var(--bw)}
 .shb__a{justify-self:end}
-.shb__win{height:100%;max-height:min(60vh,600px);aspect-ratio:4/5;position:relative;overflow:hidden;background:#0b0b0b}
+.shb__win{height:100%;max-height:min(54vh,540px);aspect-ratio:4/5;position:relative;overflow:hidden;background:#0b0b0b}
 .shb__strip{position:absolute;inset:0;will-change:transform}
 .shb__f{position:absolute;left:0;width:100%;height:100%;overflow:hidden}
 .shb__f .sh-m{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;will-change:transform}
-.shb__wm{justify-self:start;font-size:clamp(44px,6vw,120px);height:1.1em;overflow:hidden}
+.shb__wm{justify-self:start;height:1.1em;overflow:hidden}
 .shb__ws{will-change:transform}
 .shb__w{display:block;line-height:1.1}
-.shb__xs{justify-items:center;text-align:center}
+.shb__foot{display:flex;flex-direction:column;align-items:center;gap:clamp(16px,2.6vh,26px);text-align:center}
+.shb__xs{justify-items:center}
+.shb__x{font-size:var(--t-body)}
+/* E2 Mitte: Kopf mittig in einer Zeile, darunter der Satz; unten Satz zum Teil und Knopf */
+.shb--m .shb__head{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.shb--m .shb__h{max-width:24em}
+/* E3 Ecken: oben links Überschrift, oben rechts Satz; unten links Satz zum Teil, unten rechts Knopf */
+.shb--e .shb__head{align-items:start}
+.shb--e .shb__h{grid-column:1 / span 6}
+.shb--e .shb__lead{grid-column:9 / -1;justify-self:end;text-align:right;max-width:19em}
+.shb--e .shb__foot{flex-direction:row;align-items:flex-end;justify-content:space-between;text-align:left}
+.shb--e .shb__xs{justify-items:start}
+.shb--e .shb__x{max-width:26em;text-wrap:pretty}
 
 /* 6F Säulen: drei Spalten, das Bild in der Mitte über alle Zeilen; links Besser und der Knopf, rechts das Wort und der Satz.
    Mittlere Zeile = Wörter, genau auf der Mitte des Bilds */
@@ -299,7 +322,9 @@ video.sh-m{display:block;background:#0b0b0b}
   :root{--sh-pad:clamp(64px,10vh,96px)}
   .shsw{right:auto;left:50%;top:auto;bottom:max(12px,env(safe-area-inset-bottom));flex-direction:row;transform:translate(-50%,12px)}
   .shsw.is-on{transform:translate(-50%,0)}
-  .shsw a{padding:11px 7px 10px;border-left:0;border-bottom:2px solid transparent}
+  .shsw{max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}
+  .shsw::-webkit-scrollbar{display:none}
+  .shsw a{flex:none;padding:11px 7px 10px;border-left:0;border-bottom:2px solid transparent}
   .shsw a.is-cur{border-bottom-color:var(--griffner-gelb)}
   .shi__list{grid-template-columns:minmax(0,1fr)}
   .shi__list a{flex-direction:row;align-items:baseline;gap:14px}
@@ -386,15 +411,23 @@ video.sh-m{display:block;background:#0b0b0b}
   .sho__bm{left:50%;top:50%;transform:translate(-50%,calc(var(--o) * var(--ph) / 2 + var(--g)))}
   .sho__x{font-size:var(--t-body)}
   .sho__foot{gap:16px}
-  /* 6E Band: Besser oben, Fenster, das Wort unten rechts, darunter der Satz; der Knopf im Kopf unter dem Satz */
-  .shb__stage{padding:84px var(--sh-m) 28px;row-gap:14px}
-  .shb__mid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:10px}
+  /* 6E Band kompakt am Telefon: Überschrift und Knopf oben (E, E3) oder Knopf unten (E2); der Satz unter der Überschrift fällt weg, damit der Film Platz hat */
+  .shb{--bw:clamp(36px,11vw,52px)}
+  .shb__stage{padding:76px var(--sh-m) 20px;row-gap:14px}
+  .shb__head{grid-template-columns:minmax(0,1fr);row-gap:12px;margin-bottom:16px}
+  .shb__h{grid-column:1;font-size:clamp(26px,7.2vw,34px)}
+  .shb__side{grid-column:1}
+  .shb__lead{display:none}
+  .shb__side .sh-btn{min-height:42px;padding:0 18px}
+  .shb__mid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:8px}
   .shb__a{justify-self:start}
   .shb__win{justify-self:stretch;width:100%;height:100%;max-height:none;aspect-ratio:auto}
   .shb__wm{justify-self:end}
   .shb__w{text-align:right}
-  .shb__a,.shb__w,.shb__wm{font-size:clamp(40px,13vw,64px)}
-  .shb__x{font-size:var(--t-body)}
+  .shb__foot{gap:12px}
+  .shb__foot .sh-btn{min-height:42px;padding:0 18px}
+  .shb--e .shb__h{grid-column:1}
+  .shb--e .shb__foot{flex-direction:column;align-items:flex-start}
   /* 6F Säulen: Besser, Bild, Wort rechts, Satz, Knopf untereinander */
   .shc__stage{padding:84px var(--sh-m) 24px}
   .shc__grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto;row-gap:10px}

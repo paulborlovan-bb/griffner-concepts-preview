@@ -19,6 +19,7 @@
    Runde 8: drei Fassungen von 06 auf Schwarz, ohne Leiste, Zähler und Liste der Schritte, nicht wie das Brett der Journey danach:
    6D Öffnen        eine Zeile Besser planen, sie öffnet sich und der Film erscheint zwischen den Wörtern; Satz und Knopf mittig darunter
    6E Band          Film und Wort laufen wie ein Band mit demselben Fortschritt; Knopf im Kopf neben dem Satz
+                    Runde 9: kompakt, Überschrift und Knopf stehen mit auf der Bühne; 6E2 alles mittig, 6E3 Texte in den Ecken
    6F Säulen        der nächste Film baut sich in Säulen von unten auf; links Besser mit Knopf, rechts Wort mit Satz
    Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Treiben, keine Parallaxe, die Filme bleiben beim Poster, alles bleibt bedienbar. */
 import { loop, reveal, $, $$, reduce } from './core.js';
@@ -255,8 +256,8 @@ function vD() {
 
 /* 6E Band: drei Filme übereinander im Fenster, drei Wörter übereinander in der Maske; beide laufen mit demselben Fortschritt.
    Im Film läuft das Bild etwas langsamer als das Band (Tiefe) */
-function vE() {
-  const sec = $('[data-shb]'); if (!sec) return;
+function vE() { $$('[data-shb]').forEach(band); }
+function band(sec) {
   const run = $('[data-shb-run]', sec), strip = $('[data-shb-strip]', sec), ws = $('[data-shb-ws]', sec);
   $('[data-shb-a]', sec).textContent = split(TEILE[0].name)[0];
   ws.innerHTML = TEILE.map(t => `<span class="shb__w">${esc(split(t.name)[1])}</span>`).join('');
