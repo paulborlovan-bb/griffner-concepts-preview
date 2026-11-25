@@ -15,10 +15,11 @@
    Runde 4: statt der Standbilder dieselben Stellen als Film (Kamera fährt, Haus entsteht, Jahreszeiten), Parallaxe und Schwenk stärker.
    Runde 6: neuer Text vom Kunden. Überschrift, ein Satz darunter, je Teil ein Satz (SATZ) statt der Liste der Leistungen, Knopf Services entdecken;
    02 und 06 haben die Überschrift jetzt über der stehenden Bühne, die Leiste zeigt keine Leistung mehr.
-   Runde 7: drei Fassungen von 06 ohne Leiste, Zähler und Liste der Schritte, keine schwarze Bühne (danach kommt die Journey):
-   6A Weiß          06 auf Weiß, Knopf im Kopf, das Bild schiebt sich von unten herein, das Wort rollt
-   6B Seite         ohne stehende Bühne: Besser und der Knopf stehen links, rechts laufen die drei Teile vorbei (Sand)
-   6C Streifen      die drei Filme quer nebeneinander gleiten zur Seite, Besser und das Wort halb auf dem Bild, Knopf mittig darunter
+   Runde 7: 6A Weiß, 6B Seite, 6C Streifen (ohne Schwarz), nicht gewählt, entfernt.
+   Runde 8: drei Fassungen von 06 auf Schwarz, ohne Leiste, Zähler und Liste der Schritte, nicht wie das Brett der Journey danach:
+   6D Öffnen        eine Zeile Besser planen, sie öffnet sich und der Film erscheint zwischen den Wörtern; Satz und Knopf mittig darunter
+   6E Band          Film und Wort laufen wie ein Band mit demselben Fortschritt; Knopf im Kopf neben dem Satz
+   6F Säulen        der nächste Film baut sich in Säulen von unten auf; links Besser mit Knopf, rechts Wort mit Satz
    Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Treiben, keine Parallaxe, die Filme bleiben beim Poster, alles bleibt bedienbar. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
@@ -224,72 +225,91 @@ function vM() {
   } });
 }
 
-/* ---------- Runde 7: drei Fassungen von 06, ohne Leiste, ohne Zähler, ohne Liste der Schritte, keine schwarze Bühne ---------- */
-/* Wort, das rollt (6A, 6C): je Teil ein <span data-t>; is-on steht, is-up ist schon oben hinaus, die übrigen warten unten.
-   is-in = schon gezeigt (6A: die Bilder bis zum aktuellen liegen übereinander) */
+/* ---------- Runde 8: drei Fassungen von 06 auf Schwarz, ohne Leiste, Zähler und Liste der Schritte (Runde 7 Weiß, Seite, Streifen: nicht gewählt) ---------- */
+/* Wort, das rollt (6D, 6F): je Teil ein <span data-t>; is-on steht, is-up ist schon oben hinaus, die übrigen warten unten */
 const rollHtml = cls => TEILE.map(t => `<span class="${cls}" data-t="${t.i}">${esc(split(t.name)[1])}</span>`).join('');
-const setRoll = (sec, cur) => $$('[data-t]', sec).forEach(e => { const k = +e.dataset.t; e.classList.toggle('is-on', k === cur); e.classList.toggle('is-up', k < cur); e.classList.toggle('is-in', k <= cur); });
+const setRoll = (sec, cur) => $$('[data-t]', sec).forEach(e => { const k = +e.dataset.t; e.classList.toggle('is-on', k === cur); e.classList.toggle('is-up', k < cur); });
+const sm = u => u * u * (3 - 2 * u);
+/* Fortschritt mit Pausen (6E): 0 bis 2, jeder Teil steht eine Weile, dazwischen gleitet es weiter */
+const restP = pr => { const f = Math.max(0, Math.min(2, pr * 3 - .5)), k0 = Math.min(1, Math.floor(f)); return reduce ? Math.round(f) : k0 + sm(cl((f - k0 - .3) / .4)); };
 
-/* 6A Weiß: wie 06, das neue Bild schiebt sich von unten über das alte, das Wort rollt; der Knopf steht im Kopf */
-function vA() {
-  const sec = $('[data-sha]'); if (!sec) return;
-  const run = $('[data-sha-run]', sec), pics = $('[data-sha-pics]', sec);
-  $('[data-sha-a]', sec).textContent = split(TEILE[0].name)[0];
-  $('[data-sha-b]', sec).innerHTML = rollHtml('sha__t');
-  $('[data-sha-xs]', sec).innerHTML = satzHtml('sha__x');
-  pics.innerHTML = TEILE.map(t => hochM(t, 'sha__img is-st', `data-t="${t.i}"`)).join('');
-  let last = -1;
+/* 6D Öffnen: --o (0 zu, 1 offen) an der Bühne; der Film öffnet sich von der Mitte (clip-path), die Wörter weichen zur Seite (CSS).
+   Jeder Teil: öffnen, offen stehen, schließen; der letzte bleibt offen. Das Wort wechselt, wenn die Zeile zu ist */
+function vD() {
+  const sec = $('[data-sho]'); if (!sec) return;
+  const run = $('[data-sho-run]', sec), stage = $('[data-sho-stage]', sec), pics = $('[data-sho-pics]', sec);
+  $('[data-sho-a]', sec).textContent = split(TEILE[0].name)[0];
+  $('[data-sho-b]', sec).innerHTML = rollHtml('sho__t');
+  $('[data-sho-xs]', sec).innerHTML = satzHtml('sho__x');
+  pics.innerHTML = TEILE.map(t => hochM(t, 'sho__img is-st', `data-v="${t.i}"`)).join('');
+  const vs = $$('video', pics);
+  let last = -1, lo = -1;
   loop.add({ tick() {
-    const pr = prOf(run);
-    if (!reduce) pics.style.transform = `translate3d(0,${(-(pr - .5) * (innerWidth < 900 ? 24 : 60)).toFixed(1)}px,0)`;
-    const cur = Math.floor(Math.min(2.999, pr * 3));
-    if (cur !== last) { last = cur; setRoll(sec, cur); }
+    const f = Math.min(2.999, prOf(run) * 3), k = Math.floor(f), u = f - k;
+    let o = sm(cl(u / .26)); if (k < 2) o = Math.min(o, 1 - sm(cl((u - .74) / .26)));
+    if (reduce) o = 1;
+    if (Math.abs(o - lo) > .0004) { lo = o; stage.style.setProperty('--o', o.toFixed(4)); }
+    if (k !== last) { last = k; setRoll(sec, k); vs.forEach((v, i) => v.classList.toggle('is-on', i === k)); }
   } });
 }
 
-/* 6B Seite: Besser steht links (sticky), rechts laufen die drei Teile normal vorbei; der Teil in der Mitte des Bildschirms ist an */
-function vB() {
-  const sec = $('[data-shs]'); if (!sec) return;
-  const list = $('[data-shs-list]', sec), stick = $('[data-shs-stick]', sec), a = $('[data-shs-a]', sec);
-  a.textContent = split(TEILE[0].name)[0];
-  list.innerHTML = TEILE.map(t => `<article class="shs__it" data-p="${t.i}">
-      <a class="shs__pic" href="leistungen.html" tabindex="-1" aria-hidden="true">${hochM(t)}</a>
-      <p class="shs__t">${esc(split(t.name)[1])}</p>
-      <p class="shs__x">${esc(t.txt)}</p>
-    </article>`).join('');
-  const its = $$('.shs__it', list), wide = matchMedia('(min-width:900px)');
-  /* am Rechner beginnt Besser auf der Höhe des ersten Worts (Mitte des ersten Bilds) */
-  const fit = () => { stick.style.marginTop = wide.matches ? `${Math.max(0, its[0].offsetHeight / 2 - a.offsetHeight / 2).toFixed(0)}px` : ''; };
-  fit(); addEventListener('resize', fit); if (document.fonts) document.fonts.ready.then(fit);
-  let last = -1;
-  loop.add({ tick() {
-    const r = list.getBoundingClientRect(), vh = innerHeight; if (r.bottom < -200 || r.top > vh + 200) return;
-    const c = vh * (wide.matches ? .5 : .45); let cur = 0, best = Infinity;
-    its.forEach((it, k) => { const q = it.getBoundingClientRect(), d = Math.abs(q.top + q.height / 2 - c); if (d < best) { best = d; cur = k; } });
-    if (cur !== last) { last = cur; its.forEach((it, k) => it.classList.toggle('is-cur', k === cur)); }
-  } });
-}
-
-/* 6C Streifen: die drei Filme quer nebeneinander, der Fortschritt schiebt den Streifen; jeder Teil bleibt eine Weile stehen,
-   dazwischen gleitet er weiter. Die Nachbarn sind kleiner und zeigen ihr Poster */
-function vC() {
-  const sec = $('[data-shf]'); if (!sec) return;
-  const run = $('[data-shf-run]', sec), strip = $('[data-shf-strip]', sec);
-  $('[data-shf-a]', sec).textContent = split(TEILE[0].name)[0];
-  $('[data-shf-b]', sec).innerHTML = rollHtml('shf__t');
-  $('[data-shf-xs]', sec).innerHTML = satzHtml('shf__x');
-  strip.innerHTML = TEILE.map(t => `<div class="shf__c">${wideM(t, 'is-st', `data-t="${t.i}"`)}</div>`).join('');
-  const cs = $$('.shf__c', strip), sm = u => u * u * (3 - 2 * u);
+/* 6E Band: drei Filme übereinander im Fenster, drei Wörter übereinander in der Maske; beide laufen mit demselben Fortschritt.
+   Im Film läuft das Bild etwas langsamer als das Band (Tiefe) */
+function vE() {
+  const sec = $('[data-shb]'); if (!sec) return;
+  const run = $('[data-shb-run]', sec), strip = $('[data-shb-strip]', sec), ws = $('[data-shb-ws]', sec);
+  $('[data-shb-a]', sec).textContent = split(TEILE[0].name)[0];
+  ws.innerHTML = TEILE.map(t => `<span class="shb__w">${esc(split(t.name)[1])}</span>`).join('');
+  $('[data-shb-xs]', sec).innerHTML = satzHtml('shb__x');
+  strip.innerHTML = TEILE.map(t => `<div class="shb__f" style="top:${t.i * 100}%">${hochM(t, 'is-st', `data-v="${t.i}"`)}</div>`).join('');
+  const vs = $$('video', strip), wl = $$('.shb__w', ws);
   let last = -1, lp = -1;
   loop.add({ tick() {
-    const pr = prOf(run), f = Math.max(0, Math.min(2, pr * 3 - .5)), k0 = Math.min(1, Math.floor(f));
-    const p = reduce ? Math.round(f) : k0 + sm(cl((f - k0 - .3) / .4));
-    if (Math.abs(p - lp) > .0005) {
-      lp = p; const step = cs[1].offsetLeft - cs[0].offsetLeft;
-      strip.style.transform = `translate3d(${(-p * step).toFixed(1)}px,0,0)`;
-      cs.forEach((c, k) => { const d = Math.min(1, Math.abs(k - p)); c.style.transformOrigin = k < p ? '100% 50%' : '0 50%'; c.style.transform = `scale(${(1 - d * .22).toFixed(4)})`; });
+    const p = restP(prOf(run));
+    if (Math.abs(p - lp) > .0004) {
+      lp = p;
+      strip.style.transform = `translate3d(0,${(-p * 100).toFixed(3)}%,0)`;
+      ws.style.transform = `translate3d(0,${(-p * 1.1).toFixed(4)}em,0)`;
+      vs.forEach((v, k) => { v.style.transform = `translate3d(0,${((k - p) * -9).toFixed(2)}%,0)`; v.classList.toggle('is-on', Math.abs(k - p) < .999); });
+      wl.forEach((w, k) => { w.style.opacity = (1 - Math.min(1, Math.abs(k - p)) * .75).toFixed(3); });
     }
     const cur = Math.round(p);
+    if (cur !== last) { last = cur; $$('[data-t]', sec).forEach(e => e.classList.toggle('is-on', +e.dataset.t === cur)); }
+  } });
+}
+
+/* 6F Säulen: der nächste Film baut sich in sechs Säulen von unten auf (clip-path polygon), die Säulen starten von links nach rechts versetzt.
+   Der Film darunter dunkelt dabei etwas ab. Das Wort wechselt, wenn der neue Film halb steht */
+function vF() {
+  const sec = $('[data-shc]'); if (!sec) return;
+  const run = $('[data-shc-run]', sec), pics = $('[data-shc-pics]', sec);
+  $('[data-shc-a]', sec).textContent = split(TEILE[0].name)[0];
+  $('[data-shc-b]', sec).innerHTML = rollHtml('shc__t');
+  $('[data-shc-xs]', sec).innerHTML = satzHtml('shc__x');
+  pics.innerHTML = TEILE.map(t => `<div class="shc__f">${hochM(t, 'is-st', `data-v="${t.i}"`)}</div>`).join('');
+  const fs = $$('.shc__f', pics), vs = $$('video', pics), N = 6, D = .1;
+  const poly = t => {
+    if (t >= 1) return '';
+    let s = '0% 100%';
+    for (let i = 0; i < N; i++) { const y = (100 - sm(cl((t - i * D) / (1 - (N - 1) * D))) * 100).toFixed(2); s += `,${(i * 100 / N).toFixed(3)}% ${y}%,${((i + 1) * 100 / N).toFixed(3)}% ${y}%`; }
+    return `polygon(${s},100% 100%)`;
+  };
+  let last = -1, lk = '';
+  loop.add({ tick() {
+    const f = Math.max(0, Math.min(2, prOf(run) * 3 - .5));
+    const ts = [1, cl((f - .2) / .6), cl((f - 1.2) / .6)].map(t => (reduce ? Math.round(t) : t));
+    const key = ts.map(t => t.toFixed(4)).join();
+    if (key !== lk) {
+      lk = key;
+      let top = 0; ts.forEach((t, k) => { if (t >= 1) top = k; });
+      fs.forEach((el, k) => {
+        if (k) el.style.clipPath = poly(ts[k]);
+        const cover = ts[k + 1] || 0;
+        el.style.opacity = k < top ? '0' : (1 - cover * .55).toFixed(3);
+        vs[k].classList.toggle('is-on', k === top || (k === top + 1 && ts[k] > 0));
+      });
+    }
+    let cur = 0; ts.forEach((t, k) => { if (t >= .5) cur = k; });
     if (cur !== last) { last = cur; setRoll(sec, cur); }
   } });
 }
@@ -362,7 +382,7 @@ function sw() {
 }
 
 run('chrome', initChrome);
-run('v1', v1); run('v2', v2); run('v3', vZ); run('v4', vK); run('v5', vL); run('v6', vM); run('v6a', vA); run('v6b', vB); run('v6c', vC); run('v7', vX); run('vids', vids); run('par', parallax); run('sw', sw);
+run('v1', v1); run('v2', v2); run('v3', vZ); run('v4', vK); run('v5', vL); run('v6', vM); run('v6d', vD); run('v6e', vE); run('v6f', vF); run('v7', vX); run('vids', vids); run('par', parallax); run('sw', sw);
 reveal(document);
 loop.start(frame);
 if (document.fonts) document.fonts.ready.then(() => loop.poke());

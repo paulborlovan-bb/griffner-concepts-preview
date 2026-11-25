@@ -14,9 +14,9 @@
   --room-v4:var(--griffner-schwarz);
   --room-v5:var(--griffner-weiss);
   --room-v6:var(--griffner-schwarz);
-  --room-v6a:var(--griffner-weiss);
-  --room-v6b:var(--griffner-sand);
-  --room-v6c:var(--griffner-weiss);
+  --room-v6d:var(--griffner-schwarz);
+  --room-v6e:var(--griffner-schwarz);
+  --room-v6f:var(--griffner-schwarz);
   --room-v7:var(--griffner-weiss);
   --sh-m:var(--page-margin);
   --sh-h:clamp(40px,4.4vw,76px);
@@ -203,65 +203,65 @@ button.sh-bar__p:focus-visible{outline:2px solid var(--griffner-gelb);outline-of
 .shm__x{grid-area:1 / 1;margin:0;max-width:30em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
 .shm__x.is-on{opacity:.85;transform:none}
 
-/* ---------- Runde 7: drei Fassungen von 06, ohne Leiste, ohne Zähler, ohne Liste der Schritte, keine schwarze Bühne ---------- */
-.sha__a,.sha__t,.shs__a,.shs__t,.shf__a,.shf__t{margin:0;font-family:var(--font-display);font-weight:300;line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;white-space:nowrap}
-/* Wort, das rollt: eine Maske, das Wort kommt von unten und geht oben hinaus (zurück umgekehrt) */
-.sha__b,.shf__b{display:grid;overflow:hidden;padding:.06em 0}
-.sha__t,.shf__t{grid-area:1 / 1;transform:translateY(110%);transition:transform 900ms var(--ease)}
-.sha__t.is-up,.shf__t.is-up{transform:translateY(-110%)}
-.sha__t.is-on,.shf__t.is-on{transform:none}
+/* ---------- Runde 8: drei Fassungen von 06 auf Schwarz, ohne Leiste, Zähler und Liste der Schritte. Anders als die Journey danach:
+   kein Brett, keine Phasenzeile mit Linien, der Knopf nicht rechts neben der Überschrift (Runde 7 Weiß, Seite, Streifen: nicht gewählt) ---------- */
+.sho,.shb,.shc{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding-top:var(--sh-pad)}
+.sho .sh-btn,.shb .sh-btn,.shc .sh-btn{background:var(--griffner-weiss);color:var(--griffner-schwarz)}
+@media (hover:hover){.sho .sh-btn:hover,.shb .sh-btn:hover,.shc .sh-btn:hover{background:#e6e4df}}
+.sho__a,.sho__t,.shb__a,.shb__w,.shc__a,.shc__t{margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(44px,6vw,120px);line-height:.95;text-transform:uppercase;font-feature-settings:'liga' 0;white-space:nowrap}
+/* Wort, das rollt (6D, 6F): Maske, das Wort kommt von unten und geht oben hinaus (zurück umgekehrt) */
+.sho__b,.shc__b{display:grid;overflow:hidden;padding:.06em 0}
+.sho__t,.shc__t{grid-area:1 / 1;transform:translateY(110%);transition:transform 900ms var(--ease)}
+.sho__t.is-up,.shc__t.is-up{transform:translateY(-110%)}
+.sho__t.is-on,.shc__t.is-on{transform:none}
+/* Satz je Teil, überblendet */
+.sho__xs,.shb__xs,.shc__xs{display:grid}
+.sho__x,.shb__x,.shc__x{grid-area:1 / 1;margin:0;max-width:30em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
+.sho__x.is-on,.shb__x.is-on,.shc__x.is-on{opacity:.85;transform:none}
 
-/* 6A Weiß: wie 06 auf Weiß, Knopf im Kopf neben dem Satz */
-.sha{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding-top:var(--sh-pad)}
-.sha__run{height:300vh;height:300svh;position:relative}
-.sha__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:clamp(20px,3.4vh,36px);padding:clamp(96px,13vh,132px) var(--sh-m) clamp(48px,9vh,96px);overflow:hidden}
-.sha__mid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-items:center;column-gap:clamp(20px,2.6vw,44px);min-height:0}
-.sha__a,.sha__t{font-size:clamp(44px,6vw,120px)}
-.sha__a{justify-self:end}
-.sha__b{justify-self:start}
-.sha__pics{display:grid;height:100%;max-height:min(58vh,580px);aspect-ratio:4/5;align-self:center;overflow:hidden;background:#0b0b0b;will-change:transform}
-/* das neue Bild schiebt sich von unten über das alte */
-.sha__img{grid-area:1 / 1;width:100%;height:100%;object-fit:cover;clip-path:inset(100% 0 0 0);transform:scale(1.14);transition:clip-path 1100ms var(--ease),transform 1500ms var(--ease)}
-.sha__img.is-in{clip-path:inset(0 0 0 0);transform:none}
-.sha__xs{display:grid;justify-items:center;text-align:center}
-.sha__x{grid-area:1 / 1;margin:0;max-width:30em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
-.sha__x.is-on{opacity:.85;transform:none}
+/* 6D Öffnen: --o kommt aus dem Skript (0 = Zeile zu, 1 = Film offen); Film 4:5, Höhe --oh */
+.sho__run{height:360vh;height:360svh;position:relative}
+.sho__stage{--o:0;--oh:min(56vh,560px);position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:clamp(24px,4vh,44px);padding:clamp(96px,13vh,132px) var(--sh-m) clamp(32px,6vh,60px);overflow:hidden}
+.sho__line{position:relative;align-self:center;height:var(--oh)}
+.sho__pics{position:absolute;left:50%;top:0;height:100%;aspect-ratio:4/5;transform:translateX(-50%);display:grid;overflow:hidden;background:#0b0b0b;clip-path:inset(0 calc((1 - var(--o)) * 50%))}
+.sho__img{grid-area:1 / 1;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(calc(1.16 - var(--o) * .16))}
+.sho__img.is-on{opacity:1}
+/* geschlossen steht ein Wortabstand zwischen den Wörtern, offen weichen sie bis an den Film */
+.sho__a,.sho__bm{position:absolute;top:50%;--g:calc(.13em + var(--o) * clamp(16px,2vw,36px))}
+.sho__bm{font-size:clamp(44px,6vw,120px)}
+.sho__a{right:50%;transform:translate(calc(-1 * (var(--o) * var(--oh) * .4 + var(--g))),-50%)}
+.sho__bm{left:50%;transform:translate(calc(var(--o) * var(--oh) * .4 + var(--g)),-50%)}
+.sho__foot{display:flex;flex-direction:column;align-items:center;gap:clamp(20px,3.4vh,32px);text-align:center}
+.sho__xs{justify-items:center;opacity:var(--o)}
 
-/* 6B Seite (Sand): Besser und der Knopf stehen links, rechts laufen Bild, Wort und Satz der drei Teile vorbei */
-.shs{--shs-f:clamp(44px,5.6vw,108px);background:var(--griffner-sand);color:var(--griffner-schwarz);padding:var(--sh-pad) 0}
-.shs__body{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter);padding:0 var(--sh-m);margin-top:clamp(56px,10vh,112px)}
-.shs__side{grid-column:1 / span 4;grid-row:1}
-.shs__stick{position:sticky;top:calc(50vh - var(--shs-f) * .475);display:flex;flex-direction:column;align-items:flex-start;gap:clamp(28px,5vh,48px)}
-.shs__a{font-size:var(--shs-f)}
-.shs__list{grid-column:5 / -1;grid-row:1;display:flex;flex-direction:column;gap:clamp(72px,14vh,150px)}
-/* Wort genau auf der Mitte des Bilds (mittlere Zeile), der Satz darunter */
-.shs__it{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);column-gap:var(--grid-gutter)}
-.shs__pic{grid-column:1 / span 4;grid-row:1 / -1;display:block;width:100%;max-height:72vh;aspect-ratio:4/5;position:relative;overflow:hidden;background:#0b0b0b}
-.shs__pic .sh-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.shs__t{grid-column:5 / -1;grid-row:2;font-size:var(--shs-f);opacity:.22;transition:opacity 700ms var(--ease)}
-.shs__x{grid-column:5 / -1;grid-row:3;align-self:start;margin:clamp(16px,2.4vh,24px) 0 0;max-width:21em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:pretty;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
-.shs__it.is-cur .shs__t{opacity:1}
-.shs__it.is-cur .shs__x{opacity:.85;transform:none}
-.shs__end{display:none}
+/* 6E Band: Fenster 4:5, darin die drei Filme übereinander; die Wörter übereinander in einer Maske von einer Zeile */
+.shb__run{height:320vh;height:320svh;position:relative}
+.shb__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:clamp(22px,3.6vh,36px);padding:clamp(96px,13vh,132px) var(--sh-m) clamp(40px,8vh,80px);overflow:hidden}
+.shb__mid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-items:center;column-gap:clamp(20px,2.6vw,44px);min-height:0}
+.shb__a{justify-self:end}
+.shb__win{height:100%;max-height:min(60vh,600px);aspect-ratio:4/5;position:relative;overflow:hidden;background:#0b0b0b}
+.shb__strip{position:absolute;inset:0;will-change:transform}
+.shb__f{position:absolute;left:0;width:100%;height:100%;overflow:hidden}
+.shb__f .sh-m{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;will-change:transform}
+.shb__wm{justify-self:start;font-size:clamp(44px,6vw,120px);height:1.1em;overflow:hidden}
+.shb__ws{will-change:transform}
+.shb__w{display:block;line-height:1.1}
+.shb__xs{justify-items:center;text-align:center}
 
-/* 6C Streifen (Weiß): drei Filme quer nebeneinander, Besser oben links und das Wort unten rechts halb auf dem Bild, Satz und Knopf mittig darunter.
-   Die Bühne ist weiß, damit die Wörter mit Differenz auf dem Weiß schwarz und auf dem Bild hell sind */
-.shf{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding-top:var(--sh-pad)}
-.shf__run{height:320vh;height:320svh;position:relative}
-.shf__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;row-gap:clamp(36px,6vh,64px);justify-items:center;align-items:center;padding:clamp(110px,15vh,150px) var(--sh-m) clamp(36px,6vh,64px);overflow:hidden;background:var(--griffner-weiss)}
-.shf__mid{--cw:min(54vw,880px,calc((100svh - 500px) * 1.6));position:relative;width:var(--cw);aspect-ratio:16/10}
-.shf__strip{position:absolute;inset:0;display:flex;gap:clamp(24px,3vw,48px);will-change:transform}
-.shf__c{flex:0 0 100%;height:100%;position:relative;overflow:hidden;background:#0b0b0b}
-.shf__c .sh-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.shf__a,.shf__b{position:absolute;z-index:1;color:#fff;mix-blend-mode:difference;pointer-events:none}
-.shf__a,.shf__t{font-size:clamp(44px,6vw,120px)}
-.shf__a{left:0;top:0;transform:translate(-.42em,-58%)}
-.shf__b{right:0;bottom:0;transform:translate(.42em,58%)}
-.shf__t{justify-self:end}
-.shf__foot{display:flex;flex-direction:column;align-items:center;gap:clamp(20px,3.4vh,32px);text-align:center}
-.shf__xs{display:grid;justify-items:center}
-.shf__x{grid-area:1 / 1;margin:0;max-width:30em;font-size:var(--t-body-l);line-height:var(--lh-body);text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity 700ms var(--ease),transform 900ms var(--ease)}
-.shf__x.is-on{opacity:.85;transform:none}
+/* 6F Säulen: drei Spalten, das Bild in der Mitte über alle Zeilen; links Besser und der Knopf, rechts das Wort und der Satz.
+   Mittlere Zeile = Wörter, genau auf der Mitte des Bilds */
+.shc__run{height:320vh;height:320svh;position:relative}
+.shc__stage{position:sticky;top:0;height:100vh;height:100svh;box-sizing:border-box;padding:clamp(96px,13vh,132px) var(--sh-m) clamp(32px,6vh,60px);overflow:hidden}
+.shc__grid{display:grid;height:100%;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);column-gap:clamp(24px,3vw,52px)}
+.shc__l,.shc__r{display:contents}
+.shc__a{grid-column:1;grid-row:2;justify-self:end}
+.shc__l .sh-btn{grid-column:1;grid-row:3;justify-self:end;align-self:start;margin-top:clamp(24px,4vh,40px)}
+.shc__pics{grid-column:2;grid-row:1 / -1;align-self:center;height:min(62vh,620px);aspect-ratio:4/5;display:grid;overflow:hidden;background:#0b0b0b}
+.shc__f{grid-area:1 / 1;position:relative;overflow:hidden}
+.shc__f .sh-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shc__b{grid-column:3;grid-row:2;justify-self:start}
+.shc__xs{grid-column:3;grid-row:3;align-self:start;justify-self:start;margin-top:clamp(22px,3.6vh,34px);max-width:21em}
+.shc__x{text-wrap:pretty}
 
 /* ---------- 07 Versetzt (Weiß, Runde 5): 01 versetzt und verschieden groß, Spalten laufen verschieden schnell, Titel halb im Bild ---------- */
 .shx{background:var(--griffner-weiss);color:var(--griffner-schwarz);padding:var(--sh-pad) 0}
@@ -375,36 +375,36 @@ video.sh-m{display:block;background:#0b0b0b}
   .shm__b{justify-self:end}
   .shm__a,.shm__t{font-size:clamp(40px,13vw,64px)}
   .shm__x{font-size:var(--t-body)}
-  /* 6A Weiß: Besser oben, Bild, das Wort unten rechts, darunter der Satz; der Knopf unter dem Satz im Kopf */
-  .sha__stage{padding:84px var(--sh-m) 28px;row-gap:14px}
-  .sha__mid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:10px}
-  .sha__a{justify-self:start}
-  .sha__pics{justify-self:stretch;width:100%;height:100%;max-height:none;aspect-ratio:auto}
-  .sha__b{justify-self:end}
-  .sha__a,.sha__t{font-size:clamp(40px,13vw,64px)}
-  .sha__x{font-size:var(--t-body)}
-  /* 6B Seite: Besser bleibt oben stehen (Sand dahinter), die Teile laufen darunter durch, der Knopf am Ende */
-  .shs{--shs-f:clamp(40px,13vw,64px)}
-  .shs__body{grid-template-columns:minmax(0,1fr);margin-top:0}
-  /* der Streifen deckt bis ganz oben ab (unter der Kopfzeile), damit nichts zwischen Kopfzeile und Besser durchscheint */
-  .shs__side{grid-column:1;grid-row:1;position:sticky;top:0;z-index:2;align-self:start;background:var(--griffner-sand);padding:64px 0 14px}
-  .shs__stick{position:static}
-  .shs__stick .sh-btn{display:none}
-  .shs__list{grid-column:1;grid-row:2;gap:56px;margin-top:8px}
-  .shs__it{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;row-gap:14px}
-  .shs__pic{grid-column:1;grid-row:2;max-height:none;aspect-ratio:4/5}
-  .shs__t{grid-column:1;grid-row:1;justify-self:end}
-  .shs__x{grid-column:1;grid-row:3;margin:0;font-size:var(--t-body)}
-  .shs__end{display:block;grid-row:3;margin-top:40px}
-  /* 6C Streifen: Bild quadratisch, Wörter ganz auf der Bühne (nicht über den Rand hinaus) */
-  .shf__stage{padding:96px var(--sh-m) 28px;row-gap:40px}
-  .shf__mid{--cw:min(calc(100vw - 2 * var(--sh-m)),calc((100svh - 400px)));aspect-ratio:1/1}
-  .shf__strip{gap:16px}
-  .shf__a,.shf__t{font-size:clamp(40px,13vw,64px)}
-  .shf__a{transform:translate(0,-58%)}
-  .shf__b{transform:translate(0,58%)}
-  .shf__x{font-size:var(--t-body)}
-  .shf__foot{gap:18px}
+  /* 6D Öffnen: die Zeile steht als zwei Zeilen mittig (Besser über dem Wort) und öffnet sich nach oben und unten */
+  .sho__stage{--ph:min(44svh,calc((100vw - 2 * var(--sh-m)) * 1.1));padding:84px var(--sh-m) 24px;row-gap:18px}
+  .sho__line{align-self:stretch;height:auto}
+  .sho__pics{left:0;right:0;top:50%;width:auto;height:var(--ph);aspect-ratio:auto;transform:translateY(-50%);clip-path:inset(calc((1 - var(--o)) * 50%) 0)}
+  .sho__a,.sho__bm{--g:calc(.04em + var(--o) * 12px)}
+  .sho__a,.sho__t{font-size:clamp(40px,13vw,64px)}
+  .sho__bm{font-size:clamp(40px,13vw,64px)}
+  .sho__a{right:auto;left:50%;top:auto;bottom:50%;transform:translate(-50%,calc(-1 * (var(--o) * var(--ph) / 2 + var(--g))))}
+  .sho__bm{left:50%;top:50%;transform:translate(-50%,calc(var(--o) * var(--ph) / 2 + var(--g)))}
+  .sho__x{font-size:var(--t-body)}
+  .sho__foot{gap:16px}
+  /* 6E Band: Besser oben, Fenster, das Wort unten rechts, darunter der Satz; der Knopf im Kopf unter dem Satz */
+  .shb__stage{padding:84px var(--sh-m) 28px;row-gap:14px}
+  .shb__mid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:10px}
+  .shb__a{justify-self:start}
+  .shb__win{justify-self:stretch;width:100%;height:100%;max-height:none;aspect-ratio:auto}
+  .shb__wm{justify-self:end}
+  .shb__w{text-align:right}
+  .shb__a,.shb__w,.shb__wm{font-size:clamp(40px,13vw,64px)}
+  .shb__x{font-size:var(--t-body)}
+  /* 6F Säulen: Besser, Bild, Wort rechts, Satz, Knopf untereinander */
+  .shc__stage{padding:84px var(--sh-m) 24px}
+  .shc__grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto;row-gap:10px}
+  .shc__a{grid-column:1;grid-row:1;justify-self:start}
+  .shc__pics{grid-column:1;grid-row:2;width:100%;height:100%;aspect-ratio:auto;justify-self:stretch;align-self:stretch;min-height:0}
+  .shc__b{grid-column:1;grid-row:3;justify-self:end}
+  .shc__xs{grid-column:1;grid-row:4;margin-top:4px;max-width:none}
+  .shc__l .sh-btn{grid-column:1;grid-row:5;justify-self:start;margin-top:10px}
+  .shc__a,.shc__t{font-size:clamp(40px,13vw,64px)}
+  .shc__x{font-size:var(--t-body)}
   /* 07 Versetzt: zum Wischen wie 01, leicht versetzt */
   .shx__cols{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 var(--sh-m);scrollbar-width:none;margin-top:36px;align-items:flex-start;padding-bottom:8px}
   .shx__cols::-webkit-scrollbar{display:none}
@@ -414,6 +414,6 @@ video.sh-m{display:block;background:#0b0b0b}
   .shx__t{font-size:clamp(34px,10vw,48px)}
 }
 @media (prefers-reduced-motion:reduce){
-  .sh2__t,.sh2__x,.sh2__img,.shz__r,.shz__t,.shz__fi,.shz__img,.shl__c,.shm__t,.shm__x,.shm__img,.sha__t,.sha__img,.sha__x,.shs__t,.shs__x,.shf__t,.shf__x{transition:none}
+  .sh2__t,.sh2__x,.sh2__img,.shz__r,.shz__t,.shz__fi,.shz__img,.shl__c,.shm__t,.shm__x,.shm__img,.sho__t,.sho__x,.shb__x,.shc__t,.shc__x{transition:none}
   .sh-m{animation:none}
 }
