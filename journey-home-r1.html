@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journey auf der Startseite, Runde 1 / GRIFFNER</title>
+<meta name="description" content="Fünf Varianten für einen Abschnitt GRIFFNER Journey auf der Startseite von griffner.com.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/varianten.css">
+<link rel="stylesheet" href="css/journey-home-r1.css">
+</head>
+<body data-page="journey-home">
+<!-- Journey auf der Startseite. Runde 1 (2026-11-25): fünf Varianten für einen Abschnitt, der die Seite /journey vorstellt.
+     Texte wörtlich aus der Seite /journey (journey/weg.js DEF, vom Kunden freigegeben), Bilder aus journey/img (verkleinert in assets/img/jh).
+     01 Brett, 02 Etappen, 03 Vierzehn, 04 Bild, 05 Fahrt. Abläufe in js/journey-home-r1.js, Gestaltung in css/journey-home-r1.css,
+     Gemeinsames (Einstieg, Streifen, Kopf, Knopf, Sprungleiste) in css/varianten.css und js/varianten.js. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+    <!-- EINSTIEG -->
+    <section id="vx-start" class="vxi" data-room="vx-start" data-vx-start>
+      <div class="vxi__in">
+        <p class="info" data-reveal>Startseite / Journey / Runde 1</p>
+        <h1 class="vxi__h" data-reveal="80">Journey auf der Startseite.</h1>
+        <p class="vxi__txt" data-reveal="160">Fünf Varianten für einen Abschnitt, der die GRIFFNER Journey auf der Startseite vorstellt und auf die Seite Journey führt. Alle Texte stammen wörtlich von der Seite Journey. Kopf und Knopf wie in den anderen Abschnitten der Startseite.</p>
+        <ol class="vxi__list" data-reveal="240">
+          <li><a href="#v1"><span class="info">01</span><span class="vxi__n">Brett</span></a></li>
+          <li><a href="#v2"><span class="info">02</span><span class="vxi__n">Etappen</span></a></li>
+          <li><a href="#v3"><span class="info">03</span><span class="vxi__n">Vierzehn</span></a></li>
+          <li><a href="#v4"><span class="info">04</span><span class="vxi__n">Bild</span></a></li>
+          <li><a href="#v5"><span class="info">05</span><span class="vxi__n">Fahrt</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 01 BRETT: der Weg als Linie mit 14 Feldern, Start, Zwischenziel, Ziel. Die Felder leuchten nacheinander auf, darunter läuft ein Tag nach dem anderen -->
+    <div class="vxt" data-room="tag" id="v1"><p class="info">Variante 01</p><p class="vxt__n">Brett</p><p class="vxt__x">Der Weg der Journey als Linie mit 14 Feldern, Start, Zwischenziel und Ziel. Beim Hineinscrollen zeichnet sich die Linie und die Felder leuchten nacheinander auf. Darunter läuft ein Tag nach dem anderen; mit der Maus oder dem Finger wählt man selbst.</p></div>
+    <section class="jb" data-room="weiss" aria-labelledby="jb-h">
+      <div class="vx-head">
+        <h2 class="vx-h" id="jb-h" data-reveal>Gib uns 14 Tage deiner Zeit.</h2>
+        <p class="vx-lead" data-reveal="120">Um den Rest kümmern wir uns. Bei uns sind es 14 Tage, an denen du entscheidest, wie du leben willst.</p>
+      </div>
+      <div class="jb__board" data-jb></div>
+      <div class="jb__detail" data-jb-detail aria-live="polite"></div>
+      <div class="vx-foot"><p class="vx-foot__l"><span class="info">GRIFFNER Journey</span><span>Besser planen. Besser bauen. Besser leben.</span></p><a class="vx-btn" href="https://griffner.com/journey">Journey entdecken</a></div>
+    </section>
+
+    <!-- 02 ETAPPEN: drei Etappen mit Bild wie „Different Ideas of Living“, darunter die Tage jeder Etappe -->
+    <div class="vxt" data-room="tag" id="v2"><p class="info">Variante 02</p><p class="vxt__n">Etappen</p><p class="vxt__x">Aufgebaut wie die anderen Abschnitte mit drei Bildern: Besser planen, Besser bauen, Besser leben, je mit Bild aus der Journey, den Tagen der Etappe und ihren Feldern. Am Telefon zum Wischen.</p></div>
+    <section class="je vx-dark" data-room="schwarz" aria-labelledby="je-h">
+      <div class="vx-head">
+        <h2 class="vx-h" id="je-h" data-reveal>Gib uns 14 Tage deiner Zeit.</h2>
+        <p class="vx-lead" data-reveal="120">Um den Rest kümmern wir uns. Bei uns sind es 14 Tage, an denen du entscheidest, wie du leben willst.</p>
+      </div>
+      <div class="je__cols" data-je></div>
+      <div class="vx-foot"><p class="vx-foot__l"><span class="info">GRIFFNER Journey</span><span>Das ist die GRIFFNER Journey.</span></p><a class="vx-btn" href="https://griffner.com/journey">Journey entdecken</a></div>
+    </section>
+
+    <!-- 03 VIERZEHN: die Bühne steht, eine große Zahl zählt beim Scrollen von 01 bis 14, daneben der Tag; am Ende Tag 15, Besser leben -->
+    <div class="vxt" data-room="tag" id="v3"><p class="info">Variante 03</p><p class="vxt__n">Vierzehn</p><p class="vxt__x">Die Fläche bleibt stehen, beim Scrollen zählt eine große Zahl von 01 bis 14, daneben wechselt der Tag mit seinem Satz. Die Leiste unten füllt sich Feld für Feld. Am Ende steht 15 für Besser leben.</p></div>
+    <section class="jv" data-room="weiss" data-jv aria-labelledby="jv-h">
+      <div class="vx-head">
+        <h2 class="vx-h" id="jv-h" data-reveal>Gib uns 14 Tage deiner Zeit.</h2>
+        <p class="vx-lead" data-reveal="120">Um den Rest kümmern wir uns. Bei uns sind es 14 Tage, an denen du entscheidest, wie du leben willst.</p>
+      </div>
+      <div class="jv__run" data-jv-run data-pin>
+        <div class="jv__stage">
+          <div class="jv__num" data-jv-num aria-hidden="true"></div>
+          <div class="jv__txt">
+            <p class="info jv__k" data-jv-k>Tag 01 / 14</p>
+            <div class="jv__ts" data-jv-ts></div>
+            <div class="jv__xs" data-jv-xs></div>
+            <a class="vx-btn" href="https://griffner.com/journey">Journey entdecken</a>
+          </div>
+          <div class="jv__bar" data-jv-bar></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 BILD: ein großes Bild aus der Journey öffnet sich beim Scrollen bis an den Rand, die Überschrift liegt darauf, darunter die drei Etappen -->
+    <div class="vxt" data-room="tag" id="v4"><p class="info">Variante 04</p><p class="vxt__n">Bild</p><p class="vxt__x">Ein großes Bild aus dem Schluss der Journey öffnet sich beim Scrollen bis an den Rand, die Überschrift liegt darauf. Darunter die drei Etappen mit ihren 14 Feldern und der Knopf.</p></div>
+    <section class="jp vx-dark" data-room="schwarz" data-jp aria-labelledby="jp-h">
+      <div class="jp__frame" data-jp-frame>
+        <div class="jp__clip" data-jp-clip>
+          <img class="jp__img" data-jp-img src="assets/img/jh/weg-zurueck.jpg" alt="Ein Mann lehnt in seinem Zuhause an der Kücheninsel und blickt lächelnd zur Seite" loading="lazy" decoding="async">
+          <div class="jp__shade" aria-hidden="true"></div>
+          <div class="jp__over">
+            <h2 class="jp__h" id="jp-h"><span data-jp-l>Gib uns 14 Tage deiner Zeit.</span> <span data-jp-l>Um den Rest kümmern wir uns.</span></h2>
+          </div>
+        </div>
+      </div>
+      <div class="jp__phasen" data-jp-phasen></div>
+      <div class="vx-foot"><p class="vx-foot__l"><span class="info">GRIFFNER Journey</span><span>Das ist die GRIFFNER Journey.</span></p><a class="vx-btn" href="https://griffner.com/journey">Journey entdecken</a></div>
+    </section>
+
+    <!-- 05 FAHRT: ein kleines 3D-Brett wie auf der Seite Journey. Beim Scrollen fährt die Kamera die 14 Felder ab, die Blöcke wachsen, am Ende steht das Haus -->
+    <div class="vxt" data-room="tag" id="v5"><p class="info">Variante 05</p><p class="vxt__n">Fahrt</p><p class="vxt__x">Ein Vorgeschmack auf die Seite Journey: ein kleines 3D-Brett mit den 14 Feldern. Die Fläche bleibt stehen, beim Scrollen fährt die Kamera den Weg ab, ein Block nach dem anderen wächst, am Ziel steht das Haus. Die Leiste unten zeigt die Etappe.</p></div>
+    <section class="jf" data-room="weiss" data-jf aria-labelledby="jf-h">
+      <div class="vx-head">
+        <h2 class="vx-h" id="jf-h" data-reveal>Gib uns 14 Tage deiner Zeit.</h2>
+        <p class="vx-lead" data-reveal="120">Um den Rest kümmern wir uns. Bei uns sind es 14 Tage, an denen du entscheidest, wie du leben willst.</p>
+      </div>
+      <div class="jf__run" data-jf-run data-pin>
+        <div class="jf__stage">
+          <div class="jf__scene" data-jf-scene aria-hidden="true"><div class="jf__fit" data-jf-fit><div class="jf__cam" data-jf-cam></div></div></div>
+          <div class="jf__txt">
+            <p class="info jf__k" data-jf-k>Tag 01 / 14</p>
+            <div class="jf__ts" data-jf-ts></div>
+            <div class="jf__xs" data-jf-xs></div>
+            <a class="vx-btn" href="https://griffner.com/journey">Journey entdecken</a>
+          </div>
+          <div class="jf__bar" data-jf-bar></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+
+<nav class="vxsw" data-vxsw aria-label="Varianten">
+  <a href="#v1">01</a><a href="#v2">02</a><a href="#v3">03</a><a href="#v4">04</a><a href="#v5">05</a>
+</nav>
+<script type="module" src="js/journey-home-r1.js"></script>
+</body>
+</html>

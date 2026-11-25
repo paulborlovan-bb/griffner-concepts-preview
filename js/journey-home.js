@@ -1,14 +1,16 @@
-/* Journey auf der Startseite (journey-home.html), Runde 1, 2026-11-25. Fünf Varianten für einen Abschnitt, der /journey vorstellt.
-   Texte wörtlich aus journey/weg.js (DEF, vom Kunden freigegeben): Hero, Phasen, die 14 Tage mit ihrem Satz, Besser leben.
-   01 Brett     der Weg als Linie mit 14 Feldern; ein Tag nach dem anderen ist dran (schwarz erledigt, gelb aktuell), Maus oder Finger wählen selbst
-   02 Etappen   drei Etappen mit Bild (Parallaxe), Feldern und den Tagen jeder Etappe; Telefon zum Wischen
-   03 Vierzehn  stehende Bühne, eine große Zahl zählt beim Scrollen von 01 bis 14 und 15, Tag und Satz wechseln, die Leiste füllt sich
-   04 Bild      ein Bild öffnet sich beim Scrollen bis an den Rand (clip-path), die Überschrift steigt darauf, darunter die drei Etappen
-   05 Fahrt     kleines 3D-Brett aus CSS-Flächen (preserve-3d): die Kamera fährt den Weg ab, die Blöcke wachsen, am Ziel steht das Haus
-   Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, keine Parallaxe, die Kamera springt ohne Gleiten. */
+/* Journey auf der Startseite (journey-home.html), Runde 2, 2026-11-25. Kunde: „for journey I like v5 and do 5 variants in that feel
+   also keep the feel from the actual page“. Alle fünf zeigen die gezeichnete Welt der Seite /journey (js/jh-welt.js, Momente aus weg.js).
+   Texte wörtlich aus journey/weg.js (DEF, vom Kunden freigegeben).
+   01 Fahrt     wie die Fahrt aus Runde 1: Text links, die Kamera fährt hinter dem Weg her (camAt wie /journey), am Ende das Haus
+   02 Flug      randlos wie /journey im Kleinen: Brett baut sich auf, Kamera taucht ein, Start und Zwischenziel, am Ziel das Haus und der Knopf
+   03 Brett     das ganze Brett von oben, baut sich beim Scrollen auf, danach hebt sich Tag für Tag mit Moment; Maus oder Finger wählen
+   04 Moment    ohne stehende Bühne: die Kamera kreist um das aktuelle Feld und fährt alle 4,6 s weiter; Leiste zum Wählen, Anhalten
+   05 Panorama  auf Weiß, breites Band, die Kamera gleitet seitlich am Weg entlang; darunter Tag, Satz, Knopf und Etappe
+   Ohne Bewegung (prefers-reduced-motion): kein Selbstlauf, kein Kreisen, die Kamera folgt dem Scrollen ohne Gleiten. */
 import { loop, reveal, $, $$, reduce } from './core.js';
 import { initChrome, frame } from './chrome.js';
-import { esc, pad2, cl, sm, run, runP, sw } from './varianten.js';
+import { esc, pad2, run, runP, sw } from './varianten.js';
+import { Welt, WEG, umlauf, misch, cl, rp, sm, eo, io, lerp } from './jh-welt.js';
 
 const TAGE = [
   ['Architekturkonzept', 'Wir lernen deinen Alltag und deine Wünsche kennen und entwickeln daraus die architektonische Idee für dein Haus.'],
@@ -26,190 +28,237 @@ const TAGE = [
   ['Montage', 'Nach der Abnahme des Fundaments fertigen wir dein Haus in unserer Manufaktur und montieren es auf deinem Grundstück.'],
   ['Übergabe', 'Wir gehen gemeinsam durch dein Haus, erklären die Haustechnik und übergeben alle Unterlagen. Dann schließt du selbst auf.']
 ].map(([t, d], i) => ({ i, t, d }));
-const LEBEN = { h: 'Besser leben.', lead: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.', punkte: ['Jahrescheck.', 'GRIFFNER Care.', 'Open House.', 'GRIFFNER Club.'] };
+const LEBEN = { h: 'Besser leben.', lead: 'Mit dem Schlüssel endet dein Projekt, aber nicht unsere Begleitung.' };
 const PHASEN = [
-  { name: 'Besser planen.', range: 'Tag 01 bis 07', desc: 'Vom ersten Gespräch bis zum Auftrag.', bild: 'weg-griffen', pos: '62% 50%' },
-  { name: 'Besser bauen.', range: 'Tag 08 bis 14', desc: 'Vom Projektstart bis zur Übergabe.', bild: 'weg-manufaktur', pos: '50% 50%' },
-  { name: 'Besser leben.', range: 'Ab Tag 15', desc: 'Vom Einzug an, ein Leben lang.', bild: 'weg-terrasse', pos: '50% 30%' }
+  { name: 'Besser planen.', range: 'Tag 01 bis 07', desc: 'Vom ersten Gespräch bis zum Auftrag.' },
+  { name: 'Besser bauen.', range: 'Tag 08 bis 14', desc: 'Vom Projektstart bis zur Übergabe.' },
+  { name: 'Besser leben.', range: 'Ab Tag 15', desc: 'Vom Einzug an, ein Leben lang.' }
 ];
-const MARKEN = ['Start', 'Zwischenziel', 'Ziel'];
-/* die 14 Tage und als 15. Eintrag das Ziel (Besser leben) */
 const ALLE = [...TAGE, { i: 14, t: LEBEN.h, d: LEBEN.lead, ziel: true }];
 const titel = e => e.ziel ? e.t : e.t + '.';
 const tagK = i => i < 14 ? `Tag ${pad2(i + 1)} / 14` : 'Ab Tag 15';
 const phaseOf = i => i < 7 ? 0 : i < 14 ? 1 : 2;
-const IMG = n => `assets/img/jh/${n}.jpg`;
-const HAUS = '<svg class="jb__haus" viewBox="0 0 44 38" aria-hidden="true"><path d="M3 17 L22 3 L41 17 V37 H3 Z" fill="#fff" stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter"/><rect class="jb__tuer" x="18" y="24" width="8" height="13"/></svg>';
-/* gestapelte Texte, die sich überblenden (03, 05): je Eintrag ein Element im selben Rasterfeld */
 const stack = (cls, f) => ALLE.map(e => `<p class="${cls}" data-t="${e.i}">${esc(f(e))}</p>`).join('');
 const setStack = (root, cur) => $$('[data-t]', root).forEach(el => { const k = +el.dataset.t; el.classList.toggle('is-on', k === cur); el.classList.toggle('is-up', k < cur); });
+const mm = (v, a, b) => Math.max(a, Math.min(b, v));
+const PI = Math.PI;
 
-/* ---------- 01 Brett ---------- */
+/* ---------- Gemeinsam ---------- */
+const WELTEN = [];
+function buehne(can, o) {
+  const w = new Welt(can, { red: reduce, ...o }); WELTEN.push(w);
+  const fit = () => { w.size(innerWidth < 900); w.dirty = true; loop.poke(); };
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(can); else addEventListener('resize', fit);
+  fit(); return w;
+}
+const sicht = el => { const r = el.getBoundingClientRect(); return r.bottom > -40 && r.top < innerHeight + 40; };
+/* Scrollwert sanft nachziehen (wie die Fahrt), ohne Bewegung sofort */
+const glatt = () => { let v = null; return (t, k = .16) => { if (v == null || reduce) v = t; else { v += (t - v) * k; if (Math.abs(t - v) > .002) loop.poke(); else v = t; } return v; }; };
+/* nur neu zeichnen, wenn sich etwas geändert hat */
+const zeichne = (w, key, f) => { if (!w.W) return; if (key !== w.lastKey || w.dirty) { w.lastKey = key; w.dirty = false; f(); } };
+function leiste(el) {
+  el.innerHTML = PHASEN.map((p, j) => `<div class="jx-p"><span class="jx-pt"><span class="jx-pno">${pad2(j + 1)}</span><span class="jx-pn">${esc(p.name.replace('.', ''))}</span></span><span class="jx-pl"><i></i></span></div>`).join('');
+  const PF = $$('.jx-pl i', el), PP = $$('.jx-p', el);
+  return (f, c) => {
+    PF[0].style.transform = `scaleX(${cl((f + .5) / 7).toFixed(3)})`; PF[1].style.transform = `scaleX(${cl((f + .5 - 7) / 7).toFixed(3)})`; PF[2].style.transform = `scaleX(${cl((f - 13.5) / .8).toFixed(3)})`;
+    PP.forEach((p, q) => p.classList.toggle('is-cur', q === phaseOf(c)));
+  };
+}
+const zeige = (el, a, tf) => { a = Math.round(a * 1000) / 1000; if (el._a !== a) { el._a = a; el.style.opacity = a; el.style.visibility = a > .01 ? 'visible' : 'hidden'; } if (tf != null && el._t !== tf) { el._t = tf; el.style.transform = tf; } };
+
+/* ---------- 01 Fahrt ---------- */
 function v1() {
-  const b = $('[data-jb]'), det = $('[data-jb-detail]'); if (!b) return;
-  const fld = TAGE.map(t => `<button type="button" class="jb__f" data-d="${t.i}" style="--c:${t.i + 1};--pc:${t.i % 7 + 1};--pr:${t.i < 7 ? 2 : 4}" aria-label="Tag ${pad2(t.i + 1)}, ${esc(t.t)}"><span class="jb__sq"></span><span class="jb__no">${pad2(t.i + 1)}</span></button>`).join('');
-  b.innerHTML = `<div class="jb__marks">${MARKEN.map((m, k) => `<p class="jb__mk jb__mk--${k}"><i></i><span class="info">${m}</span></p>`).join('')}</div>
-    <div class="jb__track">
-      <span class="jb__line jb__line--all"><i></i></span><span class="jb__line jb__line--a"><i></i></span><span class="jb__line jb__line--b"><i></i></span>
-      ${fld}
-      <button type="button" class="jb__f jb__f--ziel" data-d="14" aria-label="Ab Tag 15, Besser leben">${HAUS}<span class="jb__no">15</span></button>
-    </div>
-    <div class="jb__phasen">${PHASEN.map((p, k) => `<div class="jb__ph jb__ph--${k}"><p class="info">${p.range}</p><p class="jb__pn">${esc(p.name)}</p><p class="jb__pd">${esc(p.desc)}</p></div>`).join('')}</div>`;
-  det.innerHTML = `<p class="info jb__dk" data-dk></p><p class="jb__dt" data-dt></p><p class="jb__dd" data-dd></p>`;
-  const F = $$('.jb__f', b), dk = $('[data-dk]', det), dt = $('[data-dt]', det), dd = $('[data-dd]', det), PH = $$('.jb__ph', b);
-  let cur = -1, hold = 0, hov = false, vis = false, on = false, swap;
-  const fill = k => {
-    b.style.setProperty('--p-all', k < 0 ? 0 : k >= 14 ? 1 : (k / 14.6).toFixed(4));
-    b.style.setProperty('--p-a', k < 0 ? 0 : cl(k / 6).toFixed(4));
-    b.style.setProperty('--p-b', k < 7 ? 0 : cl((k - 7) / 6).toFixed(4));
-  };
-  const set = k => {
-    if (k === cur) return; cur = k;
-    F.forEach((f, j) => { f.classList.toggle('is-done', j < k); f.classList.toggle('is-cur', j === k); });
-    PH.forEach((p, j) => p.classList.toggle('is-cur', j === phaseOf(k)));
-    fill(k);
-    const e = ALLE[k], put = () => { dk.textContent = tagK(k); dt.textContent = titel(e); dd.textContent = e.d; det.classList.remove('is-chg'); };
-    clearTimeout(swap);
-    if (reduce || !dt.textContent) put(); else { det.classList.add('is-chg'); swap = setTimeout(put, 220); }
-  };
-  const start = () => { if (on) return; on = true; b.classList.add('is-in'); setTimeout(() => set(0), reduce ? 0 : 900); };
-  new IntersectionObserver(es => es.forEach(e => { vis = e.isIntersecting; if (vis) start(); }), { threshold: .3 }).observe(b);
-  /* Selbstlauf: alle 2,4 s der nächste Tag; am Ziel etwas länger, dann von vorn */
-  let wait = 0;
-  setInterval(() => {
-    if (!on || !vis || reduce || hov || Date.now() < hold || cur < 0) return;
-    if (cur === 14 && ++wait < 2) return; wait = 0;
-    set((cur + 1) % 15);
-  }, 2400);
-  b.addEventListener('pointerover', e => { const f = e.target.closest('.jb__f'); if (f && e.pointerType === 'mouse') { hov = true; set(+f.dataset.d); } });
-  b.addEventListener('pointerleave', () => { if (hov) { hov = false; hold = Date.now() + 2500; } });
-  b.addEventListener('click', e => { const f = e.target.closest('.jb__f'); if (f) { set(+f.dataset.d); hold = Date.now() + 9000; } });
-  b.addEventListener('focusin', e => { const f = e.target.closest('.jb__f'); if (f) { set(+f.dataset.d); hold = Date.now() + 9000; } });
-}
-
-/* ---------- 02 Etappen ---------- */
-function v2() {
-  const el = $('[data-je]'); if (!el) return;
-  el.innerHTML = PHASEN.map((p, k) => {
-    const days = k < 2 ? TAGE.slice(k * 7, k * 7 + 7).map(t => [pad2(t.i + 1), t.t]) : LEBEN.punkte.map((t, j) => [pad2(j + 1), t]);
-    const sq = k < 2 ? 7 : 1;
-    return `<article class="je__c" data-reveal="${k * 120}">
-      <a class="je__pic" href="https://griffner.com/journey" tabindex="-1" aria-hidden="true" data-par><span class="je__par"><img src="${IMG(p.bild)}" alt="" loading="lazy" decoding="async" style="object-position:${p.pos}"></span></a>
-      <p class="je__sq" aria-hidden="true">${'<i></i>'.repeat(sq)}</p>
-      <p class="info je__r">${p.range}</p>
-      <h3 class="je__t">${esc(p.name)}</h3>
-      <p class="je__d">${esc(p.desc)}</p>
-      <ol class="je__days">${days.map(([n, t]) => `<li><span class="je__dn">${n}</span><span>${esc(t)}</span></li>`).join('')}</ol>
-    </article>`;
-  }).join('');
-}
-
-/* Parallaxe für die Bilder in 02: die Ebene läuft gegen die Bewegung (8 %) */
-function parallax() {
-  if (reduce) return;
-  const els = $$('[data-par]').map(el => ({ el, p: el.firstElementChild }));
+  const runEl = $('[data-jx1-run]'); if (!runEl) return;
+  const can = $('[data-jx1-can]'), k = $('[data-jx1-k]'), ts = $('[data-jx1-ts]'), xs = $('[data-jx1-xs]'), txt = $('[data-jx1-txt]'), barEl = $('[data-jx1-bar]');
+  ts.innerHTML = stack('jx-t', titel); xs.innerHTML = stack('jx-x', e => e.d);
+  const fill = leiste(barEl), w = buehne(can), g = glatt();
+  let cur = -1;
   loop.add({ tick() {
-    const vh = innerHeight;
-    els.forEach(({ el, p }) => {
-      const r = el.getBoundingClientRect(); if (r.bottom < -80 || r.top > vh + 80) return;
-      const d = cl((r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2), -1, 1);
-      p.style.transform = `translate3d(0,${(-d * r.height * .08).toFixed(1)}px,0)`;
+    if (!sicht(runEl)) return;
+    const pos = g(-.5 + cl(runP(runEl) * 1.05) * 15.9), c = mm(Math.floor(pos + .5), 0, 14);
+    fill(pos, c);
+    if (c !== cur) { cur = c; setStack(ts, c); setStack(xs, c); k.textContent = tagK(c); }
+    zeichne(w, pos.toFixed(4), () => {
+      const mob = w.mob, u = rp(pos, 13.1, 14.8), h = w.haus();
+      const cam = misch(w.camAt(mm(pos, 0, 13.6)), umlauf(h.m, -PI / 2 - (mob ? .35 : .75), mob ? .62 : .48, mob ? 3900 : 3300), u);
+      cam.cx = w.W * (mob ? .5 : lerp(.67, .66, io(u))); cam.cy = w.H * (mob ? lerp(.36, .4, io(u)) : lerp(.23, .4, io(u)));
+      const top = can.getBoundingClientRect().top, clipY = (mob ? txt.getBoundingClientRect().top : barEl.getBoundingClientRect().top) - top - 18;
+      w.draw(pos, cam, { netz: 1, linien: 1, haus: rp(pos, 12.4, 14.2), licht: rp(pos, 14.4, 15.2), clipY });
     });
   } });
 }
 
-/* ---------- 03 Vierzehn ---------- */
+/* ---------- 02 Flug ---------- */
+function v2() {
+  const runEl = $('[data-jx2-run]'); if (!runEl) return;
+  const can = $('[data-jx2-can]'), hero = $('[data-jx2-hero]'), L = $$('[data-jx2-l]'), MK = $$('[data-jx2-mk]'), day = $('[data-jx2-day]'), k = $('[data-jx2-k]'), ts = $('[data-jx2-ts]'), ziel = $('[data-jx2-ziel]');
+  ts.innerHTML = stack('jx-t', titel);
+  const w = buehne(can), g = glatt();
+  let cur = -1, fk = '', ov = null;
+  /* Übersicht: das ganze Brett, am Rechner quer (Start links), am Telefon in die Tiefe (Start unten) */
+  const over = () => {
+    const key = w.W + 'x' + w.H; if (fk === key && ov) return ov; fk = key;
+    const b = w.box, T = { x: (b.x0 + b.x1) / 2, y: 0, z: (b.z0 + b.z1) / 2 }, cam = w.mob ? umlauf(T, -PI / 2, 1.16, 32000) : umlauf(T, 0, .98, 32000);
+    const hb = hero.getBoundingClientRect(), sb = can.getBoundingClientRect(), m = w.mob ? 16 : Math.max(24, w.W * .04);
+    const pad = w.mob ? { l: m, r: m, t: hb.bottom - sb.top + 24, b: 40 } : { l: m, r: m, t: 110, b: sb.bottom - hb.top + 36 };
+    ov = Object.assign(cam, w.passend([cam], w.huelle(G2b), pad)); return ov;
+  };
+  const G2b = 200;
+  loop.add({ tick() {
+    if (!sicht(runEl)) return;
+    const pos = g(-3.2 + cl(runP(runEl) * 1.04) * 19.2);
+    /* Texte */
+    const ha = 1 - rp(pos, -1.8, -1.35);
+    zeige(hero, ha, `translate3d(0,${(-rp(pos, -1.8, -1.35) * 24).toFixed(1)}px,0)`);
+    const mk0 = pos > -.7 ? sm(1 - Math.abs(pos - .15) / (pos > .15 ? .75 : .6)) : 0, mk1 = sm(1 - Math.abs(pos - 7) / .8);
+    zeige(MK[0], mk0, `translate3d(0,${((1 - mk0) * 20 - (pos - .15) * 12).toFixed(1)}px,0)`); zeige(MK[1], mk1, `translate3d(0,${((1 - mk1) * 20 - (pos - 7) * 12).toFixed(1)}px,0)`);
+    const da = rp(pos, .5, .9) * (1 - rp(pos, 13.15, 13.55)) * (1 - Math.max(mk0, mk1) * .95);
+    zeige(day, da);
+    const c = mm(Math.round(pos), 0, 13);
+    if (c !== cur) { cur = c; setStack(ts, c); k.textContent = tagK(c); }
+    const za = rp(pos, 14.3, 14.9); zeige(ziel, za, `translate(-50%,${((1 - za) * 20).toFixed(1)}px)`);
+    zeichne(w, pos.toFixed(4), () => {
+      const mob = w.mob, O = over(), head = -.7 + 14.9 * rp(pos, -3.05, -1.75), dive = rp(pos, -1.1, 0), end = rp(pos, 13.05, 14.9);
+      const rideC = { ...w.camAt(mm(pos, 0, 13.6)), F: w.F, cx: w.W * (mob ? .5 : .67), cy: w.H * (mob ? .36 : .23) };
+      let cam;
+      if (pos < -1.1) cam = O;
+      else if (pos < 0) { const m = misch(O, w.camAt(0), dive), e = io(dive); cam = { ...m, F: lerp(O.F, rideC.F, e), cx: lerp(O.cx, rideC.cx, e), cy: lerp(O.cy, rideC.cy, e) }; }
+      else if (pos < 13.05) cam = rideC;
+      else { const h = w.haus(), z = umlauf(h.m, -PI / 2 - (mob ? .3 : .55), mob ? .5 : .42, mob ? 4600 : 3500), e = io(end); cam = { ...misch(rideC, z, end), F: w.F, cx: lerp(rideC.cx, w.W * .5, e), cy: lerp(rideC.cy, w.H * (mob ? .4 : .36), e) }; }
+      const sb = can.getBoundingClientRect(), clipY = mob ? Math.min(da > .01 ? day.getBoundingClientRect().top - sb.top - 18 : 1e9, za > .01 ? ziel.getBoundingClientRect().top - sb.top - 18 : 1e9) : null;
+      const intro = pos < -.45, introT = c => eo(rp(head + 1.1, c.ar - .25, c.ar + .55)), rideT = c => eo(rp(Math.min(pos, 13) + 1.1, c.ar - .25, c.ar + .55));
+      w.draw(pos, cam, {
+        netz: rp(pos, -1, -.1), linien: rp(pos, -.8, -.2), nebel: [lerp(42000, 1800, io(dive)), lerp(30000, 12500, io(dive))],
+        kachel: c => Math.max(introT(c) * (1 - rp(pos, -.4, .9)), rideT(c)),
+        weg: intro ? [-.6, Math.min(14.35, head)] : [-.6, 14.35], punkt: pos < -1.4 && head > -.6 && head < 13.9 ? head : null,
+        tag: intro ? (k => ({ u: rp(head, k - .06, k + .34), flat: true, a: 1 - rp(pos, -1.1, -.45) })) : (k => ({ u: rp(pos, k - .4, k + .02), hot: cl(1 - Math.abs(pos - k) * 1.25), m: pos, ra: rp(pos, -.6, -.2) })),
+        zahl: intro ? 0 : 1, haus: Math.max(intro ? rp(head, 13.3, 14.2) : 0, rp(pos, 12.4, 14)), licht: rp(pos, 14.5, 15.3), clipY
+      });
+    });
+  } });
+}
+
+/* ---------- 03 Brett ---------- */
 function v3() {
-  const runEl = $('[data-jv-run]'); if (!runEl) return;
-  const num = $('[data-jv-num]'), k = $('[data-jv-k]'), ts = $('[data-jv-ts]'), xs = $('[data-jv-xs]'), bar = $('[data-jv-bar]');
-  num.innerHTML = ALLE.map(e => `<span class="jv__n" data-t="${e.i}">${pad2(e.i + 1)}</span>`).join('');
-  ts.innerHTML = stack('jv__t', titel); xs.innerHTML = stack('jv__x', e => e.d);
-  bar.innerHTML = `<div class="jv__segs">${ALLE.map(e => `<span class="jv__seg${e.ziel ? ' jv__seg--ziel' : ''}"><i></i></span>`).join('')}</div>
-    <div class="jv__phs">${PHASEN.map((p, j) => `<p class="jv__ph jv__ph--${j}"><span class="info">${p.range}</span><span class="jv__pn">${esc(p.name)}</span></p>`).join('')}</div>`;
-  const SEG = $$('.jv__seg i', bar), PH = $$('.jv__ph', bar);
+  const runEl = $('[data-jx3-run]'); if (!runEl) return;
+  const can = $('[data-jx3-can]'), foot = $('[data-jx3-foot]'), phs = $('[data-jx3-phs]');
+  phs.innerHTML = PHASEN.map(p => `<div class="jx3__ph"><p class="jx3__pn">${esc(p.name)}</p><p class="info jx3__pr">${p.range}</p><p class="jx3__pd">${esc(p.desc)}</p></div>`).join('');
+  const PH = $$('.jx3__ph', phs), w = buehne(can, { pts: WEG(800) }), g = glatt();
+  const LIFT = TAGE.map(() => 0);
+  let fk = '', fit = null, hov = -1, hold = 0, auto = -1, nextA = 0, head = -1;
+  const cam = (p, t) => {
+    const b = w.box, T = { x: (b.x0 + b.x1) / 2, y: 0, z: (b.z0 + b.z1) / 2 }, s = reduce ? 0 : .06 * Math.sin(t / 6500);
+    return w.mob ? umlauf(T, -PI / 2 + .16 * (p - .5) + s, .98 - .1 * p, 32000) : umlauf(T, .5 - .24 * (p - .5) + s, .84 - .1 * p, 32000);
+  };
+  const passt = () => {
+    const key = w.W + 'x' + w.H; if (fk === key && fit) return fit; fk = key;
+    const fb = foot.getBoundingClientRect(), sb = can.getBoundingClientRect(), m = w.mob ? 16 : Math.max(24, w.W * .04);
+    fit = w.passend([cam(0, 0), cam(.5, 0), cam(1, 0)], w.huelle(-120), { l: m, r: m, t: w.mob ? 84 : 104, b: sb.bottom - fb.top + (w.mob ? 34 : 46) }); return fit;
+  };
+  const pick = (e) => {
+    if (!w.W) return -1; const r = can.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top; let best = -1, bd = w.mob ? 34 : 40;
+    TAGE.forEach((t, k) => { if (rp(head, k - .06, k + .34) <= 0) return; const q = w.feld(k, 24 + 640 * io(LIFT[k])); if (!q) return; const d = Math.hypot(q[0] - px, q[1] - py); if (d < bd) { bd = d; best = k; } });
+    return best;
+  };
+  can.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const k = pick(e); hov = k; can.classList.toggle('is-hand', k >= 0); loop.poke(); });
+  can.addEventListener('pointerleave', () => { if (hov >= 0) { hov = -1; hold = performance.now() + 1500; can.classList.remove('is-hand'); loop.poke(); } });
+  can.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; const k = pick(e); if (k >= 0) { auto = k; nextA = performance.now() + 6000; loop.poke(); } });
+  loop.add({ tick() {
+    if (!sicht(runEl)) return;
+    const now = performance.now(), p = g(cl(runP(runEl) * 1.05));
+    head = -.6 + 15.6 * rp(p, .05, .8);
+    /* nach dem Aufbau hebt sich ein Tag nach dem anderen (alle 2,6 s), die Maus oder der Finger wählen selbst */
+    const fertig = head > 14.4;
+    if (!fertig) auto = -1;
+    else if (!reduce && hov < 0 && now > hold && now > nextA) { auto = (auto + 1) % 14; nextA = now + 2600; }
+    const sel = hov >= 0 ? hov : auto;
+    let moving = false;
+    LIFT.forEach((v, k) => { const t = k === sel ? 1 : 0, n = reduce ? t : v + (t - v) * .085; LIFT[k] = Math.abs(t - n) < .002 ? t : n; if (LIFT[k] !== t) moving = true; });
+    if (moving || (!reduce && fertig)) loop.poke();
+    const ph = sel >= 0 ? phaseOf(sel) : phaseOf(mm(Math.floor(head), 0, 14));
+    PH.forEach((e, j) => e.classList.toggle('is-cur', j === ph));
+    zeichne(w, p.toFixed(4) + '|' + LIFT.map(v => v.toFixed(3)).join(',') + (fertig && !reduce ? '|' + Math.round(now / 40) : ''), () => {
+      w.o.hausT = w.mob ? null : { x: -.88, z: -.48 };
+      const F = passt(), c = { ...cam(p, now), ...F };
+      w.draw(head, c, {
+        nebel: null, rand: .75, kachel: q => eo(rp(head + 1.4, q.ar - .25, q.ar + .55)), weg: [-.6, Math.min(14.35, head)], punkt: head > -.5 && head < 13.9 ? head : null,
+        linien: rp(head, -.5, .3), zahlS: .9, haus: rp(head, 13.2, 14.2), licht: rp(head, 14.2, 15),
+        tag: k => ({ u: rp(head, k - .06, k + .34), hot: LIFT[k], h: 24 + 640 * io(LIFT[k]) })
+      });
+      if (sel >= 0 && LIFT[sel] > .05) {
+        const q = w.feld(sel, 24 + 640 * io(LIFT[sel])); if (q) { const right = q[0] + 240 < w.W; w.marke(q[0] + (right ? 22 : -22), q[1] - 46, 'Tag ' + pad2(sel + 1), TAGE[sel].t, { a: LIFT[sel], al: right ? 'left' : 'right', f1: w.mob ? 10 : 11, f2: w.mob ? 13 : 15 }); }
+      }
+    });
+  } });
+}
+
+/* ---------- 04 Moment ---------- */
+function v4() {
+  const sec = $('[data-jx4]'); if (!sec) return;
+  const can = $('[data-jx4-can]'), view = $('[data-jx4-view]'), k = $('[data-jx4-k]'), ts = $('[data-jx4-ts]'), xs = $('[data-jx4-xs]'), pp = $('[data-jx4-pp]'), steps = $('[data-jx4-steps]');
+  ts.innerHTML = stack('jx-t', titel); xs.innerHTML = stack('jx-x', e => e.d);
+  steps.innerHTML = PHASEN.map((p, j) => `<p class="jx4__ph jx4__ph--${j}"><span class="jx4__phn">${esc(p.name.replace('.', ''))}</span><span class="info">${p.range}</span></p>`).join('')
+    + ALLE.map(e => `<button type="button" class="jx4__s" data-s="${e.i}" style="grid-column:${e.i + 1}" aria-label="${e.ziel ? 'Ab Tag 15, Besser leben' : `Tag ${pad2(e.i + 1)}, ${esc(e.t)}`}"><i></i><span>${e.ziel ? 'Ziel' : pad2(e.i + 1)}</span></button>`).join('');
+  const S = $$('.jx4__s', steps), SF = S.map(s => s.querySelector('i')), PH = $$('.jx4__ph', steps), w = buehne(can), INT = 4600;
+  let cur = -1, q = -.5, from = -.5, to = -.5, t0 = 0, dur = 1, playing = !reduce, vis = false, next = 0, started = false;
+  const go = (i, user) => {
+    const now = performance.now(); cur = i; from = q; to = i < 14 ? i : 15; t0 = now; dur = reduce ? 1 : mm(Math.abs(to - from) * 650, 1100, 2400);
+    next = now + dur + (user ? INT * 1.4 : INT);
+    setStack(ts, i); setStack(xs, i); k.textContent = tagK(i);
+    S.forEach((s, j) => { s.classList.toggle('is-done', j < i); s.classList.toggle('is-cur', j === i); if (j === i) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current'); });
+    PH.forEach((p, j) => p.classList.toggle('is-cur', j === phaseOf(i)));
+    loop.poke();
+  };
+  /* nach dem Ziel kurz ausblenden und vorn neu beginnen */
+  const wrap = () => { view.style.transition = 'opacity 450ms'; view.style.opacity = 0; setTimeout(() => { q = from = to = -.5; go(0); view.style.opacity = 1; }, 480); };
+  steps.addEventListener('click', e => { const b = e.target.closest('.jx4__s'); if (b) go(+b.dataset.s, true); });
+  pp.addEventListener('click', () => { playing = !playing; pp.classList.toggle('is-play', !playing); pp.setAttribute('aria-label', playing ? 'Anhalten' : 'Abspielen'); next = performance.now() + 900; loop.poke(); });
+  if (reduce) { pp.classList.add('is-play'); pp.setAttribute('aria-label', 'Abspielen'); }
+  new IntersectionObserver(es => es.forEach(e => { vis = e.isIntersecting; if (vis && !started) { started = true; go(0); } if (vis) loop.poke(); }), { threshold: .2 }).observe(view);
+  loop.add({ tick() {
+    if (!vis || !started) return;
+    const now = performance.now(), u = cl((now - t0) / dur);
+    q = from + (to - from) * io(u);
+    if (playing && now > next) { if (cur >= 14) { next = now + 99999; wrap(); } else go(cur + 1); }
+    SF.forEach((f, j) => { const v = j < cur ? 1 : j === cur ? (playing ? cl((now - (next - INT)) / INT) : 1) : 0, s = 'scaleX(' + v.toFixed(3) + ')'; if (f._s !== s) { f._s = s; f.style.transform = s; } });
+    if (!reduce) loop.poke();
+    zeichne(w, q.toFixed(4) + (reduce ? '' : '|' + Math.round(now / 30)), () => {
+      const mob = w.mob, h = w.haus(), e = io(rp(q, 13, 15)), s = w.S(mm(q, -.5, 13)), T = { x: lerp(s.x, h.m.x, e), y: lerp(40, h.m.y * .6, e), z: lerp(s.z, h.m.z, e) };
+      const az = -PI / 2 - .62 + (reduce ? 0 : .3 * Math.sin(now / 5200)), el = .58 + (reduce ? 0 : .05 * Math.sin(now / 7300));
+      const cam = { ...umlauf(T, az, el, lerp(mob ? 1750 : 1650, mob ? 4400 : 3800, e)), F: w.F * .92, cx: w.W * .5, cy: w.H * (mob ? .5 : .54) };
+      w.draw(q, cam, { netz: 1, linien: 0, tag: j => ({ u: rp(q, j - .4, j + .02), hot: cl(1 - Math.abs(q - j) * 1.25), m: q + .4 }), haus: rp(q, 11.5, 13), licht: rp(q, 14.2, 14.9) });
+    });
+  } });
+}
+
+/* ---------- 05 Panorama ---------- */
+function v5() {
+  const runEl = $('[data-jx5-run]'); if (!runEl) return;
+  const can = $('[data-jx5-can]'), k = $('[data-jx5-k]'), ts = $('[data-jx5-ts]'), xs = $('[data-jx5-xs]'), barEl = $('[data-jx5-bar]');
+  ts.innerHTML = stack('jx-t', titel); xs.innerHTML = stack('jx-x', e => e.d);
+  /* der Weg quer durchs Bild: je Tag zwei Kacheln nach rechts, sanft auf und ab; zum Ziel gerade */
+  const Z = [200, 600, 600, 200, 200, -200, -200, 200, 600, 600, 200, 200, 200, 200];
+  const pts = Z.map((z, i) => ({ x: 200 + i * 800, z }));
+  const fill = leiste(barEl), w = buehne(can, { hell: true, pts, hausT: { x: 0, z: 1 } }), g = glatt();
   let cur = -1;
   loop.add({ tick() {
-    const r = runEl.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;
-    const f = cl(runP(runEl) * 1.07) * 15;              /* 0 bis 15; ab 14 ist das Ziel dran */
-    SEG.forEach((s, j) => { s.style.transform = `scaleX(${cl(f - j).toFixed(3)})`; });
-    const c = Math.min(14, Math.floor(f));
-    if (c === cur) return; cur = c;
-    setStack(num, c); setStack(ts, c); setStack(xs, c);
-    k.textContent = tagK(c);
-    PH.forEach((p, j) => p.classList.toggle('is-cur', j === phaseOf(c)));
-  } });
-}
-
-/* ---------- 04 Bild ---------- */
-function v4() {
-  const fr = $('[data-jp-frame]'); if (!fr) return;
-  const clip = $('[data-jp-clip]'), img = $('[data-jp-img]'), L = $$('[data-jp-l]'), ph = $('[data-jp-phasen]');
-  ph.innerHTML = PHASEN.map((p, k) => `<div class="jp__ph" data-reveal="${k * 120}"><p class="jp__sq" aria-hidden="true">${'<i></i>'.repeat(k < 2 ? 7 : 1)}</p><p class="info">${p.range}</p><p class="jp__pn">${esc(p.name)}</p><p class="jp__pd">${esc(p.desc)}</p></div>`).join('');
-  loop.add({ tick() {
-    const r = fr.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;
-    const W = innerWidth, H = innerHeight, mob = W < 900;
-    /* p: 0, wenn das Bild unten hereinkommt, bis 1, wenn es oben anliegt und der Lauf vorbei ist */
-    const p = reduce ? 1 : cl((H - r.top) / (r.height));
-    const o = sm(cl((p - .12) / .42));                     /* öffnen */
-    const iy = (1 - o) * H * (mob ? .1 : .14), ix = (1 - o) * W * (mob ? .06 : .16);
-    clip.style.clipPath = `inset(${iy.toFixed(1)}px ${ix.toFixed(1)}px)`;
-    img.style.transform = `scale(${(1.16 - .16 * o).toFixed(4)})`;
-    L.forEach((l, j) => { const t = sm(cl((p - .36 - j * .07) / .2)); l.style.transform = `translate3d(0,${((1 - t) * 105).toFixed(1)}%,0)`; });
-  } });
-}
-
-/* ---------- 05 Fahrt ---------- */
-function v5() {
-  const runEl = $('[data-jf-run]'); if (!runEl) return;
-  const cam = $('[data-jf-cam]'), fit = $('[data-jf-fit]'), k = $('[data-jf-k]'), ts = $('[data-jf-ts]'), xs = $('[data-jf-xs]'), bar = $('[data-jf-bar]');
-  const G = 120, T = 84, B = 54, HH = [30, 40, 36, 50, 44, 56, 66, 38, 46, 54, 52, 62, 68, 76];
-  /* Weg: Tag 01 bis 07 nach rechts, hinunter zum Zwischenziel, Tag 08 bis 14 zurück nach links, dann das Ziel */
-  const R = TAGE.map(t => t.i < 7 ? [t.i * G, 0] : [(13 - t.i) * G, 2 * G]); R.push([-1.6 * G, 2 * G]);
-  const D = [0]; for (let j = 1; j < R.length; j++) D.push(D[j - 1] + Math.abs(R[j][0] - R[j - 1][0]) + Math.abs(R[j][1] - R[j - 1][1]));
-  const LEN = D[D.length - 1];
-  const box = (cls, w, d, x, y, extra = '') => `<div class="jf__b${cls}" style="--w:${w}px;--d:${d}px;left:${x - w / 2}px;top:${y - d / 2}px"><i class="t"></i><i class="n"></i><i class="w"></i><i class="e"></i><i class="s">${extra}</i></div>`;
-  const path = `M${R[0][0]} ${R[0][1]} H${R[6][0]} V${R[7][1]} H${R[14][0]}`;
-  cam.innerHTML = `<svg class="jf__route" viewBox="-320 -140 1200 520" style="left:-320px;top:-140px;width:1200px;height:520px"><path class="jf__r0" d="${path}"/><path class="jf__r1" d="${path}" style="stroke-dasharray:${LEN};stroke-dashoffset:${LEN}" data-jf-r/></svg>`
-    + TAGE.map(t => `<div class="jf__tile" style="left:${R[t.i][0] - T / 2}px;top:${R[t.i][1] - T / 2}px;width:${T}px;height:${T}px"><span class="jf__no">${pad2(t.i + 1)}</span></div>`).join('')
-    + `<div class="jf__tile jf__tile--ziel" style="left:${R[14][0] - 70}px;top:${R[14][1] - 56}px;width:140px;height:112px"></div>`
-    + [[0, 'Start'], [7, 'Zwischenziel'], [14, 'Ziel']].map(([j, m]) => `<p class="jf__mk info" style="left:${R[j][0] - (j === 14 ? 70 : T / 2)}px;top:${R[j][1] + (j === 0 ? -T / 2 - 30 : (j === 14 ? 64 : T / 2 + 12))}px"><i></i>${m}</p>`).join('')
-    + TAGE.map(t => box('', B, B, R[t.i][0], R[t.i][1])).join('')
-    + box(' jf__b--haus', 104, 72, R[14][0], R[14][1], '<b class="jf__win"></b><b class="jf__win jf__win--2"></b>');
-  ts.innerHTML = stack('jf__t', titel); xs.innerHTML = stack('jf__x', e => e.d);
-  bar.innerHTML = PHASEN.map((p, j) => `<div class="jf__p" data-p="${j}"><span class="jf__pt"><span class="jf__pno">${pad2(j + 1)}</span><span class="jf__pn">${esc(p.name.replace('.', ''))}</span></span><span class="jf__pl"><i></i></span></div>`).join('');
-  const BL = $$('.jf__b', cam), RT = $('[data-jf-r]', cam), PF = $$('.jf__pl i', bar), PP = $$('.jf__p', bar);
-  const HX = [...HH, 80];
-  /* Mitte des Bretts: am Rechner folgt die Kamera nur halb (FOLGE), so bleibt fast das ganze Brett im Ausschnitt; am Telefon ganz */
-  const MX = 250, MY = 120; let FOLGE = 1;
-  let cx = MX, cy = MY, cur = -1, s = 1;
-  const size = () => { const W = innerWidth, mob = W < 900; s = mob ? cl(W / 560, .5, .78) : cl(W / 1850, .56, .92); FOLGE = mob ? 1 : .5; fit.style.setProperty('--s', s.toFixed(3)); };
-  size(); addEventListener('resize', size);
-  const hs = BL.map(() => -1);
-  loop.add({ tick() {
-    const r = runEl.getBoundingClientRect(); if (r.bottom < -40 || r.top > innerHeight + 40) return;
-    const f = cl(runP(runEl) * 1.08) * 14;             /* 0 bis 14; 14 ist das Ziel */
-    const j = Math.min(13, Math.floor(f)), fr = f - j;
-    const px = R[j][0] + (R[j + 1][0] - R[j][0]) * fr, py = R[j][1] + (R[j + 1][1] - R[j][1]) * fr;
-    const tx = MX + (px - MX) * FOLGE, ty = MY + (py - MY) * FOLGE;
-    const a = reduce ? 1 : .14; cx += (tx - cx) * a; cy += (ty - cy) * a;
-    if (Math.abs(tx - cx) + Math.abs(ty - cy) > .4) loop.poke(); else { cx = tx; cy = ty; }
-    cam.style.transform = `rotateX(56deg) rotateZ(-34deg) translate3d(${(-cx).toFixed(1)}px,${(-cy).toFixed(1)}px,0)`;
-    RT.style.strokeDashoffset = (LEN - (D[j] + (D[j + 1] - D[j]) * fr)).toFixed(1);
-    BL.forEach((b, q) => { const h = Math.round(HX[q] * sm((f - q + .55) / .5)); if (h !== hs[q]) { hs[q] = h; b.style.setProperty('--h', h + 'px'); b.classList.toggle('is-up', h > 0); } });
-    PF[0].style.transform = `scaleX(${cl((f + .5) / 7).toFixed(3)})`;
-    PF[1].style.transform = `scaleX(${cl((f + .5 - 7) / 7).toFixed(3)})`;
-    PF[2].style.transform = `scaleX(${cl((f - 13.5) / .5).toFixed(3)})`;
-    const c = Math.min(14, Math.floor(f + .5));
-    if (c === cur) return; cur = c;
-    BL.forEach((b, q) => b.classList.toggle('is-cur', q === c));
-    setStack(ts, c); setStack(xs, c); k.textContent = tagK(c);
-    PP.forEach((p, q) => p.classList.toggle('is-cur', q === phaseOf(c)));
+    if (!sicht(runEl)) return;
+    const pos = g(-.6 + cl(runP(runEl) * 1.05) * 16), c = mm(Math.floor(pos + .5), 0, 14);
+    fill(pos, c);
+    if (c !== cur) { cur = c; setStack(ts, c); setStack(xs, c); k.textContent = tagK(c); }
+    zeichne(w, pos.toFixed(4), () => {
+      const mob = w.mob, X = w.S(mm(pos, -.6, 15.4)).x;
+      const cam = mob ? { C: { x: X - 220, y: 1050, z: -1250 }, L: { x: X + 90, y: 0, z: 330 }, F: w.F * 1.05, cx: w.W * .5, cy: w.H * .4 }
+        : { C: { x: X - 380, y: 1150, z: -1250 }, L: { x: X + 160, y: 0, z: 360 }, F: w.F, cx: w.W * .5, cy: w.H * .38 };
+      w.draw(pos, cam, { linien: 1, ausblend: 1300, nebel: [2600, 9000], haus: rp(pos, 12, 13.6), licht: rp(pos, 14.2, 15) });
+    });
   } });
 }
 
 run('chrome', initChrome);
-run('v1', v1); run('v2', v2); run('v3', v3); run('v4', v4); run('v5', v5); run('par', parallax); run('sw', sw);
+run('v1', v1); run('v2', v2); run('v3', v3); run('v4', v4); run('v5', v5); run('sw', sw);
 reveal(document);
 loop.start(frame);
-if (document.fonts) document.fonts.ready.then(() => loop.poke());
-addEventListener('load', () => loop.poke());
+const neu = () => { WELTEN.forEach(w => { w.dirty = true; }); loop.poke(); };
+if (document.fonts) document.fonts.ready.then(neu);
+addEventListener('load', neu);
