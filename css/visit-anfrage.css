@@ -1,0 +1,134 @@
+/* /visit Formular „Besuch anfragen“, Runde 1 (visit-anfrage.html, 2026-11-27).
+   Wie der Abschnitt „Wann kommst du?“ auf griffner.com/visit: schwarze Fläche, links Überschrift, rechts die gelbe Fläche mit dem Formular.
+   Beschriftungen Ofelia Text 10 px versal gesperrt, Eingaben Ofelia Display Light 24 px auf einer Linie, Knopf schwarz.
+   Keine Rundungen, keine Schatten. Der CRM-Kasten links gehört nicht zur Seite, er zeigt nur, was im CRM ankäme. */
+:root{--va-gelb:var(--griffner-gelb);--va-linie:rgba(0,0,0,.32);--va-i:24px}
+
+.va{background:var(--griffner-schwarz);color:var(--griffner-weiss);padding:var(--vx-pad) var(--vx-m)}
+.va__in{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gutter,24px);align-items:start;max-width:1440px;margin:0 auto}
+.va__kopf{grid-column:1 / span 5;position:sticky;top:110px;display:flex;flex-direction:column;gap:20px}
+.va__kopf>*{margin:0}
+.va__kopf>.info{opacity:.6}
+.va__h{font-family:var(--font-display);font-weight:300;font-size:var(--vx-h);line-height:var(--lh-d);text-transform:uppercase;text-wrap:balance;font-feature-settings:'liga' 0}
+.va__lead{font-size:var(--t-body-l);line-height:var(--lh-body);opacity:.75;max-width:24em;text-wrap:pretty}
+.va__zahl{font-family:var(--font-text);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--va-gelb)}
+
+/* ---------- Gelbe Fläche mit dem Formular ---------- */
+.vf{grid-column:7 / -1;background:var(--va-gelb);color:var(--griffner-schwarz);padding:clamp(28px,3.2vw,52px);display:flex;flex-direction:column;min-width:0}
+.vf [hidden]{display:none!important}
+.vf__body,.vf__schritt,.vf__rest{display:flex;flex-direction:column;gap:30px}
+.vf__set{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:12px}
+.vf__l{display:block;padding:0;font-family:var(--font-text);font-weight:500;font-size:10px;letter-spacing:.2em;text-transform:uppercase;line-height:1.3}
+.vf__l i{font-style:normal;opacity:.55;margin-left:.6em;letter-spacing:.14em}
+.vf__feld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.vf__i{width:100%;box-sizing:border-box;margin:0;padding:6px 0 10px;background:transparent;border:0;border-bottom:1px solid var(--va-linie);border-radius:0;color:inherit;font-family:var(--font-display);font-weight:300;font-size:var(--va-i);line-height:1.2;outline:0;transition:border-color 200ms}
+.vf__i::placeholder{color:rgba(0,0,0,.34)}
+.vf__i:focus{border-bottom-color:var(--griffner-schwarz)}
+.vf__i.is-fehlt{border-bottom:2px solid var(--griffner-schwarz)}
+.vf__sel{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:28px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 4px center}
+.vf__feld--gross .vf__i{font-size:clamp(28px,2.6vw,40px)}
+.vf__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 28px}
+.vf__info,.vf__satz{margin:0;font-size:var(--t-body);line-height:1.45}
+.vf__satz{font-family:var(--font-display);font-weight:300;font-size:clamp(20px,1.7vw,26px);line-height:1.25;text-wrap:pretty}
+.vf__mini{margin:6px 0 0;font-size:13px;opacity:.7}
+
+/* Karten (Besuch) wie heute: Linie oben, Titel versal; gewählt = schwarz */
+.vf__karten{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.vf__karte{position:relative;display:flex;flex-direction:column;gap:8px;padding:14px 14px 16px;border-top:1px solid var(--griffner-schwarz);cursor:pointer;transition:background-color 220ms,color 220ms}
+.vf__karte b{font-family:var(--font-display);font-weight:500;font-size:20px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.vf__karte span{font-size:14px;line-height:1.35;opacity:.8}
+.vf__karte:has(input:checked){background:var(--griffner-schwarz);color:var(--va-gelb)}
+.vf__karte:has(input:checked) span{opacity:1;color:var(--griffner-weiss)}
+@media (hover:hover){.vf__karte:not(:has(input:checked)):hover{background:rgba(0,0,0,.07)}}
+
+/* Chips (Zeitraum, Tageszeit): Rahmen, gewählt = schwarz */
+.vf__chips{display:flex;flex-wrap:wrap;gap:8px}
+.vf__chip{position:relative;display:inline-flex;cursor:pointer}
+.vf__chip span{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;border:1px solid var(--griffner-schwarz);font-family:var(--font-text);font-weight:500;font-size:14px;line-height:1.2;transition:background-color 200ms,color 200ms}
+.vf__chips--gross .vf__chip span{min-height:52px;padding:0 22px;font-family:var(--font-display);font-weight:500;font-size:18px;letter-spacing:.04em;text-transform:uppercase}
+.vf__chip input:checked+span{background:var(--griffner-schwarz);color:var(--va-gelb)}
+@media (hover:hover){.vf__chip input:not(:checked)+span:hover{background:rgba(0,0,0,.07)}}
+
+/* echte Eingaben unsichtbar, aber fokussierbar */
+.vf__karte input,.vf__chip input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.vf__karte:has(input:focus-visible),.vf__chip:has(input:focus-visible) span{outline:2px solid var(--griffner-schwarz);outline-offset:2px}
+.vf__set.is-fehlt .vf__l::after{content:'  · bitte wählen';letter-spacing:.14em;font-weight:600}
+
+.vf__ok{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.4;cursor:pointer}
+.vf__ok input{flex:none;width:18px;height:18px;margin:1px 0 0;accent-color:var(--griffner-schwarz)}
+.vf__ok a{color:inherit}
+.vf__ok.is-fehlt span{font-weight:600}
+
+.vf__err{margin:0;font-size:14px;font-weight:600;line-height:1.4}
+.vf__err:empty{display:none}
+.vf__fuss{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.vf__send{display:inline-flex;align-items:center;gap:12px;min-height:56px;padding:0 30px;background:var(--griffner-schwarz);color:var(--griffner-weiss);border:0;font-family:var(--font-text);font-weight:600;font-size:15px;letter-spacing:.02em;cursor:pointer;transition:gap 300ms var(--ease)}
+.vf__send::after{content:'→';font-size:1.15em;line-height:1}
+@media (hover:hover){.vf__send:hover{gap:18px}}
+.vf__send:focus-visible,.vf__back:focus-visible,.vf__tab:focus-visible{outline:2px solid var(--griffner-schwarz);outline-offset:3px}
+.vf__back{padding:6px 0;background:none;border:0;color:inherit;font-family:var(--font-text);font-weight:500;font-size:14px;text-decoration:underline;text-underline-offset:.25em;cursor:pointer}
+.vf__hint{margin:-12px 0 0;font-size:14px;line-height:1.45;opacity:.72;max-width:30em}
+
+/* Schritte (01) */
+.vf__tabs{display:grid;grid-template-columns:1fr 1fr;margin:0 0 30px;border-bottom:1px solid var(--va-linie)}
+.vf__tab{display:flex;gap:12px;align-items:baseline;padding:0 0 12px;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;color:inherit;font-family:var(--font-text);font-weight:500;font-size:10px;letter-spacing:.2em;text-transform:uppercase;text-align:left;cursor:pointer;opacity:.45}
+.vf__tab span{opacity:.7}
+.vf__tab.is-cur{opacity:1;border-bottom-color:var(--griffner-schwarz)}
+.vf__tab:disabled{cursor:default}
+
+/* Danke */
+.vf__danke{display:flex;flex-direction:column;gap:18px;align-items:flex-start;padding:clamp(8px,4vh,40px) 0}
+.vf__danke>*{margin:0}
+.vf__dh{font-family:var(--font-display);font-weight:300;font-size:clamp(40px,4vw,64px);line-height:1;text-transform:uppercase}
+.vf__dt{font-size:var(--t-body-l);line-height:1.45;max-width:24em}
+.vf__danke .vf__back{margin-top:10px}
+
+/* ---------- 05 Ein Satz ---------- */
+.vs{margin:0;font-family:var(--font-display);font-weight:300;font-size:clamp(24px,2.3vw,34px);line-height:1.75;text-wrap:pretty}
+.vs__i{display:inline-block;vertical-align:baseline;box-sizing:content-box;max-width:100%;margin:0 2px;padding:0 0 2px;background:transparent;border:0;border-bottom:1.5px solid var(--griffner-schwarz);border-radius:0;color:inherit;font:inherit;line-height:1.2;outline:0}
+.vs__i::placeholder{color:rgba(0,0,0,.36)}
+.vs__i:focus{border-bottom-width:3px;padding-bottom:.5px}
+select.vs__i{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:22px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23000' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 2px center}
+select.vs__i.is-leer{color:rgba(0,0,0,.4)}
+.vs__i.is-fehlt{border-bottom-width:3px}
+
+/* ---------- CRM-Kasten (nur Vorschau) ---------- */
+.crm{margin-top:18px;padding:18px 18px 16px;border:1px solid rgba(255,255,255,.18);font-family:var(--font-text);font-size:13px;line-height:1.4}
+.crm__kopf{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;margin:0 0 12px}
+.crm__t{margin:0;white-space:nowrap;font-weight:600;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--griffner-sand)}
+.crm__s{margin:0;font-size:11px;letter-spacing:.08em;opacity:.5;white-space:nowrap}
+.crm__s.is-sent{opacity:1;color:var(--va-gelb)}
+.crm dl{margin:0;display:grid;grid-template-columns:minmax(92px,auto) minmax(0,1fr);gap:0 14px}
+.crm dt,.crm dd{margin:0;padding:6px 0;border-top:1px solid rgba(255,255,255,.1)}
+.crm dt{font-weight:500;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;padding-top:8px}
+.crm dd{overflow-wrap:anywhere}
+.crm dd.is-leer{opacity:.3}
+.crm__msg .is-neu{color:var(--va-gelb)}
+.crm__msg{white-space:pre-wrap}
+.crm__fuss{margin:12px 0 0;font-size:11.5px;line-height:1.45;opacity:.5}
+
+@media (max-width:1099px){
+  .va__kopf{grid-column:1 / span 5}
+  .vf{grid-column:6 / -1}
+  .vf__karten{grid-template-columns:minmax(0,1fr)}
+  .vf__karte{flex-direction:row;align-items:baseline;justify-content:space-between;gap:14px}
+}
+@media (max-width:899px){
+  :root{--va-i:22px}
+  .va__in{display:flex;flex-direction:column;gap:32px}
+  .va__kopf{position:static;display:contents}
+  .va__kopf>.info{order:1}.va__h{order:2}.va__lead{order:3}.va__zahl{order:4}.vf{order:5;align-self:stretch}.crm{order:6}
+  .va__kopf>.info,.va__lead,.va__zahl{margin-top:-16px}
+  .vf{margin:0 calc(-1 * var(--vx-m));padding:32px var(--vx-m) 36px}
+  .vf__grid{grid-template-columns:minmax(0,1fr);gap:22px}
+  .vf__karte span{font-size:13px;text-align:right}
+  .vf__chips--gross .vf__chip span{font-size:16px;padding:0 16px}
+  .vf__send{width:100%;justify-content:center}
+  .vf__fuss{gap:12px}
+  .vf__tabs{margin-bottom:26px}
+  .vs{font-size:20px;line-height:1.9}
+  .crm{margin-top:0}
+  .crm dl{grid-template-columns:minmax(0,1fr)}
+  .crm dt{padding-bottom:0;border-top:1px solid rgba(255,255,255,.1)}
+  .crm dd{border-top:0;padding-top:2px}
+}

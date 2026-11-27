@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Besuch anfragen, Varianten / GRIFFNER</title>
+<meta name="description" content="Fünf kürzere Formulare für /visit: Besuch anfragen statt Termin buchen, mit Vorschau, was im CRM ankommt.">
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/layout.css">
+<link rel="stylesheet" href="ds/base.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/varianten.css">
+<link rel="stylesheet" href="css/visit-anfrage.css">
+</head>
+<body data-page="visit-anfrage">
+<!-- /visit Formular, Runde 1 (2026-11-27): „Besuch anfragen“ statt „Termin buchen“. Kein Kalender mehr, statt eines Tages ein Zeitraum.
+     Fünf Varianten: 01 Anfrage (zwei Schritte wie heute), 02 Eine Seite, 03 Rückruf, 04 Je nach Besuch, 05 Ein Satz.
+     Alle schicken dieselben CRM-Felder wie das Formular heute (Sellsation „Homepage Besuch“, SmoothScroll crmPayload):
+     Vorname, Nachname, E-Mail, Telefon, Postleitzahl, Wohnort x, Land aus der PLZ, Adressquelle nach Besuch, der Rest in der Nachricht.
+     Der Kasten unter jeder Überschrift zeigt live, was ankäme. Es wird nichts gesendet. Abläufe in js/visit-anfrage.js. -->
+<div class="site">
+  <div class="bgl" data-bgl aria-hidden="true"></div>
+  <div class="connector" data-connector aria-hidden="true"><span></span><span></span></div>
+
+  <header class="hd" data-header></header>
+  <nav class="menu" id="menu" data-menu hidden aria-label="Hauptmenü"></nav>
+
+  <main id="top">
+    <!-- EINSTIEG -->
+    <section id="vx-start" class="vxi" data-room="vx-start" data-vx-start>
+      <div class="vxi__in">
+        <p class="info" data-reveal>Visit / Formular / Runde 1</p>
+        <h1 class="vxi__h" data-reveal="80">Besuch anfragen.</h1>
+        <p class="vxi__txt" data-reveal="160">Fünf Varianten für das Formular auf /visit. Heute wählt man einen Tag im Kalender und es wirkt wie eine feste Buchung. Hier fragt man einen Besuch an, sagt ungefähr wann, und wir rufen an, um den Termin auszumachen. Alle Varianten sind kürzer als heute. Ausfüllen und Absenden geht, es wird aber nichts gesendet.</p>
+        <p class="vxi__note" data-reveal="200"><b>CRM</b><span>Alle fünf schicken dieselben Felder wie heute an Sellsation (Formular Homepage Besuch): Vorname, Nachname, E-Mail, Telefon, Postleitzahl und die Adressquelle Campus, Musterhaus oder Kundenhaus. Zeitraum und Wünsche stehen in der Nachricht. In Sellsation ändert sich nichts, auf der Website nur die Zeilen der Nachricht. Der Kasten bei jeder Variante zeigt live, was ankäme.</span></p>
+        <p class="vxi__note vxi__note--heute" data-reveal="220"><b>Heute</b><span>2 Schritte. Wählen: Besuch, Musterhaus, Tag im Kalender, Tageszeit. Tippen: Vorname, Nachname, E-Mail, Telefon, Postleitzahl. Danke: „… und bestätigen deinen Termin.“</span></p>
+        <ol class="vxi__list" data-reveal="240">
+          <li><a href="#v1"><span class="info">01</span><span class="vxi__n">Anfrage</span></a></li>
+          <li><a href="#v2"><span class="info">02</span><span class="vxi__n">Eine Seite</span></a></li>
+          <li><a href="#v3"><span class="info">03</span><span class="vxi__n">Rückruf</span></a></li>
+          <li><a href="#v4"><span class="info">04</span><span class="vxi__n">Je nach Besuch</span></a></li>
+          <li><a href="#v5"><span class="info">05</span><span class="vxi__n">Ein Satz</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 01 ANFRAGE: zwei Schritte wie heute, ohne Kalender -->
+    <div class="vxt" data-room="tag" id="v1"><p class="info">Variante 01</p><p class="vxt__n">Anfrage</p><p class="vxt__x">Am nächsten an heute: zwei Schritte, gleiche Gestaltung. Statt eines Tages im Kalender ein ungefährer Zeitraum, die Tageszeit ist freiwillig. Alle Texte sagen anfragen statt buchen.</p></div>
+    <section class="va" data-room="schwarz" aria-labelledby="va1-h">
+      <div class="va__in">
+        <div class="va__kopf">
+          <p class="info">Besuch</p>
+          <h2 class="va__h" id="va1-h">Besuch anfragen.</h2>
+          <p class="va__lead">Sag uns, was du sehen willst und wann es ungefähr passt. Wir rufen dich an und machen den Termin mit dir aus.</p>
+          <p class="va__zahl">2 Schritte · 2 bis 3 × wählen · 5 × tippen</p>
+          <div class="crm" data-crm="f1"></div>
+        </div>
+        <form class="vf" id="f1" data-schritte novalidate autocomplete="on">
+          <div class="vf__tabs" role="tablist">
+            <button type="button" class="vf__tab is-cur" data-tab="1"><span>01</span>Dein Besuch</button>
+            <button type="button" class="vf__tab" data-tab="2"><span>02</span>Deine Daten</button>
+          </div>
+          <div class="vf__schritt" data-s="1">
+            <fieldset class="vf__set" data-pflicht="Besuch">
+              <legend class="vf__l">Was möchtest du sehen?</legend>
+              <div class="vf__karten">
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Campus"><b>Campus</b><span>Ein Tag in Griffen</span></label>
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Musterhaus"><b>Musterhaus</b><span>In Österreich, Deutschland und Tschechien</span></label>
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Kundenhaus"><b>Kundenhaus</b><span>Ein bewohntes GRIFFNER Haus</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__feld" data-wenn="Besuch:Musterhaus" hidden>
+              <label class="vf__l" for="f1-haus">Welches Musterhaus?</label>
+              <select class="vf__i vf__sel" id="f1-haus" name="Musterhaus" required>
+                <option value="">Bitte wählen</option>
+                <option>Griffen</option><option>Wien</option><option>Graz</option><option>Linz</option><option>Salzburg</option><option>München</option><option>Schwarzwald</option><option>Prag</option>
+              </select>
+            </div>
+            <p class="vf__info" data-wenn="Besuch:Campus" hidden>GRIFFNER Campus / Gewerbestraße 3 / 9112 Griffen</p>
+            <p class="vf__info" data-wenn="Besuch:Kundenhaus" hidden>Wir suchen ein Haus in deiner Nähe und fragen die Familie für dich.</p>
+            <fieldset class="vf__set" data-pflicht="Zeitraum">
+              <legend class="vf__l">Wann passt es dir ungefähr?</legend>
+              <div class="vf__chips">
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="Diese oder nächste Woche"><span>Diese oder nächste Woche</span></label>
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="In den nächsten Wochen"><span>In den nächsten Wochen</span></label>
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="Ich bin flexibel"><span>Ich bin flexibel</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="vf__set">
+              <legend class="vf__l">Am liebsten <i>freiwillig</i></legend>
+              <div class="vf__chips">
+                <label class="vf__chip"><input type="radio" name="Tageszeit" value="Vormittag"><span>Vormittag</span></label>
+                <label class="vf__chip"><input type="radio" name="Tageszeit" value="Nachmittag"><span>Nachmittag</span></label>
+                <label class="vf__chip"><input type="radio" name="Tageszeit" value="Egal"><span>Egal</span></label>
+              </div>
+            </fieldset>
+            <p class="vf__err" data-err role="alert"></p>
+            <div class="vf__fuss"><button type="button" class="vf__send" data-weiter>Weiter</button></div>
+          </div>
+          <div class="vf__schritt" data-s="2" hidden>
+            <div class="vf__grid">
+              <div class="vf__feld"><label class="vf__l" for="f1-vn">Vorname</label><input class="vf__i" id="f1-vn" name="Vorname" required autocomplete="given-name" placeholder="Vorname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f1-nn">Nachname</label><input class="vf__i" id="f1-nn" name="Nachname" required autocomplete="family-name" placeholder="Nachname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f1-em">E-Mail</label><input class="vf__i" id="f1-em" name="E-Mail" type="email" required autocomplete="email" placeholder="name@mail.at"></div>
+              <div class="vf__feld"><label class="vf__l" for="f1-tel">Telefon</label><input class="vf__i" id="f1-tel" name="Telefon" type="tel" required autocomplete="tel" placeholder="+43 664 123 45 67"></div>
+              <div class="vf__feld"><label class="vf__l" for="f1-plz">Postleitzahl</label><input class="vf__i" id="f1-plz" name="Postleitzahl" required inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 9112"></div>
+            </div>
+            <label class="vf__ok"><input type="checkbox" name="Einverständnis" value="ja" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren. <a href="https://griffner.com/privacy">Datenschutz</a></span></label>
+            <p class="vf__err" data-err role="alert"></p>
+            <div class="vf__fuss">
+              <button type="submit" class="vf__send">Besuch anfragen</button>
+              <button type="button" class="vf__back" data-zurueck>Zurück</button>
+            </div>
+            <p class="vf__hint">Unverbindlich. Wir rufen dich innerhalb eines Werktags an und machen den Termin mit dir aus.</p>
+          </div>
+          <div class="vf__danke" data-danke hidden>
+            <p class="vf__dh">Danke<span data-name></span>.</p>
+            <p class="vf__dt">Wir rufen dich innerhalb eines Werktags an und machen den Termin mit dir aus.</p>
+            <button type="button" class="vf__back" data-nochmal>Noch einen Besuch anfragen</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 02 EINE SEITE: alles auf einer Fläche, keine Schritte -->
+    <div class="vxt" data-room="tag" id="v2"><p class="info">Variante 02</p><p class="vxt__n">Eine Seite</p><p class="vxt__x">Alles auf einer Fläche, keine Schritte. Nur: was, ungefähr wann, Kontaktdaten. Beim Musterhaus ist „das nächste zu mir“ vorgewählt, die Postleitzahl sagt uns welches. Die Tageszeit klären wir am Telefon.</p></div>
+    <section class="va" data-room="schwarz" aria-labelledby="va2-h">
+      <div class="va__in">
+        <div class="va__kopf">
+          <p class="info">Besuch</p>
+          <h2 class="va__h" id="va2-h">Komm vorbei.</h2>
+          <p class="va__lead">Ein Formular, eine Minute. Den genauen Termin machen wir am Telefon aus.</p>
+          <p class="va__zahl">1 Schritt · 2 × wählen · 5 × tippen</p>
+          <div class="crm" data-crm="f2"></div>
+        </div>
+        <form class="vf" id="f2" novalidate autocomplete="on">
+          <div class="vf__body">
+            <fieldset class="vf__set" data-pflicht="Besuch">
+              <legend class="vf__l">Was möchtest du sehen?</legend>
+              <div class="vf__chips vf__chips--gross">
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Campus"><span>Campus</span></label>
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Musterhaus"><span>Musterhaus</span></label>
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Kundenhaus"><span>Kundenhaus</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__feld" data-wenn="Besuch:Musterhaus" hidden>
+              <label class="vf__l" for="f2-haus">Welches Musterhaus?</label>
+              <select class="vf__i vf__sel" id="f2-haus" name="Musterhaus">
+                <option value="">Das nächste zu mir</option>
+                <option>Griffen</option><option>Wien</option><option>Graz</option><option>Linz</option><option>Salzburg</option><option>München</option><option>Schwarzwald</option><option>Prag</option>
+              </select>
+            </div>
+            <fieldset class="vf__set" data-pflicht="Zeitraum">
+              <legend class="vf__l">Wann ungefähr?</legend>
+              <div class="vf__chips">
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="Diese oder nächste Woche"><span>Diese oder nächste Woche</span></label>
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="In den nächsten Wochen"><span>In den nächsten Wochen</span></label>
+                <label class="vf__chip"><input type="radio" name="Zeitraum" value="Ich bin flexibel"><span>Flexibel</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__grid">
+              <div class="vf__feld"><label class="vf__l" for="f2-vn">Vorname</label><input class="vf__i" id="f2-vn" name="Vorname" required autocomplete="given-name" placeholder="Vorname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f2-nn">Nachname</label><input class="vf__i" id="f2-nn" name="Nachname" required autocomplete="family-name" placeholder="Nachname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f2-tel">Telefon</label><input class="vf__i" id="f2-tel" name="Telefon" type="tel" required autocomplete="tel" placeholder="+43 664 123 45 67"></div>
+              <div class="vf__feld"><label class="vf__l" for="f2-em">E-Mail</label><input class="vf__i" id="f2-em" name="E-Mail" type="email" required autocomplete="email" placeholder="name@mail.at"></div>
+              <div class="vf__feld"><label class="vf__l" for="f2-plz">Postleitzahl</label><input class="vf__i" id="f2-plz" name="Postleitzahl" required inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 9112"></div>
+            </div>
+            <label class="vf__ok"><input type="checkbox" name="Einverständnis" value="ja" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren. <a href="https://griffner.com/privacy">Datenschutz</a></span></label>
+            <p class="vf__err" data-err role="alert"></p>
+            <div class="vf__fuss"><button type="submit" class="vf__send">Besuch anfragen</button></div>
+            <p class="vf__hint">Unverbindlich. Wir melden uns innerhalb eines Werktags.</p>
+          </div>
+          <div class="vf__danke" data-danke hidden>
+            <p class="vf__dh">Danke<span data-name></span>.</p>
+            <p class="vf__dt">Wir rufen dich innerhalb eines Werktags an und finden einen Termin, der dir passt.</p>
+            <button type="button" class="vf__back" data-nochmal>Noch einen Besuch anfragen</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 03 RÜCKRUF: Telefon zuerst, Termin im Gespräch -->
+    <div class="vxt" data-room="tag" id="v3"><p class="info">Variante 03</p><p class="vxt__n">Rückruf</p><p class="vxt__x">Rückruf statt Termin. Zuerst die Telefonnummer und wann wir anrufen dürfen. Welches Musterhaus und welcher Tag, klären wir im Gespräch. Für den Verkauf steht das nächste Musterhaus zur Postleitzahl schon in der Nachricht.</p></div>
+    <section class="va" data-room="schwarz" aria-labelledby="va3-h">
+      <div class="va__in">
+        <div class="va__kopf">
+          <p class="info">Besuch</p>
+          <h2 class="va__h" id="va3-h">Wir rufen dich an.</h2>
+          <p class="va__lead">Sag uns kurz, was du sehen willst. Den Tag und den Ort finden wir gemeinsam am Telefon.</p>
+          <p class="va__zahl">1 Schritt · 1 bis 2 × wählen · 5 × tippen</p>
+          <div class="crm" data-crm="f3"></div>
+        </div>
+        <form class="vf" id="f3" novalidate autocomplete="on">
+          <div class="vf__body">
+            <fieldset class="vf__set" data-pflicht="Besuch">
+              <legend class="vf__l">Was möchtest du sehen?</legend>
+              <div class="vf__chips vf__chips--gross">
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Campus"><span>Campus</span></label>
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Musterhaus"><span>Musterhaus</span></label>
+                <label class="vf__chip"><input type="radio" name="Besuch" value="Kundenhaus"><span>Kundenhaus</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__feld vf__feld--gross"><label class="vf__l" for="f3-tel">Deine Telefonnummer</label><input class="vf__i" id="f3-tel" name="Telefon" type="tel" required autocomplete="tel" placeholder="+43 664 123 45 67"></div>
+            <fieldset class="vf__set">
+              <legend class="vf__l">Wann erreichen wir dich am besten? <i>freiwillig</i></legend>
+              <div class="vf__chips">
+                <label class="vf__chip"><input type="radio" name="Erreichbar" value="Vormittag"><span>Vormittag</span></label>
+                <label class="vf__chip"><input type="radio" name="Erreichbar" value="Mittag"><span>Mittag</span></label>
+                <label class="vf__chip"><input type="radio" name="Erreichbar" value="Nachmittag"><span>Nachmittag</span></label>
+                <label class="vf__chip"><input type="radio" name="Erreichbar" value="Abend"><span>Abend</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__grid">
+              <div class="vf__feld"><label class="vf__l" for="f3-vn">Vorname</label><input class="vf__i" id="f3-vn" name="Vorname" required autocomplete="given-name" placeholder="Vorname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f3-nn">Nachname</label><input class="vf__i" id="f3-nn" name="Nachname" required autocomplete="family-name" placeholder="Nachname"></div>
+              <div class="vf__feld"><label class="vf__l" for="f3-plz">Postleitzahl</label><input class="vf__i" id="f3-plz" name="Postleitzahl" required inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 9112"></div>
+              <div class="vf__feld"><label class="vf__l" for="f3-em">E-Mail</label><input class="vf__i" id="f3-em" name="E-Mail" type="email" required autocomplete="email" placeholder="name@mail.at"></div>
+            </div>
+            <label class="vf__ok"><input type="checkbox" name="Einverständnis" value="ja" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren. <a href="https://griffner.com/privacy">Datenschutz</a></span></label>
+            <p class="vf__err" data-err role="alert"></p>
+            <div class="vf__fuss"><button type="submit" class="vf__send">Rückruf anfordern</button></div>
+            <p class="vf__hint">Wir rufen innerhalb eines Werktags an. Unverbindlich.</p>
+          </div>
+          <div class="vf__danke" data-danke hidden>
+            <p class="vf__dh">Danke<span data-name></span>.</p>
+            <p class="vf__dt" data-dt-rueckruf>Wir rufen dich innerhalb eines Werktags an.</p>
+            <button type="button" class="vf__back" data-nochmal>Noch eine Anfrage</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 04 JE NACH BESUCH: zuerst die Wahl, dann nur die passenden Fragen -->
+    <div class="vxt" data-room="tag" id="v4"><p class="info">Variante 04</p><p class="vxt__n">Je nach Besuch</p><p class="vxt__x">Zuerst die Wahl, dann nur die passenden Fragen und Texte. Beim Musterhaus schlägt die Postleitzahl das nächste vor. Beim Kundenhaus fragen wir, was man sehen möchte, und kein Zeitraum, weil die Familie erst zusagen muss.</p></div>
+    <section class="va" data-room="schwarz" aria-labelledby="va4-h">
+      <div class="va__in">
+        <div class="va__kopf">
+          <p class="info">Besuch</p>
+          <h2 class="va__h" id="va4-h">Was willst du sehen?</h2>
+          <p class="va__lead">Campus, Musterhaus oder ein Haus, in dem schon jemand wohnt. Das Formular fragt nur, was es für deinen Besuch braucht.</p>
+          <p class="va__zahl">1 Schritt · 2 × wählen · 5 × tippen</p>
+          <div class="crm" data-crm="f4"></div>
+        </div>
+        <form class="vf" id="f4" data-vorschlag novalidate autocomplete="on">
+          <div class="vf__body">
+            <fieldset class="vf__set" data-pflicht="Besuch">
+              <legend class="vf__l">Dein Besuch</legend>
+              <div class="vf__karten">
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Campus"><b>Campus</b><span>Ein Tag in Griffen</span></label>
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Musterhaus"><b>Musterhaus</b><span>Das nächste zu dir</span></label>
+                <label class="vf__karte"><input type="radio" name="Besuch" value="Kundenhaus"><b>Kundenhaus</b><span>Ein bewohntes GRIFFNER Haus</span></label>
+              </div>
+            </fieldset>
+            <div class="vf__rest" data-wenn="Besuch:Campus,Musterhaus,Kundenhaus" hidden>
+              <p class="vf__satz" data-wenn="Besuch:Campus" hidden>Ein Tag in Griffen. Wir zeigen dir den Campus und planen den Tag mit dir.</p>
+              <p class="vf__satz" data-wenn="Besuch:Musterhaus" hidden>Gib deine Postleitzahl ein. Wir schlagen dir das nächste Musterhaus vor.</p>
+              <p class="vf__satz" data-wenn="Besuch:Kundenhaus" hidden>Wir fragen unsere Bauherren für dich. Sag uns, was du sehen möchtest.</p>
+              <div class="vf__grid">
+                <div class="vf__feld"><label class="vf__l" for="f4-plz">Postleitzahl</label><input class="vf__i" id="f4-plz" name="Postleitzahl" required inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 9112"></div>
+                <div class="vf__feld" data-wenn="Besuch:Musterhaus" hidden>
+                  <label class="vf__l" for="f4-haus">Nächstes Musterhaus</label>
+                  <select class="vf__i vf__sel" id="f4-haus" name="Musterhaus" required>
+                    <option value="">Nach Postleitzahl</option>
+                    <option>Griffen</option><option>Wien</option><option>Graz</option><option>Linz</option><option>Salzburg</option><option>München</option><option>Schwarzwald</option><option>Prag</option>
+                  </select>
+                  <p class="vf__mini" data-vorschlag-info hidden>Vorgeschlagen nach deiner Postleitzahl. Du kannst es ändern.</p>
+                </div>
+              </div>
+              <fieldset class="vf__set" data-wenn="Besuch:Kundenhaus" hidden>
+                <legend class="vf__l">Was möchtest du sehen? <i>freiwillig, mehrere möglich</i></legend>
+                <div class="vf__chips">
+                  <label class="vf__chip"><input type="checkbox" name="Sehen" value="Flachdach"><span>Flachdach</span></label>
+                  <label class="vf__chip"><input type="checkbox" name="Sehen" value="Satteldach"><span>Satteldach</span></label>
+                  <label class="vf__chip"><input type="checkbox" name="Sehen" value="Bungalow"><span>Bungalow</span></label>
+                  <label class="vf__chip"><input type="checkbox" name="Sehen" value="Mit Keller"><span>Mit Keller</span></label>
+                  <label class="vf__chip"><input type="checkbox" name="Sehen" value="Ein Concept"><span>Ein Concept</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="vf__set" data-wenn="Besuch:Campus,Musterhaus" data-pflicht="Zeitraum" hidden>
+                <legend class="vf__l">Wann passt es dir ungefähr?</legend>
+                <div class="vf__chips">
+                  <label class="vf__chip"><input type="radio" name="Zeitraum" value="Diese oder nächste Woche"><span>Diese oder nächste Woche</span></label>
+                  <label class="vf__chip"><input type="radio" name="Zeitraum" value="In den nächsten Wochen"><span>In den nächsten Wochen</span></label>
+                  <label class="vf__chip"><input type="radio" name="Zeitraum" value="Ich bin flexibel"><span>Flexibel</span></label>
+                </div>
+              </fieldset>
+              <div class="vf__grid">
+                <div class="vf__feld"><label class="vf__l" for="f4-vn">Vorname</label><input class="vf__i" id="f4-vn" name="Vorname" required autocomplete="given-name" placeholder="Vorname"></div>
+                <div class="vf__feld"><label class="vf__l" for="f4-nn">Nachname</label><input class="vf__i" id="f4-nn" name="Nachname" required autocomplete="family-name" placeholder="Nachname"></div>
+                <div class="vf__feld"><label class="vf__l" for="f4-tel">Telefon</label><input class="vf__i" id="f4-tel" name="Telefon" type="tel" required autocomplete="tel" placeholder="+43 664 123 45 67"></div>
+                <div class="vf__feld"><label class="vf__l" for="f4-em">E-Mail</label><input class="vf__i" id="f4-em" name="E-Mail" type="email" required autocomplete="email" placeholder="name@mail.at"></div>
+              </div>
+              <label class="vf__ok"><input type="checkbox" name="Einverständnis" value="ja" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren. <a href="https://griffner.com/privacy">Datenschutz</a></span></label>
+              <p class="vf__err" data-err role="alert"></p>
+              <div class="vf__fuss"><button type="submit" class="vf__send">Besuch anfragen</button></div>
+              <p class="vf__hint">Unverbindlich. Wir rufen dich innerhalb eines Werktags an.</p>
+            </div>
+          </div>
+          <div class="vf__danke" data-danke hidden>
+            <p class="vf__dh">Danke<span data-name></span>.</p>
+            <p class="vf__dt" data-wenn-danke="Campus">Wir rufen dich innerhalb eines Werktags an und planen deinen Tag in Griffen.</p>
+            <p class="vf__dt" data-wenn-danke="Musterhaus">Wir rufen dich innerhalb eines Werktags an und machen einen Termin im Musterhaus aus.</p>
+            <p class="vf__dt" data-wenn-danke="Kundenhaus">Wir fragen eine Familie in deiner Nähe und melden uns, sobald sie zusagt.</p>
+            <button type="button" class="vf__back" data-nochmal>Noch einen Besuch anfragen</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 05 EIN SATZ: Lückentext, groß gesetzt -->
+    <div class="vxt" data-room="tag" id="v5"><p class="info">Variante 05</p><p class="vxt__n">Ein Satz</p><p class="vxt__x">Ein Satz mit Lücken, groß gesetzt wie die Eingabefelder auf der Website. Dieselben Angaben wie 01, nur als Text zum Ausfüllen. Ort und Besuch sind eine Auswahl, Zeitraum und Tageszeit auch.</p></div>
+    <section class="va" data-room="schwarz" aria-labelledby="va5-h">
+      <div class="va__in">
+        <div class="va__kopf">
+          <p class="info">Besuch</p>
+          <h2 class="va__h" id="va5-h">Wir freuen uns auf dich.</h2>
+          <p class="va__lead">Ein Satz statt eines Formulars. Wir rufen dich an und machen den Termin mit dir aus.</p>
+          <p class="va__zahl">1 Satz · 3 × wählen · 5 × tippen</p>
+          <div class="crm" data-crm="f5"></div>
+        </div>
+        <form class="vf vf--satz" id="f5" novalidate autocomplete="on">
+          <div class="vf__body">
+            <p class="vs">
+              Ich möchte
+              <select class="vs__i" name="Besuch" required aria-label="Was möchtest du sehen?" data-pflichtname="Besuch">
+                <option value="">… auswählen</option>
+                <option value="Campus|">den GRIFFNER Campus</option>
+                <option value="Musterhaus|">das Musterhaus in meiner Nähe</option>
+                <option value="Musterhaus|Griffen">das Musterhaus in Griffen</option>
+                <option value="Musterhaus|Wien">das Musterhaus in Wien</option>
+                <option value="Musterhaus|Graz">das Musterhaus in Graz</option>
+                <option value="Musterhaus|Linz">das Musterhaus in Linz</option>
+                <option value="Musterhaus|Salzburg">das Musterhaus in Salzburg</option>
+                <option value="Musterhaus|München">das Musterhaus in München</option>
+                <option value="Musterhaus|Schwarzwald">das Musterhaus im Schwarzwald</option>
+                <option value="Musterhaus|Prag">das Musterhaus in Prag</option>
+                <option value="Kundenhaus|">ein bewohntes GRIFFNER Haus</option>
+              </select>
+              besuchen, am liebsten
+              <select class="vs__i" name="Zeitraum" required aria-label="Wann ungefähr?" data-pflichtname="Zeitraum">
+                <option value="">… wann</option>
+                <option value="Diese oder nächste Woche">diese oder nächste Woche</option>
+                <option value="In den nächsten Wochen">in den nächsten Wochen</option>
+                <option value="Ich bin flexibel">wann es passt</option>
+              </select>
+              <select class="vs__i" name="Tageszeit" aria-label="Tageszeit, freiwillig">
+                <option value="">egal wann</option>
+                <option value="Vormittag">vormittags</option>
+                <option value="Nachmittag">nachmittags</option>
+              </select>.
+              Ich heiße
+              <input class="vs__i" name="Vorname" required autocomplete="given-name" placeholder="Vorname" aria-label="Vorname">
+              <input class="vs__i" name="Nachname" required autocomplete="family-name" placeholder="Nachname" aria-label="Nachname">
+              und wohne in
+              <input class="vs__i" name="Postleitzahl" required inputmode="numeric" autocomplete="postal-code" placeholder="Postleitzahl" aria-label="Postleitzahl">.
+              Ihr erreicht mich unter
+              <input class="vs__i" name="Telefon" type="tel" required autocomplete="tel" placeholder="Telefon" aria-label="Telefon">
+              und
+              <input class="vs__i" name="E-Mail" type="email" required autocomplete="email" placeholder="E-Mail" aria-label="E-Mail">.
+            </p>
+            <label class="vf__ok"><input type="checkbox" name="Einverständnis" value="ja" required><span>Ich bin einverstanden, dass GRIFFNER meine Angaben verwendet, um mich zu kontaktieren. <a href="https://griffner.com/privacy">Datenschutz</a></span></label>
+            <p class="vf__err" data-err role="alert"></p>
+            <div class="vf__fuss"><button type="submit" class="vf__send">Besuch anfragen</button></div>
+            <p class="vf__hint">Unverbindlich. Wir melden uns innerhalb eines Werktags.</p>
+          </div>
+          <div class="vf__danke" data-danke hidden>
+            <p class="vf__dh">Danke<span data-name></span>.</p>
+            <p class="vf__dt">Wir rufen dich innerhalb eines Werktags an und machen den Termin mit dir aus.</p>
+            <button type="button" class="vf__back" data-nochmal>Noch einen Besuch anfragen</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft" data-room="footer" data-footer></footer>
+</div>
+
+<nav class="vxsw" data-vxsw aria-label="Varianten">
+  <a href="#v1">01</a><a href="#v2">02</a><a href="#v3">03</a><a href="#v4">04</a><a href="#v5">05</a>
+</nav>
+<script type="module" src="js/visit-anfrage.js"></script>
+</body>
+</html>
